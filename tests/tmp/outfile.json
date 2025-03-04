@@ -1,0 +1,158 @@
+{
+    "file": {
+        "info": {
+            "forms": {
+                "json": {
+                    "visitdate": "2025-01-01"
+                }
+            },
+            "derived": {
+                "naccdage": 999,
+                "naccage": null,
+                "naccnihr": 99,
+                "naccalzp": 7,
+                "naccbvft": 8,
+                "naccetpr": 99,
+                "nacclbde": null,
+                "nacclbdp": null,
+                "nacclbds": 8,
+                "naccnorm": null,
+                "naccppa": 8,
+                "naccudsd": null,
+                "naccapoe": 9,
+                "ngdsexom": 0,
+                "ngdsgwas": 0,
+                "ngdswes": 0,
+                "ngdswgs": 0
+            }
+        }
+    },
+    "subject": {
+        "info": {
+            "cognitive": {
+                "uds": {
+                    "cognitive-status": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        }
+                    },
+                    "other-diagnosis": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": []
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": []
+                        }
+                    },
+                    "dementia-type": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": []
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": []
+                        },
+                        "all": []
+                    },
+                    "etpr": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": "Missing/unknown"
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "Missing/unknown"
+                        },
+                        "all": [
+                            "Missing/unknown"
+                        ]
+                    },
+                    "cdrglob": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "all": []
+                    }
+                }
+            },
+            "derived": {
+                "naccnorm": false,
+                "naccdage": 999
+            },
+            "demographics": {
+                "uds": {
+                    "age": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        }
+                    },
+                    "education-level": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        }
+                    },
+                    "primary-language": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "Unknown"
+                        }
+                    },
+                    "race": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "Unknown or ambiguous"
+                        }
+                    },
+                    "sex": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        }
+                    }
+                }
+            },
+            "genetics": {
+                "naccapoe": "Missing/unknown/not assessed",
+                "ngdsexom": false,
+                "ngdsgwas": false,
+                "ngdswes": false,
+                "ngdswgs": false
+            },
+            "longitudinal-data": {
+                "uds": {
+                    "count": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": 0
+                        }
+                    }
+                }
+            },
+            "study-parameters": {
+                "uds": {
+                    "versions": []
+                }
+            }
+        }
+    },
+    "TODO": null
+}

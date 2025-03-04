@@ -1,0 +1,22 @@
+[build-system]
+requires = [
+  "setuptools>=61.0"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nacc_attribute_deriver"
+version = "0.0.1-dev0"
+authors = [
+  { name="NACC", email="nacchelp@uw.edu" },
+]
+description = "Handles deriving NACC and MQT variables."
+readme = "README.md"
+requires-python = ">=3.11"
+
+[project.scripts]
+nacc-attribute-deriver = "nacc_attribute_deriver.bin.deriver_cli:entrypoint"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-vv"]
