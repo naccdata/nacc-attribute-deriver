@@ -8,7 +8,7 @@ curation schema.
 """
 from typing import Any, Dict
 
-from nacc_attribute_deriver.attributes.utils.utils import (
+from nacc_attribute_deriver.attributes.utils.date import (
     datetime_from_form_date
 )
 from nacc_attribute_deriver.schema.schema import (
@@ -29,6 +29,8 @@ class AttributeDeriver:
         """
         self.__schema = CurationSchema(**schema)
         self.__date_key = self.__schema.date_key
+
+    # def __generate_instance_map(self, table: SymbolTable) -> Dict[]
 
     def handle_event(self,
                      value: Any,
@@ -102,10 +104,21 @@ class AttributeDeriver:
         if self.__date_key not in table or not table[self.__date_key]:
             raise ValueError(f"Table does not have specified date key: {self.__date_key}")
 
+        instance_map = {}
+
         # derive NACC first, then MQT
-        for attribute in self.__schema.curation_order():   
-            value = attribute.function(table)
+        for attr in self.__schema.curation_order():
+            attr_class = attr.attribute['class']
+            attr_func = attr.attribute['function']
+
+            # this is really ugly and I think more indicitive of
+            # a design flaw. need to rethink if we wanna do
+            # classes of attribute collections, also kind of makes the schema useless?
+            if attr_class not in instance_map:
+                instance_map[attr_class] = attr_class(table)
+
+            value = attr_func(instance_map[attr_class])
 
             # distribute event
-            for event in attribute.events:
+            for event in attr.events:
                 self.handle_event(value, event, table)

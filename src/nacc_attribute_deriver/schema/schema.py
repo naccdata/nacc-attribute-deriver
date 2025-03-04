@@ -36,7 +36,7 @@ from pydantic import (
     ValidationError,
     field_validator
 )
-from typing import Callable, List, Optional
+from typing import Callable, Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_map import ATTRIBUTE_MAP
 
@@ -71,16 +71,18 @@ class AttributeSchema(BaseModel):
     """Defines the derive schema for a single attribute, e.g. how
     something should be derived.
     """
-    function: Callable         # callable function mapped from a string
-    events: List[DeriveEvent]  # target DeriveEvents for that function
+    attribute: Dict[str, Callable]   # Maps to class/function attribute
+    events: List[DeriveEvent]        # target DeriveEvents for that function
 
     # this is just more for human readibility, not necessary for any processing
     type: Optional[str] = None
     description: Optional[str] = None
 
-    @field_validator('function', mode='before')
-    def map_function(cls, name: str) -> Callable:
-        """Maps the given string function name to an actual callable.
+    # should not be set? this is super ugly
+
+    @field_validator('attribute', mode='before')
+    def map_attribute(cls, name: str) -> Callable:
+        """Maps the given string function name to an actual attribute class/function.
         Raises validation error if the function name is not known.
 
         Args:

@@ -1,2 +1,2 @@
-from .forms import *
+from .modules import *
 from .genetics import *

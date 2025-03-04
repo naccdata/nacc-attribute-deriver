@@ -2,7 +2,7 @@
     "date_key": "file.info.forms.json.visitdate",
     "nacc_derived_vars": [
         {
-            "function": "create_naccdage",
+            "attribute": "create_naccdage",
             "events": [
                 {
                     "location": "file.info.derived.naccdage",
@@ -13,128 +13,7 @@
             "description": "Age at death"
         },
         {
-            "function": "create_naccage",
-            "events": [
-                {
-                    "location": "file.info.derived.naccage",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Subject's age at visit"
-        },
-        {
-            "function": "create_naccnihr",
-            "events": [
-                {
-                    "location": "file.info.derived.naccnihr",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Subject's age at visit"
-        },
-        {
-            "function": "create_naccalzp",
-            "events": [
-                {
-                    "location": "file.info.derived.naccalzp",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Primary, contributing, or non-contributing cause of observed cognitive impairment -- Alzheimer's disease (AD)"
-        },
-        {
-            "function": "create_naccbvft",
-            "events": [
-                {
-                    "location": "file.info.derived.naccbvft",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Dementia syndrome -- behavioral variant FTD syndrome (bvFTD)"
-        },
-        {
-            "function": "create_naccetpr",
-            "events": [
-                {
-                    "location": "file.info.derived.naccetpr",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Primary etiologic diagnosis (MCI), impaired, not MCI, or dementia"
-        },
-        {
-            "function": "create_nacclbde",
-            "events": [
-                {
-                    "location": "file.info.derived.nacclbde",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Presumptive etilogic diagnosis of the cognitive disorder - Lewy body disease (LBD)"
-        },
-        {
-            "function": "create_nacclbdp",
-            "events": [
-                {
-                    "location": "file.info.derived.nacclbdp",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Primary, contributing, or non-contributing cause of cognitive impairment -- Lewy body disease (LBD)"
-        },
-        {
-            "function": "create_nacclbds",
-            "events": [
-                {
-                    "location": "file.info.derived.nacclbds",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Dementia syndrome -- Lewy body dementia syndrome"
-        },
-        {
-            "function": "create_naccnorm",
-            "events": [
-                {
-                    "location": "file.info.derived.naccnorm",
-                    "event": "update"
-                }
-            ],
-            "type": "cross-sectional",
-            "description": "Normal cognition at all visits to date"
-        },
-        {
-            "function": "create_naccppa",
-            "events": [
-                {
-                    "location": "file.info.derived.naccppa",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Primary progressive aphasia (PPA) with cognitive impairment"
-        },
-        {
-            "function": "create_naccudsd",
-            "events": [
-                {
-                    "location": "file.info.derived.naccudsd",
-                    "event": "update"
-                }
-            ],
-            "type": "longitudinal",
-            "description": "Cognitive status at UDS visit"
-        },
-        {
-            "function": "create_naccapoe",
+            "attribute": "create_naccapoe",
             "events": [
                 {
                     "location": "file.info.derived.naccapoe",
@@ -145,7 +24,7 @@
             "description": "APOE genotype"
         },
         {
-            "function": "create_ngdsexom",
+            "attribute": "create_ngdsexom",
             "events": [
                 {
                     "location": "file.info.derived.ngdsexom",
@@ -156,7 +35,7 @@
             "description": "ExomeChip available at NIAGADS (y/n)"
         },
         {
-            "function": "create_ngdsgwas",
+            "attribute": "create_ngdsgwas",
             "events": [
                 {
                     "location": "file.info.derived.ngdsgwas",
@@ -167,7 +46,7 @@
             "description": "GWAS available at NIAGADS (y/n)"
         },
         {
-            "function": "create_ngdswes",
+            "attribute": "create_ngdswes",
             "events": [
                 {
                     "location": "file.info.derived.ngdswes",
@@ -178,7 +57,7 @@
             "description": "Whole exome sequencing available at NIAGADS (y/n)"
         },
         {
-            "function": "create_ngdswgs",
+            "attribute": "create_ngdswgs",
             "events": [
                 {
                     "location": "file.info.derived.ngdswgs",
@@ -187,11 +66,147 @@
             ],
             "type": "cross-sectional",
             "description": "Whole genome sequencing available at NIAGADS (y/n)"
+        },
+        {
+            "attribute": "create_naccage",
+            "events": [
+                {
+                    "location": "file.info.derived.naccage",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Subject's age at visit"
+        },
+        {
+            "attribute": "create_naccnihr",
+            "events": [
+                {
+                    "location": "file.info.derived.naccnihr",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Subject's age at visit"
+        },
+        {
+            "attribute": "create_naccalzp",
+            "events": [
+                {
+                    "location": "file.info.derived.naccalzp",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Primary, contributing, or non-contributing cause of observed cognitive impairment -- Alzheimer's disease (AD)"
+        },
+        {
+            "attribute": "create_naccbvft",
+            "events": [
+                {
+                    "location": "file.info.derived.naccbvft",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Dementia syndrome -- behavioral variant FTD syndrome (bvFTD)"
+        },
+        {
+            "attribute": "create_naccetpr",
+            "events": [
+                {
+                    "location": "file.info.derived.naccetpr",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Primary etiologic diagnosis (MCI), impaired, not MCI, or dementia"
+        },
+        {
+            "attribute": "create_nacclbde",
+            "events": [
+                {
+                    "location": "file.info.derived.nacclbde",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Presumptive etilogic diagnosis of the cognitive disorder - Lewy body disease (LBD)"
+        },
+        {
+            "attribute": "create_nacclbdp",
+            "events": [
+                {
+                    "location": "file.info.derived.nacclbdp",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Primary, contributing, or non-contributing cause of cognitive impairment -- Lewy body disease (LBD)"
+        },
+        {
+            "attribute": "create_nacclbds",
+            "events": [
+                {
+                    "location": "file.info.derived.nacclbds",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Dementia syndrome -- Lewy body dementia syndrome"
+        },
+        {
+            "attribute": "create_naccnorm",
+            "events": [
+                {
+                    "location": "file.info.derived.naccnorm",
+                    "event": "update"
+                }
+            ],
+            "type": "cross-sectional",
+            "description": "Normal cognition at all visits to date"
+        },
+        {
+            "attribute": "create_naccppa",
+            "events": [
+                {
+                    "location": "file.info.derived.naccppa",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Primary progressive aphasia (PPA) with cognitive impairment"
+        },
+        {
+            "attribute": "create_naccudsd",
+            "events": [
+                {
+                    "location": "file.info.derived.naccudsd",
+                    "event": "update"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Cognitive status at UDS visit"
+        },
+        {
+            "attribute": "create_uds_visitdate",
+            "events": [
+                {
+                    "location": "subject.info.derived.initial_uds_visit",
+                    "event": "initial"
+                },
+                {
+                    "location": "subject.info.derived.latest_uds_visit",
+                    "event": "latest"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Date of UDS visit"
         }
     ],
     "mqt_derived_vars": [
         {
-            "function": "create_cognitive_status",
+            "attribute": "create_cognitive_status",
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.cognitive-status.initial",
@@ -200,13 +215,17 @@
                 {
                     "location": "subject.info.cognitive.uds.cognitive-status.latest",
                     "event": "latest"
+                },
+                {
+                    "location": "subject.info.cognitive.uds.cognitive-status.all",
+                    "event": "set"
                 }
             ],
             "type": "cognitive",
             "description": "Cognitive Status"
         },
         {
-            "function": "create_contributing_diagnosis",
+            "attribute": "create_contributing_diagnosis",
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.other-diagnosis.initial",
@@ -215,13 +234,17 @@
                 {
                     "location": "subject.info.cognitive.uds.other-diagnosis.latest",
                     "event": "latest"
+                },
+                {
+                    "location": "subject.info.cognitive.uds.other-diagnosis.all",
+                    "event": "set"
                 }
             ],
             "type": "cognitive",
             "description": "Contributing etiological diagnosis"
         },
         {
-            "function": "create_dementia",
+            "attribute": "create_dementia",
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.dementia-type.initial",
@@ -240,7 +263,7 @@
             "description": "Type of Dementia syndrome"
         },
         {
-            "function": "create_etpr",
+            "attribute": "create_etpr",
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.etpr.initial",
@@ -259,7 +282,7 @@
             "description": "Primary etiologic diagnosis"
         },
         {
-            "function": "create_global_cdr",
+            "attribute": "create_global_cdr",
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.cdrglob.initial",
@@ -278,18 +301,18 @@
             "description": "Global CDR"
         },
         {
-            "function": "create_normal_cognition",
+            "attribute": "create_normal_cognition",
             "events": [
                 {
                     "location": "subject.info.derived.naccnorm",
-                    "event": "max"
+                    "event": "min"
                 }
             ],
             "type": "cognitive",
             "description": "Normal Cognition"
         },
         {
-            "function": "create_age_at_death",
+            "attribute": "create_age_at_death",
             "events": [
                 {
                     "location": "subject.info.derived.naccdage",
@@ -300,7 +323,7 @@
             "description": "Age at death"
         },
         {
-            "function": "create_uds_age",
+            "attribute": "create_uds_age",
             "events": [
                 {
                     "location": "subject.info.demographics.uds.age.initial",
@@ -315,7 +338,7 @@
             "description": "Age at UDS visit"
         },
         {
-            "function": "create_uds_education_level",
+            "attribute": "create_uds_education_level",
             "events": [
                 {
                     "location": "subject.info.demographics.uds.education-level.latest",
@@ -326,7 +349,7 @@
             "description": "Primary language at UDS visit"
         },
         {
-            "function": "create_uds_primary_language",
+            "attribute": "create_uds_primary_language",
             "events": [
                 {
                     "location": "subject.info.demographics.uds.primary-language.latest",
@@ -337,7 +360,7 @@
             "description": "Primary language at UDS visit"
         },
         {
-            "function": "create_uds_race",
+            "attribute": "create_uds_race",
             "events": [
                 {
                     "location": "subject.info.demographics.uds.race.latest",
@@ -348,7 +371,7 @@
             "description": "Race at UDS visit"
         },
         {
-            "function": "create_uds_sex",
+            "attribute": "create_uds_sex",
             "events": [
                 {
                     "location": "subject.info.demographics.uds.sex.latest",
@@ -359,18 +382,18 @@
             "description": "Sex at UDS visit"
         },
         {
-            "function": "create_vital_status",
+            "attribute": "create_vital_status",
             "events": [
                 {
-                    "location": "TODO",
-                    "event": "update"
+                    "location": "subject.info.demographics.uds.vital-status.latest",
+                    "event": "latest"
                 }
             ],
             "type": "demographics",
             "description": "Vital status"
         },
         {
-            "function": "create_apoe",
+            "attribute": "create_apoe",
             "events": [
                 {
                     "location": "subject.info.genetics.naccapoe",
@@ -381,7 +404,7 @@
             "description": "APOE genotype"
         },
         {
-            "function": "create_ngdsexom_mqt",
+            "attribute": "create_ngdsexom_mqt",
             "events": [
                 {
                     "location": "subject.info.genetics.ngdsexom",
@@ -392,7 +415,7 @@
             "description": "ExomeChip available at NIAGADS"
         },
         {
-            "function": "create_ngdsgwas_mqt",
+            "attribute": "create_ngdsgwas_mqt",
             "events": [
                 {
                     "location": "subject.info.genetics.ngdsgwas",
@@ -403,7 +426,7 @@
             "description": "GWAS available at NIAGADS"
         },
         {
-            "function": "create_ngdswes_mqt",
+            "attribute": "create_ngdswes_mqt",
             "events": [
                 {
                     "location": "subject.info.genetics.ngdswes",
@@ -414,7 +437,7 @@
             "description": "Whole exome sequencing available at NIAGADS"
         },
         {
-            "function": "create_ngdswgs_mqt",
+            "attribute": "create_ngdswgs_mqt",
             "events": [
                 {
                     "location": "subject.info.genetics.ngdswgs",
@@ -425,7 +448,7 @@
             "description": "Whole genome sequencing available at NIAGADS"
         },
         {
-            "function": "create_total_uds_visits",
+            "attribute": "create_total_uds_visits",
             "events": [
                 {
                     "location": "subject.info.longitudinal-data.uds.count.latest",
@@ -436,7 +459,7 @@
             "description": "Total number of UDS visits"
         },
         {
-            "function": "create_years_of_uds",
+            "attribute": "create_years_of_uds",
             "events": [
                 {
                     "location": "TODO",
@@ -447,7 +470,7 @@
             "description": "Number of years of UDS visits available"
         },
         {
-            "function": "create_uds_versions_available",
+            "attribute": "create_uds_versions_available",
             "events": [
                 {
                     "location": "subject.info.study-parameters.uds.versions",

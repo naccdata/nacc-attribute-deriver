@@ -37,5 +37,3 @@ def test_full_schema():
     outfile = tmp_dir / 'outfile.json'
     with outfile.open('w') as fh:
         json.dump(form.to_dict(), fh, indent=4)
-
-    assert form.to_dict() == {}

@@ -2,159 +2,157 @@
 All demographic MQT derived variables.
 Assumes NACC-derived variables are already set
 """
-from datetime import timedelta
-from nacc_attribute_deriver.attributes.utils.utils import (
-    assert_required
+from nacc_attribute_deriver.attributes.attribute_collection import (
+    MQTAttribute,
 )
-from nacc_attribute_deriver.symbol_table import SymbolTable
-
-SEX_MAPPING = {
-    1: 'Male',
-    2: 'Female',
-    8: 'Prefer not to answer',
-    9: "Don't know"
-}
-
-RACE_MAPPING = {
-    1: 'White',
-    2: 'Black or African American',
-    3: 'American Indian or Alaska Native',
-    4: 'Native Hawaiian or Pacific Islander',
-    5: 'Asian',
-    6: 'Multiracial',
-    7: 'Middle Eastern or Northern African',
-    8: 'Hispanic or Latino',  # TODO for UDSv4?
-    99: 'Unknown or ambiguous'
-}
-
-PRIMARY_LANGUAGE_MAPPING = {    
-    1: "English",
-    2: "Spanish",
-    3: "Mandarin",
-    4: "Cantonese",
-    5: "Russian",
-    6: "Japanese",
-    8: "Other primary language (specify)",
-    9: "Unknown"
-}
-
-def _create_uds_age(table: SymbolTable) -> int:
-    """UDS age at form date, mapped from NACCAGE
-
-    Location:
-        subject.info.demographics.uds.age.initial
-        subject.info.demographics.uds.age.latest
-    Event:
-        initial
-        latest
-    Type:
-        demographics
-    Description:
-        Age at UDS visit
-    """
-    result = assert_required('create_uds_age', ['naccage'], table)
-    return result['naccage']
 
 
-def _create_uds_sex(table: SymbolTable) -> str:
-    """UDS sex
+class DemographicsAttribute(MQTAttribute):
+    """Class to collect demographic attributes."""
 
-    Location:
-        subject.info.demographics.uds.sex.latest
-    Event:
-        latest
-    Type:
-        demographics
-    Description:
-        Sex at UDS visit
-    """
-    sex = table.get('file.info.forms.json.sex')
-    if sex is None:
+    SEX_MAPPING = {
+        1: 'Male',
+        2: 'Female',
+        8: 'Prefer not to answer',
+        9: "Don't know"
+    }
+
+    RACE_MAPPING = {
+        1: 'White',
+        2: 'Black or African American',
+        3: 'American Indian or Alaska Native',
+        4: 'Native Hawaiian or Pacific Islander',
+        5: 'Asian',
+        6: 'Multiracial',
+        7: 'Middle Eastern or Northern African',
+        8: 'Hispanic or Latino',  # TODO for UDSv4?
+        99: 'Unknown or ambiguous'
+    }
+
+    PRIMARY_LANGUAGE_MAPPING = {    
+        1: "English",
+        2: "Spanish",
+        3: "Mandarin",
+        4: "Cantonese",
+        5: "Russian",
+        6: "Japanese",
+        8: "Other primary language (specify)",
+        9: "Unknown"
+    }
+
+    def _create_uds_age(self) -> int:
+        """UDS age at form date, mapped from NACCAGE
+
+        Location:
+            subject.info.demographics.uds.age.initial
+            subject.info.demographics.uds.age.latest
+        Event:
+            initial
+            latest
+        Type:
+            demographics
+        Description:
+            Age at UDS visit
+        """
+        result = self.assert_required(['naccage'])
+        return result['naccage']
+
+    def _create_uds_sex(self) -> str:
+        """UDS sex
+
+        Location:
+            subject.info.demographics.uds.sex.latest
+        Event:
+            latest
+        Type:
+            demographics
+        Description:
+            Sex at UDS visit
+        """
+        sex = self.get_value('sex')
+        if sex is None:
+            return None
+
+        try:
+            return self.SEX_MAPPING.get(int(sex), None)
+        except TypeError:
+            return None
+
         return None
 
-    try:
-        return SEX_MAPPING.get(int(sex), None)
-    except TypeError:
-        return None
+    def _create_uds_race(self) -> str:
+        """UDS race
 
-    return None
+        Location:
+            subject.info.demographics.uds.race.latest
+        Event:
+            latest
+        Type:
+            demographics
+        Description:
+            Race at UDS visit
+        """
+        result = self.assert_required(['naccnihr'])
+        return self.RACE_MAPPING.get(result['naccnihr'], 'Unknown or ambiguous')
 
+    def _create_uds_primary_language(self) -> str:
+        """UDS primary language
 
-def _create_uds_race(table: SymbolTable) -> str:
-    """UDS race
+        Location:
+            subject.info.demographics.uds.primary-language.latest
+        Event:
+            latest
+        Type:
+            demographics
+        Description:
+            Primary language at UDS visit
+        """
+        primlang = self.get_value('primlang', 9)
+        return self.PRIMARY_LANGUAGE_MAPPING.get(primlang, 'Unknown')
 
-    Location:
-        subject.info.demographics.uds.race.latest
-    Event:
-        latest
-    Type:
-        demographics
-    Description:
-        Race at UDS visit
-    """
-    result = assert_required('create_uds_race', ['naccnihr'], table)
-    return RACE_MAPPING.get(result['naccnihr'], 'Unknown or ambiguous')
+    def _create_uds_education_level(self) -> int:
+        """UDS education level
 
+        Location:
+            subject.info.demographics.uds.education-level.latest
+        Event:
+            latest
+        Type:
+            demographics
+        Description:
+            Primary language at UDS visit
+        """
+        return self.get_value('educ', None)
 
-def _create_uds_primary_language(table: SymbolTable) -> str:
-    """UDS primary language
+    def _create_age_at_death(self) -> int:
+        """Age at death, mapped from NACCDAGE
 
-    Location:
-        subject.info.demographics.uds.primary-language.latest
-    Event:
-        latest
-    Type:
-        demographics
-    Description:
-        Primary language at UDS visit
-    """
-    primlang = table.get('file.info.form.json.primlang', 9)
-    return PRIMARY_LANGUAGE_MAPPING.get(primlang, 'Unknown')
+        Location:
+            subject.info.derived.naccdage
+        Event:
+            update
+        Type:
+            demographics
+        Description:
+            Age at death
+        """
+        result = self.assert_required(['naccdage'])
+        return result['naccdage']
 
+    def _create_vital_status(self) -> str:
+        """Creates subject.info.demographics.uds.vital-status.latest
 
-def _create_uds_education_level(table: SymbolTable) -> int:
-    """UDS education level
+        Location:
+            subject.info.demographics.uds.vital-status.latest
+        Event:
+            latest
+        Type:
+            demographics
+        Description:
+            Vital status
+        """
+        result = self.assert_required(['naccdage'])
+        if result['naccdage'] == 999:
+            return "TODO: MAPPING FOR VITAL STATUS"
 
-    Location:
-        subject.info.demographics.uds.education-level.latest
-    Event:
-        latest
-    Type:
-        demographics
-    Description:
-        Primary language at UDS visit
-    """
-    return table.get('file.info.form.json.educ', None)
-
-
-def _create_age_at_death(table: SymbolTable) -> int:
-    """Age at death, mapped from NACCDAGE
-
-    Location:
-        subject.info.derived.naccdage
-    Event:
-        update
-    Type:
-        demographics
-    Description:
-        Age at death
-    """
-    result = assert_required('create_age_at_death', ['naccdage'], table)
-    return result['naccdage']
-
-
-def _create_vital_status(table: SymbolTable) -> str:
-    """Creates subject.info.demographics.uds.vital-status.latest
-
-    TODO: sure what this comes from/what it's supposed to look like?
-
-    Location:
-        TODO
-    Event:
-        update
-    Type:
-        demographics
-    Description:
-        Vital status
-    """
-    pass
+        return "TODO: MAPPING FOR VITAL STATUS"

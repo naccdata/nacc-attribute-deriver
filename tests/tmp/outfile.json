@@ -8,6 +8,11 @@
             },
             "derived": {
                 "naccdage": 999,
+                "naccapoe": null,
+                "ngdsexom": 0,
+                "ngdsgwas": 0,
+                "ngdswes": 0,
+                "ngdswgs": 0,
                 "naccage": null,
                 "naccnihr": 99,
                 "naccalzp": 7,
@@ -16,19 +21,26 @@
                 "nacclbde": null,
                 "nacclbdp": null,
                 "nacclbds": 8,
-                "naccnorm": null,
+                "naccnorm": 0,
                 "naccppa": 8,
-                "naccudsd": null,
-                "naccapoe": 9,
-                "ngdsexom": 0,
-                "ngdsgwas": 0,
-                "ngdswes": 0,
-                "ngdswgs": 0
+                "naccudsd": null
             }
         }
     },
     "subject": {
         "info": {
+            "derived": {
+                "initial_uds_visit": {
+                    "date": "2025-01-01",
+                    "value": "2025-01-01"
+                },
+                "latest_uds_visit": {
+                    "date": "2025-01-01",
+                    "value": "2025-01-01"
+                },
+                "naccnorm": false,
+                "naccdage": 999
+            },
             "cognitive": {
                 "uds": {
                     "cognitive-status": {
@@ -39,7 +51,8 @@
                         "latest": {
                             "date": "2025-01-01",
                             "value": null
-                        }
+                        },
+                        "all": []
                     },
                     "other-diagnosis": {
                         "initial": {
@@ -49,7 +62,8 @@
                         "latest": {
                             "date": "2025-01-01",
                             "value": []
-                        }
+                        },
+                        "all": []
                     },
                     "dementia-type": {
                         "initial": {
@@ -88,10 +102,6 @@
                     }
                 }
             },
-            "derived": {
-                "naccnorm": false,
-                "naccdage": 999
-            },
             "demographics": {
                 "uds": {
                     "age": {
@@ -127,6 +137,12 @@
                             "date": "2025-01-01",
                             "value": null
                         }
+                    },
+                    "vital-status": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "TODO: MAPPING FOR VITAL STATUS"
+                        }
                     }
                 }
             },
@@ -154,5 +170,5 @@
             }
         }
     },
-    "TODO": null
+    "TODO": 0
 }

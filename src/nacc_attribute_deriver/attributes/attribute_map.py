@@ -1,36 +1,41 @@
 """
-Collects all _create functions into a single map
+Defines the attribute mapping
 """
-import re
 import json
-from inspect import isfunction, ismodule
+
+from inspect import isclass, ismodule
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List
 from types import ModuleType
 
-from nacc_attribute_deriver.attributes import mqt, nacc
+from . import mqt, nacc
+from .attribute_collection import AttributeCollection
 
 
-def generate_attribute_map(modules: List[ModuleType]) -> Dict[str, Callable]:
-    """Recursively generates mapping of attributes to functions given the
-    list of Python modules. Searches for all callables that start
-    with _create. Key name is the function name without the leading
-    underscore.
-
-    Assumes no name clashes.
+def generate_attribute_map(modules: List[ModuleType]) -> Dict[str, Dict[str, Callable]]:
+    """Recursively generates mapping of attributes to attribute class/functions
+    given the list of Python modules. Only considers classes of type AttributeCollection
+    so that it can call collect_attributes on it. Assumes no name clashes.
 
     Args:
-        modules: Python moduules to iterate over
+        modules: The Python modules to iterate over
     """
     result = {}
     for module in modules:
         submodules = []
         for attr_name in dir(module):
             attr = getattr(module, attr_name)
-            if isfunction(attr) and attr_name.startswith('_create_'):
-                if attr_name in result:
-                    raise ValueError(f"Duplicate create function name: {attr_name}")
-                result[attr_name.lstrip('_')] = attr
+            if isclass(attr) and issubclass(attr, AttributeCollection):
+                subattrs = attr.collect_attributes()
+
+                # make sure no duplicate function names
+                for name, func in subattrs.items():
+                    if name in result:
+                        if func != result[name]:
+                            raise ValueError(f"Duplicate create function name '{name}'. "
+                                + f"Defined as both {func} and {result[name]}")
+                        continue
+                    result[name] = func
             elif ismodule(attr):
                 submodules.append(attr)
 
@@ -83,6 +88,10 @@ def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
     if len(results['Location:']) != len(results['Event:']):
         raise ValueError(f"Function {name} has inconsistent location/event")
 
+    for k, v in results.items():
+        if not v:
+            raise ValueError(f"Function {name} missing docstring for {k}")
+
     return results
 
 
@@ -98,17 +107,16 @@ def generate_attribute_schema(outfile: Path,
     """
     def evaluate_grouping(grouping: Dict[str, Callable]) -> List[Dict[str, Any]]:
         schema = []
-        for i, (name, function) in enumerate(grouping.items()):
+        for i, (name, source) in enumerate(grouping.items()):
             # parse type and description from docstring
-            docs = function.__doc__
-            results = parse_docs(name, function.__doc__)
+            results = parse_docs(name, source['function'].__doc__)
             
             # skip intermediate variables
             if 'intermediate' in results['Type:']:
                 continue
 
             schema.append({
-                'function': name,
+                'attribute': name,
                 'events': [{'location': results['Location:'][i], 'event': results['Event:'][i]}
                            for i in range(len(results['Location:']))],
                 'type': ' '.join(results['Type:']),
