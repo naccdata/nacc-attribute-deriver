@@ -1,24 +1,44 @@
 """
-Tests against the full schema.
-
-TODO: make this more refined, mostly just setting this up
-to make sure the module runs at all.
+Tests against the full schema end-to-end.
 """
 import json
 import pytest
 
 from pathlib import Path
+from typing import Any
 
-from nacc_attribute_deriver.attributes.attribute_map import (
-    generate_attribute_schema
-)
-from nacc_attribute_deriver import AttributeDeriver, SymbolTable
+from nacc_attribute_deriver.attributes.attribute_map import generate_attribute_schema
+from nacc_attribute_deriver.deriver.attribute_deriver import AttributeDeriver
+from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
 
 CUR_DIR = Path(__file__).resolve().parent
+BASELINE_DIR = CUR_DIR / 'baseline'
 
-def test_full_schema():
+UPDATE_BASELINES = True
+
+
+@pytest.fixture(scope='function')
+def tmp_dir():
     tmp_dir = CUR_DIR / 'tmp'
     tmp_dir.mkdir(parents=True, exist_ok=True)
+    return tmp_dir
+
+
+def compare_baseline(baseline: Path, result: Any):
+    """Compare against the baseline."""
+    if UPDATE_BASELINES:
+        with baseline.open('w') as fh:
+            json.dump(result, fh, indent=4)
+
+    with baseline.open('r') as fh:
+        baseline = json.load(fh)
+        assert result == baseline
+
+
+def test_empty_form(tmp_dir):
+    """Test against an empty form."""
+    form = SymbolTable()  # make an empty form with date key
+    form['file.info.forms.json.visitdate'] = '2025-01-01'
 
     schema_path = tmp_dir / 'schema.json'
     generate_attribute_schema(outfile=schema_path)
@@ -26,14 +46,54 @@ def test_full_schema():
     with schema_path.open('r') as fh:
         schema = json.load(fh)
 
-    form = SymbolTable()  # make an empty form
-    # add date key
-    form['file.info.forms.json.visitdate'] = '2025-01-01'
+    compare_baseline(BASELINE_DIR / 'schema.json', schema)
 
     deriver = AttributeDeriver(schema=schema)
-
     deriver.curate(form)
 
-    outfile = tmp_dir / 'outfile.json'
-    with outfile.open('w') as fh:
-        json.dump(form.to_dict(), fh, indent=4)
+    compare_baseline(BASELINE_DIR / 'empty_outfile.json', form.to_dict())
+
+
+def test_full_form(tmp_dir):
+    """Tests against a full form."""
+
+    data = {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "sex": 1,
+                        "cdrglob": 0.5,
+                        "visitdate": "2019-04-24",
+                        "birthmo": 2,
+                        "birthyr": 1980,
+                        "primlang": 3,
+                        "formver": 4.0,
+                        "race": 3,
+                        "normcog": 1,
+                    }
+                }
+            }
+        },
+        "ncrad": {
+            "info": {
+                "raw": {
+                    "apoe": 5
+                }
+            }
+        },
+        "niagads": {
+            "info": {
+                "raw": {
+                    "niagads_gwas": "NG00000",
+                    "niagads_exomechip": "NG00000",
+                    "niagads_wgs": "NG00000",
+                    "niagads_wes": None
+                }
+            }
+        }
+    }
+    form = SymbolTable(data)
+    deriver = AttributeDeriver()
+    deriver.curate(form)
+    compare_baseline(BASELINE_DIR / 'full_form.json', form.to_dict())

@@ -1,0 +1,203 @@
+{
+    "file": {
+        "info": {
+            "forms": {
+                "json": {
+                    "sex": 1,
+                    "cdrglob": 0.5,
+                    "visitdate": "2019-04-24",
+                    "birthmo": 2,
+                    "birthyr": 1980,
+                    "primlang": 3,
+                    "formver": 4.0,
+                    "race": 3,
+                    "normcog": 1
+                }
+            },
+            "derived": {
+                "naccdage": 999,
+                "naccapoe": null,
+                "ngdsexom": 1,
+                "ngdsgwas": 1,
+                "ngdswes": 0,
+                "ngdswgs": 1,
+                "naccage": 39,
+                "naccnihr": 3,
+                "naccalzp": 8,
+                "naccbvft": 8,
+                "naccetpr": 88,
+                "nacclbde": 8,
+                "nacclbdp": 8,
+                "nacclbds": 8,
+                "naccnorm": 0,
+                "naccppa": 8,
+                "naccudsd": 1
+            }
+        }
+    },
+    "ncrad": {
+        "info": {
+            "raw": {
+                "apoe": 5
+            }
+        }
+    },
+    "niagads": {
+        "info": {
+            "raw": {
+                "niagads_gwas": "NG00000",
+                "niagads_exomechip": "NG00000",
+                "niagads_wgs": "NG00000",
+                "niagads_wes": null
+            }
+        }
+    },
+    "subject": {
+        "info": {
+            "derived": {
+                "initial_uds_visit": {
+                    "date": "2019-04-24",
+                    "value": "2019-04-24"
+                },
+                "latest_uds_visit": {
+                    "date": "2019-04-24",
+                    "value": "2019-04-24"
+                },
+                "naccnorm": false,
+                "naccdage": 999
+            },
+            "cognitive": {
+                "uds": {
+                    "cognitive-status": {
+                        "initial": {
+                            "date": "2019-04-24",
+                            "value": "Normal cognition"
+                        },
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": "Normal cognition"
+                        },
+                        "all": [
+                            "Normal cognition"
+                        ]
+                    },
+                    "other-diagnosis": {
+                        "initial": {
+                            "date": "2019-04-24",
+                            "value": []
+                        },
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": []
+                        },
+                        "all": []
+                    },
+                    "dementia-type": {
+                        "initial": {
+                            "date": "2019-04-24",
+                            "value": []
+                        },
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": []
+                        },
+                        "all": []
+                    },
+                    "etpr": {
+                        "initial": {
+                            "date": "2019-04-24",
+                            "value": "Not applicable"
+                        },
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": "Not applicable"
+                        },
+                        "all": [
+                            "Not applicable"
+                        ]
+                    },
+                    "cdrglob": {
+                        "initial": {
+                            "date": "2019-04-24",
+                            "value": "0.5"
+                        },
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": "0.5"
+                        },
+                        "all": [
+                            "0.5"
+                        ]
+                    }
+                }
+            },
+            "demographics": {
+                "uds": {
+                    "age": {
+                        "initial": {
+                            "date": "2019-04-24",
+                            "value": 39
+                        },
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": 39
+                        }
+                    },
+                    "education-level": {
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": null
+                        }
+                    },
+                    "primary-language": {
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": "Mandarin"
+                        }
+                    },
+                    "race": {
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": "American Indian or Alaska Native"
+                        }
+                    },
+                    "sex": {
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": "Male"
+                        }
+                    },
+                    "vital-status": {
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": "TODO: MAPPING FOR VITAL STATUS"
+                        }
+                    }
+                }
+            },
+            "genetics": {
+                "naccapoe": "Missing/unknown/not assessed",
+                "ngdsexom": true,
+                "ngdsgwas": true,
+                "ngdswes": false,
+                "ngdswgs": true
+            },
+            "longitudinal-data": {
+                "uds": {
+                    "count": {
+                        "latest": {
+                            "date": "2019-04-24",
+                            "value": 0
+                        }
+                    }
+                }
+            },
+            "study-parameters": {
+                "uds": {
+                    "versions": []
+                }
+            }
+        }
+    },
+    "TODO": 0
+}
