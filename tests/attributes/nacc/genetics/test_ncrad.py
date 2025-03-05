@@ -12,7 +12,7 @@ def attr() -> NCRADAttribute:
     """Create dummy data and return it in an attribute object.
     """
     data = {
-        'apoe': {
+        'ncrad': {
             'info': {
                 'raw': {
                     'apoe': 5

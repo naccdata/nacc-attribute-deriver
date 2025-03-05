@@ -13,7 +13,7 @@ class NCRADAttribute(NACCAttribute):
 
     def __init__(self,
                  table: SymbolTable,
-                 form_prefix: str = 'apoe.info.raw.') -> None:
+                 form_prefix: str = 'ncrad.info.raw.') -> None:
         """Override initializer to set prefix to NCRAD-specific data.
         """
         super().__init__(table, form_prefix)
