@@ -11,8 +11,7 @@ python_distribution(
         description="Derives variables",
         author="NACC",
         author_email="nacchelp@uw.edu",
-        url="https://github.com/naccdata/nacc-attribute-deriver")
-)
+        url="https://github.com/naccdata/nacc-attribute-deriver"))
 
 pex_binary(
     name="bin",

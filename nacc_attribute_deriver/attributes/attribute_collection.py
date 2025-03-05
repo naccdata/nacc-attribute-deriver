@@ -1,15 +1,11 @@
-"""
-Implements a plugin infrastructure where each "plugin" is a collection of
+"""Implements a plugin infrastructure where each "plugin" is a collection of
 attributes.
 
 Heavily based off of
     https://eli.thegreenplace.net/2012/08/07/fundamental-concepts-of-plugin-infrastructures
 """
-import imp
-import sys
 
 from inspect import isfunction
-from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -29,8 +25,8 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
     def __init__(self,
                  table: SymbolTable,
                  form_prefix: str = 'file.info.forms.json.') -> None:
-        """Initializes the collection. Requires a SymbolTable containing
-        all the relevant FW metadata necessary to derive the attributes.
+        """Initializes the collection. Requires a SymbolTable containing all
+        the relevant FW metadata necessary to derive the attributes.
 
         Args:
             table: SymbolTable which contains all necessary
@@ -54,8 +50,8 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
 
     @classmethod
     def get_derive_hook(cls, derive_name: str) -> Callable:
-        """Aggregates all _create functions and returns the function if derive_name
-        matches. Throws error otherwise.
+        """Aggregates all _create functions and returns the function if
+        derive_name matches. Throws error otherwise.
 
         Args:
             derive_name: Derive function name to search for
@@ -74,9 +70,8 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                   key: str,
                   default: Any = None,
                   prefix: str = None) -> Any:
-        """Grab value from the table using the key and prefix,
-        if provided. If not specified, prefix will default to
-        self.form_prefix
+        """Grab value from the table using the key and prefix, if provided. If
+        not specified, prefix will default to self.form_prefix.
 
         Args:
             key: Key to grab value for
@@ -90,8 +85,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         return self.table.get(f'{prefix}{key}', default)
 
     def set_value(self, key: str, value: Any, prefix: str = None) -> None:
-        """Set the value from the table using the specified key
-        and prefix.
+        """Set the value from the table using the specified key and prefix.
 
         Args:
             key: Key to set to the value to
@@ -126,8 +120,8 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
 
     @staticmethod
     def is_int_value(value: Union[int, str], target: int) -> bool:
-        """Check whether the value is the specified target int.
-        This might be overkill but wanted it to handle str/int comparisons.
+        """Check whether the value is the specified target int. This might be
+        overkill but wanted it to handle str/int comparisons.
 
         Args:
             value: Field to check
@@ -138,15 +132,15 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
 
         try:
             return int(value) == target
-        except ValueError as e:
+        except ValueError:
             return False
 
         return False
 
 
 class NACCAttribute(AttributeCollection):
-    """Currently doesn't have anything specific going on, but
-    may be useful later."""
+    """Currently doesn't have anything specific going on, but may be useful
+    later."""
 
 
 class MQTAttribute(AttributeCollection):
@@ -159,8 +153,8 @@ class MQTAttribute(AttributeCollection):
     def assert_required(self,
                         required: List[str],
                         prefix: str = 'file.info.derived.') -> Dict[str, Any]:
-        """Asserts that the given fields in required are in the
-        table for the source
+        """Asserts that the given fields in required are in the table for the
+        source.
 
         Args:
             required: The required fields
@@ -171,9 +165,11 @@ class MQTAttribute(AttributeCollection):
         found = {}
         for r in required:
             full_field = f'{prefix}{r}'
-            if full_field not in self.table:          # TODO: maybe can implicitly derive even if schema didn't define it?
-                source = inspect.stack()[1].function  # not great but preferable to passing the name every time
-                raise ValueError(f"{full_field} must be derived before {source} can run")
+            if full_field not in self.table:  # TODO: maybe can implicitly derive even if schema didn't define it?
+                source = inspect.stack(
+                )[1].function  # not great but preferable to passing the name every time
+                raise ValueError(
+                    f"{full_field} must be derived before {source} can run")
 
             found[r] = self.table[full_field]
 

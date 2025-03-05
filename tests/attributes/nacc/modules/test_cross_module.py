@@ -1,16 +1,14 @@
-"""
-Tests cross-module attributes.
-"""
+"""Tests cross-module attributes."""
 import pytest
 
-from nacc_attribute_deriver.attributes.nacc.modules.cross_module import CrossModuleAttribute
+from nacc_attribute_deriver.attributes.nacc.modules.cross_module import (
+    CrossModuleAttribute, )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope='function')
 def attr() -> CrossModuleAttribute:
-    """Create dummy data and return it in an attribute object.
-    """
+    """Create dummy data and return it in an attribute object."""
     data = {
         'file': {
             'info': {

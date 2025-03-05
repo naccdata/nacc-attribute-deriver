@@ -1,8 +1,9 @@
-"""
-All cognitive MQT derived variables.
+"""All cognitive MQT derived variables.
+
 Assumes NACC-derived variables are already set
 """
 from typing import List
+
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 
 
@@ -20,14 +21,12 @@ class CognitiveAttribute(MQTAttribute):
     PRIMARY_DIAGNOSIS_MAPPINGS = {
         1: "Alzheimer’s disease (AD)",
         2: "Lewy body disease (LBD)",
-
         3: "Multiple system atrophy (MSA)",
         4: "Progressive supranuclear palsy (PSP)",
         5: "Corticobasal degeneration (CBD)",
         6: "FTLD with motor neuron disease (e.g., ALS)",
         7: "FTLD, other",
         8: "Vascular brain injury or vascular dementia including stroke",
-
         9: "Essential tremor",
         10: "Down syndrome",
         11: "Huntington’s disease",
@@ -36,45 +35,54 @@ class CognitiveAttribute(MQTAttribute):
         14: "Normal-pressure hydrocephalus (NPH)",
         15: "Epilepsy",  # label not consistent with DIAGNOSIS_MAPPINGS
         16: "CNS neoplasm",
-        17: "Human immunodeficiency virus (HIV)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        17:
+        "Human immunodeficiency virus (HIV)",  # label not consistent with DIAGNOSIS_MAPPINGS
         18: "Other neurological, genetic, or infection condition",
-
         19: "Depression",
         20: "Bipolar disorder",
         21: "Schizophrenia or other psychosis",
         22: "Anxiety disorder",  # label not consistent with DIAGNOSIS_MAPPINGS
         23: "Delirium",
-        24: "Post-traumatic stress disorder (PTSD)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        24:
+        "Post-traumatic stress disorder (PTSD)",  # label not consistent with DIAGNOSIS_MAPPINGS
         25: "Other psychiatric disease",
-
-        26: "Cognitive impairment due to alcohol abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
-        27: "Cognitive impairment due to other substance abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
-        28: "Cognitive impairment due to systemic disease or medical illness", # label not consistent with DIAGNOSIS_MAPPINGS
-        29: "Cognitive impairment due to medications",  # label not consistent with DIAGNOSIS_MAPPINGS
-        30: "Cognitive impairment for other specified reasons (i.e., written-in values)",  # label not consistent with DIAGNOSIS_MAPPINGS
-        88: "Not applicable",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
-        99: "Missing/unknown"  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
+        26:
+        "Cognitive impairment due to alcohol abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
+        27:
+        "Cognitive impairment due to other substance abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
+        28:
+        "Cognitive impairment due to systemic disease or medical illness",  # label not consistent with DIAGNOSIS_MAPPINGS
+        29:
+        "Cognitive impairment due to medications",  # label not consistent with DIAGNOSIS_MAPPINGS
+        30:
+        "Cognitive impairment for other specified reasons (i.e., written-in values)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        88:
+        "Not applicable",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
+        99:
+        "Missing/unknown"  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
     }
 
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS = {
         'file.info.derived.naccalzp': "Alzheimer’s disease (AD)",
         'file.info.derived.nacclbdp': "Lewy body disease (LBD)",
-
         'file.info.forms.json.msaif': "Multiple system atrophy (MSA)",
         'file.info.forms.json.pspif': "Primary supranuclear palsy (PSP)",
         'file.info.forms.json.cortif': "Corticobasal degeneration (CBD)",
-        'file.info.forms.json.ftldmoif': "FTLD with motor neuron disease (MND)",
+        'file.info.forms.json.ftldmoif':
+        "FTLD with motor neuron disease (MND)",
         'file.info.forms.json.ftldnosif': "FTLD not otherwise specified (NOS)",
-        'file.info.forms.json.ftdif': "Behavioral frontotemporal dementia (bvFTD)",
+        'file.info.forms.json.ftdif':
+        "Behavioral frontotemporal dementia (bvFTD)",
         'file.info.forms.json.ppaphif': "Primary progressive aphasia (PPA)",
 
         # vascular
         'file.info.forms.json.cvdif': "Vascular brain injury",
-        'file.info.forms.json.vascif': "Probable vascular dementia (NINDS/AIREN criteria)",
-        'file.info.forms.json.vascpsif': "Possible vascular dementia (NINDS/AIREN criteria)",
+        'file.info.forms.json.vascif':
+        "Probable vascular dementia (NINDS/AIREN criteria)",
+        'file.info.forms.json.vascpsif':
+        "Possible vascular dementia (NINDS/AIREN criteria)",
         'file.info.forms.json.strokeif': "Stroke",
-
         'file.info.forms.json.esstreif': "Essential tremor",
         'file.info.forms.json.downsif': "Down syndrome",
         'file.info.forms.json.huntif': "Huntington’s disease",
@@ -84,8 +92,8 @@ class CognitiveAttribute(MQTAttribute):
         'file.info.forms.json.epilepif': "Epilepsy Numeric longitudinal",
         'file.info.forms.json.neopif': "CNS neoplasm",
         'file.info.forms.json.hivif': "HIV",
-        'file.info.forms.json.othcogif': "Other neurological, genetic, or infection condition",
-
+        'file.info.forms.json.othcogif':
+        "Other neurological, genetic, or infection condition",
         'file.info.forms.json.depif': "Depression",
         'file.info.forms.json.bipoldif': "Bipolar disorder",
         'file.info.forms.json.schizoif': "Schizophrenia or other psychosis",
@@ -93,7 +101,6 @@ class CognitiveAttribute(MQTAttribute):
         'file.info.forms.json.delirif': "Delirium",
         'file.info.forms.json.ptsddxif': "PTSD",
         'file.info.forms.json.othpsyif': "Other psychiatric disease",
-
         'file.info.forms.json.alcdemif': "Alcohol abuse",
         'file.info.forms.json.impsubif': "Other substance abuse",
         'file.info.forms.json.dysillif': "Systemic disease/medical illness",
@@ -105,12 +112,15 @@ class CognitiveAttribute(MQTAttribute):
     }
 
     DEMENTIA_MAPPINGS = {
-        'file.info.forms.json.amndem': 'Amnestic multidomain dementia syndrome',
+        'file.info.forms.json.amndem':
+        'Amnestic multidomain dementia syndrome',
         'file.info.forms.json.pca': 'Posterior cortical atrophy syndrome',
-        'file.info.forms.json.namndem': 'Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome',
-
-        'file.info.derived.naccppa': 'Primary progressive aphasia (PPA) with cognitive impairment',
-        'file.info.derived.naccbvft': 'Behavioral variant FTD syndrome (bvFTD)',
+        'file.info.forms.json.namndem':
+        'Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome',
+        'file.info.derived.naccppa':
+        'Primary progressive aphasia (PPA) with cognitive impairment',
+        'file.info.derived.naccbvft':
+        'Behavioral variant FTD syndrome (bvFTD)',
         'file.info.derived.nacclbds': 'Lewy body dementia syndrome',
     }
 
@@ -128,7 +138,7 @@ class CognitiveAttribute(MQTAttribute):
         Type:
             cognitive
         Description:
-            Contributing etiological diagnosis 
+            Contributing etiological diagnosis
         """
         self.assert_required(['naccalzp', 'nacclbdp'])
 
@@ -141,7 +151,7 @@ class CognitiveAttribute(MQTAttribute):
         return list(contr_diagnosis)
 
     def _create_cognitive_status(self) -> str:
-        """Mapped from NACCUDSD
+        """Mapped from NACCUDSD.
 
         Location:
             subject.info.cognitive.uds.cognitive-status.initial
@@ -160,7 +170,7 @@ class CognitiveAttribute(MQTAttribute):
         return self.NACCUDSD_MAPPING.get(result['naccudsd'], None)
 
     def _create_etpr(self) -> str:
-        """Mapped from NACCETPR
+        """Mapped from NACCETPR.
 
         Location:
             subject.info.cognitive.uds.etpr.initial
@@ -176,11 +186,11 @@ class CognitiveAttribute(MQTAttribute):
             Primary etiologic diagnosis
         """
         result = self.assert_required(['naccetpr'])
-        return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
-            result['naccetpr'], "Missing/unknown")
+        return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(result['naccetpr'],
+                                                   "Missing/unknown")
 
     def _create_global_cdr(self) -> str:
-        """Mapped from CDRGLOB
+        """Mapped from CDRGLOB.
 
         Location:
             subject.info.cognitive.uds.cdrglob.initial
@@ -199,7 +209,7 @@ class CognitiveAttribute(MQTAttribute):
         return str(cdrglob) if cdrglob else None
 
     def _create_dementia(self) -> List[str]:
-        """Mapped from all dementia types
+        """Mapped from all dementia types.
 
         TODO: initial/latest were set as a single instead
             of set, is there a priority?
@@ -229,7 +239,7 @@ class CognitiveAttribute(MQTAttribute):
         return list(dementia_types)
 
     def _create_normal_cognition(self) -> bool:
-        """Mapped from NACCNORM
+        """Mapped from NACCNORM.
 
         Location:
             subject.info.derived.naccnorm

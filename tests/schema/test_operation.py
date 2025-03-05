@@ -1,7 +1,6 @@
-"""
-Tests the operations
-"""
+"""Tests the operations."""
 import pytest
+
 from nacc_attribute_deriver.schema.operation import *
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -23,10 +22,7 @@ def table(location, date_key) -> SymbolTable:
     """Generate dummy table for testing."""
     table = SymbolTable()
     table[date_key] = '2025-01-01'
-    table[location] = {
-        'date': '2024-01-01',
-        'value': 10
-    }
+    table[location] = {'date': '2024-01-01', 'value': 10}
     return table
 
 
@@ -35,13 +31,8 @@ class TestOperation():
     def test_registry(self):
         """Test registry is instantiated correctly."""
         assert OperationRegistry.operations == [
-            UpdateOperation,
-            SetOperation,
-            InitialOperation,
-            LatestOperation,
-            CountOperation,
-            MinOperation,
-            MaxOperation
+            UpdateOperation, SetOperation, InitialOperation, LatestOperation,
+            CountOperation, MinOperation, MaxOperation
         ]
 
     def test_update(self, table, location):
@@ -82,9 +73,8 @@ class TestOperation():
             }
 
     def test_initial(self, table, location, date_key):
-        """Tests the initial operation; will NOT be
-        set since current date > destination date
-        """
+        """Tests the initial operation; will NOT be set since current date >
+        destination date."""
         op = InitialOperation()
         assert op.LABEL == 'initial'
         op.evaluate(table, 5, location, date_key)
@@ -100,9 +90,8 @@ class TestOperation():
         }
 
     def test_latest(self, table, location, date_key):
-        """Tests the latest operation; WILL be
-        set since current date > destination date
-        """
+        """Tests the latest operation; WILL be set since current date >
+        destination date."""
         op = LatestOperation()
         assert op.LABEL == 'latest'
         op.evaluate(table, 5, location, date_key)
@@ -118,9 +107,7 @@ class TestOperation():
         }
 
     def test_min(self, table, location):
-        """Tests the min operation; WILL be set
-        since 5 < 10
-        """
+        """Tests the min operation; WILL be set since 5 < 10."""
         op = MinOperation()
         assert op.LABEL == 'min'
 
@@ -135,9 +122,7 @@ class TestOperation():
         }
 
     def test_max(self, table, location):
-        """Tests the max operation; will NOT be set
-        since 5 < 10
-        """
+        """Tests the max operation; will NOT be set since 5 < 10."""
         op = MaxOperation()
         assert op.LABEL == 'max'
 

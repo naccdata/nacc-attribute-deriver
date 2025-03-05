@@ -1,6 +1,4 @@
-"""
-Helper methods related to dates.
-"""
+"""Helper methods related to dates."""
 import re
 from datetime import datetime, timedelta
 
@@ -25,7 +23,7 @@ def datetime_from_form_date(date_string: str) -> datetime:
 
 
 def calculate_age(date1: datetime, date2: datetime) -> int:
-    """Calculate age in years between two dates
+    """Calculate age in years between two dates.
 
     Args:
         date1: The earlier date

@@ -1,4 +1,4 @@
-# this is ugly, figure out better way to 
+# this is ugly, figure out better way to
 # do attribute map
 from .cognitive import *
 from .demographics import *

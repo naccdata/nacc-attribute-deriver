@@ -1,8 +1,9 @@
-"""
-All study-parameter MQT derived variables.
+"""All study-parameter MQT derived variables.
+
 Assumes NACC-derived variables are already set
 """
 from typing import List
+
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 
 
@@ -10,7 +11,7 @@ class StudyParametersAttribute(MQTAttribute):
     """Class to collect study-parameter attributes."""
 
     def _create_uds_versions_available(self) -> List[str]:
-        """Keeps track of available UDS versions
+        """Keeps track of available UDS versions.
 
         Location:
             subject.info.study-parameters.uds.versions
@@ -22,8 +23,8 @@ class StudyParametersAttribute(MQTAttribute):
             Number of years of UDS visits available
         """
         formver = self.get_value('formver')
-        versions = self.table.get(
-            'subject.info.study-parameters.uds.versions', [])
+        versions = self.table.get('subject.info.study-parameters.uds.versions',
+                                  [])
         versions = set(versions) if versions else set()
 
         if formver:
