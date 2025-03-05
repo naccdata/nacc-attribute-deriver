@@ -3,7 +3,7 @@ Derived variables from form A1.
 """
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.utils.date import (
+from nacc_attribute_deriver.utils.date import (
     calculate_age,
     datetime_from_form_date,
 )

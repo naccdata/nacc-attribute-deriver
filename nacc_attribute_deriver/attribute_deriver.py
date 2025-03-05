@@ -13,7 +13,6 @@ from .attributes.attribute_map import (
     discover_collections,
     generate_attribute_schema,
 )
-from .attributes.utils.date import datetime_from_form_date
 from .schema.schema import CurationSchema
 from .symbol_table import SymbolTable
 
@@ -50,20 +49,23 @@ class AttributeDeriver:
             raise ValueError(f"Table does not have specified date key: {self.__date_key}")
 
         collections = [c(table) for c in self.__collections]
+        instance_collections = {}
+
+        # collect all attributes beforehand so they're easily hashable
+        for instance in [c(table) for c in self.__collections]:
+            instance_collections.update({
+                k: {'func': v, 'instance': instance}
+                for k, v in instance.get_all_hooks().items()
+            })
 
         # derive NACC first, then MQT
         for attr in self.__schema.curation_order():
-            found_hook = False
-            for c in collections:
-                hook = c.get_derive_hook(attr.function)
-                if hook:
-                    found_hook = True
-                    value = hook(c)
+            hook = instance_collections.get(attr.function, None)
+            if not hook:
+                raise ValueError(f"Unknown attribute function: {attr.function}")
 
-                    for event in attr.events:
-                        event.operation.evaluate(table, value, event.location,
-                                                 date_key=self.__date_key)
-                    break
+            value = hook['func'](hook['instance'])
 
-            if not found_hook:
-                raise ValueError(f"Unknown attribute function: {attr}")
+            for event in attr.events:
+                event.operation.evaluate(table, value, event.location,
+                                         date_key=self.__date_key)

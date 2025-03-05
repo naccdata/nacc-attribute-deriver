@@ -3,7 +3,7 @@ All longtitudinal MQT derived variables.
 Assumes NACC-derived variables are already set
 """
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
-from nacc_attribute_deriver.attributes.utils.date import (
+from nacc_attribute_deriver.utils.date import (
     calculate_age,
     datetime_from_form_date,
 )

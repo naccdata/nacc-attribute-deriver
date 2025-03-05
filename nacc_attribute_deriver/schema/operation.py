@@ -2,14 +2,12 @@
 Defines the operations to be performed on derived variables.
 Uses a metaclass to keep track of operation types.
 
-This kind of feels like overkill?
+This kind of feels overengineered?
 """
 from typing import Any
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.attributes.utils.date import (
-    datetime_from_form_date
-)
+from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
 class OperationException(Exception):

@@ -3,7 +3,7 @@ Derived variables that rely on multiple modules.
 """
 from datetime import datetime
 from typing import Any
-from nacc_attribute_deriver.attributes.utils.date import (
+from nacc_attribute_deriver.utils.date import (
     calculate_age,
     datetime_from_form_date,
 )

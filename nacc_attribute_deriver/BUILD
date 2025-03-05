@@ -6,7 +6,8 @@ python_distribution(
         ":lib",
         "nacc_attribute_deriver/attributes:lib",
         "nacc_attribute_deriver/bin:lib",
-        "nacc_attribute_deriver/schema:lib"
+        "nacc_attribute_deriver/schema:lib",
+        "nacc_attribute_deriver/utils:lib"
     ],
     entry_points={
         "console_scripts": {
