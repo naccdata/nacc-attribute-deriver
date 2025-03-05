@@ -37,7 +37,7 @@ class AttributeDeriver:
         curate the schema. Derived attributes will be added to the same table.
 
         Args:
-            file: File to curate
+            table: Table with file data to curate
         """
         # make sure date_key is in metadata
         if self.__date_key not in table or not table[self.__date_key]:

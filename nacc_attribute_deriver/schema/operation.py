@@ -79,7 +79,6 @@ class SetOperation(Operation):
 
 
 class DateOperation(Operation):
-
     LABEL = None
 
     def evaluate(self, table: SymbolTable, value: Any, location: str,

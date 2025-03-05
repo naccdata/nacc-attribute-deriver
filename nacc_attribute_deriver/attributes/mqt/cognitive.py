@@ -2,8 +2,7 @@
 
 Assumes NACC-derived variables are already set
 """
-from typing import List
-
+from typing import Dict, List, Optional
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 
 
@@ -64,65 +63,82 @@ class CognitiveAttribute(MQTAttribute):
 
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS = {
-        'file.info.derived.naccalzp': "Alzheimer’s disease (AD)",
-        'file.info.derived.nacclbdp': "Lewy body disease (LBD)",
-        'file.info.forms.json.msaif': "Multiple system atrophy (MSA)",
-        'file.info.forms.json.pspif': "Primary supranuclear palsy (PSP)",
-        'file.info.forms.json.cortif': "Corticobasal degeneration (CBD)",
-        'file.info.forms.json.ftldmoif':
-        "FTLD with motor neuron disease (MND)",
-        'file.info.forms.json.ftldnosif': "FTLD not otherwise specified (NOS)",
-        'file.info.forms.json.ftdif':
-        "Behavioral frontotemporal dementia (bvFTD)",
-        'file.info.forms.json.ppaphif': "Primary progressive aphasia (PPA)",
+        'file.info.derived.': {
+            'naccalzp': "Alzheimer’s disease (AD)",
+            'nacclbdp': "Lewy body disease (LBD)"
+        },
 
-        # vascular
-        'file.info.forms.json.cvdif': "Vascular brain injury",
-        'file.info.forms.json.vascif':
-        "Probable vascular dementia (NINDS/AIREN criteria)",
-        'file.info.forms.json.vascpsif':
-        "Possible vascular dementia (NINDS/AIREN criteria)",
-        'file.info.forms.json.strokeif': "Stroke",
-        'file.info.forms.json.esstreif': "Essential tremor",
-        'file.info.forms.json.downsif': "Down syndrome",
-        'file.info.forms.json.huntif': "Huntington’s disease",
-        'file.info.forms.json.prionif': "Prion disease (CJD, other)",
-        'file.info.forms.json.brninjif': "Traumatic brain injury (TBI)",
-        'file.info.forms.json.hycephif': "Normal-pressure hydrocephalus (NPH)",
-        'file.info.forms.json.epilepif': "Epilepsy Numeric longitudinal",
-        'file.info.forms.json.neopif': "CNS neoplasm",
-        'file.info.forms.json.hivif': "HIV",
-        'file.info.forms.json.othcogif':
-        "Other neurological, genetic, or infection condition",
-        'file.info.forms.json.depif': "Depression",
-        'file.info.forms.json.bipoldif': "Bipolar disorder",
-        'file.info.forms.json.schizoif': "Schizophrenia or other psychosis",
-        'file.info.forms.json.anxietif': "Anxiety",
-        'file.info.forms.json.delirif': "Delirium",
-        'file.info.forms.json.ptsddxif': "PTSD",
-        'file.info.forms.json.othpsyif': "Other psychiatric disease",
-        'file.info.forms.json.alcdemif': "Alcohol abuse",
-        'file.info.forms.json.impsubif': "Other substance abuse",
-        'file.info.forms.json.dysillif': "Systemic disease/medical illness",
-        'file.info.forms.json.medsif': "Medications",
-        'file.info.forms.json.demunif': "Undetermined etiology",
-        'file.info.forms.json.cogothif': "Other",
-        'file.info.forms.json.cogoth2f': "Other",
-        'file.info.forms.json.cogoth3f': "Other"
+        'file.info.forms.json.': {
+            'msaif': "Multiple system atrophy (MSA)",
+            'pspif': "Primary supranuclear palsy (PSP)",
+            'cortif': "Corticobasal degeneration (CBD)",
+            'ftldmoif': "FTLD with motor neuron disease (MND)",
+            'ftldnosif': "FTLD not otherwise specified (NOS)",
+            'ftdif': "Behavioral frontotemporal dementia (bvFTD)",
+            'ppaphif': "Primary progressive aphasia (PPA)",
+
+            # vascular
+            'cvdif': "Vascular brain injury",
+            'vascif': "Probable vascular dementia (NINDS/AIREN criteria)",
+            'vascpsif': "Possible vascular dementia (NINDS/AIREN criteria)",
+            'strokeif': "Stroke",
+
+            'esstreif': "Essential tremor",
+            'downsif': "Down syndrome",
+            'huntif': "Huntington’s disease",
+            'prionif': "Prion disease (CJD, other)",
+            'brninjif': "Traumatic brain injury (TBI)",
+            'hycephif': "Normal-pressure hydrocephalus (NPH)",
+            'epilepif': "Epilepsy Numeric longitudinal",
+            'neopif': "CNS neoplasm",
+            'hivif': "HIV",
+            'othcogif': "Other neurological, genetic, or infection condition",
+
+            'depif': "Depression",
+            'bipoldif': "Bipolar disorder",
+            'schizoif': "Schizophrenia or other psychosis",
+            'anxietif': "Anxiety",
+            'delirif': "Delirium",
+            'ptsddxif': "PTSD",
+            'othpsyif': "Other psychiatric disease",
+
+            'alcdemif': "Alcohol abuse",
+            'impsubif': "Other substance abuse",
+            'dysillif': "Systemic disease/medical illness",
+            'medsif': "Medications",
+            'demunif': "Undetermined etiology",
+            'cogothif': "Other",
+            'cogoth2f': "Other",
+            'cogoth3f': "Other"
+        }
     }
 
     DEMENTIA_MAPPINGS = {
-        'file.info.forms.json.amndem':
-        'Amnestic multidomain dementia syndrome',
-        'file.info.forms.json.pca': 'Posterior cortical atrophy syndrome',
-        'file.info.forms.json.namndem':
-        'Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome',
-        'file.info.derived.naccppa':
-        'Primary progressive aphasia (PPA) with cognitive impairment',
-        'file.info.derived.naccbvft':
-        'Behavioral variant FTD syndrome (bvFTD)',
-        'file.info.derived.nacclbds': 'Lewy body dementia syndrome',
+        'file.info.forms.json.': {
+            'amndem': 'Amnestic multidomain dementia syndrome',
+            'pca': 'Posterior cortical atrophy syndrome',
+            'namndem': 'Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome',
+        },
+
+        'file.info.derived.': {
+            'naccppa': 'Primary progressive aphasia (PPA) with cognitive impairment',
+            'naccbvft': 'Behavioral variant FTD syndrome (bvFTD)',
+            'nacclbds': 'Lewy body dementia syndrome',
+        }
     }
+
+    def grab_mappings(self, mapping: Dict[str, Dict[str, str]], target: int) -> List[str]:
+        """Grab mappings."""
+        mapped_vars = set()
+
+        for prefix, fields in mapping.items():
+            aggr = self.aggregate_variables(fields, prefix=prefix)
+            mapped_vars = mapped_vars.union(set([
+                mapping[prefix][k] for k, v in aggr.items()
+                if self.is_int_value(v, target)
+            ]))
+
+        return list(mapped_vars)
 
     def _create_contributing_diagnosis(self) -> List[str]:
         """Mapped from all possible contributing diagnosis.
@@ -141,14 +157,32 @@ class CognitiveAttribute(MQTAttribute):
             Contributing etiological diagnosis
         """
         self.assert_required(['naccalzp', 'nacclbdp'])
+        return self.grab_mappings(self.DIAGNOSIS_MAPPINGS, target=2)
 
-        all_vars = self.aggregate_variables(self.DIAGNOSIS_MAPPINGS)
-        contr_diagnosis = set([
-            self.DIAGNOSIS_MAPPINGS[k] for k, v in all_vars.items()
-            if self.is_int_value(v, 1)
-        ])
-        # needs to check against latest
-        return list(contr_diagnosis)
+    def _create_dementia(self) -> Optional[str]:
+        """Mapped from all dementia types
+
+        Location:
+            subject.info.cognitive.uds.dementia-type.initial
+            subject.info.cognitive.uds.dementia-type.latest
+            subject.info.cognitive.uds.dementia-type.all
+        Operation:
+            initial
+            latest
+            set
+        Type:
+            cognitive
+        Description:
+            Type of Dementia syndrome
+        """
+        self.assert_required(['naccppa', 'naccbvft', 'nacclbds'])
+        results = self.grab_mappings(self.DEMENTIA_MAPPINGS, target=1)
+
+        if len(results) > 1:
+            raise ValueError(
+                f"More than one primary dementia syndrome found: {results}")
+
+        return results[0] if results else None
 
     def _create_cognitive_status(self) -> str:
         """Mapped from NACCUDSD.

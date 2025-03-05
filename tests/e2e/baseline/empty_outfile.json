@@ -68,11 +68,11 @@
                     "dementia-type": {
                         "initial": {
                             "date": "2025-01-01",
-                            "value": []
+                            "value": null
                         },
                         "latest": {
                             "date": "2025-01-01",
-                            "value": []
+                            "value": null
                         },
                         "all": []
                     },

@@ -52,6 +52,12 @@ class SymbolTable(MutableMapping):
 
         return value
 
+    def get(self, key: str, default: Any = None) -> Optional[Any]:
+        if key in self:
+            return self[key]
+
+        return default
+
     def __contains__(self, key: Any) -> bool:
         if not isinstance(key, str) or self.__separator not in key:
             return key in self.__table
