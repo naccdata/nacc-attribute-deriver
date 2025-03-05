@@ -4,7 +4,7 @@ Tests cross-module attributes.
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.modules.cross_module import CrossModuleAttribute
-from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope='function')

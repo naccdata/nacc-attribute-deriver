@@ -7,10 +7,14 @@ call this AttributeDeriver (deriver.curate(file)) for all
 curation schema.
 """
 from typing import Any, Dict
+from pathlib import Path
 
-from nacc_attribute_deriver.attributes.attribute_map import generate_attribute_schema
-from nacc_attribute_deriver.attributes.utils.date import datetime_from_form_date
-from nacc_attribute_deriver.schema.schema import (
+from .attributes.attribute_map import (
+    discover_collections,
+    generate_attribute_schema,
+)
+from .attributes.utils.date import datetime_from_form_date
+from .schema.schema import (
     CurationSchema,
     DeriveEvent,
     EventType,
@@ -27,13 +31,15 @@ class AttributeDeriver:
             schema: Raw curation schema; if not provided,
                 generates the all-attribute schema
         """
+        # get all available collections
+        self.__collections = discover_collections()
+
         if not schema:
-            schema = generate_attribute_schema()
+            schema = generate_attribute_schema(
+                collections=self.__collections)
 
         self.__schema = CurationSchema(**schema)
         self.__date_key = self.__schema.date_key
-
-    # def __generate_instance_map(self, table: SymbolTable) -> Dict[]
 
     def handle_event(self,
                      value: Any,
@@ -107,21 +113,20 @@ class AttributeDeriver:
         if self.__date_key not in table or not table[self.__date_key]:
             raise ValueError(f"Table does not have specified date key: {self.__date_key}")
 
-        instance_map = {}
+        collections = [c(table) for c in self.__collections]
 
         # derive NACC first, then MQT
         for attr in self.__schema.curation_order():
-            attr_class = attr.attribute['class']
-            attr_func = attr.attribute['function']
+            found_hook = False
+            for c in collections:
+                hook = c.get_derive_hook(attr.function)
+                if hook:
+                    found_hook = True
+                    value = hook(c)
 
-            # this is really ugly and I think more indicitive of
-            # a design flaw. need to rethink if we wanna do
-            # classes of attribute collections, also kind of makes the schema useless?
-            if attr_class not in instance_map:
-                instance_map[attr_class] = attr_class(table)
+                    for event in attr.events:
+                        self.handle_event(value, event, table)
+                    break
 
-            value = attr_func(instance_map[attr_class])
-
-            # distribute event
-            for event in attr.events:
-                self.handle_event(value, event, table)
+            if not found_hook:
+                raise ValueError(f"Unknown attribute function: {attr}")

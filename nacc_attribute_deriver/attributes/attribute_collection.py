@@ -1,29 +1,74 @@
 """
-Base class to define a collection of attributes.
+Implements a plugin infrastructure where each "plugin" is a collection of
+attributes.
+
+Heavily based off of
+    https://eli.thegreenplace.net/2012/08/07/fundamental-concepts-of-plugin-infrastructures
 """
+import imp
+import sys
+
 from inspect import isfunction
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
-from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class AttributeCollection:
-    """Class to define a collection of attributes.
+class AttributeCollectionRegistry(type):
+    collections = []
 
-    All derived variables should be part of an attribute class.
-    """
+    def __init__(cls, name, bases, attrs):
+        if name != 'AttributeCollection':
+            if name not in AttributeCollectionRegistry.collections:
+                AttributeCollectionRegistry.collections.append(cls)
+
+
+class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
 
     def __init__(self,
                  table: SymbolTable,
                  form_prefix: str = 'file.info.forms.json.') -> None:
-        """Initializer.
+        """Initializes the collection. Requires a SymbolTable containing
+        all the relevant FW metadata necessary to derive the attributes.
 
         Args:
             table: SymbolTable which contains all necessary
                 FW metadata information
+            form_prefix: Form key prefix, which is where most variables
+                to pull from are expected to live under.
         """
         self.table = table
         self.__form_prefix = form_prefix
+
+    @classmethod
+    def get_all_hooks(cls) -> Dict[str, Callable]:
+        """Grab all available _create_ functions."""
+        result = {}
+        for attr_name in dir(cls):
+            attr = getattr(cls, attr_name)
+            if isfunction(attr) and attr_name.startswith('_create_'):
+                result[attr_name.lstrip('_')] = attr
+
+        return result
+
+    @classmethod
+    def get_derive_hook(cls, derive_name: str) -> Callable:
+        """Aggregates all _create functions and returns the function if derive_name
+        matches. Throws error otherwise.
+
+        Args:
+            derive_name: Derive function name to search for
+        Returns:
+            _create_ function, if defined for this class
+        """
+        for attr_name in dir(cls):
+            attr = getattr(cls, attr_name)
+            if isfunction(attr) and attr_name.startswith('_create_'):
+                if attr_name.lstrip('_') == derive_name:
+                    return attr
+
+        return None
 
     def get_value(self,
                   key: str,
@@ -97,22 +142,6 @@ class AttributeCollection:
             return False
 
         return False
-
-    @classmethod
-    def collect_attributes(cls) -> Dict[str, Dict[str, Callable]]:
-        """Aggregates all _create functions and returns a mapping from
-        function name to the class and callable.
-        """
-        result = {}
-        for attr_name in dir(cls):
-            attr = getattr(cls, attr_name)
-            if isfunction(attr) and attr_name.startswith('_create_'):
-                result[attr_name.lstrip('_')] = {
-                    'class': cls,
-                    'function': attr
-                }
-
-        return result
 
 
 class NACCAttribute(AttributeCollection):

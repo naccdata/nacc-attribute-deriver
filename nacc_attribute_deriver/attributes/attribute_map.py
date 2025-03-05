@@ -3,50 +3,29 @@ Defines the attribute mapping
 """
 import json
 
-from inspect import isclass, ismodule
 from pathlib import Path
 from typing import Any, Callable, Dict, List
-from types import ModuleType
 
-import nacc_attribute_deriver.attributes.mqt as mqt
-import nacc_attribute_deriver.attributes.nacc as nacc
-from .attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.attribute_collection import (
+    AttributeCollection,
+    AttributeCollectionRegistry,
+    MQTAttribute,
+    NACCAttribute,
+)
 
+from nacc_attribute_deriver.attributes import mqt, nacc
 
-def generate_attribute_map(modules: List[ModuleType]) -> Dict[str, Dict[str, Callable]]:
-    """Recursively generates mapping of attributes to attribute class/functions
-    given the list of Python modules. Only considers classes of type AttributeCollection
-    so that it can call collect_attributes on it. Assumes no name clashes.
+def discover_collections():
+    """There seems to be an issue with walking over python files like
+    the plugin example shows due to the way Pants selectively imports
+    files (the files "don't exist" if it's not imported to begin with).
 
-    Args:
-        modules: The Python modules to iterate over
+    So currently doing the hacky thing where we just go ahead
+    and explicitly import everything under mqt/nacc, so we're not really
+    "discovering" anything. Ultimately the end result is the same though
+    (everything gets imported).
     """
-    result = {}
-    for module in modules:
-        submodules = []
-        for attr_name in dir(module):
-            attr = getattr(module, attr_name)
-            if isclass(attr) and issubclass(attr, AttributeCollection):
-                subattrs = attr.collect_attributes()
-
-                # make sure no duplicate function names
-                for name, func in subattrs.items():
-                    if name in result:
-                        if func != result[name]:
-                            raise ValueError(f"Duplicate create function name '{name}'. "
-                                + f"Defined as both {func} and {result[name]}")
-                        continue
-                    result[name] = func
-            elif ismodule(attr):
-                submodules.append(attr)
-
-        if submodules:
-            result.update(generate_attribute_map(submodules))
-
-    return result
-
-
-ATTRIBUTE_MAP = generate_attribute_map([nacc, mqt])
+    return AttributeCollectionRegistry.collections
 
 
 def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
@@ -97,7 +76,8 @@ def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
 
 
 def generate_attribute_schema(outfile: Path = None,
-                              date_key: str = 'file.info.forms.json.visitdate') -> Dict[str, Any]:
+                              date_key: str = 'file.info.forms.json.visitdate',
+                              collections: List[AttributeCollection] = None) -> Dict[str, Any]:
     """Generates a skeleton curation schema for every attribute
     and writes results to JSON.
 
@@ -106,27 +86,37 @@ def generate_attribute_schema(outfile: Path = None,
         date_key: Schema date key, defaults to
             file.info.forms.json.visitdate
     """
-    def evaluate_grouping(grouping: Dict[str, Callable]) -> List[Dict[str, Any]]:
+    def evaluate_grouping(grouping: List[AttributeCollection]) -> List[Dict[str, Any]]:
         schema = []
-        for i, (name, source) in enumerate(grouping.items()):
-            # parse type and description from docstring
-            results = parse_docs(name, source['function'].__doc__)
-            
-            # skip intermediate variables
-            if 'intermediate' in results['Type:']:
-                continue
+        for collection in grouping:
+            for name, func in collection.get_all_hooks().items():
+                # parse type and description from docstring
+                results = parse_docs(name, func.__doc__)
+                
+                # skip intermediate variables
+                if 'intermediate' in results['Type:']:
+                    continue
 
-            schema.append({
-                'attribute': name,
-                'events': [{'location': results['Location:'][i], 'event': results['Event:'][i]}
-                           for i in range(len(results['Location:']))],
-                'type': ' '.join(results['Type:']),
-                'description': ' '.join(results['Description:'])
-            })
+                schema.append({
+                    'function': name,
+                    'events': [{'location': results['Location:'][i], 'event': results['Event:'][i]}
+                               for i in range(len(results['Location:']))],
+                    'type': ' '.join(results['Type:']),
+                    'description': ' '.join(results['Description:'])
+                })
         return schema
 
-    nacc_vars = generate_attribute_map([nacc])
-    mqt_vars = generate_attribute_map([mqt])
+    if not collections:
+        collections = discover_collections()
+
+    nacc_vars = []
+    mqt_vars = []
+
+    for c in collections:
+        if issubclass(c, NACCAttribute):
+            nacc_vars.append(c)
+        else:
+            mqt_vars.append(c)
 
     result = {
         'date_key': date_key,

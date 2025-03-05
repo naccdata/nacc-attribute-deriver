@@ -5,7 +5,7 @@ Right now these should all come from the imported GWAS data under
     <subject>_niagads_availability.json
 """
 from nacc_attribute_deriver.attributes.attribute_collection import NACCAttribute
-from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class NIAGADSAttribute(NACCAttribute):

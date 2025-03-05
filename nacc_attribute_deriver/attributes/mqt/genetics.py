@@ -9,21 +9,6 @@ from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 class GeneticAttribute(MQTAttribute):
     """Class to collect genetic attributes."""
 
-    # this encoding is also in the apoe_transformer gear
-    # 2 options: 1. Keep a1/a2 in that gear's output/metadata so we don't have to map back
-    #            2. Pull this same mapping in the gear
-    APOE_ENCODINGS: Dict[Tuple[str, str], int] = {
-        ("E3", "E3"): 1,
-        ("E3", "E4"): 2,
-        ("E4", "E3"): 2,
-        ("E3", "E2"): 3,
-        ("E2", "E3"): 3,
-        ("E4", "E4"): 4,
-        ("E4", "E2"): 5,
-        ("E2", "E4"): 5,
-        ("E2", "E2"): 6
-    }
-
     def _create_apoe(self) -> str:
         """Mapped from NACCAPOE
 

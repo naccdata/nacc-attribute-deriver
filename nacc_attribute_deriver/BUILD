@@ -3,9 +3,9 @@ python_sources(name="lib")
 python_distribution(
     name="dist",
     dependencies=[
+        ":lib",
         "nacc_attribute_deriver/attributes:lib",
         "nacc_attribute_deriver/bin:lib",
-        "nacc_attribute_deriver/deriver:lib",
         "nacc_attribute_deriver/schema:lib"
     ],
     entry_points={

@@ -4,7 +4,6 @@ Assumes NACC-derived variables are already set
 """
 from typing import List
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_d1 import ContributionStatus
 
 
 class CognitiveAttribute(MQTAttribute):
@@ -136,7 +135,7 @@ class CognitiveAttribute(MQTAttribute):
         all_vars = self.aggregate_variables(self.DIAGNOSIS_MAPPINGS)
         contr_diagnosis = set([
             self.DIAGNOSIS_MAPPINGS[k] for k, v in all_vars.items()
-            if self.is_int_value(v, ContributionStatus.CONTRIBUTING)
+            if self.is_int_value(v, 1)
         ])
         # needs to check against latest
         return list(contr_diagnosis)

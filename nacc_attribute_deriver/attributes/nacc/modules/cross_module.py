@@ -7,7 +7,7 @@ from nacc_attribute_deriver.attributes.utils.date import (
     calculate_age,
     datetime_from_form_date,
 )
-from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .uds.uds_attribute import UDSAttribute
 

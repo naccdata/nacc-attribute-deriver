@@ -8,13 +8,13 @@ from pathlib import Path
 from typing import Any
 
 from nacc_attribute_deriver.attributes.attribute_map import generate_attribute_schema
-from nacc_attribute_deriver.deriver.attribute_deriver import AttributeDeriver
-from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 CUR_DIR = Path(__file__).resolve().parent
 BASELINE_DIR = CUR_DIR / 'baseline'
 
-UPDATE_BASELINES = True
+UPDATE_BASELINES = False
 
 
 @pytest.fixture(scope='function')

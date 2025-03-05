@@ -7,12 +7,6 @@
                 }
             },
             "derived": {
-                "naccdage": 999,
-                "naccapoe": null,
-                "ngdsexom": 0,
-                "ngdsgwas": 0,
-                "ngdswes": 0,
-                "ngdswgs": 0,
                 "naccage": null,
                 "naccnihr": 99,
                 "naccalzp": 7,
@@ -23,7 +17,13 @@
                 "nacclbds": 8,
                 "naccnorm": 0,
                 "naccppa": 8,
-                "naccudsd": null
+                "naccudsd": null,
+                "naccdage": 999,
+                "naccapoe": 9,
+                "ngdsexom": 0,
+                "ngdsgwas": 0,
+                "ngdswes": 0,
+                "ngdswgs": 0
             }
         }
     },

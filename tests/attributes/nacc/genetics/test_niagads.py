@@ -4,7 +4,7 @@ Tests NIAGADS genetic attributes
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.genetics.niagads import NIAGADSAttribute
-from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope='function')

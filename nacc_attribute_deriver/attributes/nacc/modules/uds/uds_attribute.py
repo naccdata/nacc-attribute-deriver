@@ -13,6 +13,7 @@ class UDSAttribute(NACCAttribute):
         birthmo = self.get_value('birthmo')
         birthyr = self.get_value('birthyr')
         formdate = self.get_value('visitdate')
+
         if None in [birthmo, birthyr, formdate]:
             return None
 

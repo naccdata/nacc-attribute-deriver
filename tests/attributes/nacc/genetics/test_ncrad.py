@@ -4,7 +4,7 @@ Tests NCRAD genetic attributes
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.genetics.ncrad import NCRADAttribute
-from nacc_attribute_deriver.deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope='function')
