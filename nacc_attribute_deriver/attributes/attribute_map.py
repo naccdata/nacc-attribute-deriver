@@ -99,7 +99,8 @@ def generate_attribute_schema(outfile: Path = None,
 
                 schema.append({
                     'function': name,
-                    'events': [{'location': results['Location:'][i], 'event': results['Event:'][i]}
+                    # TODO - need to change docstring name to operation
+                    'events': [{'location': results['Location:'][i], 'operation': results['Event:'][i]}
                                for i in range(len(results['Location:']))],
                     'type': ' '.join(results['Type:']),
                     'description': ' '.join(results['Description:'])

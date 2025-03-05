@@ -6,7 +6,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccage",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -17,7 +17,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccnihr",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -28,7 +28,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccalzp",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -39,7 +39,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccbvft",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -50,7 +50,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccetpr",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -61,7 +61,7 @@
             "events": [
                 {
                     "location": "file.info.derived.nacclbde",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -72,7 +72,7 @@
             "events": [
                 {
                     "location": "file.info.derived.nacclbdp",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -83,7 +83,7 @@
             "events": [
                 {
                     "location": "file.info.derived.nacclbds",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -94,7 +94,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccnorm",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "cross-sectional",
@@ -105,7 +105,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccppa",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -116,7 +116,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccudsd",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "longitudinal",
@@ -127,11 +127,11 @@
             "events": [
                 {
                     "location": "subject.info.derived.initial_uds_visit",
-                    "event": "initial"
+                    "operation": "initial"
                 },
                 {
                     "location": "subject.info.derived.latest_uds_visit",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "longitudinal",
@@ -142,7 +142,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccdage",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "cross-sectional",
@@ -153,7 +153,7 @@
             "events": [
                 {
                     "location": "file.info.derived.naccapoe",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "cross-sectional",
@@ -164,7 +164,7 @@
             "events": [
                 {
                     "location": "file.info.derived.ngdsexom",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "cross-sectional",
@@ -175,7 +175,7 @@
             "events": [
                 {
                     "location": "file.info.derived.ngdsgwas",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "cross-sectional",
@@ -186,7 +186,7 @@
             "events": [
                 {
                     "location": "file.info.derived.ngdswes",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "cross-sectional",
@@ -197,7 +197,7 @@
             "events": [
                 {
                     "location": "file.info.derived.ngdswgs",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "cross-sectional",
@@ -210,15 +210,15 @@
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.cognitive-status.initial",
-                    "event": "initial"
+                    "operation": "initial"
                 },
                 {
                     "location": "subject.info.cognitive.uds.cognitive-status.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 },
                 {
                     "location": "subject.info.cognitive.uds.cognitive-status.all",
-                    "event": "set"
+                    "operation": "set"
                 }
             ],
             "type": "cognitive",
@@ -229,15 +229,15 @@
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.other-diagnosis.initial",
-                    "event": "initial"
+                    "operation": "initial"
                 },
                 {
                     "location": "subject.info.cognitive.uds.other-diagnosis.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 },
                 {
                     "location": "subject.info.cognitive.uds.other-diagnosis.all",
-                    "event": "set"
+                    "operation": "set"
                 }
             ],
             "type": "cognitive",
@@ -248,15 +248,15 @@
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.dementia-type.initial",
-                    "event": "initial"
+                    "operation": "initial"
                 },
                 {
                     "location": "subject.info.cognitive.uds.dementia-type.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 },
                 {
                     "location": "subject.info.cognitive.uds.dementia-type.all",
-                    "event": "set"
+                    "operation": "set"
                 }
             ],
             "type": "cognitive",
@@ -267,15 +267,15 @@
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.etpr.initial",
-                    "event": "initial"
+                    "operation": "initial"
                 },
                 {
                     "location": "subject.info.cognitive.uds.etpr.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 },
                 {
                     "location": "subject.info.cognitive.uds.etpr.all",
-                    "event": "set"
+                    "operation": "set"
                 }
             ],
             "type": "cognitive",
@@ -286,15 +286,15 @@
             "events": [
                 {
                     "location": "subject.info.cognitive.uds.cdrglob.initial",
-                    "event": "initial"
+                    "operation": "initial"
                 },
                 {
                     "location": "subject.info.cognitive.uds.cdrglob.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 },
                 {
                     "location": "subject.info.cognitive.uds.cdrglob.all",
-                    "event": "set"
+                    "operation": "set"
                 }
             ],
             "type": "cognitive",
@@ -305,7 +305,7 @@
             "events": [
                 {
                     "location": "subject.info.derived.naccnorm",
-                    "event": "min"
+                    "operation": "min"
                 }
             ],
             "type": "cognitive",
@@ -316,7 +316,7 @@
             "events": [
                 {
                     "location": "subject.info.derived.naccdage",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "demographics",
@@ -327,11 +327,11 @@
             "events": [
                 {
                     "location": "subject.info.demographics.uds.age.initial",
-                    "event": "initial"
+                    "operation": "initial"
                 },
                 {
                     "location": "subject.info.demographics.uds.age.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "demographics",
@@ -342,7 +342,7 @@
             "events": [
                 {
                     "location": "subject.info.demographics.uds.education-level.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "demographics",
@@ -353,7 +353,7 @@
             "events": [
                 {
                     "location": "subject.info.demographics.uds.primary-language.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "demographics",
@@ -364,7 +364,7 @@
             "events": [
                 {
                     "location": "subject.info.demographics.uds.race.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "demographics",
@@ -375,7 +375,7 @@
             "events": [
                 {
                     "location": "subject.info.demographics.uds.sex.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "demographics",
@@ -386,7 +386,7 @@
             "events": [
                 {
                     "location": "subject.info.demographics.uds.vital-status.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "demographics",
@@ -397,7 +397,7 @@
             "events": [
                 {
                     "location": "subject.info.genetics.naccapoe",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "genetics",
@@ -408,7 +408,7 @@
             "events": [
                 {
                     "location": "subject.info.genetics.ngdsexom",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "genetics",
@@ -419,7 +419,7 @@
             "events": [
                 {
                     "location": "subject.info.genetics.ngdsgwas",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "genetics",
@@ -430,7 +430,7 @@
             "events": [
                 {
                     "location": "subject.info.genetics.ngdswes",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "genetics",
@@ -441,7 +441,7 @@
             "events": [
                 {
                     "location": "subject.info.genetics.ngdswgs",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "genetics",
@@ -452,7 +452,7 @@
             "events": [
                 {
                     "location": "subject.info.longitudinal-data.uds.count.latest",
-                    "event": "latest"
+                    "operation": "latest"
                 }
             ],
             "type": "mqt-longitudinal",
@@ -463,7 +463,7 @@
             "events": [
                 {
                     "location": "TODO",
-                    "event": "update"
+                    "operation": "update"
                 }
             ],
             "type": "mqt-longitudinal",
@@ -474,7 +474,7 @@
             "events": [
                 {
                     "location": "subject.info.study-parameters.uds.versions",
-                    "event": "set"
+                    "operation": "set"
                 }
             ],
             "type": "mqt-longitudinal",
