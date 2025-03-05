@@ -2,18 +2,7 @@ python_sources(name="lib")
 
 python_distribution(
     name="dist",
-    dependencies=[
-        ":lib",
-        "nacc_attribute_deriver/attributes:lib",
-        "nacc_attribute_deriver/bin:lib",
-        "nacc_attribute_deriver/schema:lib",
-        "nacc_attribute_deriver/utils:lib"
-    ],
-    entry_points={
-        "console_scripts": {
-            "nacc-attribute-deriver": "nacc_attribute_deriver.bin.deriver_cli:entrypoint"
-        }
-    },
+    dependencies=[":lib"],
     wheel=True,
     sdist=True,
     provides=python_artifact(
@@ -22,5 +11,9 @@ python_distribution(
         description="Derives variables",
         author="NACC",
         author_email="nacchelp@uw.edu",
-        url="https://github.com/naccdata/nacc-attribute-deriver"),
+        url="https://github.com/naccdata/nacc-attribute-deriver"))
+
+pex_binary(
+    name="bin",
+    entry_point="deriver_cli.py",
 )
