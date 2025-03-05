@@ -1,5 +1,5 @@
 """
-Tests deriving MQT gennetics variables
+Tests deriving MQT genetics variables
 """
 import pytest
 

@@ -87,7 +87,6 @@ class SetOperation(Operation):
 
 
 class DateOperation(Operation):
-
     LABEL = None
 
     def evaluate(self,
