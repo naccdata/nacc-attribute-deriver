@@ -8,7 +8,7 @@ Heavily based off of
 import imp
 import sys
 
-from inspect import isfunction
+from inspect import stack, isfunction
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
@@ -104,13 +104,13 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         self.table[f'{prefix}{key}'] = value
 
     def aggregate_variables(self,
-                            mapping: Dict[str, Any],
+                            fields: List[str],
                             default: Any = None,
                             prefix: str = None) -> Dict[str, Any]:
-        """Aggregates all the variables defined in the mapping.
+        """Aggregates all the specified fields.
 
         Args:
-            mapping: Mapping to iterate over. Grabs the field and sets it
+            fields: Fields to iterate over. Grabs the field and sets it
                      to the found/derived value.
             default: Default value to set aggregation to if not found
             prefix: Prefix key to pull mapped values out of. This prefix
@@ -119,7 +119,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             The aggregated variables
         """
         result = {}
-        for field, label in mapping.items():
+        for field in fields:
             result[field] = self.get_value(field, default, prefix)
 
         return result
@@ -172,7 +172,7 @@ class MQTAttribute(AttributeCollection):
         for r in required:
             full_field = f'{prefix}{r}'
             if full_field not in self.table:          # TODO: maybe can implicitly derive even if schema didn't define it?
-                source = inspect.stack()[1].function  # not great but preferable to passing the name every time
+                source = stack()[1].function  # not great but preferable to passing the name every time
                 raise ValueError(f"{full_field} must be derived before {source} can run")
 
             found[r] = self.table[full_field]

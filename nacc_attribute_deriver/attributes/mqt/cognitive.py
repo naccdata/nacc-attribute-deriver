@@ -132,7 +132,7 @@ class CognitiveAttribute(MQTAttribute):
         """
         self.assert_required(['naccalzp', 'nacclbdp'])
 
-        all_vars = self.aggregate_variables(self.DIAGNOSIS_MAPPINGS)
+        all_vars = self.aggregate_variables(list(self.DIAGNOSIS_MAPPINGS.keys()))
         contr_diagnosis = set([
             self.DIAGNOSIS_MAPPINGS[k] for k, v in all_vars.items()
             if self.is_int_value(v, 1)
@@ -218,7 +218,7 @@ class CognitiveAttribute(MQTAttribute):
             Type of Dementia syndrome
         """
         self.assert_required(['naccppa', 'naccbvft', 'nacclbds'])
-        all_vars = self.aggregate_variables(self.DEMENTIA_MAPPINGS)
+        all_vars = self.aggregate_variables(list(self.DEMENTIA_MAPPINGS.keys()))
 
         # collect if == 1 (Present/Yes)
         dementia_types = set([
