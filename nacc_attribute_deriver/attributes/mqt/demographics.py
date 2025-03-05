@@ -44,7 +44,7 @@ class DemographicsAttribute(MQTAttribute):
         Location:
             subject.info.demographics.uds.age.initial
             subject.info.demographics.uds.age.latest
-        Event:
+        Operation:
             initial
             latest
         Type:
@@ -60,7 +60,7 @@ class DemographicsAttribute(MQTAttribute):
 
         Location:
             subject.info.demographics.uds.sex.latest
-        Event:
+        Operation:
             latest
         Type:
             demographics
@@ -83,7 +83,7 @@ class DemographicsAttribute(MQTAttribute):
 
         Location:
             subject.info.demographics.uds.race.latest
-        Event:
+        Operation:
             latest
         Type:
             demographics
@@ -98,7 +98,7 @@ class DemographicsAttribute(MQTAttribute):
 
         Location:
             subject.info.demographics.uds.primary-language.latest
-        Event:
+        Operation:
             latest
         Type:
             demographics
@@ -113,7 +113,7 @@ class DemographicsAttribute(MQTAttribute):
 
         Location:
             subject.info.demographics.uds.education-level.latest
-        Event:
+        Operation:
             latest
         Type:
             demographics
@@ -127,7 +127,7 @@ class DemographicsAttribute(MQTAttribute):
 
         Location:
             subject.info.derived.naccdage
-        Event:
+        Operation:
             update
         Type:
             demographics
@@ -142,7 +142,7 @@ class DemographicsAttribute(MQTAttribute):
 
         Location:
             subject.info.demographics.uds.vital-status.latest
-        Event:
+        Operation:
             latest
         Type:
             demographics

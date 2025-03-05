@@ -20,7 +20,7 @@ class LongitudinalAttribute(MQTAttribute):
 
         Location:
             subject.info.longitudinal-data.uds.count.latest
-        Event:
+        Operation:
             latest
         Type:
             mqt-longitudinal
@@ -44,7 +44,7 @@ class LongitudinalAttribute(MQTAttribute):
 
         Location:
             TODO
-        Event:
+        Operation:
             update
         Type:
             mqt-longitudinal

@@ -33,7 +33,7 @@ class NIAGADSAttribute(NACCAttribute):
 
         Location:
             file.info.derived.ngdsgwas
-        Event:
+        Operation:
             update
         Type:
             cross-sectional
@@ -48,7 +48,7 @@ class NIAGADSAttribute(NACCAttribute):
 
         Location:
             file.info.derived.ngdsexom
-        Event:
+        Operation:
             update
         Type:
             cross-sectional
@@ -63,7 +63,7 @@ class NIAGADSAttribute(NACCAttribute):
 
         Location:
             file.info.derived.ngdswgs
-        Event:
+        Operation:
             update
         Type:
             cross-sectional
@@ -78,7 +78,7 @@ class NIAGADSAttribute(NACCAttribute):
 
         Location:
             file.info.derived.ngdswes
-        Event:
+        Operation:
             update
         Type:
             cross-sectional

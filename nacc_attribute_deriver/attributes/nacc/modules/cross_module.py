@@ -56,7 +56,7 @@ class CrossModuleAttribute(UDSAttribute):
 
         Location:
             file.info.derived.naccdage
-        Event:
+        Operation:
             update
         Type:
             cross-sectional

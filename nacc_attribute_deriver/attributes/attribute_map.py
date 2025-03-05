@@ -34,7 +34,7 @@ def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
 
         Location:
             List of locations, one per line. Should be in sync with Event
-        Event:
+        Operation:
             List of events, one per line. Should be in sync with Location
         Type:
             The type of the attribute, e.g. cross-section, longitudinal, etc.
@@ -50,7 +50,7 @@ def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
     doc_parts = [x.strip() for x in docs.split('\n')]
     results = {
         'Location:': [],
-        'Event:': [],
+        'Operation:': [],
         'Type:': [],
         'Description:': []
     }
@@ -65,7 +65,7 @@ def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
         elif cur_str is not None:
             cur_str.append(part)
 
-    if len(results['Location:']) != len(results['Event:']):
+    if len(results['Location:']) != len(results['Operation:']):
         raise ValueError(f"Function {name} has inconsistent location/event")
 
     for k, v in results.items():
@@ -100,7 +100,7 @@ def generate_attribute_schema(outfile: Path = None,
                 schema.append({
                     'function': name,
                     # TODO - need to change docstring name to operation
-                    'events': [{'location': results['Location:'][i], 'operation': results['Event:'][i]}
+                    'events': [{'location': results['Location:'][i], 'operation': results['Operation:'][i]}
                                for i in range(len(results['Location:']))],
                     'type': ' '.join(results['Type:']),
                     'description': ' '.join(results['Description:'])

@@ -13,7 +13,7 @@ class UDSHeaderAttribute(UDSAttribute):
         Location:
             subject.info.derived.initial_uds_visit
             subject.info.derived.latest_uds_visit
-        Event:
+        Operation:
             initial
             latest
         Type:

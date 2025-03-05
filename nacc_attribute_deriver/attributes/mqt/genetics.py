@@ -14,7 +14,7 @@ class GeneticAttribute(MQTAttribute):
 
         Location:
             subject.info.genetics.naccapoe
-        Event:
+        Operation:
             update
         Type:
             genetics
@@ -34,7 +34,7 @@ class GeneticAttribute(MQTAttribute):
 
         Location:
             subject.info.genetics.ngdsgwas
-        Event:
+        Operation:
             update
         Type:
             genetics
@@ -49,7 +49,7 @@ class GeneticAttribute(MQTAttribute):
 
         Location:
             subject.info.genetics.ngdsexom
-        Event:
+        Operation:
             update
         Type:
             genetics
@@ -64,7 +64,7 @@ class GeneticAttribute(MQTAttribute):
 
         Location:
             subject.info.genetics.ngdswgs
-        Event:
+        Operation:
             update
         Type:
             genetics
@@ -79,7 +79,7 @@ class GeneticAttribute(MQTAttribute):
 
         Location:
             subject.info.genetics.ngdswes
-        Event:
+        Operation:
             update
         Type:
             genetics

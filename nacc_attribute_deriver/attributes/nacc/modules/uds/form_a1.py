@@ -20,7 +20,7 @@ class UDSFormA1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccage
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -39,7 +39,7 @@ class UDSFormA1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccnihr
-        Event:
+        Operation:
             update
         Type:
             longitudinal

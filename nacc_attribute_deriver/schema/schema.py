@@ -1,34 +1,5 @@
 """
-Defines the curation schema. In JSON would look like the following:
-{
-    nacc_derived_vars: [
-        {
-            "function": "create_naccalzp",
-            "events": [
-                {
-                    "location": "file.info.derived.naccalzp",
-                    "type": "update"
-                }
-            ]
-        }
-    ],
-
-    "mqt_derived_vars": [
-        {
-            "function": "contributing_diagnosis",
-            "events": [
-                {
-                    "location": "subject.info.cognitive.uds.cognitive-status.initial",
-                    "type": "initial"
-                },
-                {
-                    "location": "subject.info.cognitive.uds.cognitive-status.latest",
-                    "type": "latest"
-                }
-            ]
-        }
-    ]
-}
+Defines the curation schema.
 """
 from enum import StrEnum
 from pydantic import (

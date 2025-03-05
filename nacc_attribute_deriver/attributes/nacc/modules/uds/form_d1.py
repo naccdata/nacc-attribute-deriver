@@ -51,7 +51,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             tmp.mci
-        Event:
+        Operation:
             update
         Type:
             intermediate
@@ -72,7 +72,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccalzp
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -95,7 +95,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.nacclbde
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -126,7 +126,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.nacclbdp
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -156,7 +156,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccudsd
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -182,7 +182,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccetpr
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -243,7 +243,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccppa
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -277,7 +277,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccbvft
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -304,7 +304,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.nacclbds
-        Event:
+        Operation:
             update
         Type:
             longitudinal
@@ -333,7 +333,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Location:
             file.info.derived.naccnorm
-        Event:
+        Operation:
             update
         Type:
             cross-sectional

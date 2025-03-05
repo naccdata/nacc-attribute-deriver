@@ -14,7 +14,7 @@ class StudyParametersAttribute(MQTAttribute):
 
         Location:
             subject.info.study-parameters.uds.versions
-        Event:
+        Operation:
             set
         Type:
             mqt-longitudinal

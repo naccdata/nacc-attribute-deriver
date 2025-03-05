@@ -121,7 +121,7 @@ class CognitiveAttribute(MQTAttribute):
             subject.info.cognitive.uds.other-diagnosis.initial
             subject.info.cognitive.uds.other-diagnosis.latest
             subject.info.cognitive.uds.other-diagnosis.all
-        Event:
+        Operation:
             initial
             latest
             set
@@ -147,7 +147,7 @@ class CognitiveAttribute(MQTAttribute):
             subject.info.cognitive.uds.cognitive-status.initial
             subject.info.cognitive.uds.cognitive-status.latest
             subject.info.cognitive.uds.cognitive-status.all
-        Event:
+        Operation:
             initial
             latest
             set
@@ -166,7 +166,7 @@ class CognitiveAttribute(MQTAttribute):
             subject.info.cognitive.uds.etpr.initial
             subject.info.cognitive.uds.etpr.latest
             subject.info.cognitive.uds.etpr.all
-        Event:
+        Operation:
             initial
             latest
             set
@@ -186,7 +186,7 @@ class CognitiveAttribute(MQTAttribute):
             subject.info.cognitive.uds.cdrglob.initial
             subject.info.cognitive.uds.cdrglob.latest
             subject.info.cognitive.uds.cdrglob.all
-        Event:
+        Operation:
             initial
             latest
             set
@@ -208,7 +208,7 @@ class CognitiveAttribute(MQTAttribute):
             subject.info.cognitive.uds.dementia-type.initial
             subject.info.cognitive.uds.dementia-type.latest
             subject.info.cognitive.uds.dementia-type.all
-        Event:
+        Operation:
             initial
             latest
             set
@@ -233,7 +233,7 @@ class CognitiveAttribute(MQTAttribute):
 
         Location:
             subject.info.derived.naccnorm
-        Event:
+        Operation:
             min
         Type:
             cognitive

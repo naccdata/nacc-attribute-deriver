@@ -26,7 +26,7 @@ class NCRADAttribute(NACCAttribute):
 
         Location:
             file.info.derived.naccapoe
-        Event:
+        Operation:
             update
         Type:
             cross-sectional
