@@ -1,0 +1,19 @@
+python_sources(name="lib")
+
+python_distribution(
+    name="dist",
+    dependencies=[":lib"],
+    wheel=True,
+    sdist=True,
+    provides=python_artifact(
+        name="nacc-attribute-deriver",
+        version="0.0.1-dev1",
+        description="Derives variables",
+        author="NACC",
+        author_email="nacchelp@uw.edu",
+        url="https://github.com/naccdata/nacc-attribute-deriver"))
+
+pex_binary(
+    name="bin",
+    entry_point="deriver_cli.py",
+)

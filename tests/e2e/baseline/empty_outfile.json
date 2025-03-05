@@ -1,0 +1,174 @@
+{
+    "file": {
+        "info": {
+            "forms": {
+                "json": {
+                    "visitdate": "2025-01-01"
+                }
+            },
+            "derived": {
+                "naccage": null,
+                "naccnihr": 99,
+                "naccalzp": 7,
+                "naccbvft": 8,
+                "naccetpr": 99,
+                "nacclbde": null,
+                "nacclbdp": null,
+                "nacclbds": 8,
+                "naccnorm": 0,
+                "naccppa": 8,
+                "naccudsd": null,
+                "naccdage": 999,
+                "naccapoe": 9,
+                "ngdsexom": 0,
+                "ngdsgwas": 0,
+                "ngdswes": 0,
+                "ngdswgs": 0
+            }
+        }
+    },
+    "subject": {
+        "info": {
+            "derived": {
+                "initial_uds_visit": {
+                    "date": "2025-01-01",
+                    "value": "2025-01-01"
+                },
+                "latest_uds_visit": {
+                    "date": "2025-01-01",
+                    "value": "2025-01-01"
+                },
+                "naccnorm": false,
+                "naccdage": 999
+            },
+            "cognitive": {
+                "uds": {
+                    "cognitive-status": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "all": []
+                    },
+                    "other-diagnosis": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": []
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": []
+                        },
+                        "all": []
+                    },
+                    "dementia-type": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "all": []
+                    },
+                    "etpr": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": "Missing/unknown"
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "Missing/unknown"
+                        },
+                        "all": [
+                            "Missing/unknown"
+                        ]
+                    },
+                    "cdrglob": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "all": []
+                    }
+                }
+            },
+            "demographics": {
+                "uds": {
+                    "age": {
+                        "initial": {
+                            "date": "2025-01-01",
+                            "value": null
+                        },
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        }
+                    },
+                    "education-level": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        }
+                    },
+                    "primary-language": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "Unknown"
+                        }
+                    },
+                    "race": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "Unknown or ambiguous"
+                        }
+                    },
+                    "sex": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": null
+                        }
+                    },
+                    "vital-status": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": "TODO: MAPPING FOR VITAL STATUS"
+                        }
+                    }
+                }
+            },
+            "genetics": {
+                "naccapoe": "Missing/unknown/not assessed",
+                "ngdsexom": false,
+                "ngdsgwas": false,
+                "ngdswes": false,
+                "ngdswgs": false
+            },
+            "longitudinal-data": {
+                "uds": {
+                    "count": {
+                        "latest": {
+                            "date": "2025-01-01",
+                            "value": 0
+                        }
+                    }
+                }
+            },
+            "study-parameters": {
+                "uds": {
+                    "versions": []
+                }
+            }
+        }
+    },
+    "TODO": 0
+}
