@@ -31,7 +31,7 @@
                 "ngdsexom": 1,
                 "ngdsgwas": 1,
                 "ngdswes": 0,
-                "ngdswgs": 1
+                "ngdswgs": 0
             }
         }
     },
@@ -47,7 +47,7 @@
             "raw": {
                 "niagads_gwas": "NG00000",
                 "niagads_exomechip": "NG00000",
-                "niagads_wgs": "NG00000",
+                "niagads_wgs": "0",
                 "niagads_wes": null
             }
         }
@@ -180,7 +180,7 @@
                 "ngdsexom": true,
                 "ngdsgwas": true,
                 "ngdswes": false,
-                "ngdswgs": true
+                "ngdswgs": false
             },
             "longitudinal-data": {
                 "uds": {

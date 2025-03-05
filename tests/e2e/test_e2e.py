@@ -87,7 +87,7 @@ def test_full_form(tmp_dir):
                 "raw": {
                     "niagads_gwas": "NG00000",
                     "niagads_exomechip": "NG00000",
-                    "niagads_wgs": "NG00000",
+                    "niagads_wgs": "0",
                     "niagads_wes": None
                 }
             }
