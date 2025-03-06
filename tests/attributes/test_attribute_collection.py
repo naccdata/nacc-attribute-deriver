@@ -1,6 +1,4 @@
-"""
-Tests the base AttributeCollection classes
-"""
+"""Tests the base AttributeCollection classes."""
 import pytest
 
 from nacc_attribute_deriver.attributes.attribute_collection import (
@@ -24,7 +22,9 @@ class TestAttributeCollection:
         assert attr.get_value('missing', 'default') == 'default'
 
         assert attr.get_value('value', prefix='some.other.prefix.') == 10
-        assert attr.get_value('missing', 'default', prefix='some.other.prefix.') == 'default'
+        assert attr.get_value('missing',
+                              'default',
+                              prefix='some.other.prefix.') == 'default'
 
     def test_set_value(self):
         """Tests setting value."""

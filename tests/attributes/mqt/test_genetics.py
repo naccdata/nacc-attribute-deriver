@@ -1,6 +1,4 @@
-"""
-Tests deriving MQT genetics variables
-"""
+"""Tests deriving MQT genetics variables."""
 import pytest
 
 from nacc_attribute_deriver.attributes.mqt.genetics import GeneticAttribute
@@ -9,8 +7,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 @pytest.fixture(scope='function')
 def attr() -> GeneticAttribute:
-    """Create dummy data and return it in an attribute object.
-    """
+    """Create dummy data and return it in an attribute object."""
     data = {
         'ncrad': {
             'info': {
@@ -54,12 +51,12 @@ class TestGeneticAttribute:
         assert attr._create_ngdswes_mqt() == False
 
         # test null case
-       	attr.table['file.info.derived'] = {
+        attr.table['file.info.derived'] = {
             "ngdsexom": None,
             "ngdsgwas": None,
             "ngdswes": None,
             "ngdswgs": None
-       	}
+        }
         assert attr._create_ngdsgwas_mqt() == False
         assert attr._create_ngdsexom_mqt() == False
         assert attr._create_ngdswgs_mqt() == False

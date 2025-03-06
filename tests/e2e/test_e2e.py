@@ -1,14 +1,12 @@
-"""
-Tests against the full schema end-to-end.
-"""
+"""Tests against the full schema end-to-end."""
 import json
-import pytest
-
 from pathlib import Path
 from typing import Any
 
-from nacc_attribute_deriver.attributes.attribute_map import generate_attribute_schema
+import pytest
+
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
+from nacc_attribute_deriver.attributes.attribute_map import generate_attribute_schema
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 CUR_DIR = Path(__file__).resolve().parent

@@ -1,8 +1,7 @@
-"""
-All genetics MQT derived variables.
+"""All genetics MQT derived variables.
+
 Assumes NACC-derived variables are already set
 """
-from typing import Dict, Tuple
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 
 
@@ -10,7 +9,7 @@ class GeneticAttribute(MQTAttribute):
     """Class to collect genetic attributes."""
 
     def _create_apoe(self) -> str:
-        """Mapped from NACCAPOE
+        """Mapped from NACCAPOE.
 
         Location:
             subject.info.genetics.naccapoe
@@ -30,7 +29,7 @@ class GeneticAttribute(MQTAttribute):
         return f'{a1},{a2}'.lower()
 
     def _create_ngdsgwas_mqt(self) -> bool:
-        """Mapped from NGDSGWAS
+        """Mapped from NGDSGWAS.
 
         Location:
             subject.info.genetics.ngdsgwas
@@ -45,7 +44,7 @@ class GeneticAttribute(MQTAttribute):
         return bool(result['ngdsgwas'])
 
     def _create_ngdsexom_mqt(self) -> bool:
-        """Mapped from NGDSEXOM
+        """Mapped from NGDSEXOM.
 
         Location:
             subject.info.genetics.ngdsexom
@@ -60,7 +59,7 @@ class GeneticAttribute(MQTAttribute):
         return bool(result['ngdsexom'])
 
     def _create_ngdswgs_mqt(self) -> bool:
-        """Mapped from NGDSWGS
+        """Mapped from NGDSWGS.
 
         Location:
             subject.info.genetics.ngdswgs
@@ -75,7 +74,7 @@ class GeneticAttribute(MQTAttribute):
         return bool(result['ngdswgs'])
 
     def _create_ngdswes_mqt(self) -> bool:
-        """Mapped from NGDSWES
+        """Mapped from NGDSWES.
 
         Location:
             subject.info.genetics.ngdswes

@@ -1,6 +1,4 @@
-"""
-Derived variables from form A1.
-"""
+"""Derived variables from form A1."""
 from typing import Optional
 
 from nacc_attribute_deriver.utils.date import (
@@ -15,8 +13,7 @@ class UDSFormA1Attribute(UDSAttribute):
     """Class to collect UDS A1 attributes."""
 
     def _create_naccage(self) -> str:
-        """Creates DOB from BIRTHMO and BIRTHYR and
-        compares to form date.
+        """Creates DOB from BIRTHMO and BIRTHYR and compares to form date.
 
         Location:
             file.info.derived.naccage
@@ -33,7 +30,6 @@ class UDSFormA1Attribute(UDSAttribute):
 
         return calculate_age(dob, visitdate)
 
-
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)
 
@@ -46,19 +42,18 @@ class UDSFormA1Attribute(UDSAttribute):
         Description:
             Subject's age at visit
         """
-        return self.generate_naccnihr(
-            race=self.get_value('race'),
-            racex=self.get_value('racex'),
-            racesec=self.get_value('racesec'),
-            racesecx=self.get_value('racesecx'),
-            raceter=self.get_value('raceter'),
-            raceterx=self.get_value('raceterx')
-        )
+        return self.generate_naccnihr(race=self.get_value('race'),
+                                      racex=self.get_value('racex'),
+                                      racesec=self.get_value('racesec'),
+                                      racesecx=self.get_value('racesecx'),
+                                      raceter=self.get_value('raceter'),
+                                      raceterx=self.get_value('raceterx'))
 
     @staticmethod
     def generate_naccnihr(race: Optional[int], racex: Optional[str],
                           racesec: Optional[int], racesecx: Optional[str],
-                          raceter: Optional[int], raceterx: Optional[str]) -> int:
+                          raceter: Optional[int],
+                          raceterx: Optional[str]) -> int:
 
         if not race:
             return 99
@@ -264,9 +259,9 @@ class UDSFormA1Attribute(UDSAttribute):
             "brazilian", "brown", "columbian", "criollo", "cuban", "guyanese",
             "hispan ic", "hispanic", "hispanic/ latino", "hspanic", "human",
             "humana", "indian", "indigenous", "indio", "latin,trigueno",
-            "latina hispanic", "latina", "latino", "mexican american", "mexican",
-            "other", "puerto rican", "puerto rician", "refused", "see report",
-            "usa"
+            "latina hispanic", "latina", "latino", "mexican american",
+            "mexican", "other", "puerto rican", "puerto rician", "refused",
+            "see report", "usa"
         }
 
         if racex:
@@ -284,8 +279,10 @@ class UDSFormA1Attribute(UDSAttribute):
             blackx = 1 if racesecx.lower() in black_responses else blackx
         if racex:
             blackx = 1 if racex.lower() in black_responses else blackx
-            nativex = 1 if racex.lower() in native_american_responses else nativex
-            hawaiix = 1 if racex.lower() in pacific_islander_responses else hawaiix
+            nativex = 1 if racex.lower(
+            ) in native_american_responses else nativex
+            hawaiix = 1 if racex.lower(
+            ) in pacific_islander_responses else hawaiix
             asianx = 1 if racex.lower() in asian_responses else asianx
             multix = 1 if racex.lower() in multiracial_responses else multix
 
@@ -296,7 +293,8 @@ class UDSFormA1Attribute(UDSAttribute):
             multix = 1 if racesecx.lower() in multiracial_responses else multix
 
         if racex:
-            multipx = 1 if racex.lower() in multiple_race_responses else multipx
+            multipx = 1 if racex.lower(
+            ) in multiple_race_responses else multipx
             multipx = 1 if racesec == 3 and racex == "European" else multipx
         if racesecx:
             multipx = 1 if race in {2, 3, 4, 5
@@ -317,9 +315,11 @@ class UDSFormA1Attribute(UDSAttribute):
             multipx = 1 if race == 5 and racesecx == "Korean" and raceterx == "Portuguese" else multipx
         if racesecx:
             multipx = 1 if race == 1 and racesecx == "West Indian" else multipx
-            multipx = 1 if racesecx.lower() in multiple_race_responses else multipx
+            multipx = 1 if racesecx.lower(
+            ) in multiple_race_responses else multipx
         if raceterx:
-            multipx = 1 if raceterx.lower() in multiple_race_responses else multipx
+            multipx = 1 if raceterx.lower(
+            ) in multiple_race_responses else multipx
 
         if racex:
             unx = 1 if racex.lower() in unknown_responses else unx
@@ -339,8 +339,9 @@ class UDSFormA1Attribute(UDSAttribute):
         naccnihr = 5 if (race == 5 | race == 50) and asianx == 1 else naccnihr
         naccnihr = 6 if race == 5 and asianx == 1 and whitex == 1 else naccnihr
 
-        naccnihr = 6 if race == 50 and racesec == 5 and raceter in {1, 2, 3, 4
-                                                                    } else naccnihr
+        naccnihr = 6 if race == 50 and racesec == 5 and raceter in {
+            1, 2, 3, 4
+        } else naccnihr
         naccnihr = 6 if racesec == 5 and raceter in {1, 2, 3} else naccnihr
         naccnihr = 6 if race == 50 and racesec == 4 and raceter == 1 else naccnihr
         naccnihr = 6 if race == 50 and racesec == 1 else naccnihr
