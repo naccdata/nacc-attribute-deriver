@@ -1,11 +1,13 @@
 from collections import deque
-from typing import Any, Dict, Iterator, MutableMapping, Optional
+from typing import Any, Iterator, MutableMapping, Optional
 
 
 class SymbolTable(MutableMapping):
     """Implements a dictionary like object for using metadata paths as keys."""
 
-    def __init__(self, symbol_dict: MutableMapping = None, separator: str = '.') -> None:
+    def __init__(self,
+                 symbol_dict: MutableMapping = None,
+                 separator: str = '.') -> None:
         self.__table = {}
         self.__separator = separator
 
@@ -95,7 +97,11 @@ class SymbolTable(MutableMapping):
     def to_dict(self) -> MutableMapping:
         return self.__table
 
-    def compress(self, table: MutableMapping = None, parent_key: str = None,) -> MutableMapping:
+    def compress(
+        self,
+        table: MutableMapping = None,
+        parent_key: str = None,
+    ) -> MutableMapping:
         """Compress the table by flattening all keys."""
         if not table:
             table = self.__table

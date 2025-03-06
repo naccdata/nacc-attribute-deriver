@@ -1,17 +1,19 @@
-"""
-Tests UDS Form D1 attributes.
-"""
+"""Tests UDS Form D1 attributes."""
 import pytest
 
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_d1 import ContributionStatus, UDSFormD1Attribute
+from nacc_attribute_deriver.attributes.nacc.modules.uds.form_d1 import (
+    ContributionStatus,
+    UDSFormD1Attribute,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope='function')
 def attr() -> UDSFormD1Attribute:
     """Create dummy data and return it in an attribute object.
-    In this case most will want to manually set fields so only
-    leave bare minimum in.
+
+    In this case most will want to manually set fields so only leave
+    bare minimum in.
     """
     data = {
         'file': {
@@ -44,7 +46,7 @@ class TestUDSFormD1Attribute:
         assert attr._create_mci() == 0
 
     def test_create_naccalzp(self, attr):
-        """Tests creating NACCALZP"""
+        """Tests creating NACCALZP."""
         assert attr._create_naccalzp() == 8
 
         attr.set_value('normcog', 0)
@@ -62,7 +64,7 @@ class TestUDSFormD1Attribute:
         assert attr._create_naccalzp() == 1
 
     def test_create_nacclbde(self, attr):
-        """Tests creating NACCLBDE"""
+        """Tests creating NACCLBDE."""
         assert attr._create_nacclbde() == 8
 
         attr.set_value('normcog', 0)
@@ -85,7 +87,7 @@ class TestUDSFormD1Attribute:
         assert attr._create_nacclbde() is None
 
     def test_create_nacclbdp(self, attr):
-        """Tests creating NACCLBDP"""
+        """Tests creating NACCLBDP."""
         assert attr._create_nacclbdp() == 8
 
         attr.set_value('normcog', 0)

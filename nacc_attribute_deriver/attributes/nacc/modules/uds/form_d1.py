@@ -1,6 +1,4 @@
-"""
-Derived variables from form D1.
-"""
+"""Derived variables from form D1."""
 from typing import List
 
 from .uds_attribute import UDSAttribute
@@ -14,19 +12,15 @@ class ContributionStatus:
     @classmethod
     def all(cls):
         """Returns all possible statuses."""
-        return [
-            cls.PRIMARY,
-            cls.CONTRIBUTING,
-            cls.NON_CONTRIBUTING
-        ]
+        return [cls.PRIMARY, cls.CONTRIBUTING, cls.NON_CONTRIBUTING]
 
 
 class UDSFormD1Attribute(UDSAttribute):
 
     def get_contr_status(self, fields: List[str]) -> int:
         """Gets the overall contributing status based on the given list.
-        Assumes all fields have values null or
-            1, 2, or 3 (primary, contributing, or non-contributing)
+        Assumes all fields have values null or 1, 2, or 3 (primary,
+        contributing, or non-contributing)
 
         Args:
             table: Table with all FW metadata
@@ -46,8 +40,8 @@ class UDSFormD1Attribute(UDSAttribute):
         return None
 
     def _create_mci(self) -> int:
-        """Create MCI, which is not a derived variable itself but
-        is used to calculate other derived variables.
+        """Create MCI, which is not a derived variable itself but is used to
+        calculate other derived variables.
 
         Location:
             tmp.mci
@@ -68,7 +62,7 @@ class UDSFormD1Attribute(UDSAttribute):
         ]) else 0
 
     def _create_naccalzp(self) -> int:
-        """From d1structrdd.sas
+        """From d1structrdd.sas.
 
         Location:
             file.info.derived.naccalzp
@@ -83,7 +77,8 @@ class UDSFormD1Attribute(UDSAttribute):
         if self.get_value('normcog') == 1:
             return 8
 
-        contr_status = self.get_contr_status(['probadif', 'possadif', 'alzdisif'])
+        contr_status = self.get_contr_status(
+            ['probadif', 'possadif', 'alzdisif'])
         if contr_status:
             return contr_status
 
@@ -91,7 +86,7 @@ class UDSFormD1Attribute(UDSAttribute):
         return 7
 
     def _create_nacclbde(self) -> int:
-        """From d1structrdd.sas
+        """From d1structrdd.sas.
 
         Location:
             file.info.derived.nacclbde
@@ -122,7 +117,8 @@ class UDSFormD1Attribute(UDSAttribute):
         return None
 
     def _create_nacclbdp(self) -> int:
-        """From d1structrdd.sas. Also relies on another derived variable nacclbde
+        """From d1structrdd.sas. Also relies on another derived variable
+        nacclbde.
 
         Location:
             file.info.derived.nacclbdp
@@ -175,8 +171,8 @@ class UDSFormD1Attribute(UDSAttribute):
         return None
 
     def _create_naccetpr(self) -> int:
-        """From Create NACCETPR, PRIMDX, SYNMULT.R which in turn
-        comes from getd1all.sas
+        """From Create NACCETPR, PRIMDX, SYNMULT.R which in turn comes from
+        getd1all.sas.
 
         Looking for primary status here.
 
@@ -199,8 +195,11 @@ class UDSFormD1Attribute(UDSAttribute):
         # result maps to position in list (start index 1)
         all_status = [
             self.get_contr_status(['probadif', 'possadif', 'alzdisif']),
-            self.get_contr_status(['dlbif', 'parkif', 'lbdif']) if self.get_value('formver') != 3 else None,
-            self.get_contr_status(['msaif']),  # could just grab directly for those with only 1 but this is more readable
+            self.get_contr_status(['dlbif', 'parkif', 'lbdif'])
+            if self.get_value('formver') != 3 else None,
+            self.get_contr_status(
+                ['msaif']
+            ),  # could just grab directly for those with only 1 but this is more readable
             self.get_contr_status(['pspif']),
             self.get_contr_status(['cortif']),
             self.get_contr_status(['ftldmoif']),
@@ -239,7 +238,7 @@ class UDSFormD1Attribute(UDSAttribute):
         return 99
 
     def _create_naccppa(self) -> int:
-        """From d1structdd.sas
+        """From d1structdd.sas.
 
         Location:
             file.info.derived.naccppa
@@ -267,13 +266,14 @@ class UDSFormD1Attribute(UDSAttribute):
                 return 1
             if ppaph == 0 or ppasyn == 0:
                 return 0
-            if (self.get_value('formver') != 3 and nodx == 1) or (self.get_value('formver') == 3):
+            if (self.get_value('formver') != 3
+                    and nodx == 1) or (self.get_value('formver') == 3):
                 return 7
 
         return 8
 
     def _create_naccbvft(self) -> int:
-        """From d1structdd.sas
+        """From d1structdd.sas.
 
         Location:
             file.info.derived.naccbvft
@@ -300,7 +300,7 @@ class UDSFormD1Attribute(UDSAttribute):
         return 8
 
     def _create_nacclbds(self) -> int:
-        """From d1structdd.sas
+        """From d1structdd.sas.
 
         Location:
             file.info.derived.nacclbds

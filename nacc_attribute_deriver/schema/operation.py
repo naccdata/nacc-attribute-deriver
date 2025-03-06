@@ -1,6 +1,5 @@
-"""
-Defines the operations to be performed on derived variables.
-Uses a metaclass to keep track of operation types.
+"""Defines the operations to be performed on derived variables. Uses a
+metaclass to keep track of operation types.
 
 This kind of feels overengineered?
 """
@@ -39,10 +38,7 @@ class Operation(object, metaclass=OperationRegistry):
 
         raise ValueError(f"Unrecognized operation: {label}")
 
-    def evaluate(self,
-                 table: SymbolTable,
-                 value: Any,
-                 location: str,
+    def evaluate(self, table: SymbolTable, value: Any, location: str,
                  date_key: str, **kwargs) -> None:
         """Evaluate the operation, and stores the computed value at the
         specified location.
@@ -58,10 +54,8 @@ class Operation(object, metaclass=OperationRegistry):
 class UpdateOperation(Operation):
     LABEL = 'update'
 
-    def evaluate(self,
-                 table: SymbolTable,
-                 value: Any,
-                 location: str, **kwargs) -> None:
+    def evaluate(self, table: SymbolTable, value: Any, location: str,
+                 **kwargs) -> None:
         """Simply updates the location."""
         table[location] = value
 
@@ -69,12 +63,10 @@ class UpdateOperation(Operation):
 class SetOperation(Operation):
     LABEL = 'set'
 
-    def evaluate(self,
-                 table: SymbolTable,
-                 value: Any,
-                 location: str, **kwargs) -> None:
-        """Adds the value to a set, although it actually is saved
-        as a list since the final output is a JSON."""
+    def evaluate(self, table: SymbolTable, value: Any, location: str,
+                 **kwargs) -> None:
+        """Adds the value to a set, although it actually is saved as a list
+        since the final output is a JSON."""
         cur_set = table.get(location)
         cur_set = set(cur_set) if cur_set else set()
 
@@ -89,10 +81,7 @@ class SetOperation(Operation):
 class DateOperation(Operation):
     LABEL = None
 
-    def evaluate(self,
-                 table: SymbolTable,
-                 value: Any,
-                 location: str,
+    def evaluate(self, table: SymbolTable, value: Any, location: str,
                  date_key: str) -> None:
         """Compares dates to determine the result."""
         try:
@@ -105,13 +94,9 @@ class DateOperation(Operation):
         if self.LABEL not in ['initial', 'latest']:
             raise OperationException(f"Unknown date operation: {self.LABEL}")
 
-        if (not dest_date or 
-            (self.LABEL == 'initial' and cur_date < dest_date) or
-            (self.LABEL == 'latest' and cur_date > dest_date)):
-            table[location] = {
-                'date': str(cur_date.date()),
-                'value': value
-            }
+        if (not dest_date or (self.LABEL == 'initial' and cur_date < dest_date)
+                or (self.LABEL == 'latest' and cur_date > dest_date)):
+            table[location] = {'date': str(cur_date.date()), 'value': value}
 
 
 class InitialOperation(DateOperation):
@@ -125,10 +110,8 @@ class LatestOperation(DateOperation):
 class CountOperation(Operation):
     LABEL = 'count'
 
-    def evaluate(self,
-                 table: SymbolTable,
-                 value: Any,
-                 location: str, **kwargs) -> None:
+    def evaluate(self, table: SymbolTable, value: Any, location: str,
+                 **kwargs) -> None:
         """Counts the result."""
         cur_count = table.get(location, 0)
         table[location] = cur_count + 1
@@ -137,24 +120,22 @@ class CountOperation(Operation):
 class ComparisonOperation(Operation):
     LABEL = None
 
-    def evaluate(self,
-                 table: SymbolTable,
-                 value: Any,
-                 location: str, **kwargs) -> None:
+    def evaluate(self, table: SymbolTable, value: Any, location: str,
+                 **kwargs) -> None:
         """Does a comparison between the value and location value."""
         dest_value = table.get(location)
 
         if self.LABEL not in ['min', 'max']:
-            raise OperationException(f"Unknown comparison operation: {self.LABEL}")
+            raise OperationException(
+                f"Unknown comparison operation: {self.LABEL}")
 
         try:
-            if (not dest_value or
-                (self.LABEL == 'min' and value < dest_value) or
-                (self.LABEL == 'max' and value > dest_value)):
+            if (not dest_value or (self.LABEL == 'min' and value < dest_value)
+                    or (self.LABEL == 'max' and value > dest_value)):
                 table[location] = value
         except TypeError as e:
             raise OperationException(
-               f"Cannot compare types for {self.LABEL} operation: {e}") from e
+                f"Cannot compare types for {self.LABEL} operation: {e}") from e
 
 
 class MinOperation(ComparisonOperation):

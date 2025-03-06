@@ -1,8 +1,7 @@
-"""
-NCRAD-specific derived variables.
+"""NCRAD-specific derived variables.
 
 Right now these should all come from the imported APOE data under
-    <subject>_apoe_availability.json
+<subject>_apoe_availability.json
 """
 from nacc_attribute_deriver.attributes.attribute_collection import NACCAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -14,8 +13,7 @@ class NCRADAttribute(NACCAttribute):
     def __init__(self,
                  table: SymbolTable,
                  form_prefix: str = 'ncrad.info.raw.') -> None:
-        """Override initializer to set prefix to NCRAD-specific data.
-        """
+        """Override initializer to set prefix to NCRAD-specific data."""
         super().__init__(table, form_prefix)
 
     def _create_naccapoe(self) -> int:

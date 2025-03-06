@@ -1,5 +1,5 @@
-"""
-All longtitudinal MQT derived variables.
+"""All longtitudinal MQT derived variables.
+
 Assumes NACC-derived variables are already set
 """
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
@@ -36,10 +36,9 @@ class LongitudinalAttribute(MQTAttribute):
 
         return count
 
-
     def _create_years_of_uds(self) -> int:
-        """Creates subject.info.longitudinal-data.uds.year-count.latest
-        
+        """Creates subject.info.longitudinal-data.uds.year-count.latest.
+
         TODO Not clear how this is supposed to be calculated.
 
         Location:
@@ -51,8 +50,9 @@ class LongitudinalAttribute(MQTAttribute):
         Description:
             Number of years of UDS visits available
         """
-        result = self.assert_required(['initial_uds_visit', 'latest_uds_visit'],
-                                      prefix='subject.info.derived.')
+        result = self.assert_required(
+            ['initial_uds_visit', 'latest_uds_visit'],
+            prefix='subject.info.derived.')
 
         initial = datetime_from_form_date(result['initial_uds_visit']['value'])
         latest = datetime_from_form_date(result['latest_uds_visit']['value'])
