@@ -504,20 +504,4 @@ class UDSFormA1Attribute(UDSAttribute):
         if racex == "hispanic" and racesecx == "meztiza":
             naccnihr = 6
 
-        # raise ValueError(f"""
-        #     whitex: {whitex}
-        #     blackx: {blackx}
-        #     nativex: {nativex}
-        #     hawaiix: {hawaiix}
-        #     asianx: {asianx}
-        #     multix: {multix}
-        #     multipx: {multipx}
-        #     naccnihr: {naccnihr}
-
-        #     race: {race}
-        #     racesec: {racesec}
-
-        #     racex: {racex}
-        #     racesecx: {racesecx}""")
-
         return naccnihr

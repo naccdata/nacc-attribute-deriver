@@ -1,5 +1,5 @@
-"""
-All demographic MQT derived variables.
+"""All demographic MQT derived variables.
+
 Assumes NACC-derived variables are already set
 """
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
@@ -27,7 +27,7 @@ class DemographicsAttribute(MQTAttribute):
         99: 'Unknown or ambiguous'
     }
 
-    PRIMARY_LANGUAGE_MAPPING = {    
+    PRIMARY_LANGUAGE_MAPPING = {
         1: "English",
         2: "Spanish",
         3: "Mandarin",
@@ -39,7 +39,7 @@ class DemographicsAttribute(MQTAttribute):
     }
 
     def _create_uds_age(self) -> int:
-        """UDS age at form date, mapped from NACCAGE
+        """UDS age at form date, mapped from NACCAGE.
 
         Location:
             subject.info.demographics.uds.age.initial
@@ -56,7 +56,7 @@ class DemographicsAttribute(MQTAttribute):
         return result['naccage']
 
     def _create_uds_sex(self) -> str:
-        """UDS sex
+        """UDS sex.
 
         Location:
             subject.info.demographics.uds.sex.latest
@@ -79,7 +79,7 @@ class DemographicsAttribute(MQTAttribute):
         return None
 
     def _create_uds_race(self) -> str:
-        """UDS race
+        """UDS race.
 
         Location:
             subject.info.demographics.uds.race.latest
@@ -91,10 +91,11 @@ class DemographicsAttribute(MQTAttribute):
             Race at UDS visit
         """
         result = self.assert_required(['naccnihr'])
-        return self.RACE_MAPPING.get(result['naccnihr'], 'Unknown or ambiguous')
+        return self.RACE_MAPPING.get(result['naccnihr'],
+                                     'Unknown or ambiguous')
 
     def _create_uds_primary_language(self) -> str:
-        """UDS primary language
+        """UDS primary language.
 
         Location:
             subject.info.demographics.uds.primary-language.latest
@@ -109,7 +110,7 @@ class DemographicsAttribute(MQTAttribute):
         return self.PRIMARY_LANGUAGE_MAPPING.get(primlang, 'Unknown')
 
     def _create_uds_education_level(self) -> int:
-        """UDS education level
+        """UDS education level.
 
         Location:
             subject.info.demographics.uds.education-level.latest
@@ -123,7 +124,7 @@ class DemographicsAttribute(MQTAttribute):
         return self.get_value('educ', None)
 
     def _create_age_at_death(self) -> int:
-        """Age at death, mapped from NACCDAGE
+        """Age at death, mapped from NACCDAGE.
 
         Location:
             subject.info.derived.naccdage
@@ -138,7 +139,7 @@ class DemographicsAttribute(MQTAttribute):
         return result['naccdage']
 
     def _create_vital_status(self) -> str:
-        """Creates subject.info.demographics.uds.vital-status.latest
+        """Creates subject.info.demographics.uds.vital-status.latest.
 
         Location:
             subject.info.demographics.uds.vital-status.latest

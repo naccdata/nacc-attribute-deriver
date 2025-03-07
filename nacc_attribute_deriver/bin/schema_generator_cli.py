@@ -1,5 +1,4 @@
-"""
-CLI entrypoint for generating attribute schema.
+"""CLI entrypoint for generating attribute schema.
 
 nacc-attribute-deriver generate-schema -o outfile.json
 """
@@ -20,15 +19,23 @@ def run(args: Namespace):
 
 
 def set_schema_generator_cli(parser: ArgumentParser):
-    """Set up the Attribute Generation subparser
+    """Set up the Attribute Generation subparser.
 
     Args:
         parser: The ArgumentParser to add arguments to
     """
     # add arguments
-    parser.add_argument('-o', '--outfile', dest="outfile", type=Path, required=True,
+    parser.add_argument('-o',
+                        '--outfile',
+                        dest="outfile",
+                        type=Path,
+                        required=True,
                         help='Output file to write schema to')
-    parser.add_argument('-k', '--date-key', dest='date_key', type=str, required=False,
+    parser.add_argument('-k',
+                        '--date-key',
+                        dest='date_key',
+                        type=str,
+                        required=False,
                         default='file.info.forms.json.visitdate',
                         help='Form field date key to use to order attributes')
 

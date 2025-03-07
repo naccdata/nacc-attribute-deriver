@@ -1,6 +1,4 @@
-"""
-Tests NIAGADS genetic attributes
-"""
+"""Tests NIAGADS genetic attributes."""
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.genetics.niagads import NIAGADSAttribute
@@ -9,8 +7,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 @pytest.fixture(scope='function')
 def attr() -> NIAGADSAttribute:
-    """Create dummy data and return it in an attribute object.
-    """
+    """Create dummy data and return it in an attribute object."""
     data = {
         'niagads': {
             'info': {
