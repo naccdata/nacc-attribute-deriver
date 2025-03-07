@@ -60,7 +60,7 @@ class NPFormAttribute(NPAttribute):
         return new
     
     def _maplewy(self) -> int:
-        nplewy = self.get_value('nplwey')
+        nplewy = self.get_value('nplewy')
         new = nplewy
         if nplewy == 5:
             new = 0
@@ -140,6 +140,8 @@ class NPFormAttribute(NPAttribute):
         """           
         formver = self.get_value('formver')
         npold = self.get_value('npold', None)
+        npmicro = self.get_value('npmicro', None)
+        
         naccmicr = npold
         if formver in [10, 11]:
             pass
@@ -147,7 +149,7 @@ class NPFormAttribute(NPAttribute):
             naccmicr = self._mapv9(npold, naccmicr)
         elif formver == 1:
             if npold:
-                naccmicr = self._mapv9(npold, naccmicr)
+                naccmicr = self._mapv9(npmicro, naccmicr)
             else:
                 naccmicr = self._mapvasc(naccmicr)
         
