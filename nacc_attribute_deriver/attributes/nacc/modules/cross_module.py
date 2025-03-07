@@ -78,9 +78,13 @@ class CrossModuleAttribute(UDSAttribute):
 
         # UDS
         # looks like looking at UDS is just for NACCINT?
+        dob = self.generate_uds_dob()
 
-        if not dod:
+        if not dod or not dob:
             return 999
 
-        dob = self.generate_uds_dob()
-        return calculate_age(dob, dod)
+        age = calculate_age(dob, dod)
+        if not age:
+            return 888
+
+        return age

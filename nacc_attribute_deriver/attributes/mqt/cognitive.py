@@ -2,7 +2,7 @@
 All cognitive MQT derived variables.
 Assumes NACC-derived variables are already set
 """
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 
 
@@ -154,7 +154,7 @@ class CognitiveAttribute(MQTAttribute):
         self.assert_required(['naccalzp', 'nacclbdp'])
         return self.grab_mappings(self.DIAGNOSIS_MAPPINGS, target=2)
 
-    def _create_dementia(self) -> Optional[str]:
+    def _create_dementia(self) -> Set[str]:
         """Mapped from all dementia types
 
         Location:
@@ -172,12 +172,7 @@ class CognitiveAttribute(MQTAttribute):
         """
         self.assert_required(['naccppa', 'naccbvft', 'nacclbds'])
         results = self.grab_mappings(self.DEMENTIA_MAPPINGS, target=1)
-
-        if len(results) > 1:
-            raise ValueError(
-                f"More than one primary dementia syndrome found: {results}")
-
-        return results[0] if results else None
+        return results
 
     def _create_cognitive_status(self) -> str:
         """Mapped from NACCUDSD

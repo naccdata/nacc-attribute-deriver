@@ -199,13 +199,13 @@ class UDSFormD1Attribute(UDSAttribute):
         # result maps to position in list (start index 1)
         all_status = [
             self.get_contr_status(['probadif', 'possadif', 'alzdisif']),
-            self.get_contr_status(['dlbif', 'parkif', 'lbdif']) if self.get_value('formver') != 3 else None,
+            self.get_contr_status(['dlbif', 'parkif']) if self.get_value('formver') != 3 else self.get_contr_status(['lbdif']),
             self.get_contr_status(['msaif']),  # could just grab directly for those with only 1 but this is more readable
             self.get_contr_status(['pspif']),
             self.get_contr_status(['cortif']),
             self.get_contr_status(['ftldmoif']),
             self.get_contr_status(['ftdif', 'ppaphif', 'ftldnoif']),
-            self.get_contr_status(['cdvif', 'vascif', 'vascpsif', 'strokeif']),
+            self.get_contr_status(['cvdif', 'vascif', 'vascpsif', 'strokif']),
             self.get_contr_status(['esstreif']),
             self.get_contr_status(['downsif']),
             self.get_contr_status(['huntif']),
@@ -319,9 +319,9 @@ class UDSFormD1Attribute(UDSAttribute):
         lbdsyn = self.get_value('lbdsyn')
 
         if dlb in [0, 1]:
-            return ftd
+            return dlb
         if lbdsyn in [0, 1]:
-            return ftdsyn
+            return lbdsyn
 
         return 8
 
@@ -341,7 +341,7 @@ class UDSFormD1Attribute(UDSAttribute):
             Normal cognition at all visits to date
         """
         naccnorm = self.table.get('subject.info.derived.naccnorm')
-        if not naccnorm or self.get_value('normcog') == 0:
-            return 0
+        if naccnorm == 0:
+            return naccnorm
 
-        return 1
+        return self.get_value('normcog')

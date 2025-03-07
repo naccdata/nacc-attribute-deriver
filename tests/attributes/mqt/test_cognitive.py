@@ -69,7 +69,18 @@ class TestCognitiveAttribute:
     def test_dementia(self, attr):
         """Tests _create_dementia"""
         assert attr._create_dementia() == \
-            CognitiveAttribute.DEMENTIA_MAPPINGS['file.info.derived.']['nacclbds']
+            [CognitiveAttribute.DEMENTIA_MAPPINGS['file.info.derived.']['nacclbds']]
+
+        # test multiple
+        attr.set_value('amndem', 1)
+        attr.set_value('pca', 1)
+
+        assert set(attr._create_dementia()) == \
+            set([
+                CognitiveAttribute.DEMENTIA_MAPPINGS['file.info.forms.json.']['amndem'],
+                CognitiveAttribute.DEMENTIA_MAPPINGS['file.info.forms.json.']['pca'],
+                CognitiveAttribute.DEMENTIA_MAPPINGS['file.info.derived.']['nacclbds']
+            ])
 
     def test_cognitive_status(self, attr):
         """Tests _create_cognitive_status, which just comes from NACCUDSD"""

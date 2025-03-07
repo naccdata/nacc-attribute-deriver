@@ -14,6 +14,7 @@ log = logging.getLogger(__name__)
 
 def run(args: Namespace):
     """Generate the attribute schema"""
+    log.info(f"Writing schema to {args.outfile}")
     generate_attribute_schema(outfile=args.outfile,
                               date_key=args.date_key)
 

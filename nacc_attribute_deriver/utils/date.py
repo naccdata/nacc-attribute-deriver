@@ -36,6 +36,10 @@ def calculate_age(date1: datetime, date2: datetime) -> int:
     if not date1 or not date2:
         return None
 
-    # .25 is due to leap year/how we defined it for error checks
-    # not sure if we want to do the same here
-    return (date2 - date1) // timedelta(days=365.25)
+    # use date objects, not doing division with leap year
+    # since it's not always precise when visitdate == birthdate
+    date1 = date1.date()
+    date2 = date2.date()
+
+    return (date2.year - date1.year) - \
+           ((date2.month, date2.day) < (date1.month, date1.day))
