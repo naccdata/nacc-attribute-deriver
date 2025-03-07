@@ -1,16 +1,8 @@
 """Derived variables from neuropathology form"""
-from nacc_attribute_deriver.symbol_table import SymbolTable
-
 from .np_attribute import NPAttribute
 
 
 class NPFormAttribute(NPAttribute):
-    def __init__(self,
-                 table: SymbolTable,
-                 np_prefix: str = 'np.info.forms.json.') -> None:
-        """Override initializer to set NP module prefix."""
-        super().__init__(table, np_prefix)
-    
     def _mapgross(self, new) -> int:
         npgross = self.get_value('npgross')
         if npgross == 2:
@@ -19,7 +11,7 @@ class NPFormAttribute(NPAttribute):
             new = 9
         return new
         
-    def _mapsub4(self, old, new) -> int:
+    def _mapsub4(self, old) -> int:
         if old in [1, 2, 3, 4]:
             new = 4 - old
         elif old == 5:
@@ -28,7 +20,7 @@ class NPFormAttribute(NPAttribute):
             new = 9
         return new
     
-    def _mapv9(self, old, new) -> int:
+    def _mapv9(self, old) -> int:
         if old == 1:
             new = 1
         elif old == 2:
@@ -50,7 +42,7 @@ class NPFormAttribute(NPAttribute):
             new = 8
         return new
     
-    def _mapsub1(self, old, new):
+    def _mapsub1(self, old):
         if old in [1, 2, 3, 4]:
             new = old - 1
         elif old == 5:
@@ -81,7 +73,7 @@ class NPFormAttribute(NPAttribute):
             Braak stage for neurofibrillary degeneration (B score)
         """        
         formver = self.get_value('formver')
-        npbraak = self.get_value('npbraak', None)
+        npbraak = self.get_value('npbraak')
         naccbraa = npbraak
         
         if formver in [10, 11]:
@@ -111,16 +103,16 @@ class NPFormAttribute(NPAttribute):
             Density of neocortical neuritic plaques (CERAD score) (C score)
         """           
         formver = self.get_value('formver')
-        npneur = self.get_value('npneur', None)
+        npneur = self.get_value('npneur')
         naccneur = npneur
         
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccneur = self._mapsub4(npneur, naccneur)
+            naccneur = self._mapsub4(npneur)
         elif formver == 1:
             if npneur:
-                naccneur = self._mapsub4(npneur, naccneur)
+                naccneur = self._mapsub4(npneur)
             else:
                 naccneur = self._mapgross(naccneur)
         
@@ -139,17 +131,17 @@ class NPFormAttribute(NPAttribute):
             Microinfarcts
         """           
         formver = self.get_value('formver')
-        npold = self.get_value('npold', None)
-        npmicro = self.get_value('npmicro', None)
+        npold = self.get_value('npold')
+        npmicro = self.get_value('npmicro')
         
         naccmicr = npold
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccmicr = self._mapv9(npold, naccmicr)
+            naccmicr = self._mapv9(npold)
         elif formver == 1:
             if npold:
-                naccmicr = self._mapv9(npmicro, naccmicr)
+                naccmicr = self._mapv9(npmicro)
             else:
                 naccmicr = self._mapvasc(naccmicr)
         
@@ -168,11 +160,11 @@ class NPFormAttribute(NPAttribute):
             Hemorrhages and microbleeds
         """           
         formver = self.get_value('formver')
-        nphem = self.get_value('nphem', None)        
+        nphem = self.get_value('nphem')        
 
         if formver in [10, 11]:
-            nphemo = self.get_value('nphemo', None)
-            npoldd = self.get_value('npoldd', None)            
+            nphemo = self.get_value('nphemo')
+            npoldd = self.get_value('npoldd')            
             if nphemo == 1 or npoldd == 1:
                 nacchem = 1
             elif nphemo == 0 and npoldd == 0:
@@ -183,11 +175,11 @@ class NPFormAttribute(NPAttribute):
                 nacchem = 9
         elif formver in [7, 8, 9]:
             nacchem = nphem           
-            nacchem = self._mapv9(nphem, nacchem)
+            nacchem = self._mapv9(nphem)
         elif formver == 1:
             nacchem = nphem
             if nphem:
-                nacchem = self._mapv9(nphem, nacchem)
+                nacchem = self._mapv9(nphem)
             else:
                 nacchem = self._mapvasc(nacchem)
         
@@ -206,16 +198,16 @@ class NPFormAttribute(NPAttribute):
             Arteriolosclerosis
         """           
         formver = self.get_value('formver')
-        nparter = self.get_value('nparter', None)
+        nparter = self.get_value('nparter')
         naccarte = nparter
 
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:          
-            naccarte = self._mapsub1(nparter, naccarte)
+            naccarte = self._mapsub1(nparter)
         elif formver == 1:
             if nparter:
-                naccarte = self._mapsub1(nparter, naccarte)
+                naccarte = self._mapsub1(nparter)
             else:
                 naccarte = self._mapvasc(naccarte)
         
@@ -236,7 +228,7 @@ class NPFormAttribute(NPAttribute):
         formver = self.get_value('formver')
 
         if formver in [10, 11]:
-            nplbod = self.get_value('nplbod', None)
+            nplbod = self.get_value('nplbod')
             nacclewy = nplbod
             if nplbod == 4:
                 nacclewy = 2
@@ -245,7 +237,7 @@ class NPFormAttribute(NPAttribute):
         elif formver in [7, 8, 9]:          
             nacclewy = self._maplewy()
         elif formver == 1:
-            nplewy = self.get_value('nplewy', None)
+            nplewy = self.get_value('nplewy')
             if nplewy:
                 nacclewy = self._maplewy()
             else:
