@@ -99,7 +99,7 @@ class NPFormAttribute(NPAttribute):
             else:
                 naccbraa = self._mapgross(naccbraa)
 
-        return naccbraa
+        return naccbraa if naccbraa is not None else 9
 
     def _create_naccneur(self) -> int:
         """Create the NACCNEUR variable.
@@ -127,7 +127,7 @@ class NPFormAttribute(NPAttribute):
             else:
                 naccneur = self._mapgross(naccneur)
 
-        return naccneur
+        return naccneur if naccneur is not None else 9
 
     def _create_naccmicr(self) -> int:
         """Create the NACCMICR variable.
@@ -156,7 +156,7 @@ class NPFormAttribute(NPAttribute):
             else:
                 naccmicr = self._mapvasc(naccmicr)
 
-        return naccmicr
+        return naccmicr if naccmicr is not None else 9
 
     def _create_nacchem(self) -> Optional[int]:
         """Create the NACCHEM variable.
@@ -196,7 +196,7 @@ class NPFormAttribute(NPAttribute):
             else:
                 nacchem = self._mapvasc(nacchem)
 
-        return nacchem
+        return nacchem if nacchem is not None else 9
 
     def _create_naccarte(self) -> Optional[int]:
         """Create the NACCARTE variable.
@@ -224,7 +224,7 @@ class NPFormAttribute(NPAttribute):
             else:
                 naccarte = self._mapvasc(naccarte)
 
-        return naccarte
+        return naccarte if naccarte is not None else 9
 
     def _create_nacclewy(self) -> Optional[int]:
         """Create the NACCLEWY variable.
@@ -258,4 +258,4 @@ class NPFormAttribute(NPAttribute):
                 nacclewy = nplewy
                 nacclewy = self._mapgross(nacclewy)
 
-        return nacclewy
+        return nacclewy if nacclewy is not None else 9

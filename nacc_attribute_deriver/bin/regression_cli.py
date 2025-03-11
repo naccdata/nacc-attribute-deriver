@@ -99,7 +99,6 @@ def run(args: Namespace):
     with args.baseline_json.open('r') as fh:
         baselines = json.load(fh)
 
-    log.info(f"Running regression test against {args.input_csv}")
     count = 0
     num_failed = 0
     errors = []
@@ -110,6 +109,7 @@ def run(args: Namespace):
             json.dump({}, fh, indent=4)
 
     if args.input_csv:
+        log.info(f"Running regression test against {args.input_csv}")
         with args.input_csv.open('r') as fh:
             reader = csv.DictReader(fh)
             for row in reader:
@@ -139,6 +139,7 @@ def run(args: Namespace):
                     num_failed += 1
 
     elif args.input_json:
+        log.info(f"Running regression test against {args.input_json}")
         with args.input_json.open('r') as fh:
             data = json.load(fh)
             for row in data:

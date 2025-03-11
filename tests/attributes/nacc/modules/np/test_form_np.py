@@ -42,13 +42,13 @@ def np_form_nulls() -> NPFormAttribute:
 class TestHelpers:
 
     def test_mapgross_null(self, np_form_nulls):
-        assert np_form_nulls._mapgross(None) is None
+        assert np_form_nulls._mapgross(None) == None
 
     def test_mapsub4_null(self, np_form_nulls):
         assert np_form_nulls._mapsub4(None) == 9
 
     def test_mapvasc_null(self, np_form_nulls):
-        assert np_form_nulls._mapvasc(None) is None
+        assert np_form_nulls._mapvasc(None) == None
         assert np_form_nulls._mapvasc(1) == 1
 
     def test_mapv9_null(self, np_form_nulls):
@@ -57,8 +57,8 @@ class TestHelpers:
     def test_mapsub1_null(self, np_form_nulls):
         assert np_form_nulls._mapsub1(None) == 9
 
-    def test_maylewy_null(self, np_form_nulls):
-        assert np_form_nulls._maplewy() is None
+    def test_maplewy_null(self, np_form_nulls):
+        assert np_form_nulls._maplewy() == None
 
     def test_mapgross(self, np_form_attribute):
         assert np_form_attribute._mapgross(0) == 0
@@ -98,11 +98,11 @@ class TestHelpers:
 class TestCreateNACCBRAA:
 
     def test_create_naccbraa_null(self, np_form_nulls):
-        assert np_form_nulls._create_naccbraa() is None
+        assert np_form_nulls._create_naccbraa() == 9
         np_form_nulls.set_value('formver', 8)
-        assert np_form_nulls._create_naccbraa() is None
+        assert np_form_nulls._create_naccbraa() == 9
         np_form_nulls.set_value('formver', 10)
-        assert np_form_nulls._create_naccbraa() is None
+        assert np_form_nulls._create_naccbraa() == 9
 
     def test_create_naccbraa(self, np_form_attribute):
         assert np_form_attribute._create_naccbraa() == 0
@@ -113,12 +113,12 @@ class TestCreateNACCBRAA:
 class TestCreateNACCNEUR:
 
     def test_create_naccneur_null(self, np_form_nulls):
-        assert np_form_nulls._create_naccneur() is None
+        assert np_form_nulls._create_naccneur() == 9
         np_form_nulls.set_value('formver', 8)
         assert np_form_nulls._create_naccneur(
         ) == 9  # WARNING: Different behavior here!
         np_form_nulls.set_value('formver', 10)
-        assert np_form_nulls._create_naccneur() is None
+        assert np_form_nulls._create_naccneur() == 9
 
     def test_create_naccneur(self, np_form_attribute):
         assert np_form_attribute._create_naccneur() == 3
@@ -129,12 +129,12 @@ class TestCreateNACCNEUR:
 class TestCreateNACCMICR:
 
     def test_create_naccmicr_null(self, np_form_nulls):
-        assert np_form_nulls._create_naccmicr() is None
+        assert np_form_nulls._create_naccmicr() == 9
         np_form_nulls.set_value('formver', 8)
         assert np_form_nulls._create_naccmicr(
         ) == 9  # WARNING: Different behavior here
         np_form_nulls.set_value('formver', 10)
-        assert np_form_nulls._create_naccmicr() is None
+        assert np_form_nulls._create_naccmicr() == 9
 
     def test_create_naccmicr(self, np_form_attribute):
         assert np_form_attribute._create_naccmicr() == 1
@@ -156,7 +156,7 @@ class TestCreateNACCMICR:
 class TestCreateNACCHEM:
 
     def test_create_nacchem_null(self, np_form_nulls):
-        assert np_form_nulls._create_nacchem() is None
+        assert np_form_nulls._create_nacchem() == 9
         np_form_nulls.set_value('formver', 8)
         assert np_form_nulls._create_nacchem(
         ) == 9  # WARNING: Different behavior here
@@ -173,12 +173,12 @@ class TestCreateNACCHEM:
 class TestCreateNACCARTE:
 
     def test_create_naccarte_null(self, np_form_nulls):
-        assert np_form_nulls._create_naccarte() is None
+        assert np_form_nulls._create_naccarte() == 9
         np_form_nulls.set_value('formver', 8)
         assert np_form_nulls._create_naccarte(
         ) == 9  # WARNING: Different behavior here
         np_form_nulls.set_value('formver', 10)
-        assert np_form_nulls._create_naccarte() is None
+        assert np_form_nulls._create_naccarte() == 9
 
     def test_create_naccarte(self, np_form_attribute):
         assert np_form_attribute._create_naccarte() == 0
@@ -189,11 +189,11 @@ class TestCreateNACCARTE:
 class TestCreateNACCLEWY:
 
     def test_create_nacclewy_null(self, np_form_nulls):
-        assert np_form_nulls._create_nacclewy() is None
+        assert np_form_nulls._create_nacclewy() == 9
         np_form_nulls.set_value('formver', 8)
-        assert np_form_nulls._create_nacclewy() is None
+        assert np_form_nulls._create_nacclewy() == 9
         np_form_nulls.set_value('formver', 10)
-        assert np_form_nulls._create_nacclewy() is None
+        assert np_form_nulls._create_nacclewy() == 9
 
     def test_create_nacclewy(self, np_form_attribute):
         assert np_form_attribute._create_nacclewy() == 0
