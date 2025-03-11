@@ -35,8 +35,6 @@ def curate_row(deriver: AttributeDeriver,
                update_form: bool = False) -> List[str]:
     """Curate the row's raw variables and compare against baseline To create
     the raw variables, merge row and baseline."""
-    log.info(f"Evaluating {key}")
-
     for group in [row, baseline]:
         for k, v in group.items():
             # hacky way to do type casting on CSV, just assume anything that looks
@@ -131,7 +129,6 @@ def run(args: Namespace):
                     'vstdate_a1']  # based off first form, should really get vistidate
                 key = f"{naccid}_{visitdate}"
                 if key not in baselines:
-                    log.warning(f"{key} not found in baseline")
                     continue
 
                 row_errors = curate_row(deriver, key, row, baselines[key],
@@ -166,8 +163,6 @@ def run(args: Namespace):
 
                 if row_errors:
                     num_failed += 1
-                else:
-                    raise ValueError(key)
 
     if errors:
         log.error('\n'.join(errors))

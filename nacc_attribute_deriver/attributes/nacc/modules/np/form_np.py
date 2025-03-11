@@ -15,62 +15,61 @@ class NPFormAttribute(NPAttribute):
         super().__init__(table, form_prefix)
         # TODO - in general need to hash out what our prefixes are
 
-    def _mapgross(self, new) -> int:
+    def _mapgross(self, new) -> Optional[int]:
         npgross = self.get_value('npgross')
         if npgross == 2:
-            new = 0
-        elif npgross == 9:
-            new = 9
+            return 0
+        if npgross == 9:
+            return 9
+
         return new
 
     def _mapsub4(self, old) -> int:
         if old in [1, 2, 3, 4]:
-            new = 4 - old
-        elif old == 5:
-            new = 8
-        else:
-            new = 9
-        return new
+            return 4 - old
+        if old == 5:
+            return 8
+
+        return 9
 
     def _mapv9(self, old) -> int:
         if old == 1:
-            new = 1
-        elif old == 2:
-            new = 0
-        elif old == 3:
-            new = 8
-        else:
-            new = 9
-        return new
+            return 1
+        if old == 2:
+            return 0
+        if old == 3:
+            return 8
+
+        return 9
 
     def _mapvasc(self, new) -> int:
         npgross = self.get_value('npgross')
         npvasc = self.get_value('npvasc')
         if npgross == 2 or npvasc == 2:
-            new = 0
-        elif npgross == 9 or npvasc == 9:
-            new = 9
-        elif npvasc == 3:
-            new = 8
+            return 0
+        if npgross == 9 or npvasc == 9:
+            return 9
+        if npvasc == 3:
+            return 8
+
         return new
 
     def _mapsub1(self, old):
         if old in [1, 2, 3, 4]:
-            new = old - 1
-        elif old == 5:
-            new = 8
-        else:
-            new = 9
-        return new
+            return old - 1
+        if old == 5:
+            return 8
+
+        return 9
 
     def _maplewy(self) -> int:
         nplewy = self.get_value('nplewy')
-        new = nplewy
-        if nplewy == 5:
-            new = 0
         if nplewy == 6:
-            new = 8
-        return new
+            return 8
+        if nplewy == 5:
+            return 0
+
+        return nplewy
 
     def _create_naccbraa(self) -> int:
         """Create the NACCBRAA variable.
@@ -150,9 +149,9 @@ class NPFormAttribute(NPAttribute):
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccmicr = self._mapv9(npold)
+            naccmicr = self._mapv9(npmicro)
         elif formver == 1:
-            if npold:
+            if npmicro:
                 naccmicr = self._mapv9(npmicro)
             else:
                 naccmicr = self._mapvasc(naccmicr)

@@ -141,6 +141,17 @@ class TestCreateNACCMICR:
         np_form_attribute.set_value('formver', 10)
         assert np_form_attribute._create_naccmicr() == 1
 
+    def test_create_naccmicr_v9(self, np_form_nulls):
+        """Test V9 NACCMICR."""
+        np_form_nulls.set_value('formver', 9)
+        assert np_form_nulls._create_naccmicr() == 9
+        np_form_nulls.set_value('npmicro', 1)
+        assert np_form_nulls._create_naccmicr() == 1
+        np_form_nulls.set_value('npmicro', 2)
+        assert np_form_nulls._create_naccmicr() == 0
+        np_form_nulls.set_value('npmicro', 3)
+        assert np_form_nulls._create_naccmicr() == 8
+
 
 class TestCreateNACCHEM:
 
