@@ -9,6 +9,8 @@ from nacc_attribute_deriver.attributes.attribute_collection import (
     NACCAttribute,
 )
 
+from nacc_attribute_deriver.attributes import mqt, nacc
+
 
 def discover_collections():
     """There seems to be an issue with walking over python files like the

@@ -1,8 +1,17 @@
 """Derived variables from neuropathology form"""
 from .np_attribute import NPAttribute
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class NPFormAttribute(NPAttribute):
+
+    def __init__(self,
+                 table: SymbolTable,
+                 form_prefix: str = 'file.info.np.') -> None:
+        """Override initializer to set NP prefix."""
+        super().__init__(table, form_prefix)
+        # TODO - in general need to hash out what our prefixes are
+
     def _mapgross(self, new) -> int:
         npgross = self.get_value('npgross')
         if npgross == 2:
@@ -166,6 +175,7 @@ class NPFormAttribute(NPAttribute):
         if formver in [10, 11]:
             nphemo = self.get_value('nphemo')
             npoldd = self.get_value('npoldd')
+
             if nphemo == 1 or npoldd == 1:
                 nacchem = 1
             elif nphemo == 0 and npoldd == 0:
@@ -200,10 +210,10 @@ class NPFormAttribute(NPAttribute):
         """           
         formver = self.get_value('formver')
         nparter = self.get_value('nparter')
-        naccarte = nparter
+        naccarte = None
 
         if formver in [10, 11]:
-            pass
+            naccarte = nparter
         elif formver in [7, 8, 9]:          
             naccarte = self._mapsub1(nparter)
         elif formver == 1:
