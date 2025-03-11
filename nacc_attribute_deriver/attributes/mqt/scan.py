@@ -51,7 +51,7 @@ class SCANAttribute(MQTAttribute):
         self.series_type = self.get_mri_value('seriestype')
 
         # pet
-        self.tracer_str, self.scan_type = self.__get_tracer_str()
+        self.tracer_str, self.scan_type = self.__get_tracer()
         self.centiloid = self.__get_centiloid()
 
     def get_mri_value(self, key: str, default: Any = None) -> Any:
@@ -330,6 +330,8 @@ class SCANAttribute(MQTAttribute):
 
     def _create_scan_pet_amyloid_positivity_indicator(self) -> Optional[bool]:
         """Access AMYLOID_STATUS in UC Berkeley GAAIN analysis
+        TODO: is this a string/int value> may need to cast to int first since
+        strings always evaluate to true?
 
         Location:
             subject.info.imaging.pet.scan.amyloid.positive-scans
@@ -356,6 +358,7 @@ class SCANAttribute(MQTAttribute):
         """
         if self.scan_type == "tau":
             return self.tracer_str
+
         return None
 
     def _create_scan_mri_count(self):
@@ -392,7 +395,7 @@ class SCANAttribute(MQTAttribute):
         pass
 
 
-    def create_scan_mri_year_count(self) -> int:
+    def _create_scan_mri_year_count(self) -> int:
         """Years of SCAN MRI scans available
 
         Does this similar to years of UDS where it keeps track of a
@@ -411,10 +414,11 @@ class SCANAttribute(MQTAttribute):
         """
         result = self.assert_required(
             ['scan_mri_years'], prefix='subject.info.derived.')
+        result = result['scan_mri_years']
 
         return len(result) if result else 0
 
-    def create_scan_pet_year_count(self) -> int:
+    def _create_scan_pet_year_count(self) -> int:
         """Years of SCAN PET scans available
 
         Location:
@@ -428,5 +432,6 @@ class SCANAttribute(MQTAttribute):
         """
         result = self.assert_required(
             ['scan_pet_years'], prefix='subject.info.derived.')
+        result = result['scan_pet_years']
 
         return len(result) if result else 0

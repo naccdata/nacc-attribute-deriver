@@ -51,4 +51,5 @@ class LongitudinalAttribute(MQTAttribute):
         result = self.assert_required(
             ['uds_years'], prefix='subject.info.derived.')
 
+        result = result['uds_years']
         return len(result) if result else 0
