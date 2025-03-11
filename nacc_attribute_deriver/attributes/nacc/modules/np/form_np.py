@@ -160,11 +160,12 @@ class NPFormAttribute(NPAttribute):
             Hemorrhages and microbleeds
         """           
         formver = self.get_value('formver')
-        nphem = self.get_value('nphem')        
+        nphem = self.get_value('nphem')
+        nacchem = None
 
         if formver in [10, 11]:
             nphemo = self.get_value('nphemo')
-            npoldd = self.get_value('npoldd')            
+            npoldd = self.get_value('npoldd')
             if nphemo == 1 or npoldd == 1:
                 nacchem = 1
             elif nphemo == 0 and npoldd == 0:
@@ -183,7 +184,7 @@ class NPFormAttribute(NPAttribute):
             else:
                 nacchem = self._mapvasc(nacchem)
         
-        return nacchem        
+        return nacchem
     
     def _create_naccarte(self) -> int:
         """Create the NACCARTE variable
@@ -226,6 +227,7 @@ class NPFormAttribute(NPAttribute):
             Lewy body disease
         """           
         formver = self.get_value('formver')
+        nacclewy = None
 
         if formver in [10, 11]:
             nplbod = self.get_value('nplbod')

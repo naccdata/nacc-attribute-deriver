@@ -22,36 +22,35 @@ def tmp_dir():
     return tmp_dir
 
 
-def compare_baseline(baseline: Path, result: Any):
-    """Compare against the baseline."""
-    if UPDATE_BASELINES:
-        with baseline.open('w') as fh:
-            json.dump(result, fh, indent=4)
+# baseline not really working, for now just use as sanity check
+# def compare_baseline(baseline: Path, result: Any):
+#     """Compare against the baseline."""
+#     if UPDATE_BASELINES:
+#         with baseline.open('w') as fh:
+#             json.dump(result, fh, indent=4)
 
-    with baseline.open('r') as fh:
-        baseline = json.load(fh)
-        assert result == baseline
+#     with baseline.open('r') as fh:
+#         baseline = json.load(fh)
+#         assert result == baseline
 
-def test_dummy():
-    pass
 
-# def test_empty_form(tmp_dir):
-#     """Test against an empty form."""
-#     form = SymbolTable()  # make an empty form with date key
-#     form['file.info.forms.json.visitdate'] = '2025-01-01'
+def test_empty_form(tmp_dir):
+    """Test against an empty form."""
+    form = SymbolTable()  # make an empty form with date key
+    form['file.info.forms.json.visitdate'] = '2025-01-01'
 
-#     schema_path = tmp_dir / 'schema.json'
-#     generate_attribute_schema(outfile=schema_path)
+    schema_path = tmp_dir / 'schema.json'
+    generate_attribute_schema(outfile=schema_path)
 
-#     with schema_path.open('r') as fh:
-#         schema = json.load(fh)
+    with schema_path.open('r') as fh:
+        schema = json.load(fh)
 
-#     compare_baseline(BASELINE_DIR / 'schema.json', schema)
+    #compare_baseline(BASELINE_DIR / 'schema.json', schema)
 
-#     deriver = AttributeDeriver(schema=schema)
-#     deriver.curate(form)
+    deriver = AttributeDeriver(schema=schema)
+    deriver.curate(form)
 
-#     compare_baseline(BASELINE_DIR / 'empty_outfile.json', form.to_dict())
+    #compare_baseline(BASELINE_DIR / 'empty_outfile.json', form.to_dict())
 
 
 # def test_full_form(tmp_dir):

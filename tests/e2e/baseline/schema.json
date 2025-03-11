@@ -2,6 +2,83 @@
     "date_key": "file.info.forms.json.visitdate",
     "nacc_derived_vars": [
         {
+            "function": "create_naccapoe",
+            "events": [
+                {
+                    "location": "file.info.derived.naccapoe",
+                    "operation": "update"
+                }
+            ],
+            "type": "cross-sectional",
+            "description": "APOE genotype"
+        },
+        {
+            "function": "create_ngdsexom",
+            "events": [
+                {
+                    "location": "file.info.derived.ngdsexom",
+                    "operation": "update"
+                }
+            ],
+            "type": "cross-sectional",
+            "description": "ExomeChip available at NIAGADS (y/n)"
+        },
+        {
+            "function": "create_ngdsgwas",
+            "events": [
+                {
+                    "location": "file.info.derived.ngdsgwas",
+                    "operation": "update"
+                }
+            ],
+            "type": "cross-sectional",
+            "description": "GWAS available at NIAGADS (y/n)"
+        },
+        {
+            "function": "create_ngdswes",
+            "events": [
+                {
+                    "location": "file.info.derived.ngdswes",
+                    "operation": "update"
+                }
+            ],
+            "type": "cross-sectional",
+            "description": "Whole exome sequencing available at NIAGADS (y/n)"
+        },
+        {
+            "function": "create_ngdswgs",
+            "events": [
+                {
+                    "location": "file.info.derived.ngdswgs",
+                    "operation": "update"
+                }
+            ],
+            "type": "cross-sectional",
+            "description": "Whole genome sequencing available at NIAGADS (y/n)"
+        },
+        {
+            "function": "create_scan_mri_year",
+            "events": [
+                {
+                    "location": "subject.info.derived.scan_mri_years",
+                    "operation": "set"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Year of MRI SCAN"
+        },
+        {
+            "function": "create_scan_pet_year",
+            "events": [
+                {
+                    "location": "subject.info.derived.scan_pet_years",
+                    "operation": "set"
+                }
+            ],
+            "type": "longitudinal",
+            "description": "Year of PET SCAN"
+        },
+        {
             "function": "create_naccage",
             "events": [
                 {
@@ -123,19 +200,15 @@
             "description": "Cognitive status at UDS visit"
         },
         {
-            "function": "create_uds_visitdate",
+            "function": "create_uds_year",
             "events": [
                 {
-                    "location": "subject.info.derived.initial_uds_visit",
-                    "operation": "initial"
-                },
-                {
-                    "location": "subject.info.derived.latest_uds_visit",
-                    "operation": "latest"
+                    "location": "subject.info.derived.uds_years",
+                    "operation": "set"
                 }
             ],
             "type": "longitudinal",
-            "description": "Date of UDS visit"
+            "description": "Year of UDS visit"
         },
         {
             "function": "create_naccdage",
@@ -149,59 +222,70 @@
             "description": "Age at death"
         },
         {
-            "function": "create_naccapoe",
+            "function": "create_naccarte",
             "events": [
                 {
-                    "location": "file.info.derived.naccapoe",
+                    "location": "file.info.derived.naccarte",
                     "operation": "update"
                 }
             ],
             "type": "cross-sectional",
-            "description": "APOE genotype"
+            "description": "Arteriolosclerosis"
         },
         {
-            "function": "create_ngdsexom",
+            "function": "create_naccbraa",
             "events": [
                 {
-                    "location": "file.info.derived.ngdsexom",
+                    "location": "file.info.derived.naccbraa",
                     "operation": "update"
                 }
             ],
             "type": "cross-sectional",
-            "description": "ExomeChip available at NIAGADS (y/n)"
+            "description": "Braak stage for neurofibrillary degeneration (B score)"
         },
         {
-            "function": "create_ngdsgwas",
+            "function": "create_nacchem",
             "events": [
                 {
-                    "location": "file.info.derived.ngdsgwas",
+                    "location": "file.info.derived.nacchem",
                     "operation": "update"
                 }
             ],
             "type": "cross-sectional",
-            "description": "GWAS available at NIAGADS (y/n)"
+            "description": "Hemorrhages and microbleeds"
         },
         {
-            "function": "create_ngdswes",
+            "function": "create_nacclewy",
             "events": [
                 {
-                    "location": "file.info.derived.ngdswes",
+                    "location": "file.info.derived.nacclewy",
                     "operation": "update"
                 }
             ],
             "type": "cross-sectional",
-            "description": "Whole exome sequencing available at NIAGADS (y/n)"
+            "description": "Lewy body disease"
         },
         {
-            "function": "create_ngdswgs",
+            "function": "create_naccmicr",
             "events": [
                 {
-                    "location": "file.info.derived.ngdswgs",
+                    "location": "file.info.derived.naccmicr",
                     "operation": "update"
                 }
             ],
             "type": "cross-sectional",
-            "description": "Whole genome sequencing available at NIAGADS (y/n)"
+            "description": "Microinfarcts"
+        },
+        {
+            "function": "create_naccneur",
+            "events": [
+                {
+                    "location": "file.info.derived.naccneur",
+                    "operation": "update"
+                }
+            ],
+            "type": "cross-sectional",
+            "description": "Density of neocortical neuritic plaques (CERAD score) (C score)"
         }
     ],
     "mqt_derived_vars": [
@@ -462,12 +546,210 @@
             "function": "create_years_of_uds",
             "events": [
                 {
-                    "location": "TODO",
-                    "operation": "update"
+                    "location": "subject.info.longitudinal-data.uds.year-count",
+                    "operation": "max"
                 }
             ],
             "type": "mqt-longitudinal",
             "description": "Number of years of UDS visits available"
+        },
+        {
+            "function": "create_flair_volume_analysis_indicator",
+            "events": [
+                {
+                    "location": "subject.info.imaging.mri.scan.flair.brain-volume",
+                    "operation": "max"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN FLAIR brain volume analysis results available"
+        },
+        {
+            "function": "create_flair_wmh_indicator",
+            "events": [
+                {
+                    "location": "subject.info.imaging.mri.scan.flair.wmh",
+                    "operation": "max"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN FLAIR WMH analysis available"
+        },
+        {
+            "function": "create_scan_mri_count",
+            "events": [
+                {
+                    "location": "subject.info.imaging.mri.scan.count",
+                    "operation": "count"
+                }
+            ],
+            "type": "scan",
+            "description": "Number of SCAN MRI scans available"
+        },
+        {
+            "function": "create_scan_mri_scan_types",
+            "events": [
+                {
+                    "location": "subject.info.mri.scan.types",
+                    "operation": "set"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN MRI scan types available"
+        },
+        {
+            "function": "create_scan_mri_year_count",
+            "events": [
+                {
+                    "location": "subject.info.imaging.mri.scan.year-count",
+                    "operation": "max"
+                }
+            ],
+            "type": "scan",
+            "description": "Years of SCAN MRI scans available"
+        },
+        {
+            "function": "create_scan_pet_amyloid_positivity_indicator",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.amyloid.positive-scans",
+                    "operation": "max"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN Amyloid positive scans available"
+        },
+        {
+            "function": "create_scan_pet_amyloid_tracers",
+            "events": [
+                {
+                    "location": "subject.info.pet.scan.amyloid.tracers",
+                    "operation": "set"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN Amyloid tracers available"
+        },
+        {
+            "function": "create_scan_pet_centaloid",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.amyloid.centiloid.min",
+                    "operation": "min"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN Amyloid PET scans centiloid min"
+        },
+        {
+            "function": "create_scan_pet_centaloid_florbetaben",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.amyloid.florbetaben.centiloid.min",
+                    "operation": "min"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN Amyloid PET scans with Florbetaben centiloid min"
+        },
+        {
+            "function": "create_scan_pet_centaloid_florbetapir",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.amyloid.florbetapir.centiloid.min",
+                    "operation": "min"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN Amyloid PET scans with Florbetapir centiloid min"
+        },
+        {
+            "function": "create_scan_pet_centaloid_nav4694",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.amyloid.nav4694.centiloid.min",
+                    "operation": "min"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN Amyloid PET scans with NAV4694 centiloid min"
+        },
+        {
+            "function": "create_scan_pet_centaloid_pib",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.amyloid.pib.centiloid.min",
+                    "operation": "min"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN Amyloid PET scans with PIB centiloid min"
+        },
+        {
+            "function": "create_scan_pet_count",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.count",
+                    "operation": "count"
+                }
+            ],
+            "type": "scan",
+            "description": "Number of SCAN PET scans available"
+        },
+        {
+            "function": "create_scan_pet_scan_types",
+            "events": [
+                {
+                    "location": "subject.info.pet.scan.types",
+                    "operation": "set"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN PET types available"
+        },
+        {
+            "function": "create_scan_pet_tau_tracers",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.tau.tracers",
+                    "operation": "set"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN tau tracers available"
+        },
+        {
+            "function": "create_scan_pet_year_count",
+            "events": [
+                {
+                    "location": "subject.info.imaging.pet.scan.year-count",
+                    "operation": "max"
+                }
+            ],
+            "type": "scan",
+            "description": "Years of SCAN PET scans available"
+        },
+        {
+            "function": "create_t1_wmh_indicator",
+            "events": [
+                {
+                    "location": "subject.info.imaging.mri.scan.t1.wmh",
+                    "operation": "max"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN T1 WMH analysis available available"
+        },
+        {
+            "function": "create_volume_analysis_indicator",
+            "events": [
+                {
+                    "location": "subject.info.imaging.mri.scan.t1.brain-volume",
+                    "operation": "max"
+                }
+            ],
+            "type": "scan",
+            "description": "SCAN T1 brain volume analysis results available"
         },
         {
             "function": "create_uds_versions_available",
