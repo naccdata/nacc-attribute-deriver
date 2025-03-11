@@ -45,10 +45,10 @@ class TestGeneticAttribute:
 
     def test_create_ngds_vars(self, attr):
         """Tests creating the NIAGADS availability variables."""
-        assert attr._create_ngdsgwas_mqt() == True
-        assert attr._create_ngdsexom_mqt() == True
-        assert attr._create_ngdswgs_mqt() == False
-        assert attr._create_ngdswes_mqt() == False
+        assert attr._create_ngdsgwas_mqt()
+        assert attr._create_ngdsexom_mqt()
+        assert not attr._create_ngdswgs_mqt()
+        assert not attr._create_ngdswes_mqt()
 
         # test null case
         attr.table['file.info.derived'] = {
@@ -57,7 +57,7 @@ class TestGeneticAttribute:
             "ngdswes": None,
             "ngdswgs": None
         }
-        assert attr._create_ngdsgwas_mqt() == False
-        assert attr._create_ngdsexom_mqt() == False
-        assert attr._create_ngdswgs_mqt() == False
-        assert attr._create_ngdswes_mqt() == False
+        assert not attr._create_ngdsgwas_mqt()
+        assert not attr._create_ngdsexom_mqt()
+        assert not attr._create_ngdswgs_mqt()
+        assert not attr._create_ngdswes_mqt()

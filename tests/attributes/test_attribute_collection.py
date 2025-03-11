@@ -18,7 +18,7 @@ class TestAttributeCollection:
 
         attr = AttributeCollection(table, form_prefix='test.')
         assert attr.get_value('value') == 5
-        assert attr.get_value('missing') == None
+        assert attr.get_value('missing') is None
         assert attr.get_value('missing', 'default') == 'default'
 
         assert attr.get_value('value', prefix='some.other.prefix.') == 10
@@ -46,12 +46,12 @@ class TestAttributeCollection:
 
     def test_is_int_value(self):
         """Tests is_int_value."""
-        assert AttributeCollection.is_int_value('5', 5) == True
-        assert AttributeCollection.is_int_value(5, 5) == True
-        assert AttributeCollection.is_int_value(None, 5) == False
-        assert AttributeCollection.is_int_value(3, 5) == False
-        assert AttributeCollection.is_int_value('3', 5) == False
-        assert AttributeCollection.is_int_value('hello', 5) == False
+        assert AttributeCollection.is_int_value('5', 5)
+        assert AttributeCollection.is_int_value(5, 5)
+        assert not AttributeCollection.is_int_value(None, 5)
+        assert not AttributeCollection.is_int_value(3, 5)
+        assert not AttributeCollection.is_int_value('3', 5)
+        assert not AttributeCollection.is_int_value('hello', 5)
 
 
 class TestMQTAttribute:

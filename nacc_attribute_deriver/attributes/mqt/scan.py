@@ -73,7 +73,7 @@ class SCANAttribute(MQTAttribute):
         return self.get_value(key, default, prefix=self.__pet_prefix)
 
     # get functions for common values
-    def __get_tracer(self) -> Optional[Tuple[str, str]]:
+    def __get_tracer(self) -> Tuple[str | None, str | None]:
         """Get the tracer string."""
         tracer = None
         try:
@@ -81,8 +81,9 @@ class SCANAttribute(MQTAttribute):
         except (ValueError, TypeError):
             pass
 
-        return (self.TRACER_MAPPING.get(tracer, None),
-                self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None))
+        return (
+            self.TRACER_MAPPING.get(tracer, None),  # type: ignore
+            self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None))  # type: ignore
 
     def __get_centiloid(self) -> Optional[float]:
         """Get the centiloid value."""

@@ -1,7 +1,11 @@
 """Tests create_naccnihr specifically."""
-import pytest
 from typing import Callable
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import UDSFormA1Attribute
+
+import pytest
+
+from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import (
+    UDSFormA1Attribute,  # type: ignore
+)
 
 
 @pytest.fixture(scope='module')
@@ -73,14 +77,17 @@ class TestCreateNACCNIHR:
         assert generate_naccnihr(1, "", 50, "ITIALIAN AMERICAN", 88, "") == 1
 
     def test_NACC356772(self, generate_naccnihr):
-        # baseline says 6, was computing as 99
-        # EGYPT as a response is not defined
-        # in the SAS code, I believe it's set by the line
-        #   &RACE = 50 and &RACESEC = 1 then &NACCNIHR = 6;
-        # since the python code does not work on if/else, it gets additionally set to 99 here
-        #   &RACE = 50 and WHITEX ne 1 and BLACKX ne 1 and HAWAIIX ne 1
-        #       and ASIANX ne 1 and MULTIX ne 1 and MULTIPX ne 1 then &NACCNIHR = 99;
-        # updated code to work on if/else similar to SAS
+        """baseline says 6, was computing as 99 EGYPT as a response is not
+        defined in the SAS code, I believe it's set by the line.
+
+          &RACE = 50 and &RACESEC = 1 then &NACCNIHR = 6;
+        since the python code does not work on if/else, it gets
+        additionally set to 99 here
+          &RACE = 50 and WHITEX ne 1 and BLACKX ne 1 and HAWAIIX ne 1
+              and ASIANX ne 1 and MULTIX ne 1 and MULTIPX ne 1
+              then &NACCNIHR = 99;
+        updated code to work on if/else similar to SAS
+        """
         assert generate_naccnihr(50, "EGYPT", 1, "", 88, "") == 6
 
     def test_NACC703416(self, generate_naccnihr):

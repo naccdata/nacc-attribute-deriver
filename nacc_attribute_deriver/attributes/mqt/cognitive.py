@@ -3,6 +3,7 @@
 Assumes NACC-derived variables are already set
 """
 from typing import Dict, List, Optional, Set
+
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 
 
@@ -17,6 +18,7 @@ class CognitiveAttribute(MQTAttribute):
         5: "All of the above"
     }
 
+    # several labels not consistent with DIAGNOSIS_MAPPINGS
     PRIMARY_DIAGNOSIS_MAPPINGS = {
         1: "Alzheimer’s disease (AD)",
         2: "Lewy body disease (LBD)",
@@ -32,29 +34,25 @@ class CognitiveAttribute(MQTAttribute):
         12: "Prion disease (CJD, other)",
         13: "Traumatic brain injury (TBI)",
         14: "Normal-pressure hydrocephalus (NPH)",
-        15: "Epilepsy",  # label not consistent with DIAGNOSIS_MAPPINGS
+        15: "Epilepsy",  # not consistent
         16: "CNS neoplasm",
-        17:
-        "Human immunodeficiency virus (HIV)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        17: "Human immunodeficiency virus (HIV)",  # not consistent
         18: "Other neurological, genetic, or infection condition",
         19: "Depression",
         20: "Bipolar disorder",
         21: "Schizophrenia or other psychosis",
-        22: "Anxiety disorder",  # label not consistent with DIAGNOSIS_MAPPINGS
+        22: "Anxiety disorder",  # not consistent
         23: "Delirium",
-        24:
-        "Post-traumatic stress disorder (PTSD)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        24: "Post-traumatic stress disorder (PTSD)",  # not consistent
         25: "Other psychiatric disease",
-        26:
-        "Cognitive impairment due to alcohol abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
+        26: "Cognitive impairment due to alcohol abuse",  # not consistent
         27:
-        "Cognitive impairment due to other substance abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
-        28:
-        "Cognitive impairment due to systemic disease or medical illness",  # label not consistent with DIAGNOSIS_MAPPINGS
-        29:
-        "Cognitive impairment due to medications",  # label not consistent with DIAGNOSIS_MAPPINGS
-        30:
-        "Cognitive impairment for other specified reasons (i.e., written-in values)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        "Cognitive impairment due to other substance abuse",  # not consistent
+        28:  # not consistent
+        "Cognitive impairment due to systemic disease or medical illness",
+        29: "Cognitive impairment due to medications",  # not consistent
+        30:  # not consistent
+        "Cognitive impairment for other specified reasons (i.e., written-in values)",
         88:
         "Not applicable",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
         99:
@@ -129,10 +127,10 @@ class CognitiveAttribute(MQTAttribute):
     def grab_mappings(self, mapping: Dict[str, Dict[str, str]],
                       target: int) -> List[str]:
         """Grab mappings."""
-        mapped_vars = set()
+        mapped_vars: Set[str] = set()
 
         for prefix, fields in mapping.items():
-            aggr = self.aggregate_variables(fields, prefix=prefix)
+            aggr = self.aggregate_variables(list(fields.keys()), prefix=prefix)
             mapped_vars = mapped_vars.union(
                 set([
                     mapping[prefix][k] for k, v in aggr.items()
@@ -160,7 +158,7 @@ class CognitiveAttribute(MQTAttribute):
         self.assert_required(['naccalzp', 'nacclbdp'])
         return self.grab_mappings(self.DIAGNOSIS_MAPPINGS, target=2)
 
-    def _create_dementia(self) -> Set[str]:
+    def _create_dementia(self) -> List[str]:
         """Mapped from all dementia types.
 
         Location:
@@ -180,7 +178,7 @@ class CognitiveAttribute(MQTAttribute):
         results = self.grab_mappings(self.DEMENTIA_MAPPINGS, target=1)
         return results
 
-    def _create_cognitive_status(self) -> str:
+    def _create_cognitive_status(self) -> Optional[str]:
         """Mapped from NACCUDSD.
 
         Location:
@@ -219,7 +217,7 @@ class CognitiveAttribute(MQTAttribute):
         return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(result['naccetpr'],
                                                    "Missing/unknown")
 
-    def _create_global_cdr(self) -> str:
+    def _create_global_cdr(self) -> Optional[str]:
         """Mapped from CDRGLOB.
 
         Location:

@@ -3,17 +3,15 @@
 This is very hacked together for the sake of testing - a more formalized
 one should be done once we get better testing sources.
 """
-import copy
 import csv
 import json
 import logging
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.attributes.attribute_map import generate_attribute_schema
 
 log = logging.getLogger(__name__)
 
@@ -33,20 +31,16 @@ def curate_row(deriver: AttributeDeriver,
                key: str,
                row: Dict[str, Any],
                baseline: Dict[str, Any],
-               debug_outfile: Path = None,
+               debug_outfile: Optional[Path] = None,
                update_form: bool = False) -> List[str]:
     """Curate the row's raw variables and compare against baseline To create
     the raw variables, merge row and baseline."""
     log.info(f"Evaluating {key}")
-    table = SymbolTable()
-
-    raw_vars = {}
-    derived_vars = {}
 
     for group in [row, baseline]:
         for k, v in group.items():
-            # hacky way to do type casting, just assume anything that looks like an integer
-            # is supposed to be an integer
+            # hacky way to do type casting on CSV, just assume anything that looks
+            # like an integer is supposed to be an integer
             try:
                 group[k] = int(v) if v is not None else v
             except (TypeError, ValueError):
@@ -56,6 +50,7 @@ def curate_row(deriver: AttributeDeriver,
                     pass
 
     if update_form:
+        table = SymbolTable()
         table['file.info.forms.json'] = row
         # need to manually make visitdate and formver
         table['file.info.forms.json.visitdate'] = \
@@ -65,12 +60,10 @@ def curate_row(deriver: AttributeDeriver,
         table = SymbolTable(row)
 
     deriver.curate(table)
-
     errors = []
-    debug = None
 
     # assert derived variables are as expected
-    for k, v in table['file.info.derived'].items():
+    for k, v in table['file.info.derived'].items():  # type: ignore
         if k not in baseline:
             raise ValueError(f"Derived variable {k} not found in baseline, " +
                              "possible typo?")
@@ -153,8 +146,11 @@ def run(args: Namespace):
             data = json.load(fh)
             for row in data:
                 count += 1
-                naccid = row['file']['info']['forms']['json']['naccid']
-                visitdate = row['file']['info']['forms']['json']['visitdate']
+                naccid = row['file']['info']['forms']['json'][  # type: ignore
+                    'naccid']  # type: ignore
+                visitdate = row['file']['info']['forms'][  # type: ignore
+                    'json'][  # type: ignore
+                        'visitdate']  # type: ignore
                 key = f"{naccid}_{visitdate}"
                 if key not in baselines:
                     log.warning(f"{key} not found in baseline")

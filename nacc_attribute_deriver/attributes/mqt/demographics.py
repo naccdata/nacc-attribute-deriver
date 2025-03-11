@@ -2,6 +2,8 @@
 
 Assumes NACC-derived variables are already set
 """
+from typing import Optional
+
 from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
 
 
@@ -55,7 +57,7 @@ class DemographicsAttribute(MQTAttribute):
         result = self.assert_required(['naccage'])
         return result['naccage']
 
-    def _create_uds_sex(self) -> str:
+    def _create_uds_sex(self) -> Optional[str]:
         """UDS sex.
 
         Location:

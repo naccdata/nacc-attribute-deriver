@@ -192,7 +192,7 @@ class UDSFormA1Attribute(UDSAttribute):
         }
     }
 
-    def _create_naccage(self) -> str:
+    def _create_naccage(self) -> Optional[int]:
         """Creates DOB from BIRTHMO and BIRTHYR and compares to form date.
 
         Location:
@@ -207,6 +207,8 @@ class UDSFormA1Attribute(UDSAttribute):
         dob = self.generate_uds_dob()
         visitdate = self.get_value('visitdate', None)
         visitdate = datetime_from_form_date(visitdate)
+        if not dob or not visitdate:
+            return None
 
         return calculate_age(dob, visitdate)
 
@@ -352,8 +354,8 @@ class UDSFormA1Attribute(UDSAttribute):
         naccnihr = race
 
         # based on the SAS code, everything after this needs to be on an if/else basis
-        # these could probably be compressed in some way, but better to leave it as similar
-        # to SAS as possible
+        # these could probably be compressed in some way, but better to leave it as
+        # similar to SAS as possible
         # unfortunately this caused all hispanic/latino to be classified as white, so
         # also ended up refactoring the above to match the SAS close more closely
 

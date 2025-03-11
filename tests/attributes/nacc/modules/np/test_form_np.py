@@ -3,8 +3,6 @@ import pytest
 from nacc_attribute_deriver.attributes.nacc.modules.np.form_np import NPFormAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-# filepath: /workspaces/nacc-attribute-deriver/nacc_attribute_deriver/attributes/nacc/modules/np/test_form_np.py
-
 
 @pytest.fixture(scope='function')
 def np_form_attribute() -> NPFormAttribute:

@@ -1,5 +1,5 @@
 """Derived variables from form D1."""
-from typing import List
+from typing import List, Optional
 
 from .uds_attribute import UDSAttribute
 
@@ -17,7 +17,7 @@ class ContributionStatus:
 
 class UDSFormD1Attribute(UDSAttribute):
 
-    def get_contr_status(self, fields: List[str]) -> int:
+    def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
         Assumes all fields have values null or 1, 2, or 3 (primary,
         contributing, or non-contributing)
@@ -85,7 +85,7 @@ class UDSFormD1Attribute(UDSAttribute):
         # default
         return 7
 
-    def _create_nacclbde(self) -> int:
+    def _create_nacclbde(self) -> Optional[int]:
         """From d1structrdd.sas.
 
         Location:
@@ -116,7 +116,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         return None
 
-    def _create_nacclbdp(self) -> int:
+    def _create_nacclbdp(self) -> Optional[int]:
         """From d1structrdd.sas. Also relies on another derived variable
         nacclbde.
 
@@ -147,7 +147,7 @@ class UDSFormD1Attribute(UDSAttribute):
 
         return None
 
-    def _create_naccudsd(self) -> int:
+    def _create_naccudsd(self) -> Optional[int]:
         """From Create NACCUDSD.R which in turn is from derive.sas.
 
         Location:
@@ -198,9 +198,9 @@ class UDSFormD1Attribute(UDSAttribute):
             self.get_contr_status(['dlbif', 'parkif'])
             if self.get_value('formver') != 3 else self.get_contr_status(
                 ['lbdif']),
-            self.get_contr_status(
-                ['msaif']
-            ),  # could just grab directly for those with only 1 but this is more readable
+
+            # could just grab directly for those with only 1 but this is more readable
+            self.get_contr_status(['msaif']),
             self.get_contr_status(['pspif']),
             self.get_contr_status(['cortif']),
             self.get_contr_status(['ftldmoif']),
@@ -232,7 +232,8 @@ class UDSFormD1Attribute(UDSAttribute):
 
         assert len(all_status) == 30
         for i, status in enumerate(all_status):
-            if self.is_int_value(status, ContributionStatus.PRIMARY):
+            if status and self.is_int_value(status,
+                                            ContributionStatus.PRIMARY):
                 return i + 1
 
         # default for normcog == 0

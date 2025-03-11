@@ -1,15 +1,13 @@
 """Defines the attribute mapping."""
 import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import (
     AttributeCollection,
     AttributeCollectionRegistry,
     NACCAttribute,
 )
-
-from nacc_attribute_deriver.attributes import mqt, nacc
 
 
 def discover_collections():
@@ -25,7 +23,7 @@ def discover_collections():
     return AttributeCollectionRegistry.collections
 
 
-def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
+def parse_docs(name: str, docs: str | None) -> Dict[str, List[str]]:
     """Parses attribute docstrings. Looks for the following blocks in Google
     style at the bottom of the docstring:
 
@@ -44,8 +42,11 @@ def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
         name: Name of the function being evaluated
         docs: The docs from the function being evaluated
     """
+    if not docs:
+        raise ValueError(f"Docstring not defined for {name}")
+
     doc_parts = [x.strip() for x in docs.split('\n')]
-    results = {
+    results: Dict[str, List[str]] = {
         'Location:': [],
         'Operation:': [],
         'Type:': [],
@@ -73,9 +74,10 @@ def parse_docs(name: str, docs: str) -> Dict[str, List[str]]:
 
 
 def generate_attribute_schema(
-        outfile: Path = None,
+        outfile: Optional[Path] = None,
         date_key: str = 'file.info.forms.json.visitdate',
-        collections: List[AttributeCollection] = None) -> Dict[str, Any]:
+        collections: Optional[List[AttributeCollection]] = None
+) -> Dict[str, Any]:
     """Generates a skeleton curation schema for every attribute and writes
     results to JSON.
 
@@ -118,8 +120,8 @@ def generate_attribute_schema(
     nacc_vars = []
     mqt_vars = []
 
-    for c in collections:
-        if issubclass(c, NACCAttribute):
+    for c in collections:  # type: ignore
+        if issubclass(c, NACCAttribute):  # type: ignore
             nacc_vars.append(c)
         else:
             mqt_vars.append(c)

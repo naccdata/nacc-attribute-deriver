@@ -5,8 +5,8 @@ Currently just used to generate current attributes schema.
 import logging
 from argparse import ArgumentParser
 
-from .bin.schema_generator_cli import set_schema_generator_cli
 from .bin.regression_cli import set_regression_cli
+from .bin.schema_generator_cli import set_schema_generator_cli
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('niagads_gwas_data_transfer')

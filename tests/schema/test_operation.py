@@ -1,7 +1,16 @@
 """Tests the operations."""
 import pytest
 
-from nacc_attribute_deriver.schema.operation import *
+from nacc_attribute_deriver.schema.operation import (
+    CountOperation,
+    InitialOperation,
+    LatestOperation,
+    MaxOperation,
+    MinOperation,
+    OperationRegistry,
+    SetOperation,
+    UpdateOperation,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

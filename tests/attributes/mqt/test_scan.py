@@ -73,8 +73,10 @@ class TestSCANAttribute:
         assert not attr._create_volume_analysis_indicator()
 
     def test_create_t1_wmh_indicator(self, table):
-        """Tests _create_t1_wmh_indicator, which looks at wmh when series_type
-        == "T1w"."""
+        """Tests _create_t1_wmh_indicator, which looks at wmh when series_type.
+
+        == "T1w".
+        """
         attr = SCANAttribute(table)
         assert attr._create_t1_wmh_indicator()
 
@@ -217,8 +219,10 @@ class TestSCANAttribute:
         assert not attr._create_scan_pet_amyloid_positivity_indicator()
 
     def test_create_scan_pet_tau_tracers(self, table):
-        """Tests _create_scan_pet_tau_tracers, which just checks if scan_type
-        == tau and returns tracer string if so."""
+        """Tests _create_scan_pet_tau_tracers, which just checks if scan_type.
+
+        == tau and returns tracer string if so.
+        """
         attr = SCANAttribute(table)
         assert attr._create_scan_pet_tau_tracers() is None
 

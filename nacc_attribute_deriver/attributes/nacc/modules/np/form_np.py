@@ -1,6 +1,9 @@
 """Derived variables from neuropathology form."""
-from .np_attribute import NPAttribute
+from typing import Optional
+
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
+from .np_attribute import NPAttribute
 
 
 class NPFormAttribute(NPAttribute):
@@ -156,7 +159,7 @@ class NPFormAttribute(NPAttribute):
 
         return naccmicr
 
-    def _create_nacchem(self) -> int:
+    def _create_nacchem(self) -> Optional[int]:
         """Create the NACCHEM variable.
 
         Location:
@@ -196,7 +199,7 @@ class NPFormAttribute(NPAttribute):
 
         return nacchem
 
-    def _create_naccarte(self) -> int:
+    def _create_naccarte(self) -> Optional[int]:
         """Create the NACCARTE variable.
 
         Location:
@@ -224,7 +227,7 @@ class NPFormAttribute(NPAttribute):
 
         return naccarte
 
-    def _create_nacclewy(self) -> int:
+    def _create_nacclewy(self) -> Optional[int]:
         """Create the NACCLEWY variable.
 
         Location:

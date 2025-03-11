@@ -2,7 +2,8 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.modules.cross_module import (
-    CrossModuleAttribute, )
+    CrossModuleAttribute,  # type: ignore
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
