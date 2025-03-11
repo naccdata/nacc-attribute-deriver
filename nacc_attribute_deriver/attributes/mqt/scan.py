@@ -97,7 +97,6 @@ class SCANAttribute(MQTAttribute):
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """Access SeriesType (scan_mridashboard file)
 
-
         Location:
             subject.info.mri.scan.types
         Operation:
@@ -120,8 +119,8 @@ class SCANAttribute(MQTAttribute):
     # Note: Might not need to explicitly check on scan type here,
     # as non-null cerebrumtcv probably implies the type
     def _create_volume_analysis_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file)
-        and cerebrumtcv (ucdmrisbm file)
+        """Access SeriesType (scan_mridashboard file) and cerebrumtcv
+        (ucdmrisbm file)
 
         Location:
             subject.info.imaging.mri.scan.t1.brain-volume
@@ -143,8 +142,7 @@ class SCANAttribute(MQTAttribute):
         return bool(cerebrumtcv)
 
     def _create_t1_wmh_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file)
-        and wmh (ucdmrisbm file)
+        """Access SeriesType (scan_mridashboard file) and wmh (ucdmrisbm file)
 
         Location:
             subject.info.imaging.mri.scan.t1.wmh
@@ -166,8 +164,7 @@ class SCANAttribute(MQTAttribute):
         return bool(wmh)
 
     def _create_flair_wmh_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file)
-        and wmh (ucdmrisbm file)
+        """Access SeriesType (scan_mridashboard file) and wmh (ucdmrisbm file)
 
         Location:
             subject.info.imaging.mri.scan.flair.wmh
@@ -188,10 +185,9 @@ class SCANAttribute(MQTAttribute):
 
         return bool(wmh)
 
-
     def _create_flair_volume_analysis_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file)
-        and cerebrumtcv (ucdmrisbm file)
+        """Access SeriesType (scan_mridashboard file) and cerebrumtcv
+        (ucdmrisbm file)
 
         Location:
             subject.info.imaging.mri.scan.flair.brain-volume
@@ -214,7 +210,8 @@ class SCANAttribute(MQTAttribute):
 
     # Note: Probably should be "tracer_types"
     def _create_scan_pet_scan_types(self) -> Optional[str]:
-        """Access radiotracer (scan_petdashboard) and map to
+        """Access radiotracer (scan_petdashboard) and map to.
+
         {amyloid, tau, fdg}
 
         Location:
@@ -229,7 +226,7 @@ class SCANAttribute(MQTAttribute):
         return self.tracer_str
 
     def _create_scan_pet_amyloid_tracers(self) -> Optional[str]:
-        """Access radiotracer (scan_petdashboard) and map to names of tracers
+        """Access radiotracer (scan_petdashboard) and map to names of tracers.
 
         Location:
             subject.info.pet.scan.amyloid.tracers
@@ -247,7 +244,7 @@ class SCANAttribute(MQTAttribute):
 
     # Note: Be careful about the float return type here with the min computation.
     def _create_scan_pet_centaloid(self) -> Optional[float]:
-        """Access CENTILOIDS in UC Berkeley GAAIN analysis
+        """Access CENTILOIDS in UC Berkeley GAAIN analysis.
 
         Location:
             subject.info.imaging.pet.scan.amyloid.centiloid.min
@@ -261,7 +258,7 @@ class SCANAttribute(MQTAttribute):
         return self.centiloid
 
     def _create_scan_pet_centaloid_pib(self) -> Optional[float]:
-        """Access CENTILOIDS in UC Berkeley GAAIN analysis
+        """Access CENTILOIDS in UC Berkeley GAAIN analysis.
 
         Location:
             subject.info.imaging.pet.scan.amyloid.pib.centiloid.min
@@ -278,7 +275,7 @@ class SCANAttribute(MQTAttribute):
         return None
 
     def _create_scan_pet_centaloid_florbetapir(self) -> Optional[float]:
-        """A ccess CENTILOIDS in UC Berkeley GAAIN analysis
+        """A ccess CENTILOIDS in UC Berkeley GAAIN analysis.
 
         Location:
             subject.info.imaging.pet.scan.amyloid.florbetapir.centiloid.min
@@ -295,7 +292,7 @@ class SCANAttribute(MQTAttribute):
         return None
 
     def _create_scan_pet_centaloid_florbetaben(self) -> Optional[float]:
-        """Access CENTILOIDS in UC Berkeley GAAIN analysis
+        """Access CENTILOIDS in UC Berkeley GAAIN analysis.
 
         Location:
             subject.info.imaging.pet.scan.amyloid.florbetaben.centiloid.min
@@ -312,7 +309,7 @@ class SCANAttribute(MQTAttribute):
         return None
 
     def _create_scan_pet_centaloid_nav4694(self) -> Optional[float]:
-        """Access CENTILOIDS in UC Berkeley GAAIN analysis
+        """Access CENTILOIDS in UC Berkeley GAAIN analysis.
 
         Location:
             subject.info.imaging.pet.scan.amyloid.nav4694.centiloid.min
@@ -345,7 +342,7 @@ class SCANAttribute(MQTAttribute):
         return bool(self.get_mri_value("amyloid_status"))
 
     def _create_scan_pet_tau_tracers(self) -> Optional[str]:
-        """Access radiotracer (scan_petdashboard) and map to names of tracers
+        """Access radiotracer (scan_petdashboard) and map to names of tracers.
 
         Location:
             subject.info.imaging.pet.scan.tau.tracers
@@ -362,7 +359,7 @@ class SCANAttribute(MQTAttribute):
         return None
 
     def _create_scan_mri_count(self):
-        """Number of SCAN MRI scans available
+        """Number of SCAN MRI scans available.
 
         TODO: Where to to get count?
 
@@ -377,9 +374,8 @@ class SCANAttribute(MQTAttribute):
         """
         pass
 
-
     def _create_scan_pet_count(self):
-        """Number of SCAN PET scans available
+        """Number of SCAN PET scans available.
 
         TODO: Where to to get count?
 
@@ -394,9 +390,8 @@ class SCANAttribute(MQTAttribute):
         """
         pass
 
-
     def _create_scan_mri_year_count(self) -> int:
-        """Years of SCAN MRI scans available
+        """Years of SCAN MRI scans available.
 
         Does this similar to years of UDS where it keeps track of a
         "NACC" derived variable scan_years which is a list of all
@@ -412,14 +407,14 @@ class SCANAttribute(MQTAttribute):
         Description:
             Years of SCAN MRI scans available
         """
-        result = self.assert_required(
-            ['scan_mri_years'], prefix='subject.info.derived.')
+        result = self.assert_required(['scan_mri_years'],
+                                      prefix='subject.info.derived.')
         result = result['scan_mri_years']
 
         return len(result) if result else 0
 
     def _create_scan_pet_year_count(self) -> int:
-        """Years of SCAN PET scans available
+        """Years of SCAN PET scans available.
 
         Location:
             subject.info.imaging.pet.scan.year-count
@@ -430,8 +425,8 @@ class SCANAttribute(MQTAttribute):
         Description:
             Years of SCAN PET scans available
         """
-        result = self.assert_required(
-            ['scan_pet_years'], prefix='subject.info.derived.')
+        result = self.assert_required(['scan_pet_years'],
+                                      prefix='subject.info.derived.')
         result = result['scan_pet_years']
 
         return len(result) if result else 0

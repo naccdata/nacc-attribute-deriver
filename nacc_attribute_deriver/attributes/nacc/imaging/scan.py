@@ -4,7 +4,7 @@ from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
 class SCANRawAttribute(NACCAttribute):
-    """Class to collect raw SCAN attributes needed to derive MQT"""
+    """Class to collect raw SCAN attributes needed to derive MQT."""
 
     def _create_scan_mri_year(self) -> int:
         """Gets the year of the MRI scan.

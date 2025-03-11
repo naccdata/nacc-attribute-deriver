@@ -1,5 +1,4 @@
-"""
-CLI entrypoint for running regression tests
+"""CLI entrypoint for running regression tests.
 
 This is very hacked together for the sake of testing - a more formalized
 one should be done once we get better testing sources.
@@ -30,11 +29,14 @@ SKIP_VALUES = [
 ]
 
 
-def curate_row(deriver: AttributeDeriver, key: str, row: Dict[str, Any], baseline: Dict[str, Any], debug_outfile: Path = None,
+def curate_row(deriver: AttributeDeriver,
+               key: str,
+               row: Dict[str, Any],
+               baseline: Dict[str, Any],
+               debug_outfile: Path = None,
                update_form: bool = False) -> List[str]:
-    """Curate the row's raw variables and compare against baseline
-    To create the raw variables, merge row and baseline.
-    """
+    """Curate the row's raw variables and compare against baseline To create
+    the raw variables, merge row and baseline."""
     log.info(f"Evaluating {key}")
     table = SymbolTable()
 
@@ -70,19 +72,15 @@ def curate_row(deriver: AttributeDeriver, key: str, row: Dict[str, Any], baselin
     # assert derived variables are as expected
     for k, v in table['file.info.derived'].items():
         if k not in baseline:
-            raise ValueError(
-                f"Derived variable {k} not found in baseline, " +
-                "possible typo?"
-            )
+            raise ValueError(f"Derived variable {k} not found in baseline, " +
+                             "possible typo?")
 
         if k in SKIP_VALUES:
             continue
 
         if baseline[k] != v:
-            errors.append(
-                f"Record {key} derived variable {k} does " +
-                f"not match: baseline {baseline[k]} vs computed {v}"
-            )
+            errors.append(f"Record {key} derived variable {k} does " +
+                          f"not match: baseline {baseline[k]} vs computed {v}")
 
     if errors and debug_outfile:
         data = None
@@ -102,7 +100,7 @@ def curate_row(deriver: AttributeDeriver, key: str, row: Dict[str, Any], baselin
 
 
 def run(args: Namespace):
-    """Generate the attribute schema"""
+    """Generate the attribute schema."""
     if not args.input_csv and not args.input_json:
         raise ValueError("One of input CSV or input JSON must be provided")
 
@@ -125,7 +123,9 @@ def run(args: Namespace):
             reader = csv.DictReader(fh)
             for row in reader:
                 if args.num_records is not None and count >= args.num_records:
-                    log.info(f"Evaluated {args.num_records} records, stopping early")
+                    log.info(
+                        f"Evaluated {args.num_records} records, stopping early"
+                    )
                     break
 
                 # ignore non-initial visits
@@ -134,13 +134,15 @@ def run(args: Namespace):
 
                 count += 1
                 naccid = row['naccid']
-                visitdate = row['vstdate_a1']  # based off first form, should really get vistidate
+                visitdate = row[
+                    'vstdate_a1']  # based off first form, should really get vistidate
                 key = f"{naccid}_{visitdate}"
                 if key not in baselines:
                     log.warning(f"{key} not found in baseline")
                     continue
 
-                row_errors = curate_row(deriver, key, row, baselines[key], args.debug_outfile)
+                row_errors = curate_row(deriver, key, row, baselines[key],
+                                        args.debug_outfile)
                 errors.extend(row_errors)
 
                 if row_errors:
@@ -158,7 +160,12 @@ def run(args: Namespace):
                     log.warning(f"{key} not found in baseline")
                     continue
 
-                row_errors = curate_row(deriver, key, row, baselines[key], args.debug_outfile, update_form=False)
+                row_errors = curate_row(deriver,
+                                        key,
+                                        row,
+                                        baselines[key],
+                                        args.debug_outfile,
+                                        update_form=False)
                 errors.extend(row_errors)
 
                 if row_errors:
@@ -173,24 +180,56 @@ def run(args: Namespace):
 
 
 def set_regression_cli(parser: ArgumentParser):
-    """Set up the regression testing subparser
+    """Set up the regression testing subparser.
 
     Args:
         parser: The ArgumentParser to add arguments to
     """
     # add arguments
-    parser.add_argument('-i', '--input-csv', dest="input_csv", type=Path, required=False,
-                        help='Input CSV to run regression test against; this or a JSON must be provided')
-    parser.add_argument('-j', '--input-json', dest="input_json", type=Path, required=False,
-                        help='Input JSON to run regression test against; this or a CSV must be provided')
+    parser.add_argument(
+        '-i',
+        '--input-csv',
+        dest="input_csv",
+        type=Path,
+        required=False,
+        help=
+        'Input CSV to run regression test against; this or a JSON must be provided'
+    )
+    parser.add_argument(
+        '-j',
+        '--input-json',
+        dest="input_json",
+        type=Path,
+        required=False,
+        help=
+        'Input JSON to run regression test against; this or a CSV must be provided'
+    )
 
-    parser.add_argument('-b', '--baseline-json', dest="baseline_json", type=Path, required=True,
-                        help='Baseline JSON containing map of NACCIDs to NACC derived variables')
-    parser.add_argument('-n', '--num_records', dest="num_records", type=int, required=False,
-                        default=None,
-                        help='Number of records to test against; defaults to all')
-    parser.add_argument('-d', '--debug-outfile', dest="debug_outfile", type=Path, required=False,
-                        default=None,
-                        help='File to write record to for debugging. Writes to stdout if not specified')
+    parser.add_argument(
+        '-b',
+        '--baseline-json',
+        dest="baseline_json",
+        type=Path,
+        required=True,
+        help='Baseline JSON containing map of NACCIDs to NACC derived variables'
+    )
+    parser.add_argument(
+        '-n',
+        '--num_records',
+        dest="num_records",
+        type=int,
+        required=False,
+        default=None,
+        help='Number of records to test against; defaults to all')
+    parser.add_argument(
+        '-d',
+        '--debug-outfile',
+        dest="debug_outfile",
+        type=Path,
+        required=False,
+        default=None,
+        help=
+        'File to write record to for debugging. Writes to stdout if not specified'
+    )
 
     parser.set_defaults(run=run)

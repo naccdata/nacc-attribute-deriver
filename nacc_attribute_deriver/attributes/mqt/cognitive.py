@@ -1,5 +1,5 @@
-"""
-All cognitive MQT derived variables.
+"""All cognitive MQT derived variables.
+
 Assumes NACC-derived variables are already set
 """
 from typing import Dict, List, Optional, Set
@@ -20,14 +20,12 @@ class CognitiveAttribute(MQTAttribute):
     PRIMARY_DIAGNOSIS_MAPPINGS = {
         1: "Alzheimer’s disease (AD)",
         2: "Lewy body disease (LBD)",
-
         3: "Multiple system atrophy (MSA)",
         4: "Progressive supranuclear palsy (PSP)",
         5: "Corticobasal degeneration (CBD)",
         6: "FTLD with motor neuron disease (e.g., ALS)",
         7: "FTLD, other",
         8: "Vascular brain injury or vascular dementia including stroke",
-
         9: "Essential tremor",
         10: "Down syndrome",
         11: "Huntington’s disease",
@@ -36,24 +34,31 @@ class CognitiveAttribute(MQTAttribute):
         14: "Normal-pressure hydrocephalus (NPH)",
         15: "Epilepsy",  # label not consistent with DIAGNOSIS_MAPPINGS
         16: "CNS neoplasm",
-        17: "Human immunodeficiency virus (HIV)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        17:
+        "Human immunodeficiency virus (HIV)",  # label not consistent with DIAGNOSIS_MAPPINGS
         18: "Other neurological, genetic, or infection condition",
-
         19: "Depression",
         20: "Bipolar disorder",
         21: "Schizophrenia or other psychosis",
         22: "Anxiety disorder",  # label not consistent with DIAGNOSIS_MAPPINGS
         23: "Delirium",
-        24: "Post-traumatic stress disorder (PTSD)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        24:
+        "Post-traumatic stress disorder (PTSD)",  # label not consistent with DIAGNOSIS_MAPPINGS
         25: "Other psychiatric disease",
-
-        26: "Cognitive impairment due to alcohol abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
-        27: "Cognitive impairment due to other substance abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
-        28: "Cognitive impairment due to systemic disease or medical illness", # label not consistent with DIAGNOSIS_MAPPINGS
-        29: "Cognitive impairment due to medications",  # label not consistent with DIAGNOSIS_MAPPINGS
-        30: "Cognitive impairment for other specified reasons (i.e., written-in values)",  # label not consistent with DIAGNOSIS_MAPPINGS
-        88: "Not applicable",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
-        99: "Missing/unknown"  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
+        26:
+        "Cognitive impairment due to alcohol abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
+        27:
+        "Cognitive impairment due to other substance abuse",  # label not consistent with DIAGNOSIS_MAPPINGS
+        28:
+        "Cognitive impairment due to systemic disease or medical illness",  # label not consistent with DIAGNOSIS_MAPPINGS
+        29:
+        "Cognitive impairment due to medications",  # label not consistent with DIAGNOSIS_MAPPINGS
+        30:
+        "Cognitive impairment for other specified reasons (i.e., written-in values)",  # label not consistent with DIAGNOSIS_MAPPINGS
+        88:
+        "Not applicable",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
+        99:
+        "Missing/unknown"  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
     }
 
     # maps each diagnosis to their string value
@@ -62,7 +67,6 @@ class CognitiveAttribute(MQTAttribute):
             'naccalzp': "Alzheimer’s disease (AD)",
             'nacclbdp': "Lewy body disease (LBD)"
         },
-
         'file.info.forms.json.': {
             'msaif': "Multiple system atrophy (MSA)",
             'pspif': "Primary supranuclear palsy (PSP)",
@@ -77,7 +81,6 @@ class CognitiveAttribute(MQTAttribute):
             'vascif': "Probable vascular dementia (NINDS/AIREN criteria)",
             'vascpsif': "Possible vascular dementia (NINDS/AIREN criteria)",
             'strokeif': "Stroke",
-
             'esstreif': "Essential tremor",
             'downsif': "Down syndrome",
             'huntif': "Huntington’s disease",
@@ -88,7 +91,6 @@ class CognitiveAttribute(MQTAttribute):
             'neopif': "CNS neoplasm",
             'hivif': "HIV",
             'othcogif': "Other neurological, genetic, or infection condition",
-
             'depif': "Depression",
             'bipoldif': "Bipolar disorder",
             'schizoif': "Schizophrenia or other psychosis",
@@ -96,7 +98,6 @@ class CognitiveAttribute(MQTAttribute):
             'delirif': "Delirium",
             'ptsddxif': "PTSD",
             'othpsyif': "Other psychiatric disease",
-
             'alcdemif': "Alcohol abuse",
             'impsubif': "Other substance abuse",
             'dysillif': "Systemic disease/medical illness",
@@ -110,28 +111,33 @@ class CognitiveAttribute(MQTAttribute):
 
     DEMENTIA_MAPPINGS = {
         'file.info.forms.json.': {
-            'amndem': 'Amnestic multidomain dementia syndrome',
-            'pca': 'Posterior cortical atrophy syndrome',
-            'namndem': 'Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome',
+            'amndem':
+            'Amnestic multidomain dementia syndrome',
+            'pca':
+            'Posterior cortical atrophy syndrome',
+            'namndem':
+            'Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome',
         },
-
         'file.info.derived.': {
-            'naccppa': 'Primary progressive aphasia (PPA) with cognitive impairment',
+            'naccppa':
+            'Primary progressive aphasia (PPA) with cognitive impairment',
             'naccbvft': 'Behavioral variant FTD syndrome (bvFTD)',
             'nacclbds': 'Lewy body dementia syndrome',
         }
     }
 
-    def grab_mappings(self, mapping: Dict[str, Dict[str, str]], target: int) -> List[str]:
+    def grab_mappings(self, mapping: Dict[str, Dict[str, str]],
+                      target: int) -> List[str]:
         """Grab mappings."""
         mapped_vars = set()
 
         for prefix, fields in mapping.items():
             aggr = self.aggregate_variables(fields, prefix=prefix)
-            mapped_vars = mapped_vars.union(set([
-                mapping[prefix][k] for k, v in aggr.items()
-                if self.is_int_value(v, target)
-            ]))
+            mapped_vars = mapped_vars.union(
+                set([
+                    mapping[prefix][k] for k, v in aggr.items()
+                    if self.is_int_value(v, target)
+                ]))
 
         return list(mapped_vars)
 
@@ -149,13 +155,13 @@ class CognitiveAttribute(MQTAttribute):
         Type:
             cognitive
         Description:
-            Contributing etiological diagnosis 
+            Contributing etiological diagnosis
         """
         self.assert_required(['naccalzp', 'nacclbdp'])
         return self.grab_mappings(self.DIAGNOSIS_MAPPINGS, target=2)
 
     def _create_dementia(self) -> Set[str]:
-        """Mapped from all dementia types
+        """Mapped from all dementia types.
 
         Location:
             subject.info.cognitive.uds.dementia-type.initial
@@ -175,7 +181,7 @@ class CognitiveAttribute(MQTAttribute):
         return results
 
     def _create_cognitive_status(self) -> str:
-        """Mapped from NACCUDSD
+        """Mapped from NACCUDSD.
 
         Location:
             subject.info.cognitive.uds.cognitive-status.initial
@@ -194,7 +200,7 @@ class CognitiveAttribute(MQTAttribute):
         return self.NACCUDSD_MAPPING.get(result['naccudsd'], None)
 
     def _create_etpr(self) -> str:
-        """Mapped from NACCETPR
+        """Mapped from NACCETPR.
 
         Location:
             subject.info.cognitive.uds.etpr.initial
@@ -210,11 +216,11 @@ class CognitiveAttribute(MQTAttribute):
             Primary etiologic diagnosis
         """
         result = self.assert_required(['naccetpr'])
-        return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
-            result['naccetpr'], "Missing/unknown")
+        return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(result['naccetpr'],
+                                                   "Missing/unknown")
 
     def _create_global_cdr(self) -> str:
-        """Mapped from CDRGLOB
+        """Mapped from CDRGLOB.
 
         Location:
             subject.info.cognitive.uds.cdrglob.initial
@@ -233,7 +239,7 @@ class CognitiveAttribute(MQTAttribute):
         return str(cdrglob) if cdrglob else None
 
     def _create_normal_cognition(self) -> bool:
-        """Mapped from NACCNORM
+        """Mapped from NACCNORM.
 
         Location:
             subject.info.derived.naccnorm

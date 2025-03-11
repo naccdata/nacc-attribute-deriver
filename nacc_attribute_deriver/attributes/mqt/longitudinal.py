@@ -37,7 +37,7 @@ class LongitudinalAttribute(MQTAttribute):
         return count
 
     def _create_years_of_uds(self) -> int:
-        """Creates subject.info.longitudinal-data.uds.year-count
+        """Creates subject.info.longitudinal-data.uds.year-count.
 
         Location:
             subject.info.longitudinal-data.uds.year-count
@@ -48,8 +48,8 @@ class LongitudinalAttribute(MQTAttribute):
         Description:
             Number of years of UDS visits available
         """
-        result = self.assert_required(
-            ['uds_years'], prefix='subject.info.derived.')
+        result = self.assert_required(['uds_years'],
+                                      prefix='subject.info.derived.')
 
         result = result['uds_years']
         return len(result) if result else 0

@@ -1,6 +1,4 @@
-"""
-Derived variables from form A1.
-"""
+"""Derived variables from form A1."""
 from typing import Optional
 
 from nacc_attribute_deriver.utils.date import (
@@ -51,7 +49,7 @@ class UDSFormA1Attribute(UDSAttribute):
             "swedish,irish.russian",
             "switzerland",
             "syria,caucasian,arabic,french,hebrew",
-            "syrian", 
+            "syrian",
             "turkish",
             "ukrain",
         },
@@ -104,91 +102,36 @@ class UDSFormA1Attribute(UDSAttribute):
             "turkish/arab",
             "westerneurope"
         },
-        'raceterx': {
-            "jewish",
-            "portuguese",
-            "romanian",
-            "scotch"
-        }
+        'raceterx': {"jewish", "portuguese", "romanian", "scotch"}
     }
 
     BLACKX_RESPONSES = {
         'racesecx': {
-            'black/african-american',
-            'africanamerican',
-            'bahamanian',
-            'caribian',
-            'caribbean',
-            'haitian',
-            'hatian',
-            'jamaican',
-            'westindian',
-            'westindies'
+            'black/african-american', 'africanamerican', 'bahamanian',
+            'caribian', 'caribbean', 'haitian', 'hatian', 'jamaican',
+            'westindian', 'westindies'
         },
         'racex': {
-            "africanamerican",
-            "westindian",
-            'westindies',
-            "bahamas",
-            "barbadian",
-            "barbardian",
-            "eritrian",
-            'haitian',
-            "hatian",
-            'jamaician',
-            'jamaica',
-            'jamaican',
-            "hispanicdominican",
-            'dominican/hispanic',
-            "nigerian",
-            "trinidadian",
-            'westindies'
+            "africanamerican", "westindian", 'westindies', "bahamas",
+            "barbadian", "barbardian", "eritrian", 'haitian', "hatian",
+            'jamaician', 'jamaica', 'jamaican', "hispanicdominican",
+            'dominican/hispanic', "nigerian", "trinidadian", 'westindies'
         }
     }
 
-    NATIVEX_RESPONSES = {
-        'racex': {
-            'nativeamerican',
-            'nativeamerica'
-        }
-    }
+    NATIVEX_RESPONSES = {'racex': {'nativeamerican', 'nativeamerica'}}
 
-    HAWAIIX_RESPONSES = {
-        'racex': {
-            'tahitian'
-        },
-        'racesecx': {
-            'samoan'
-        }
-    }
+    HAWAIIX_RESPONSES = {'racex': {'tahitian'}, 'racesecx': {'samoan'}}
 
     ASIANX_RESPONSES = {
         'racex': {
-            'asian',
-            'asianindian',
-            'chinese',
-            'chineseamerican',
-            'eastindian',
-            'filipino',
-            'filipinoamerican',
-            'korean',
-            'japanese',
-            'japaneseamerican',
-            'india',
-            'indian',
-            'indiasouthindian',
-            'malay',
-            'okanawajapanese',
-            'phillipino',
-            'southasian',
-            'srilankan',
+            'asian', 'asianindian', 'chinese', 'chineseamerican', 'eastindian',
+            'filipino', 'filipinoamerican', 'korean', 'japanese',
+            'japaneseamerican', 'india', 'indian', 'indiasouthindian', 'malay',
+            'okanawajapanese', 'phillipino', 'southasian', 'srilankan',
             'vietnamese'
         },
-        'racesecx': {
-            'asianindian',
-            'eastindian',
-            'korean'
-        }
+        'racesecx': {'asianindian', 'eastindian', 'korean'}
     }
 
     MULTIX_RESPONSES = {
@@ -221,10 +164,8 @@ class UDSFormA1Attribute(UDSAttribute):
 
     MULTIPX_RESPONSES = {
         'racex': {
-            'africanandamericanindian',
-            'mixblackandwhite',
-            'mixedblackandwhite',
-            'wht/blk'
+            'africanandamericanindian', 'mixblackandwhite',
+            'mixedblackandwhite', 'wht/blk'
         },
         'racesecx': {
             'caribbeanindian',
@@ -242,38 +183,17 @@ class UDSFormA1Attribute(UDSAttribute):
 
     UNX_RESPONSES = {
         'racex': {
-            'brazilian',
-            'columbian',
-            'criollo',
-            'cuban',
-            'guyanese',
-            'hispanic',
-            'hispanic/latino',
-            'hspanic',
-            'human',
-            'humana',
-            'indian',
-            'indio',
-            'latin,trigueno',
-            'latina',
-            'latinahispanic',
-            'latino',
-            'mexicanamerican',
-            'other',
-            'puertorican',
-            'puertorician',
-            'refused',
-            'seereport',
-            'brown',
-            'indigenous',
-            'mexican',
-            'usa'
+            'brazilian', 'columbian', 'criollo', 'cuban', 'guyanese',
+            'hispanic', 'hispanic/latino', 'hspanic', 'human', 'humana',
+            'indian', 'indio', 'latin,trigueno', 'latina', 'latinahispanic',
+            'latino', 'mexicanamerican', 'other', 'puertorican',
+            'puertorician', 'refused', 'seereport', 'brown', 'indigenous',
+            'mexican', 'usa'
         }
     }
 
     def _create_naccage(self) -> str:
-        """Creates DOB from BIRTHMO and BIRTHYR and
-        compares to form date.
+        """Creates DOB from BIRTHMO and BIRTHYR and compares to form date.
 
         Location:
             file.info.derived.naccage
@@ -290,7 +210,6 @@ class UDSFormA1Attribute(UDSAttribute):
 
         return calculate_age(dob, visitdate)
 
-
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)
 
@@ -303,21 +222,22 @@ class UDSFormA1Attribute(UDSAttribute):
         Description:
             Subject's age at visit
         """
-        return self.generate_naccnihr(
-            race=self.get_value('race'),
-            racex=self.get_value('racex'),
-            racesec=self.get_value('racesec'),
-            racesecx=self.get_value('racesecx'),
-            raceter=self.get_value('raceter'),
-            raceterx=self.get_value('raceterx')
-        )
+        return self.generate_naccnihr(race=self.get_value('race'),
+                                      racex=self.get_value('racex'),
+                                      racesec=self.get_value('racesec'),
+                                      racesecx=self.get_value('racesecx'),
+                                      raceter=self.get_value('raceter'),
+                                      raceterx=self.get_value('raceterx'))
 
     @classmethod
-    def is_multiracial(cls, racex: Optional[str], racesecx: Optional[str]) -> bool:
+    def is_multiracial(cls, racex: Optional[str],
+                       racesecx: Optional[str]) -> bool:
         """Returns whether or not the write-in values denote multiracial."""
         if racex:
-            mult_satisfied = any([x in racex for x in 
-                                  ['muiti', 'mult', 'muti', 'multi', 'mulit', 'mutl']])
+            mult_satisfied = any([
+                x in racex
+                for x in ['muiti', 'mult', 'muti', 'multi', 'mulit', 'mutl']
+            ])
             if mult_satisfied and 'racial' in racex:
                 return True
 
@@ -330,15 +250,17 @@ class UDSFormA1Attribute(UDSAttribute):
     @classmethod
     def generate_naccnihr(cls, race: Optional[int], racex: Optional[str],
                           racesec: Optional[int], racesecx: Optional[str],
-                          raceter: Optional[int], raceterx: Optional[str]) -> int:
+                          raceter: Optional[int],
+                          raceterx: Optional[str]) -> int:
         """"NACCNIHR values:
-            1: "White"
-            2: "Black or African American"
-            3: "American Indian or Alaska Native"
-            4: "Native Hawaiian or Pacific Islander"
-            5: "Asian"
-            6: "Multiracial"
-            99: "Unknown or ambiguous"
+
+        1: "White"
+        2: "Black or African American"
+        3: "American Indian or Alaska Native"
+        4: "Native Hawaiian or Pacific Islander"
+        5: "Asian"
+        6: "Multiracial"
+        99: "Unknown or ambiguous"
         """
 
         if not race:
@@ -363,7 +285,8 @@ class UDSFormA1Attribute(UDSAttribute):
         # whitex
         if racex in cls.WHITEX_RESPONSES['racex']:
             whitex = 1
-        if race == 1 and racesec == 50 and racesecx in cls.WHITEX_RESPONSES['racesecx']:
+        if race == 1 and racesec == 50 and racesecx in cls.WHITEX_RESPONSES[
+                'racesecx']:
             whitex = 1
         if raceterx in cls.WHITEX_RESPONSES['raceterx']:
             whitex = 1
@@ -438,7 +361,9 @@ class UDSFormA1Attribute(UDSAttribute):
             naccnihr = 1
         elif blackx == 1 and race == 50 and racesec == 5:
             naccnihr = 6
-        elif blackx == 1 and race == 50 and racesec == 1 and raceter in {2, 3, 4, 5}:
+        elif blackx == 1 and race == 50 and racesec == 1 and raceter in {
+                2, 3, 4, 5
+        }:
             naccnihr = 6
         elif race == 50 and racesec == 2 and raceter == 3:
             naccnihr = 6

@@ -18,6 +18,5 @@ class UDSHeaderAttribute(UDSAttribute):
         Description:
             Year of UDS visit
         """
-        formdate = datetime_from_form_date(
-            self.get_value('visitdate'))
+        formdate = datetime_from_form_date(self.get_value('visitdate'))
         return formdate.year if formdate else None

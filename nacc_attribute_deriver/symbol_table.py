@@ -49,8 +49,8 @@ class SymbolTable(MutableMapping):
                 raise KeyError("Key %s maps to atomic value", key)
 
             if sub_key not in value:
-                 raise KeyError("Key %s does not exist", key)
- 
+                raise KeyError("Key %s does not exist", key)
+
             value = value[sub_key]
 
         return value

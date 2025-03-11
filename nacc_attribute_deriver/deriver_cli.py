@@ -31,7 +31,8 @@ def entrypoint():
     set_schema_generator_cli(schema_generator)
 
     # regression testing
-    regression = subparsers.add_parser('run-regression', help="Run regression testing")
+    regression = subparsers.add_parser('run-regression',
+                                       help="Run regression testing")
     set_regression_cli(regression)
 
     args = parser.parse_args()

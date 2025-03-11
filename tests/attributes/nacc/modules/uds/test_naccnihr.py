@@ -1,9 +1,8 @@
-"""
-Tests create_naccnihr specifically
-"""
+"""Tests create_naccnihr specifically."""
 import pytest
 from typing import Callable
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import UDSFormA1Attribute
+
 
 @pytest.fixture(scope='module')
 def generate_naccnihr() -> Callable:
@@ -11,15 +10,15 @@ def generate_naccnihr() -> Callable:
 
 
 class TestCreateNACCNIHR:
-    """Specifically test the generate_naccnihr function,
-    which ultimately is also testing _create_naccnihr. Needs
+    """Specifically test the generate_naccnihr function, which ultimately is
+    also testing _create_naccnihr. Needs.
 
-        race
-        racex
-        racesec
-        racesecx
-        raceter
-        raceterx
+    race
+    racex
+    racesec
+    racesecx
+    raceter
+    raceterx
     """
 
     def test_original_primary(self, generate_naccnihr):
@@ -34,9 +33,11 @@ class TestCreateNACCNIHR:
 
     def test_original_primary_writein(self, generate_naccnihr):
         assert generate_naccnihr(50, "Arab", None, None, None, None) == 1
-        assert generate_naccnihr(50, "African American", None, None, None, None) == 2
-        assert generate_naccnihr(50, "NATIVE AMERICAN", None, None, None, None) == 3
-        
+        assert generate_naccnihr(50, "African American", None, None, None,
+                                 None) == 2
+        assert generate_naccnihr(50, "NATIVE AMERICAN", None, None, None,
+                                 None) == 3
+
         # TODO: check what SAS/R code returns for this
         # won't return 4
         #assert generate_naccnihr(50, "Samoan", None, None, None, None) == 4
@@ -47,7 +48,8 @@ class TestCreateNACCNIHR:
 
         assert generate_naccnihr(50, "Asian", None, None, None, None) == 5
         assert generate_naccnihr(50, "Biracial", None, None, None, None) == 6
-        assert generate_naccnihr(50, "African and American Indian", None, None, None, None) == 6 
+        assert generate_naccnihr(50, "African and American Indian", None, None,
+                                 None, None) == 6
         assert generate_naccnihr(50, "HUMAN", None, None, None, None) == 99
 
     def test_original_ignore(self, generate_naccnihr):
@@ -55,7 +57,7 @@ class TestCreateNACCNIHR:
         assert generate_naccnihr(1, "Arab", None, None, None, None) == 1
         assert generate_naccnihr(2, "Arab", None, None, None, None) == 2
         assert generate_naccnihr(3, "Arab", None, None, None, None) == 3
-        assert generate_naccnihr(4, "Arab", None, None, None, None) == 4       
+        assert generate_naccnihr(4, "Arab", None, None, None, None) == 4
         assert generate_naccnihr(5, "Arab", None, None, None, None) == 6
         assert generate_naccnihr(6, "Arab", None, None, None, None) == 6
 
@@ -75,7 +77,7 @@ class TestCreateNACCNIHR:
         # EGYPT as a response is not defined
         # in the SAS code, I believe it's set by the line
         #   &RACE = 50 and &RACESEC = 1 then &NACCNIHR = 6;
-        # since the python code does not work on if/else, it gets additionally set to 99 here 
+        # since the python code does not work on if/else, it gets additionally set to 99 here
         #   &RACE = 50 and WHITEX ne 1 and BLACKX ne 1 and HAWAIIX ne 1
         #       and ASIANX ne 1 and MULTIX ne 1 and MULTIPX ne 1 then &NACCNIHR = 99;
         # updated code to work on if/else similar to SAS
@@ -89,13 +91,13 @@ class TestCreateNACCNIHR:
     def test_hispanic(self, generate_naccnihr):
         """This one is most volatile to changes/script differences.
 
-        Original derived value is 99, but needs to be further refined for UDSv4
+        Original derived value is 99, but needs to be further refined
+        for UDSv4
         """
         assert generate_naccnihr(50, "HISPANIC", 88, "", 88, "") == 99
         assert generate_naccnihr(50, "Hispanic", 88, "", 88, "") == 99
 
     def test_NACC342334(self, generate_naccnihr):
-        """baseline 1 vs computed 6, issue was accidental lack of comma
-        should in fact be 1
-        """
+        """baseline 1 vs computed 6, issue was accidental lack of comma should
+        in fact be 1."""
         assert generate_naccnihr(1, "", 50, "Middle Eastern", 88, "") == 1

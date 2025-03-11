@@ -1,6 +1,4 @@
-"""
-Tests UDS Form A1 attributes.
-"""
+"""Tests UDS Form A1 attributes."""
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import UDSFormA1Attribute
@@ -9,8 +7,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 @pytest.fixture(scope='function')
 def attr() -> UDSFormA1Attribute:
-    """Create dummy data and return it in an attribute object.
-    """
+    """Create dummy data and return it in an attribute object."""
     data = {
         'file': {
             'info': {

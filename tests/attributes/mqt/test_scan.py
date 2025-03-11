@@ -42,8 +42,8 @@ def table() -> SymbolTable:
 class TestSCANAttribute:
 
     def test_create_scan_mri_scan_types(self, table):
-        """Tests _create_scan_mri_scan_types,
-        which should just return the seriestype."""
+        """Tests _create_scan_mri_scan_types, which should just return the
+        seriestype."""
         attr = SCANAttribute(table)
         assert attr._create_scan_mri_scan_types() == "T1w"
 
@@ -52,8 +52,8 @@ class TestSCANAttribute:
         assert attr._create_scan_mri_scan_types() is None
 
     def test_create_volume_analysis_indicator(self, table):
-        """Tests _create_volume_analysis_indicator, which
-        looks at cerebrumtcv when series_type == T1w"""
+        """Tests _create_volume_analysis_indicator, which looks at cerebrumtcv
+        when series_type == T1w."""
         attr = SCANAttribute(table)
         assert attr._create_volume_analysis_indicator()
 
@@ -73,9 +73,8 @@ class TestSCANAttribute:
         assert not attr._create_volume_analysis_indicator()
 
     def test_create_t1_wmh_indicator(self, table):
-        """Tests _create_t1_wmh_indicator, which looks at
-        wmh when series_type == "T1w"
-        """
+        """Tests _create_t1_wmh_indicator, which looks at wmh when series_type
+        == "T1w"."""
         attr = SCANAttribute(table)
         assert attr._create_t1_wmh_indicator()
 
@@ -95,9 +94,8 @@ class TestSCANAttribute:
         assert not attr._create_t1_wmh_indicator()
 
     def test_create_flair_wmh_indicator(self, table):
-        """Tests _create_flair_wmh_indicator, which looks at
-        wmh when series_type == "T2w"
-        """
+        """Tests _create_flair_wmh_indicator, which looks at wmh when
+        series_type == "T2w"."""
         # not T2w, should return False
         attr = SCANAttribute(table)
         assert not attr._create_flair_wmh_indicator()
@@ -117,9 +115,8 @@ class TestSCANAttribute:
         assert not attr._create_flair_wmh_indicator()
 
     def test_create_flair_volume_analysis_indicator(self, table):
-        """Tests _create_flair_wmh_indicator, which looks at
-        cerebrumtcv when series_type == "T2w"
-        """
+        """Tests _create_flair_wmh_indicator, which looks at cerebrumtcv when
+        series_type == "T2w"."""
         # not T2w, should return False
         attr = SCANAttribute(table)
         assert not attr._create_flair_volume_analysis_indicator()
@@ -168,8 +165,8 @@ class TestSCANAttribute:
         assert attr._create_scan_pet_amyloid_tracers() is None
 
     def test_create_scan_pet_centaloid(self, table):
-        """Tests _create_scan_pet_centaloid, should just return centaloid
-        as a float."""
+        """Tests _create_scan_pet_centaloid, should just return centaloid as a
+        float."""
         attr = SCANAttribute(table)
         assert attr._create_scan_pet_centaloid() == 1.5
 
@@ -178,8 +175,8 @@ class TestSCANAttribute:
         assert attr._create_scan_pet_centaloid() is None
 
     def test_create_scan_pet_centaloid_x(self, table):
-        """Tests _create_scan_pet_centaloid_*, should return centerloid
-        as a float if the tracer is the given value."""
+        """Tests _create_scan_pet_centaloid_*, should return centerloid as a
+        float if the tracer is the given value."""
         table['file.info.scan.pet.radiotracer'] = '2'
         attr = SCANAttribute(table)
         assert attr._create_scan_pet_centaloid_pib() == 1.5
@@ -205,8 +202,8 @@ class TestSCANAttribute:
         assert attr._create_scan_pet_centaloid_nav4694() is None
 
     def test_create_scan_pet_amyloid_positivity_indicator(self, table):
-        """Tests _create_scan_pet_amyloid_positivity_indicator,
-        which just gets amyloid_status."""
+        """Tests _create_scan_pet_amyloid_positivity_indicator, which just gets
+        amyloid_status."""
         attr = SCANAttribute(table)
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
@@ -220,8 +217,8 @@ class TestSCANAttribute:
         assert not attr._create_scan_pet_amyloid_positivity_indicator()
 
     def test_create_scan_pet_tau_tracers(self, table):
-        """Tests _create_scan_pet_tau_tracers, which just checks
-        if scan_type == tau and returns tracer string if so."""
+        """Tests _create_scan_pet_tau_tracers, which just checks if scan_type
+        == tau and returns tracer string if so."""
         attr = SCANAttribute(table)
         assert attr._create_scan_pet_tau_tracers() is None
 
@@ -234,7 +231,7 @@ class TestSCANAttribute:
 
     def test_create_scan_mri_year_count(self, table):
         """Tests _create_scan_mri_year_count, which should jsut count
-        scan_mri_years"""
+        scan_mri_years."""
         attr = SCANAttribute(table)
         assert attr._create_scan_mri_year_count() == 3
 
@@ -245,7 +242,7 @@ class TestSCANAttribute:
 
     def test_create_scan_pet_year_count(self, table):
         """Tests _create_scan_pet_year_count, which should jsut count
-        scan_mri_years"""
+        scan_mri_years."""
         attr = SCANAttribute(table)
         assert attr._create_scan_pet_year_count() == 1
 

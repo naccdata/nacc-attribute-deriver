@@ -14,7 +14,8 @@ python_distribution(
         url="https://github.com/naccdata/nacc-attribute-deriver"),
     entry_points={
         "console_scripts": {
-            "nacc-attribute-deriver": "nacc_attribute_deriver.deriver_cli:entrypoint"
+            "nacc-attribute-deriver":
+            "nacc_attribute_deriver.deriver_cli:entrypoint"
         }
     })
 
