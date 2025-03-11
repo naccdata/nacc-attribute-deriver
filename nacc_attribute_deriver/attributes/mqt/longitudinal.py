@@ -37,24 +37,18 @@ class LongitudinalAttribute(MQTAttribute):
         return count
 
     def _create_years_of_uds(self) -> int:
-        """Creates subject.info.longitudinal-data.uds.year-count.latest.
-
-        TODO Not clear how this is supposed to be calculated.
+        """Creates subject.info.longitudinal-data.uds.year-count
 
         Location:
-            TODO
+            subject.info.longitudinal-data.uds.year-count
         Operation:
-            update
+            max
         Type:
             mqt-longitudinal
         Description:
             Number of years of UDS visits available
         """
         result = self.assert_required(
-            ['initial_uds_visit', 'latest_uds_visit'],
-            prefix='subject.info.derived.')
+            ['uds_years'], prefix='subject.info.derived.')
 
-        initial = datetime_from_form_date(result['initial_uds_visit']['value'])
-        latest = datetime_from_form_date(result['latest_uds_visit']['value'])
-
-        return calculate_age(initial, latest)
+        return len(result) if result else 0

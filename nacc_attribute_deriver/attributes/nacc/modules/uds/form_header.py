@@ -1,22 +1,23 @@
 """Derived variables that come from the header variables."""
 from .uds_attribute import UDSAttribute
+from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
 class UDSHeaderAttribute(UDSAttribute):
     """Class to collect UDS header attributes."""
 
-    def _create_uds_visitdate(self) -> int:
-        """Gets visitdate.
+    def _create_uds_year(self) -> int:
+        """Gets the year of the visitdate.
 
         Location:
-            subject.info.derived.initial_uds_visit
-            subject.info.derived.latest_uds_visit
+            subject.info.derived.uds_years
         Operation:
-            initial
-            latest
+            set
         Type:
             longitudinal
         Description:
-            Date of UDS visit
+            Year of UDS visit
         """
-        return self.get_value('visitdate')
+        formdate = datetime_from_form_date(
+            self.get_value('visitdate'))
+        return formdate.year if formdate else None

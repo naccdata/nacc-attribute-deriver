@@ -48,15 +48,12 @@ class SymbolTable(MutableMapping):
             if not isinstance(value, dict):
                 raise KeyError("Key %s maps to atomic value", key)
 
-            value = value.get(sub_key)
+            if sub_key not in value:
+                 raise KeyError("Key %s does not exist")
+ 
+            value = value[sub_key]
 
         return value
-
-    def get(self, key: str, default: Any = None) -> Optional[Any]:
-        if key in self:
-            return self[key]
-
-        return default
 
     def __contains__(self, key: Any) -> bool:
         if not isinstance(key, str) or self.__separator not in key:

@@ -94,6 +94,9 @@ class DateOperation(Operation):
         if self.LABEL not in ['initial', 'latest']:
             raise OperationException(f"Unknown date operation: {self.LABEL}")
 
+        if value is None:
+            return
+
         if (not dest_date or (self.LABEL == 'initial' and cur_date < dest_date)
                 or (self.LABEL == 'latest' and cur_date > dest_date)):
             table[location] = {'date': str(cur_date.date()), 'value': value}
@@ -128,6 +131,9 @@ class ComparisonOperation(Operation):
         if self.LABEL not in ['min', 'max']:
             raise OperationException(
                 f"Unknown comparison operation: {self.LABEL}")
+
+        if value is None:
+            return
 
         try:
             if (not dest_value or (self.LABEL == 'min' and value < dest_value)
