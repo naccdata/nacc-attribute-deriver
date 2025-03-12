@@ -43,7 +43,7 @@ class TestCrossModuleAttribute:
         # trigger NP case
         assert attr._create_naccdage() == 83
 
-        # trigger MDS case
+        # trigger MDS/UDS case
         attr.table['file.info.np'] = {}
         assert attr._create_naccdage() == 39
 

@@ -108,10 +108,7 @@ def run(args: Namespace):
                 log.warning(f"{key} not found in baseline")
                 continue
 
-            row_errors = curate_row(deriver,
-                                    key,
-                                    row,
-                                    baselines[key],
+            row_errors = curate_row(deriver, key, row, baselines[key],
                                     args.debug_outfile)
             errors.extend(row_errors)
 
@@ -131,15 +128,12 @@ def set_regression_cli(parser: ArgumentParser):
         parser: The ArgumentParser to add arguments to
     """
     # add arguments
-    parser.add_argument(
-        '-i',
-        '--input-json',
-        dest="input_json",
-        type=Path,
-        required=True,
-        help=
-        'Input JSON to run regression test against'
-    )
+    parser.add_argument('-i',
+                        '--input-json',
+                        dest="input_json",
+                        type=Path,
+                        required=True,
+                        help='Input JSON to run regression test against')
 
     parser.add_argument(
         '-b',

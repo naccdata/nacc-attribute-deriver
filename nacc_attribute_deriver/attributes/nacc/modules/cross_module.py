@@ -3,10 +3,7 @@ from datetime import datetime
 from typing import Any
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import (
-    calculate_age,
-    datetime_from_form_date,
-)
+from nacc_attribute_deriver.utils.date import calculate_age
 
 from .uds.uds_attribute import UDSAttribute
 
