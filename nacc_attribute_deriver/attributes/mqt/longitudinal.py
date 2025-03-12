@@ -3,7 +3,7 @@
 Assumes NACC-derived variables are already set
 """
 from nacc_attribute_deriver.attributes.base.base_attributes import MQTAttribute
-from nacc_attribute_deriver.utils.date import datetime_from_form_date
+from nacc_attribute_deriver.utils.date import get_unique_years
 
 
 class LongitudinalAttribute(MQTAttribute):
@@ -47,8 +47,4 @@ class LongitudinalAttribute(MQTAttribute):
         """
         result = self.assert_required(['uds_visitdates'],
                                       prefix='subject.info.derived.')
-        # get unique years
-        years = set(datetime_from_form_date(x).year
-                    for x in result['uds_visitdates'])
-
-        return len(years)
+        return len(get_unique_years(result['uds_visitdates']))

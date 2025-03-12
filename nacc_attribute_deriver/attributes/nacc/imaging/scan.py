@@ -23,8 +23,8 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         Description:
             Date of MRI SCAN
         """
-        scandate = datetime_from_form_date(
-            self.get_mri_value('scandt'))  # TODO: double check this is the date we want
+        scandate = datetime_from_form_date(self.get_mri_value(
+            'scandt'))  # TODO: double check this is the date we want
         return str(scandate.date()) if scandate else None
 
     def _create_scan_pet_year(self) -> Optional[str]:
@@ -39,6 +39,6 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         Description:
             Date of PET SCAN
         """
-        scandate = datetime_from_form_date(
-            self.get_pet_value('scan_date'))  # TODO: double check this is the date we want
+        scandate = datetime_from_form_date(self.get_pet_value(
+            'scan_date'))  # TODO: double check this is the date we want
         return str(scandate.date()) if scandate else None

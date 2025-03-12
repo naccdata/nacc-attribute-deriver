@@ -1,9 +1,7 @@
 """Tests deriving MQT longitudinal variables."""
 import pytest
 
-from nacc_attribute_deriver.attributes.mqt.longitudinal import (
-    LongitudinalAttribute,
-)
+from nacc_attribute_deriver.attributes.mqt.longitudinal import LongitudinalAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -11,7 +9,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def attr() -> LongitudinalAttribute:
     """Create dummy data and return it in an attribute object."""
     data = {
-        'file':{
+        'file': {
             'info': {
                 'forms': {
                     'json': {
@@ -25,12 +23,8 @@ def attr() -> LongitudinalAttribute:
             'info': {
                 'derived': {
                     'uds_visitdates': [
-                        '1980-05-06',
-                        '1980-10-10',
-                        '2023-12-12',
-                        '2024-01-01',
-                        '2024-02-02',
-                        '2025-03-03'
+                        '1980-05-06', '1980-10-10', '2023-12-12', '2024-01-01',
+                        '2024-02-02', '2025-03-03'
                     ]
                 },
                 'longitudinal-data': {
@@ -65,6 +59,5 @@ class TestLongitudinalAttribute:
         assert attr._create_total_uds_visits() == 0
 
     def test_create_years_of_uds(self, attr):
-        """Tests _create_years_of_uds, should only
-        count unique years"""
+        """Tests _create_years_of_uds, should only count unique years."""
         assert attr._create_years_of_uds() == 4

@@ -42,13 +42,13 @@ def np_form_nulls() -> NPFormAttribute:
 class TestHelpers:
 
     def test_mapgross_null(self, np_form_nulls):
-        assert np_form_nulls._mapgross(None) == None
+        assert np_form_nulls._mapgross(None) is None
 
     def test_mapsub4_null(self, np_form_nulls):
         assert np_form_nulls._mapsub4(None) == 9
 
     def test_mapvasc_null(self, np_form_nulls):
-        assert np_form_nulls._mapvasc(None) == None
+        assert np_form_nulls._mapvasc(None) is None
         assert np_form_nulls._mapvasc(1) == 1
 
     def test_mapv9_null(self, np_form_nulls):
@@ -58,7 +58,7 @@ class TestHelpers:
         assert np_form_nulls._mapsub1(None) == 9
 
     def test_maplewy_null(self, np_form_nulls):
-        assert np_form_nulls._maplewy() == None
+        assert np_form_nulls._maplewy() is None
 
     def test_mapgross(self, np_form_attribute):
         assert np_form_attribute._mapgross(0) == 0

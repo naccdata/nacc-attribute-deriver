@@ -1,7 +1,7 @@
 """Helper methods related to dates."""
 import re
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional, Set
 
 
 def datetime_from_form_date(date_string: str) -> Optional[datetime]:
@@ -42,3 +42,13 @@ def calculate_age(d1: datetime, d2: datetime) -> Optional[int]:
 
     return (date2.year - date1.year) - \
            ((date2.month, date2.day) < (date1.month, date1.day))
+
+
+def get_unique_years(dates: List[str]) -> Set[int]:
+    """Gets unique years from list of string dates.
+
+    Args:
+        dates: List of dates to get unique years from
+    """
+    years = [datetime_from_form_date(x) for x in dates]
+    return set(x.year for x in years if x is not None)

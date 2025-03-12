@@ -42,8 +42,8 @@ class TestOperation():
         """Test registry is instantiated correctly."""
         assert OperationRegistry.operations == [
             UpdateOperation, SetOperation, SortedListOperation,
-            InitialOperation, LatestOperation,
-            CountOperation, MinOperation, MaxOperation
+            InitialOperation, LatestOperation, CountOperation, MinOperation,
+            MaxOperation
         ]
 
     def test_update(self, table, location):
@@ -135,7 +135,7 @@ class TestOperation():
         """Tests the count operation."""
         op = CountOperation()
         assert op.LABEL == 'count'
-        table[location]  = 5
+        table[location] = 5
         op.evaluate(table, True, location)
 
         assert table.to_dict() == {

@@ -2,14 +2,13 @@
 
 Assumes NACC-derived variables are already set
 """
-from typing import Any, Optional, Tuple
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.base_attributes import (
     MQTAttribute,
     SCANAttribute,
 )
-from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import datetime_from_form_date
+from nacc_attribute_deriver.utils.date import get_unique_years
 
 
 class MQTSCANAttribute(MQTAttribute, SCANAttribute):
@@ -330,11 +329,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         """
         result = self.assert_required(['scan_mri_dates'],
                                       prefix='subject.info.derived.')
-        # get unique years
-        years = set(datetime_from_form_date(x).year
-                    for x in result['scan_mri_dates'])
-        return len(years)
-
+        return len(get_unique_years(result['scan_mri_dates']))
 
     def _create_scan_pet_year_count(self) -> int:
         """Years of SCAN PET scans available.
@@ -350,7 +345,4 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         """
         result = self.assert_required(['scan_pet_dates'],
                                       prefix='subject.info.derived.')
-        # get unique years
-        years = set(datetime_from_form_date(x).year
-                    for x in result['scan_pet_dates'])
-        return len(years)
+        return len(get_unique_years(result['scan_pet_dates']))

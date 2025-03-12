@@ -1,8 +1,7 @@
-"""
-Base attributes, derive directly from AttributeCollection
-"""
-from inspect import isfunction, stack
+"""Base attributes, derive directly from AttributeCollection."""
+from inspect import stack
 from typing import Any, Dict, List, Optional
+
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -110,7 +109,7 @@ class SCANAttribute(AttributeCollection):
         except (ValueError, TypeError):
             pass
 
-        return self.TRACER_MAPPING.get(tracer, None)
+        return self.TRACER_MAPPING.get(tracer, None)  # type: ignore
 
     def get_scan_type(self) -> Optional[str]:
         """Get the scan type from the tracer."""
@@ -120,7 +119,7 @@ class SCANAttribute(AttributeCollection):
         except (ValueError, TypeError):
             pass
 
-        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
+        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)  # type: ignore
 
     def get_centiloid(self) -> Optional[float]:
         """Get the centiloid value."""
