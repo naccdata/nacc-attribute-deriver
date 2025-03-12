@@ -40,6 +40,11 @@ class DemographicsAttribute(MQTAttribute):
         9: "Unknown"
     }
 
+    VITAL_STATUS_MAPPINGS = {
+        0: "Not deceased/unknown"
+        1: "Deceased"
+    }
+
     def _create_uds_age(self) -> int:
         """UDS age at form date, mapped from NACCAGE.
 
@@ -152,8 +157,5 @@ class DemographicsAttribute(MQTAttribute):
         Description:
             Vital status
         """
-        result = self.assert_required(['naccdage'])
-        if result['naccdage'] == 999:
-            return "TODO: MAPPING FOR VITAL STATUS"
-
-        return "TODO: MAPPING FOR VITAL STATUS"
+        result = self.assert_required(['naccdied'])
+        return self.VITAL_STATUS_MAPPINGS.get(result['naccdied'], "Unknown")

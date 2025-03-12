@@ -11,13 +11,13 @@ from nacc_attribute_deriver.utils.date import datetime_from_form_date
 class NACCSCANAttribute(NACCAttribute, SCANAttribute):
     """Class to collect NACC SCAN attributes needed to derive MQT."""
 
-    def _create_scan_mri_year(self) -> Optional[str]:
+    def _create_scan_mri_dates(self) -> Optional[str]:
         """Gets the date of the MRI scan - temporary derived variable.
 
         Location:
             subject.info.derived.scan_mri_dates
         Operation:
-            set
+            sortedlist
         Type:
             longitudinal
         Description:
@@ -27,18 +27,18 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
             'scandt'))  # TODO: double check this is the date we want
         return str(scandate.date()) if scandate else None
 
-    def _create_scan_pet_year(self) -> Optional[str]:
+    def _create_scan_pet_dates(self) -> Optional[str]:
         """Gets the date of the PET scan - temporary derived variable
 
         Location:
             subject.info.derived.scan_pet_dates
         Operation:
-            set
+            sortedlist
         Type:
             longitudinal
         Description:
             Date of PET SCAN
         """
         scandate = datetime_from_form_date(self.get_pet_value(
-            'scan_date'))  # TODO: double check this is the date we want
+            'scandate'))  # TODO: double check this is the date we want
         return str(scandate.date()) if scandate else None

@@ -18,11 +18,13 @@ class CrossModuleAttribute(UDSAttribute):
                  table: SymbolTable,
                  form_prefix: str = 'file.info.forms.json.',
                  np_prefix: str = 'file.info.np.',
-                 mds_prefix: str = 'file.info.mds.') -> None:
-        """Override initializer to set other module prefixdes."""
+                 mds_prefix: str = 'file.info.mds.',
+                 mile_prefix: str = 'file.info.milestone.') -> None:
+        """Override initializer to set other module prefixes."""
         super().__init__(table, form_prefix)
         self.__np_prefix = np_prefix
         self.__mds_prefix = mds_prefix
+        self.__mile_prefix = mile_prefix
 
     def get_np_value(self, key: str, default: Any = None) -> Any:
         """Get NP-specific value.
@@ -41,6 +43,19 @@ class CrossModuleAttribute(UDSAttribute):
             default: Default value to return if key is not found
         """
         return self.get_value(key, default, prefix=self.__mds_prefix)
+
+    def get_mile_value(self, key: str, default: Any = None) -> Any:
+        """Get Milestone-specific value.
+
+        Args:
+            key: Key to grab value for
+            default: Default value to return if key is not found
+        """
+        return self.get_value(key, default, prefix=self.__mile_prefix)
+
+    # death status
+    def _determine_death_np(self):
+        """Determines the death status given the NP form."""
 
     def _create_naccdage(self) -> int:
         """From derive.sas and derivenew.sas.
@@ -81,3 +96,19 @@ class CrossModuleAttribute(UDSAttribute):
             return 888
 
         return age
+
+    def _create_naccdied(self) -> int:
+        """Creates NACCDIED from NP and/or milestone form.
+        Defaults to 0 for unknown.
+
+        Location:
+            file.info.derived.naccdied
+        Operation:
+            update
+        Type:
+            cross-sectional
+        Description:
+            Subject is known to be deceased
+        """
+
+
