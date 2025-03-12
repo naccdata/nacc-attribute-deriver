@@ -17,7 +17,7 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         Location:
             subject.info.derived.scan_mri_dates
         Operation:
-            set
+            sortedlist
         Type:
             longitudinal
         Description:
@@ -33,7 +33,7 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         Location:
             subject.info.derived.scan_pet_dates
         Operation:
-            set
+            sortedlist
         Type:
             longitudinal
         Description:

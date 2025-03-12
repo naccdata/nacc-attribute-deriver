@@ -9,7 +9,7 @@ from .uds_attribute import UDSAttribute
 class UDSHeaderAttribute(UDSAttribute):
     """Class to collect UDS header attributes."""
 
-    def _create_uds_visitdate(self) -> Optional[str]:
+    def _create_uds_visitdates(self) -> Optional[str]:
         """Gets the visitdate - temporary derived variable.
 
         Location:
