@@ -226,10 +226,9 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
 
         return None
 
-    def _create_scan_pet_amyloid_positivity_indicator(self) -> Optional[bool]:
-        """Access AMYLOID_STATUS in UC Berkeley GAAIN analysis
-        TODO: is this a string/int value> may need to cast to int first since
-        strings always evaluate to true?
+    def _create_scan_pet_amyloid_positivity_indicator(self) -> bool:
+        """Access AMYLOID_STATUS in UC Berkeley GAAIN analysis. Is given as an
+        int so check int boolean.
 
         Location:
             subject.info.imaging.pet.scan.amyloid.positive-scans
@@ -240,7 +239,12 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN Amyloid positive scans available
         """
-        return bool(self.get_mri_value("amyloid_status"))
+        try:
+            status = int(self.get_pet_value("amyloid_status"))
+        except (TypeError, ValueError):
+            return False
+
+        return bool(status)
 
     def _create_scan_pet_tau_tracers(self) -> Optional[str]:
         """Access radiotracer (scan_petdashboard) and map to names of tracers.

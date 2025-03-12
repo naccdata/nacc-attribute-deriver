@@ -17,11 +17,11 @@ def table() -> SymbolTable:
                         "seriestype": "T1w",
                         "cerebrumtcv": "2.5",
                         "wmh": "3.5",
-                        "amyloid_status": "1"  # TODO may need to change type
                     },
                     "pet": {
                         "radiotracer": "1",
-                        "centiloids": "1.5"
+                        "centiloids": "1.5",
+                        "amyloid_status": "1"
                     }
                 }
             }
@@ -212,10 +212,10 @@ class TestMQTSCANAttribute:
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
-        # TODO: check what 0 case should be?
+        # 0 case, should be False
         table['file.info.scan.pet.amyloid_status'] = '0'
         attr = MQTSCANAttribute(table)
-        assert attr._create_scan_pet_amyloid_positivity_indicator()
+        assert not attr._create_scan_pet_amyloid_positivity_indicator()
 
         # empty
         attr = MQTSCANAttribute(SymbolTable({}))
