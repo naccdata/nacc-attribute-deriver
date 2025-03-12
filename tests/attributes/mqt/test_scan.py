@@ -65,11 +65,11 @@ class TestMQTSCANAttribute:
         attr = MQTSCANAttribute(table)
         assert not attr._create_volume_analysis_indicator()
 
-        # 0 case - TODO check this really should return false
+        # 0 case, is a valid number so should return True
         table['file.info.scan.mri.seriestype'] = 'T1w'
         table['file.info.scan.mri.cerebrumtcv'] = '0'
         attr = MQTSCANAttribute(table)
-        assert not attr._create_volume_analysis_indicator()
+        assert attr._create_volume_analysis_indicator()
 
         # empty
         attr = MQTSCANAttribute(SymbolTable({}))
@@ -88,11 +88,11 @@ class TestMQTSCANAttribute:
         attr = MQTSCANAttribute(table)
         assert not attr._create_t1_wmh_indicator()
 
-        # 0 case - TODO check this really should return false
+        # 0 case, is a valid number so should return True
         table['file.info.scan.mri.seriestype'] = 'T1w'
         table['file.info.scan.mri.wmh'] = '0'
         attr = MQTSCANAttribute(table)
-        assert not attr._create_t1_wmh_indicator()
+        assert attr._create_t1_wmh_indicator()
 
         # empty
         attr = MQTSCANAttribute(SymbolTable({}))
@@ -110,10 +110,10 @@ class TestMQTSCANAttribute:
         attr = MQTSCANAttribute(table)
         assert attr._create_flair_wmh_indicator()
 
-        # 0 case - TODO check this really should return false
+        # 0 case, is a valid number so should return True
         table['file.info.scan.mri.wmh'] = '0'
         attr = MQTSCANAttribute(table)
-        assert not attr._create_flair_wmh_indicator()
+        assert attr._create_flair_wmh_indicator()
 
         # empty
         attr = MQTSCANAttribute(SymbolTable({}))
@@ -131,10 +131,10 @@ class TestMQTSCANAttribute:
         attr = MQTSCANAttribute(table)
         assert attr._create_flair_volume_analysis_indicator()
 
-        # 0 case - TODO check this really should return false
+        # 0 case, is a valid number so should return True
         table['file.info.scan.mri.cerebrumtcv'] = '0'
         attr = MQTSCANAttribute(table)
-        assert not attr._create_flair_volume_analysis_indicator()
+        assert attr._create_flair_volume_analysis_indicator()
 
         # empty
         attr = MQTSCANAttribute(SymbolTable({}))

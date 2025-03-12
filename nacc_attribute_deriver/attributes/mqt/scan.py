@@ -28,16 +28,29 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         """
         return self.get_mri_value('seriestype')
 
-    # Warning: The max operation operates on ints, so there
-    # feels like some awkwardness with operating on a bool
-    # Warning: Perhaps need to be careful about pulling
-    # cerebrumtcv from the table and casting as a float
-    # --could generate exceptions. Similar story below
-    # with casting as int() and bool() as well. Perhaps
-    # worth wrapping the cast:
-    # https://stackoverflow.com/questions/6330071/safe-casting-in-python
-    # Note: Might not need to explicitly check on scan type here,
-    # as non-null cerebrumtcv probably implies the type
+    def _is_indicator(self, seriestype: str, target: str) -> bool:
+        """Returns whether or not the given target is.
+
+        an indicator for the series - checks by seeing if
+        the target can be conveted to a float.
+
+        Args:
+            seriestype: The expected series type
+            target: The target field
+        Returns:
+            Whether or not this is an indicator
+        """
+        if self.get_mri_value('seriestype') != seriestype:
+            return False
+
+        try:
+            float(self.get_mri_value(target))
+        except (ValueError, TypeError):
+            return False
+
+        # true if valid float
+        return True
+
     def _create_volume_analysis_indicator(self) -> bool:
         """Access SeriesType (scan_mridashboard file) and cerebrumtcv
         (ucdmrisbm file)
@@ -51,15 +64,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN T1 brain volume analysis results available
         """
-        if self.get_mri_value('seriestype') != 'T1w':
-            return False
-
-        try:
-            cerebrumtcv = float(self.get_mri_value("cerebrumtcv"))
-        except (ValueError, TypeError):
-            return False
-
-        return bool(cerebrumtcv)
+        return self._is_indicator('T1w', 'cerebrumtcv')
 
     def _create_t1_wmh_indicator(self) -> bool:
         """Access SeriesType (scan_mridashboard file) and wmh (ucdmrisbm file)
@@ -73,37 +78,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN T1 WMH analysis available available
         """
-        if self.get_mri_value('seriestype') != 'T1w':
-            return False
-
-        try:
-            wmh = float(self.get_mri_value("wmh"))
-        except (ValueError, TypeError):
-            return False
-
-        return bool(wmh)
-
-    def _create_flair_wmh_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file) and wmh (ucdmrisbm file)
-
-        Location:
-            subject.info.imaging.mri.scan.flair.wmh
-        Operation:
-            max
-        Type:
-            scan
-        Description:
-            SCAN FLAIR WMH analysis available
-        """
-        if self.get_mri_value('seriestype') != 'T2w':
-            return False
-
-        try:
-            wmh = float(self.get_mri_value("wmh"))
-        except (ValueError, TypeError):
-            return False
-
-        return bool(wmh)
+        return self._is_indicator('T1w', 'wmh')
 
     def _create_flair_volume_analysis_indicator(self) -> bool:
         """Access SeriesType (scan_mridashboard file) and cerebrumtcv
@@ -118,15 +93,21 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN FLAIR brain volume analysis results available
         """
-        if self.get_mri_value('seriestype') != 'T2w':
-            return False
+        return self._is_indicator('T2w', 'cerebrumtcv')
 
-        try:
-            cerebrumtcv = float(self.get_mri_value("cerebrumtcv"))
-        except (ValueError, TypeError):
-            return False
+    def _create_flair_wmh_indicator(self) -> bool:
+        """Access SeriesType (scan_mridashboard file) and wmh (ucdmrisbm file)
 
-        return bool(cerebrumtcv)
+        Location:
+            subject.info.imaging.mri.scan.flair.wmh
+        Operation:
+            max
+        Type:
+            scan
+        Description:
+            SCAN FLAIR WMH analysis available
+        """
+        return self._is_indicator('T2w', 'wmh')
 
     # Note: Probably should be "tracer_types"
     def _create_scan_pet_scan_types(self) -> Optional[str]:
