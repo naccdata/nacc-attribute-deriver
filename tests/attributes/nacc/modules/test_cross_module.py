@@ -19,27 +19,15 @@ def attr() -> CrossModuleAttribute:
                         'birthmo': 3,
                         'birthyr': 1990
                     }
-                }
-            }
-        },
-        'np': {
-            'info': {
-                'forms': {
-                    'json': {
-                        'npdage': '2025-01-01'
-                    }
-                }
-            }
-        },
-        'mds': {
-            'info': {
-                'forms': {
-                    'json': {
-                        'deceased': 1,
-                        'deathyr': 2030,
-                        'deathmo': 1,
-                        'deathdy': 1
-                    }
+                },
+                'np': {
+                    'npdage': 83,
+                },
+                'mds': {
+                    'deceased': 1,
+                    'deathyr': 2030,
+                    'deathmo': 1,
+                    'deathdy': 1
                 }
             }
         }
@@ -53,15 +41,15 @@ class TestCrossModuleAttribute:
     def test_create_naccdage(self, attr):
         """Tests creating NACCDAGE triggering each case."""
         # trigger NP case
-        assert attr._create_naccdage() == 34
+        assert attr._create_naccdage() == 83
 
         # trigger MDS case
-        attr.table['np'] = {}
+        attr.table['file.info.np'] = {}
         assert attr._create_naccdage() == 39
 
         # trigger none case
-        attr.table['mds.info.forms.json.deceased'] = 0
+        attr.table['file.info.mds.deceased'] = 0
         assert attr._create_naccdage() == 999
 
-        attr.table['mds'] = {}
+        attr.table['file.info.mds'] = {}
         assert attr._create_naccdage() == 999

@@ -3,7 +3,6 @@
 This is very hacked together for the sake of testing - a more formalized
 one should be done once we get better testing sources.
 """
-import csv
 import json
 import logging
 from argparse import ArgumentParser, Namespace
@@ -17,7 +16,7 @@ log = logging.getLogger(__name__)
 
 # hack for now
 SKIP_VALUES = [
-    "naccdage",  # needs NP/MDS data
+    #"naccdage",  # needs NP/MDS data
     "naccapoe",  # needs apoe data
     "ngdsgwas",  # needs niagads data
     "ngdsexom",
@@ -31,32 +30,21 @@ def curate_row(deriver: AttributeDeriver,
                key: str,
                row: Dict[str, Any],
                baseline: Dict[str, Any],
-               debug_outfile: Optional[Path] = None,
-               update_form: bool = False) -> List[str]:
+               debug_outfile: Optional[Path] = None) -> List[str]:
     """Curate the row's raw variables and compare against baseline To create
     the raw variables, merge row and baseline."""
-    for group in [row, baseline]:
-        for k, v in group.items():
-            # hacky way to do type casting on CSV, just assume anything that looks
-            # like an integer is supposed to be an integer
+    for k, v in baseline.items():
+        # hacky way to do type casting from CSV, just assume anything that looks
+        # like an integer is supposed to be an integer
+        try:
+            baseline[k] = int(v) if v is not None else v
+        except (TypeError, ValueError):
             try:
-                group[k] = int(v) if v is not None else v
+                baseline[k] = float(v) if v is not None else v
             except (TypeError, ValueError):
-                try:
-                    group[k] = float(v) if v is not None else v
-                except (TypeError, ValueError):
-                    pass
+                pass
 
-    if update_form:
-        table = SymbolTable()
-        table['file.info.forms.json'] = row
-        # need to manually make visitdate and formver
-        table['file.info.forms.json.visitdate'] = \
-            f"{baseline['visityr']:02d}-{baseline['visitmo']:02d}-{baseline['visitday']:02d}"
-        table['file.info.forms.json.formver'] = baseline['formver']
-    else:
-        table = SymbolTable(row)
-
+    table = SymbolTable(row)
     deriver.curate(table)
     errors = []
 
@@ -92,9 +80,6 @@ def curate_row(deriver: AttributeDeriver,
 
 def run(args: Namespace):
     """Generate the attribute schema."""
-    if not args.input_csv and not args.input_json:
-        raise ValueError("One of input CSV or input JSON must be provided")
-
     deriver = AttributeDeriver()
     with args.baseline_json.open('r') as fh:
         baselines = json.load(fh)
@@ -108,62 +93,30 @@ def run(args: Namespace):
         with args.debug_outfile.open('w') as fh:
             json.dump({}, fh, indent=4)
 
-    if args.input_csv:
-        log.info(f"Running regression test against {args.input_csv}")
-        with args.input_csv.open('r') as fh:
-            reader = csv.DictReader(fh)
-            for row in reader:
-                if args.num_records is not None and count >= args.num_records:
-                    log.info(
-                        f"Evaluated {args.num_records} records, stopping early"
-                    )
-                    break
+    log.info(f"Running regression test against {args.input_json}")
+    with args.input_json.open('r') as fh:
+        data = json.load(fh)
+        for row in data:
+            count += 1
+            naccid = row['file']['info']['forms']['json'][  # type: ignore
+                'naccid']  # type: ignore
+            visitdate = row['file']['info']['forms'][  # type: ignore
+                'json'][  # type: ignore
+                    'visitdate']  # type: ignore
+            key = f"{naccid}_{visitdate}"
+            if key not in baselines:
+                log.warning(f"{key} not found in baseline")
+                continue
 
-                # ignore non-initial visits
-                if row['packet'] != 'I':
-                    continue
+            row_errors = curate_row(deriver,
+                                    key,
+                                    row,
+                                    baselines[key],
+                                    args.debug_outfile)
+            errors.extend(row_errors)
 
-                count += 1
-                naccid = row['naccid']
-                visitdate = row[
-                    'vstdate_a1']  # based off first form, should really get vistidate
-                key = f"{naccid}_{visitdate}"
-                if key not in baselines:
-                    continue
-
-                row_errors = curate_row(deriver, key, row, baselines[key],
-                                        args.debug_outfile)
-                errors.extend(row_errors)
-
-                if row_errors:
-                    num_failed += 1
-
-    elif args.input_json:
-        log.info(f"Running regression test against {args.input_json}")
-        with args.input_json.open('r') as fh:
-            data = json.load(fh)
-            for row in data:
-                count += 1
-                naccid = row['file']['info']['forms']['json'][  # type: ignore
-                    'naccid']  # type: ignore
-                visitdate = row['file']['info']['forms'][  # type: ignore
-                    'json'][  # type: ignore
-                        'visitdate']  # type: ignore
-                key = f"{naccid}_{visitdate}"
-                if key not in baselines:
-                    log.warning(f"{key} not found in baseline")
-                    continue
-
-                row_errors = curate_row(deriver,
-                                        key,
-                                        row,
-                                        baselines[key],
-                                        args.debug_outfile,
-                                        update_form=False)
-                errors.extend(row_errors)
-
-                if row_errors:
-                    num_failed += 1
+            if row_errors:
+                num_failed += 1
 
     if errors:
         log.error('\n'.join(errors))
@@ -180,21 +133,12 @@ def set_regression_cli(parser: ArgumentParser):
     # add arguments
     parser.add_argument(
         '-i',
-        '--input-csv',
-        dest="input_csv",
-        type=Path,
-        required=False,
-        help=
-        'Input CSV to run regression test against; this or a JSON must be provided'
-    )
-    parser.add_argument(
-        '-j',
         '--input-json',
         dest="input_json",
         type=Path,
-        required=False,
+        required=True,
         help=
-        'Input JSON to run regression test against; this or a CSV must be provided'
+        'Input JSON to run regression test against'
     )
 
     parser.add_argument(
