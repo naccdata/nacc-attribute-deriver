@@ -5,14 +5,15 @@ Heavily based off of
     https://eli.thegreenplace.net/2012/08/07/fundamental-concepts-of-plugin-infrastructures
 """
 
-from inspect import isfunction, stack
-from typing import Any, Callable, Dict, List, Union
+from inspect import isfunction
+from types import FunctionType
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class AttributeCollectionRegistry(type):
-    collections = []
+    collections: List["AttributeCollection"] = []
 
     def __init__(cls, name, bases, attrs):
         if name != 'AttributeCollection':
@@ -35,10 +36,10 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                 to pull from are expected to live under.
         """
         self.table = table
-        self.__form_prefix = form_prefix
+        self.form_prefix = form_prefix
 
     @classmethod
-    def get_all_hooks(cls) -> Dict[str, Callable]:
+    def get_all_hooks(cls) -> Dict[str, FunctionType]:
         """Grab all available _create_ functions."""
         result = {}
         for attr_name in dir(cls):
@@ -49,7 +50,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         return result
 
     @classmethod
-    def get_derive_hook(cls, derive_name: str) -> Callable:
+    def get_derive_hook(cls, derive_name: str) -> Optional[Callable]:
         """Aggregates all _create functions and returns the function if
         derive_name matches. Throws error otherwise.
 
@@ -68,8 +69,8 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
 
     def get_value(self,
                   key: str,
-                  default: Any = None,
-                  prefix: str = None) -> Any:
+                  default: Optional[Any] = None,
+                  prefix: Optional[str] = None) -> Any:
         """Grab value from the table using the key and prefix, if provided. If
         not specified, prefix will default to self.form_prefix.
 
@@ -80,11 +81,14 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                 to explicitly not set a prefix.
         """
         if prefix is None:
-            prefix = self.__form_prefix
+            prefix = self.form_prefix
 
         return self.table.get(f'{prefix}{key}', default)
 
-    def set_value(self, key: str, value: Any, prefix: str = None) -> None:
+    def set_value(self,
+                  key: str,
+                  value: Any,
+                  prefix: Optional[str] = None) -> None:
         """Set the value from the table using the specified key and prefix.
 
         Args:
@@ -93,14 +97,14 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             prefix: Prefix to attach to key
         """
         if prefix is None:
-            prefix = self.__form_prefix
+            prefix = self.form_prefix
 
         self.table[f'{prefix}{key}'] = value
 
     def aggregate_variables(self,
                             fields: List[str],
-                            default: Any = None,
-                            prefix: str = None) -> Dict[str, Any]:
+                            default: Optional[Any] = None,
+                            prefix: Optional[str] = None) -> Dict[str, Any]:
         """Aggregates all the specified fields.
 
         Args:
@@ -136,41 +140,3 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             return False
 
         return False
-
-
-class NACCAttribute(AttributeCollection):
-    """Currently doesn't have anything specific going on, but may be useful
-    later."""
-
-
-class MQTAttribute(AttributeCollection):
-    """MQT-specific attribute collection.
-
-    The main difference is that MQT variables often require that a
-    derived NACC variable has already been set.
-    """
-
-    def assert_required(self,
-                        required: List[str],
-                        prefix: str = 'file.info.derived.') -> Dict[str, Any]:
-        """Asserts that the given fields in required are in the table for the
-        source.
-
-        Args:
-            required: The required fields
-            prefix: Key prefix the required field is expected to be under
-        Returns:
-            The found required variables, flattened out from the table
-        """
-        found = {}
-        for r in required:
-            full_field = f'{prefix}{r}'
-            if full_field not in self.table:  # TODO: maybe can implicitly derive even if schema didn't define it?
-                source = stack(
-                )[1].function  # not great but preferable to passing the name every time
-                raise ValueError(
-                    f"{full_field} must be derived before {source} can run")
-
-            found[r] = self.table[full_field]
-
-        return found

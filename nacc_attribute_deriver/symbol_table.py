@@ -1,14 +1,14 @@
 from collections import deque
-from typing import Any, Iterator, MutableMapping, Optional
+from typing import Any, Dict, Iterator, MutableMapping, Optional
 
 
 class SymbolTable(MutableMapping):
     """Implements a dictionary like object for using metadata paths as keys."""
 
     def __init__(self,
-                 symbol_dict: MutableMapping = None,
+                 symbol_dict: Optional[MutableMapping] = None,
                  separator: str = '.') -> None:
-        self.__table = {}
+        self.__table: Dict[Any, Any] = {}
         self.__separator = separator
 
         # interpret metadata paths
@@ -48,15 +48,12 @@ class SymbolTable(MutableMapping):
             if not isinstance(value, dict):
                 raise KeyError("Key %s maps to atomic value", key)
 
-            value = value.get(sub_key)
+            if sub_key not in value:
+                raise KeyError("Key %s does not exist", key)
+
+            value = value[sub_key]
 
         return value
-
-    def get(self, key: str, default: Any = None) -> Optional[Any]:
-        if key in self:
-            return self[key]
-
-        return default
 
     def __contains__(self, key: Any) -> bool:
         if not isinstance(key, str) or self.__separator not in key:
@@ -96,24 +93,3 @@ class SymbolTable(MutableMapping):
 
     def to_dict(self) -> MutableMapping:
         return self.__table
-
-    def compress(
-        self,
-        table: MutableMapping = None,
-        parent_key: str = None,
-    ) -> MutableMapping:
-        """Compress the table by flattening all keys."""
-        if not table:
-            table = self.__table
-
-        items = []
-        for k, v in table.items():
-            compressed_key = f'{parent_key}{self.__separator}{k}' if parent_key else k
-
-            if isinstance(v, MutableMapping):
-                items.extend(
-                    self.compress(table=v, parent_key=compressed_key).items())
-            else:
-                items.append((compressed_key, v))
-
-        return dict(items)

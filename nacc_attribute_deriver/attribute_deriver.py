@@ -4,7 +4,7 @@ Gear needs to iterate over all subjects, and for each subject, call this
 AttributeDeriver (deriver.curate(file)) for all (relevant) files in the
 subject. File must correspond to the curation schema.
 """
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from .attributes.attribute_map import (
     discover_collections,
@@ -16,7 +16,7 @@ from .symbol_table import SymbolTable
 
 class AttributeDeriver:
 
-    def __init__(self, schema: Dict[str, Any] = None):
+    def __init__(self, schema: Optional[Dict[str, Any]] = None):
         """Initiailzer.
 
         Args:
@@ -44,10 +44,8 @@ class AttributeDeriver:
             raise ValueError(
                 f"Table does not have specified date key: {self.__date_key}")
 
-        collections = [c(table) for c in self.__collections]
-        instance_collections = {}
-
         # collect all attributes beforehand so they're easily hashable
+        instance_collections = {}
         for instance in [c(table) for c in self.__collections]:
             instance_collections.update({
                 k: {

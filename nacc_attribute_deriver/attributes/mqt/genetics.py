@@ -2,7 +2,7 @@
 
 Assumes NACC-derived variables are already set
 """
-from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attributes import MQTAttribute
 
 
 class GeneticAttribute(MQTAttribute):

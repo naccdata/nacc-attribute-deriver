@@ -3,10 +3,7 @@ from datetime import datetime
 from typing import Any
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import (
-    calculate_age,
-    datetime_from_form_date,
-)
+from nacc_attribute_deriver.utils.date import calculate_age
 
 from .uds.uds_attribute import UDSAttribute
 
@@ -20,8 +17,8 @@ class CrossModuleAttribute(UDSAttribute):
     def __init__(self,
                  table: SymbolTable,
                  form_prefix: str = 'file.info.forms.json.',
-                 np_prefix: str = 'np.info.forms.json.',
-                 mds_prefix: str = 'mds.info.forms.json.') -> None:
+                 np_prefix: str = 'file.info.np.',
+                 mds_prefix: str = 'file.info.mds.') -> None:
         """Override initializer to set other module prefixdes."""
         super().__init__(table, form_prefix)
         self.__np_prefix = np_prefix
@@ -59,24 +56,28 @@ class CrossModuleAttribute(UDSAttribute):
         Description:
             Age at death
         """
-        dod = None
         # NP
         npdage = self.get_np_value('npdage')
         if npdage:
-            dod = datetime_from_form_date(npdage)
+            return npdage
 
-        # milestone
-        if not dod and self.get_mds_value('deceased') == 1:
+        dod = None
+
+        # MDS
+        if self.get_mds_value('deceased') == 1:
             dyr = self.get_mds_value('deathyr')
             dmo = self.get_mds_value('deathmo')
             ddy = self.get_mds_value('deathdy')
             dod = datetime(dyr, dmo, ddy)
 
         # UDS
-        # looks like looking at UDS is just for NACCINT?
+        dob = self.generate_uds_dob()
 
-        if not dod:
+        if not dod or not dob:
             return 999
 
-        dob = self.generate_uds_dob()
-        return calculate_age(dob, dod)
+        age = calculate_age(dob, dod)
+        if not age:
+            return 888
+
+        return age

@@ -11,7 +11,13 @@ python_distribution(
         description="Derives variables",
         author="NACC",
         author_email="nacchelp@uw.edu",
-        url="https://github.com/naccdata/nacc-attribute-deriver"))
+        url="https://github.com/naccdata/nacc-attribute-deriver"),
+    entry_points={
+        "console_scripts": {
+            "nacc-attribute-deriver":
+            "nacc_attribute_deriver.deriver_cli:entrypoint"
+        }
+    })
 
 pex_binary(
     name="bin",

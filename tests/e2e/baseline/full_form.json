@@ -15,6 +15,11 @@
                 }
             },
             "derived": {
+                "naccapoe": 5,
+                "ngdsexom": 1,
+                "ngdsgwas": 1,
+                "ngdswes": 0,
+                "ngdswgs": 0,
                 "naccage": 39,
                 "naccnihr": 3,
                 "naccalzp": 8,
@@ -23,15 +28,16 @@
                 "nacclbde": 8,
                 "nacclbdp": 8,
                 "nacclbds": 8,
-                "naccnorm": 0,
+                "naccnorm": 1,
                 "naccppa": 8,
                 "naccudsd": 1,
                 "naccdage": 999,
-                "naccapoe": 5,
-                "ngdsexom": 1,
-                "ngdsgwas": 1,
-                "ngdswes": 0,
-                "ngdswgs": 0
+                "naccarte": null,
+                "naccbraa": null,
+                "nacchem": null,
+                "nacclewy": null,
+                "naccmicr": null,
+                "naccneur": null
             }
         }
     },
@@ -55,15 +61,12 @@
     "subject": {
         "info": {
             "derived": {
-                "initial_uds_visit": {
-                    "date": "2019-04-24",
-                    "value": "2019-04-24"
-                },
-                "latest_uds_visit": {
-                    "date": "2019-04-24",
-                    "value": "2019-04-24"
-                },
-                "naccnorm": false,
+                "scan_mri_years": [],
+                "scan_pet_years": [],
+                "uds_years": [
+                    2019
+                ],
+                "naccnorm": true,
                 "naccdage": 999
             },
             "cognitive": {
@@ -95,11 +98,11 @@
                     "dementia-type": {
                         "initial": {
                             "date": "2019-04-24",
-                            "value": null
+                            "value": []
                         },
                         "latest": {
                             "date": "2019-04-24",
-                            "value": null
+                            "value": []
                         },
                         "all": []
                     },
@@ -143,12 +146,6 @@
                             "value": 39
                         }
                     },
-                    "education-level": {
-                        "latest": {
-                            "date": "2019-04-24",
-                            "value": null
-                        }
-                    },
                     "primary-language": {
                         "latest": {
                             "date": "2019-04-24",
@@ -189,7 +186,49 @@
                             "date": "2019-04-24",
                             "value": 0
                         }
+                    },
+                    "year-count": 1
+                }
+            },
+            "imaging": {
+                "mri": {
+                    "scan": {
+                        "flair": {
+                            "brain-volume": false,
+                            "wmh": false
+                        },
+                        "count": 1,
+                        "year-count": 0,
+                        "t1": {
+                            "wmh": false,
+                            "brain-volume": false
+                        }
                     }
+                },
+                "pet": {
+                    "scan": {
+                        "amyloid": {
+                            "positive-scans": false
+                        },
+                        "count": 1,
+                        "tau": {
+                            "tracers": []
+                        },
+                        "year-count": 0
+                    }
+                }
+            },
+            "mri": {
+                "scan": {
+                    "types": []
+                }
+            },
+            "pet": {
+                "scan": {
+                    "amyloid": {
+                        "tracers": []
+                    },
+                    "types": []
                 }
             },
             "study-parameters": {
@@ -198,6 +237,5 @@
                 }
             }
         }
-    },
-    "TODO": 0
+    }
 }

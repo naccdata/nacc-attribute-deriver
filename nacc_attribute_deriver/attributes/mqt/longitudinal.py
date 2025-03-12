@@ -2,11 +2,8 @@
 
 Assumes NACC-derived variables are already set
 """
-from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
-from nacc_attribute_deriver.utils.date import (
-    calculate_age,
-    datetime_from_form_date,
-)
+from nacc_attribute_deriver.attributes.base.base_attributes import MQTAttribute
+from nacc_attribute_deriver.utils.date import get_unique_years
 
 
 class LongitudinalAttribute(MQTAttribute):
@@ -37,24 +34,17 @@ class LongitudinalAttribute(MQTAttribute):
         return count
 
     def _create_years_of_uds(self) -> int:
-        """Creates subject.info.longitudinal-data.uds.year-count.latest.
-
-        TODO Not clear how this is supposed to be calculated.
+        """Creates subject.info.longitudinal-data.uds.year-count.
 
         Location:
-            TODO
+            subject.info.longitudinal-data.uds.year-count
         Operation:
-            update
+            max
         Type:
             mqt-longitudinal
         Description:
             Number of years of UDS visits available
         """
-        result = self.assert_required(
-            ['initial_uds_visit', 'latest_uds_visit'],
-            prefix='subject.info.derived.')
-
-        initial = datetime_from_form_date(result['initial_uds_visit']['value'])
-        latest = datetime_from_form_date(result['latest_uds_visit']['value'])
-
-        return calculate_age(initial, latest)
+        result = self.assert_required(['uds_visitdates'],
+                                      prefix='subject.info.derived.')
+        return len(get_unique_years(result['uds_visitdates']))
