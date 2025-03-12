@@ -81,6 +81,23 @@ class SetOperation(Operation):
         table[location] = list(cur_set)
 
 
+class SortedListOperation(Operation):
+    LABEL = 'sortedlist'
+
+    def evaluate(  # type: ignore
+            self, table: SymbolTable, value: Any, location: str,
+            **kwargs) -> None:
+        """Adds the value to a sorted list."""
+        cur_list = table.get(location, [])
+
+        if isinstance(value, (list, set)):
+            cur_list.extend(list(value))
+        elif value is not None:
+            cur_list.append(value)
+
+        table[location] = sorted(cur_list)
+
+
 class DateOperation(Operation):
     LABEL: str | None = None
 
@@ -125,6 +142,9 @@ class CountOperation(Operation):
             self, table: SymbolTable, value: Any, location: str,
             **kwargs) -> None:
         """Counts the result."""
+        if not value:  # TODO: should we count 0s/Falses?
+            return
+
         cur_count = table.get(location, 0)
         table[location] = cur_count + 1
 

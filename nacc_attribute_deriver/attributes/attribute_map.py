@@ -6,6 +6,9 @@ from typing import Any, Dict, List, Optional
 from nacc_attribute_deriver.attributes.attribute_collection import (
     AttributeCollection,
     AttributeCollectionRegistry,
+)
+
+from nacc_attribute_deriver.attributes.base.base_attributes import (
     NACCAttribute,
 )
 

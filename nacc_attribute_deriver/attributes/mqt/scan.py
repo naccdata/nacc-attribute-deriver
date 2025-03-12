@@ -4,96 +4,16 @@ Assumes NACC-derived variables are already set
 """
 from typing import Any, Optional, Tuple
 
-from nacc_attribute_deriver.attributes.attribute_collection import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attributes import (
+    MQTAttribute,
+    SCANAttribute,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
-class SCANAttribute(MQTAttribute):
-    """Class to collect SCAN attributes."""
-
-    TRACER_MAPPING = {
-        1: "fdg",
-        2: "pib",
-        3: "florbetapir",
-        4: "florbetaben",
-        5: "nav4694",
-        6: "flortaucipir",
-        7: "MK6240",
-        8: "pi2620",
-        9: "gtp1",
-        99: "unknown",
-    }
-
-    TRACER_SCAN_TYPE_MAPPING = {
-        1: "fdg",
-        2: "amyloid",
-        3: "amyloid",
-        4: "amyloid",
-        5: "amyloid",
-        6: "tau",
-        7: "tau",
-        8: "tau",
-        9: "tau",
-    }
-
-    def __init__(self,
-                 table: SymbolTable,
-                 form_prefix: str = 'file.info.scan.',
-                 mri_prefix: str = 'file.info.scan.mri.',
-                 pet_prefix: str = 'file.info.scan.pet.') -> None:
-        """Override initializer to set prefix to SCAN-specific data."""
-        super().__init__(table, form_prefix)
-        self.__mri_prefix = mri_prefix
-        self.__pet_prefix = pet_prefix
-
-        # common gate values
-        # mri
-        self.series_type = self.get_mri_value('seriestype')
-
-        # pet
-        self.tracer_str, self.scan_type = self.__get_tracer()
-        self.centiloid = self.__get_centiloid()
-
-    def get_mri_value(self, key: str, default: Any = None) -> Any:
-        """Get MRI-specific value.
-
-        Args:
-            key: Key to grab value for
-            default: Default value to return if key is not found
-        """
-        return self.get_value(key, default, prefix=self.__mri_prefix)
-
-    def get_pet_value(self, key: str, default: Any = None) -> Any:
-        """Get PET-specific value.
-
-        Args:
-            key: Key to grab value for
-            default: Default value to return if key is not found
-        """
-        return self.get_value(key, default, prefix=self.__pet_prefix)
-
-    # get functions for common values
-    def __get_tracer(self) -> Tuple[str | None, str | None]:
-        """Get the tracer string."""
-        tracer = None
-        try:
-            tracer = int(self.get_pet_value("radiotracer"))
-        except (ValueError, TypeError):
-            pass
-
-        return (
-            self.TRACER_MAPPING.get(tracer, None),  # type: ignore
-            self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None))  # type: ignore
-
-    def __get_centiloid(self) -> Optional[float]:
-        """Get the centiloid value."""
-        centiloid = None
-        try:
-            centiloid = float(self.get_pet_value("centiloids"))
-        except (ValueError, TypeError):
-            pass
-
-        return centiloid
+class MQTSCANAttribute(MQTAttribute, SCANAttribute):
+    """Class to collect MQT SCAN attributes."""
 
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """Access SeriesType (scan_mridashboard file)
@@ -107,7 +27,7 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN MRI scan types available
         """
-        return self.series_type if self.series_type else None
+        return self.get_mri_value('seriestype')
 
     # Warning: The max operation operates on ints, so there
     # feels like some awkwardness with operating on a bool
@@ -132,7 +52,7 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN T1 brain volume analysis results available
         """
-        if self.series_type != 'T1w':
+        if self.get_mri_value('seriestype') != 'T1w':
             return False
 
         try:
@@ -154,7 +74,7 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN T1 WMH analysis available available
         """
-        if self.series_type != 'T1w':
+        if self.get_mri_value('seriestype') != 'T1w':
             return False
 
         try:
@@ -176,7 +96,7 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN FLAIR WMH analysis available
         """
-        if self.series_type != 'T2w':
+        if self.get_mri_value('seriestype') != 'T2w':
             return False
 
         try:
@@ -199,7 +119,7 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN FLAIR brain volume analysis results available
         """
-        if self.series_type != 'T2w':
+        if self.get_mri_value('seriestype') != 'T2w':
             return False
 
         try:
@@ -224,7 +144,7 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN PET types available
         """
-        return self.tracer_str
+        return self.get_tracer()
 
     def _create_scan_pet_amyloid_tracers(self) -> Optional[str]:
         """Access radiotracer (scan_petdashboard) and map to names of tracers.
@@ -238,8 +158,8 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN Amyloid tracers available
         """
-        if self.scan_type == "amyloid":
-            return self.tracer_str
+        if self.get_scan_type() == "amyloid":
+            return self.get_tracer()
 
         return None
 
@@ -256,7 +176,7 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN Amyloid PET scans centiloid min
         """
-        return self.centiloid
+        return self.get_centiloid()
 
     def _create_scan_pet_centaloid_pib(self) -> Optional[float]:
         """Access CENTILOIDS in UC Berkeley GAAIN analysis.
@@ -270,8 +190,8 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN Amyloid PET scans with PIB centiloid min
         """
-        if self.tracer_str == "pib":
-            return self.centiloid
+        if self.get_tracer() == "pib":
+            return self.get_centiloid()
 
         return None
 
@@ -287,8 +207,8 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN Amyloid PET scans with Florbetapir centiloid min
         """
-        if self.tracer_str == "florbetapir":
-            return self.centiloid
+        if self.get_tracer() == "florbetapir":
+            return self.get_centiloid()
 
         return None
 
@@ -304,8 +224,8 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN Amyloid PET scans with Florbetaben centiloid min
         """
-        if self.tracer_str == "florbetaben":
-            return self.centiloid
+        if self.get_tracer() == "florbetaben":
+            return self.get_centiloid()
 
         return None
 
@@ -321,8 +241,8 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN Amyloid PET scans with NAV4694 centiloid min
         """
-        if self.tracer_str == "nav4694":
-            return self.centiloid
+        if self.get_tracer() == "nav4694":
+            return self.get_centiloid()
 
         return None
 
@@ -354,8 +274,8 @@ class SCANAttribute(MQTAttribute):
         Description:
             SCAN tau tracers available
         """
-        if self.scan_type == "tau":
-            return self.tracer_str
+        if self.get_scan_type() == "tau":
+            return self.get_tracer()
 
         return None
 
@@ -408,11 +328,13 @@ class SCANAttribute(MQTAttribute):
         Description:
             Years of SCAN MRI scans available
         """
-        result = self.assert_required(['scan_mri_years'],
+        result = self.assert_required(['scan_mri_dates'],
                                       prefix='subject.info.derived.')
-        result = result['scan_mri_years']
+        # get unique years
+        years = set(datetime_from_form_date(x).year
+                    for x in result['scan_mri_dates'])
+        return len(years)
 
-        return len(result) if result else 0
 
     def _create_scan_pet_year_count(self) -> int:
         """Years of SCAN PET scans available.
@@ -426,8 +348,9 @@ class SCANAttribute(MQTAttribute):
         Description:
             Years of SCAN PET scans available
         """
-        result = self.assert_required(['scan_pet_years'],
+        result = self.assert_required(['scan_pet_dates'],
                                       prefix='subject.info.derived.')
-        result = result['scan_pet_years']
-
-        return len(result) if result else 0
+        # get unique years
+        years = set(datetime_from_form_date(x).year
+                    for x in result['scan_pet_dates'])
+        return len(years)

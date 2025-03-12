@@ -1,12 +1,11 @@
 """Derived variables from neuropathology form."""
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.base.base_attributes import NACCAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from .np_attribute import NPAttribute
 
-
-class NPFormAttribute(NPAttribute):
+class NPFormAttribute(NACCAttribute):
 
     def __init__(self,
                  table: SymbolTable,

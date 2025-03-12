@@ -9,6 +9,7 @@ from nacc_attribute_deriver.schema.operation import (
     MinOperation,
     OperationRegistry,
     SetOperation,
+    SortedListOperation,
     UpdateOperation,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -40,7 +41,8 @@ class TestOperation():
     def test_registry(self):
         """Test registry is instantiated correctly."""
         assert OperationRegistry.operations == [
-            UpdateOperation, SetOperation, InitialOperation, LatestOperation,
+            UpdateOperation, SetOperation, SortedListOperation,
+            InitialOperation, LatestOperation,
             CountOperation, MinOperation, MaxOperation
         ]
 
@@ -81,6 +83,20 @@ class TestOperation():
                 }
             }
 
+    def test_sorted_list(self, table, location):
+        """Tests the sorted list operation."""
+        op = SortedListOperation()
+        assert op.LABEL == 'sortedlist'
+        table[location] = [1, 2, 3, 4]
+        op.evaluate(table, 2, location)
+
+        assert table.to_dict() == {
+            'test': {
+                'date': '2025-01-01',
+                'location': [1, 2, 2, 3, 4]
+            }
+        }
+
     def test_initial(self, table, location, date_key):
         """Tests the initial operation; will NOT be set since current date >
         destination date."""
@@ -112,6 +128,20 @@ class TestOperation():
                     'date': '2025-01-01',
                     'value': 5
                 }
+            }
+        }
+
+    def test_count(self, table, location):
+        """Tests the count operation."""
+        op = CountOperation()
+        assert op.LABEL == 'count'
+        table[location]  = 5
+        op.evaluate(table, True, location)
+
+        assert table.to_dict() == {
+            'test': {
+                'date': '2025-01-01',
+                'location': 6
             }
         }
 
