@@ -80,7 +80,7 @@ def curate_row(deriver: AttributeDeriver,
 
 def run(args: Namespace):
     """Generate the attribute schema."""
-    deriver = AttributeDeriver()
+    deriver = AttributeDeriver(date_key='file.info.forms.json.visitdate')
     with args.baseline_json.open('r') as fh:
         baselines = json.load(fh)
 

@@ -7,18 +7,16 @@ subject. File must correspond to the curation schema.
 import csv
 from importlib.resources import files
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from .attributes.attribute_collection import AttributeCollectionRegistry
-from .schema.schema import AttributeSchema
+from .schema.schema import AttributeSchema, DeriveEvent
 from .symbol_table import SymbolTable
 
 
 class AttributeDeriver:
 
-    def __init__(self,
-                 date_key: str,
-                 rules_file: Optional[Path] = None):
+    def __init__(self, date_key: str, rules_file: Optional[Path] = None):
         """Initiailzer.
 
         Args:
@@ -28,25 +26,30 @@ class AttributeDeriver:
                 default derive_rules.csv
         """
         self.__date_key = date_key
-
-        if not rules_file:
-            rules_file = files("nacc_attribute_deriver")\
-                .joinpath("bin/derive_rules.csv")
-
         self.__rules = self.__load_rules(rules_file)
 
-    def __load_rules(self, rules_file: Path) -> List[AttributeSchema]:
-        """Load rules from the given path. All forms called through curate
-        will have these rules applied to them.
+    def __load_rules(self,
+                     rules_file: Optional[Path] = None
+                     ) -> List[AttributeSchema]:
+        """Load rules from the given path. All forms called through curate will
+        have these rules applied to them.
 
         Args:
             rules_file: Path to load rules from
         """
+        # grab default rules from bin
+        if not rules_file:
+            rules_file = files(  # type: ignore
+                "nacc_attribute_deriver").joinpath("bin/derive_rules.csv")
+
         # first aggregate all events to their attribute, since some
         # may have multiple events
-        attributes = {}
-        with rules_file.open('r') as fh:
+        attributes: Dict[str, List[DeriveEvent]] = {}
+        with rules_file.open('r') as fh:  # type: ignore
             reader = csv.DictReader(fh)
+            if not reader.fieldnames:
+                raise ValueError("No CSV headers found")
+
             for exp_header in ['function', 'location', 'operation']:
                 if exp_header not in reader.fieldnames:
                     raise ValueError(f"Missing expected header: {exp_header}")
@@ -55,15 +58,13 @@ class AttributeDeriver:
                 func = row.pop('function')
                 if func not in attributes:
                     attributes[func] = []
-                attributes[func].append({
-                    'location': row['location'],
-                    'operation': row['operation']
-                })
+                attributes[func].append(DeriveEvent(**row))  # type: ignore
 
         # create AttributeSchema for each attribute
         rules = []
         for func, events in attributes.items():
-            rules.append(AttributeSchema(function=f'create_{func}', events=events))
+            rules.append(
+                AttributeSchema(function=f'create_{func}', events=events))
 
         return rules
 
@@ -81,7 +82,10 @@ class AttributeDeriver:
 
         # collect all attributes beforehand so they're easily hashable
         instance_collections = {}
-        for instance in [c(table) for c in AttributeCollectionRegistry.collections]:
+        for instance in [
+                c(table) for c in  # type: ignore
+                AttributeCollectionRegistry.collections
+        ]:
             instance_collections.update({
                 k: {
                     'func': v,

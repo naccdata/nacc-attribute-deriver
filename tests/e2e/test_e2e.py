@@ -1,16 +1,11 @@
 """Tests against the full schema end-to-end."""
-import json
-from pathlib import Path
-
-import pytest
-
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 def test_empty_form():
-    """Test against an empty form; mainly a sanity check to make
-    sure the module runs at all."""
+    """Test against an empty form; mainly a sanity check to make sure the
+    module runs at all."""
     form = SymbolTable()  # make an empty form with date key
     form['file.info.forms.json.visitdate'] = '2025-01-01'
 
