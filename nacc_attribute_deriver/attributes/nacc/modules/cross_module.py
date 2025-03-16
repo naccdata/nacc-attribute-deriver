@@ -59,8 +59,6 @@ class CrossModuleAttribute(UDSAttribute):
     def _determine_death_date(self) -> Optional[datetime]:
         """Determines the death status, and returns the death date if found.
 
-        TODO: need better way of indicating whether a form is available?
-
         Checks the following forms in order:
             - NP
             - Milestone
