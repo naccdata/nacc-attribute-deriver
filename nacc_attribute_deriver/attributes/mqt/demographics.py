@@ -40,10 +40,7 @@ class DemographicsAttribute(MQTAttribute):
         9: "Unknown"
     }
 
-    VITAL_STATUS_MAPPINGS = {
-        0: "Not deceased/unknown"
-        1: "Deceased"
-    }
+    VITAL_STATUS_MAPPINGS = {0: "Not deceased/unknown", 1: "Deceased"}
 
     def _create_uds_age(self) -> int:
         """UDS age at form date, mapped from NACCAGE.
