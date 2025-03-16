@@ -1,8 +1,11 @@
-python_sources(name="lib")
+python_sources(
+    name="lib",
+    dependencies=[":rules"]
+)
 
 python_distribution(
     name="dist",
-    dependencies=[":lib"],
+    dependencies=[":lib", ":rules"],
     wheel=True,
     sdist=True,
     provides=python_artifact(
@@ -22,4 +25,9 @@ python_distribution(
 pex_binary(
     name="bin",
     entry_point="deriver_cli.py",
+)
+
+resource(
+    name="rules",
+    source="bin/derive_rules.csv"
 )
