@@ -9,13 +9,15 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def attr() -> NIAGADSAttribute:
     """Create dummy data and return it in an attribute object."""
     data = {
-        'niagads': {
+        'file': {
             'info': {
                 'raw': {
-                    'niagads_gwas': "NG00000",
-                    'niagads_exomechip': "NG00000, NG00001",
-                    'niagads_wgs': "0",
-                    'niagads_wes': None
+                    'niagads': {
+                        'niagads_gwas': "NG00000",
+                        'niagads_exomechip': "NG00000, NG00001",
+                        'niagads_wgs': "0",
+                        'niagads_wes': None
+                    }
                 }
             }
         }

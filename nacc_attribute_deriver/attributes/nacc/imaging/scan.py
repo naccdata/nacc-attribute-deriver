@@ -1,10 +1,8 @@
 """Derived variables that come from SCAN values."""
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attributes import (
-    NACCAttribute,
-    SCANAttribute,
-)
+from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
+from nacc_attribute_deriver.attributes.base.scan_attribute import SCANAttribute
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
@@ -23,8 +21,14 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         Description:
             Date of MRI SCAN
         """
-        scandate = datetime_from_form_date(self.get_mri_value(
-            'scandt'))  # TODO: double check this is the date we want
+        # TODO: either studydate (mridashboard) or scandt (ucdmrisbm)
+        # need to confirm how the data is represented in the table
+        # do mridashboard then ucdmrisbm
+        scandate = self.get_mri_value('studydate')
+        if not scandate:
+            scandate = self.get_mri_value('scandt')
+
+        scandate = datetime_from_form_date(scandate)
         return str(scandate.date()) if scandate else None
 
     def _create_scan_pet_dates(self) -> Optional[str]:
@@ -39,6 +43,12 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         Description:
             Date of PET SCAN
         """
-        scandate = datetime_from_form_date(self.get_pet_value(
-            'scandate'))  # TODO: double check this is the date we want
+        # TODO: either or scan_date(petdashboard) scandate (berkeley files)
+        # need to confirm how the data is represented in the table
+        # try petdashboard first, then berkeley files
+        scandate = self.get_pet_value('scan_date')
+        if not scandate:
+            scandate = self.get_pet_value('scandate')
+
+        scandate = datetime_from_form_date(scandate)
         return str(scandate.date()) if scandate else None

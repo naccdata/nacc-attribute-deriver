@@ -1,7 +1,7 @@
 """Derived variables from neuropathology form."""
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attributes import NACCAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

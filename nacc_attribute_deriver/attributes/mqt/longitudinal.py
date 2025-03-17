@@ -2,7 +2,7 @@
 
 Assumes NACC-derived variables are already set
 """
-from nacc_attribute_deriver.attributes.base.base_attributes import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
 from nacc_attribute_deriver.utils.date import get_unique_years
 
 

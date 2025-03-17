@@ -12,16 +12,16 @@ def table() -> SymbolTable:
     data = {
         'file': {
             'info': {
-                'scan': {
+                'raw': {
                     "mri": {
-                        "seriestype": "T1w",
-                        "cerebrumtcv": "2.5",
-                        "wmh": "3.5",
+                        "seriestype": "T1w",   # scan_mridashboard
+                        "cerebrumtcv": "2.5",  # ucdmrisbm
+                        "wmh": "3.5",          # ucdmrisbm
                     },
                     "pet": {
-                        "radiotracer": "1",
-                        "centiloids": "1.5",
-                        "amyloid_status": "1"
+                        "radiotracer": "1",    # scan_petdashboard
+                        "centiloids": "1.5",   # v_ucberkeley_amyloid_mrifree_gaain
+                        "amyloid_status": "1"  # v_ucberkeley_amyloid_mrifree_gaain
                     }
                 }
             }
@@ -61,13 +61,13 @@ class TestMQTSCANAttribute:
         assert attr._create_volume_analysis_indicator()
 
         # not T1w, should return False
-        table['file.info.scan.mri.seriestype'] = 'dummy'
+        table['file.info.raw.mri.seriestype'] = 'dummy'
         attr = MQTSCANAttribute(table)
         assert not attr._create_volume_analysis_indicator()
 
         # 0 case, is a valid number so should return True
-        table['file.info.scan.mri.seriestype'] = 'T1w'
-        table['file.info.scan.mri.cerebrumtcv'] = '0'
+        table['file.info.raw.mri.seriestype'] = 'T1w'
+        table['file.info.raw.mri.cerebrumtcv'] = '0'
         attr = MQTSCANAttribute(table)
         assert attr._create_volume_analysis_indicator()
 
@@ -76,21 +76,19 @@ class TestMQTSCANAttribute:
         assert not attr._create_volume_analysis_indicator()
 
     def test_create_t1_wmh_indicator(self, table):
-        """Tests _create_t1_wmh_indicator, which looks at wmh when series_type.
-
-        == "T1w".
-        """
+        """Tests _create_t1_wmh_indicator, which looks at wmh when
+        series_type == "T1w"."""
         attr = MQTSCANAttribute(table)
         assert attr._create_t1_wmh_indicator()
 
         # not T1w, should return False
-        table['file.info.scan.mri.seriestype'] = 'dummy'
+        table['file.info.raw.mri.seriestype'] = 'dummy'
         attr = MQTSCANAttribute(table)
         assert not attr._create_t1_wmh_indicator()
 
         # 0 case, is a valid number so should return True
-        table['file.info.scan.mri.seriestype'] = 'T1w'
-        table['file.info.scan.mri.wmh'] = '0'
+        table['file.info.raw.mri.seriestype'] = 'T1w'
+        table['file.info.raw.mri.wmh'] = '0'
         attr = MQTSCANAttribute(table)
         assert attr._create_t1_wmh_indicator()
 
@@ -106,12 +104,12 @@ class TestMQTSCANAttribute:
         assert not attr._create_flair_wmh_indicator()
 
         # now T2w, should pass
-        table['file.info.scan.mri.seriestype'] = 'T2w'
+        table['file.info.raw.mri.seriestype'] = 'T2w'
         attr = MQTSCANAttribute(table)
         assert attr._create_flair_wmh_indicator()
 
         # 0 case, is a valid number so should return True
-        table['file.info.scan.mri.wmh'] = '0'
+        table['file.info.raw.mri.wmh'] = '0'
         attr = MQTSCANAttribute(table)
         assert attr._create_flair_wmh_indicator()
 
@@ -127,12 +125,12 @@ class TestMQTSCANAttribute:
         assert not attr._create_flair_volume_analysis_indicator()
 
         # now T2w, should pass
-        table['file.info.scan.mri.seriestype'] = 'T2w'
+        table['file.info.raw.mri.seriestype'] = 'T2w'
         attr = MQTSCANAttribute(table)
         assert attr._create_flair_volume_analysis_indicator()
 
         # 0 case, is a valid number so should return True
-        table['file.info.scan.mri.cerebrumtcv'] = '0'
+        table['file.info.raw.mri.cerebrumtcv'] = '0'
         attr = MQTSCANAttribute(table)
         assert attr._create_flair_volume_analysis_indicator()
 
@@ -144,7 +142,7 @@ class TestMQTSCANAttribute:
         """Tests _create_scan_pet_scan_types, loop over all options."""
         for k, v in MQTSCANAttribute.TRACER_MAPPING.items():
             # convert to string just to make sure type conversion is correct
-            table['file.info.scan.pet.radiotracer'] = str(k)
+            table['file.info.raw.pet.radiotracer'] = str(k)
             attr = MQTSCANAttribute(table)
             assert attr._create_scan_pet_scan_types() == v
 
@@ -156,7 +154,7 @@ class TestMQTSCANAttribute:
         """Tests _create_scan_pet_amyloid_tracers, loop over all options."""
         for k, v in MQTSCANAttribute.TRACER_MAPPING.items():
             # convert to string just to make sure type conversion is correct
-            table['file.info.scan.pet.radiotracer'] = str(k)
+            table['file.info.raw.pet.radiotracer'] = str(k)
             attr = MQTSCANAttribute(table)
 
             # needs to == amyloid
@@ -182,24 +180,24 @@ class TestMQTSCANAttribute:
     def test_create_scan_pet_centaloid_x(self, table):
         """Tests _create_scan_pet_centaloid_*, should return centerloid as a
         float if the tracer is the given value."""
-        table['file.info.scan.pet.radiotracer'] = '2'
+        table['file.info.raw.pet.radiotracer'] = '2'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_pib() == 1.5
 
-        table['file.info.scan.pet.radiotracer'] = '3'
+        table['file.info.raw.pet.radiotracer'] = '3'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_florbetapir() == 1.5
 
-        table['file.info.scan.pet.radiotracer'] = '4'
+        table['file.info.raw.pet.radiotracer'] = '4'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_florbetaben() == 1.5
 
-        table['file.info.scan.pet.radiotracer'] = '5'
+        table['file.info.raw.pet.radiotracer'] = '5'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_nav4694() == 1.5
 
         # 99, should all be None
-        table['file.info.scan.pet.radiotracer'] = '99'
+        table['file.info.raw.pet.radiotracer'] = '99'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_pib() is None
         assert attr._create_scan_pet_centaloid_florbetapir() is None
@@ -213,7 +211,7 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
         # 0 case, should be False
-        table['file.info.scan.pet.amyloid_status'] = '0'
+        table['file.info.raw.pet.amyloid_status'] = '0'
         attr = MQTSCANAttribute(table)
         assert not attr._create_scan_pet_amyloid_positivity_indicator()
 
@@ -231,7 +229,7 @@ class TestMQTSCANAttribute:
 
         # tau scans
         for i in [6, 7, 8, 9]:
-            table['file.info.scan.pet.radiotracer'] = i
+            table['file.info.raw.pet.radiotracer'] = i
             attr = MQTSCANAttribute(table)
             assert attr._create_scan_pet_tau_tracers() == \
                 attr.TRACER_MAPPING[i]

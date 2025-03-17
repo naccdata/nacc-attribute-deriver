@@ -4,7 +4,7 @@ Assumes NACC-derived variables are already set
 """
 from typing import List
 
-from nacc_attribute_deriver.attributes.base.base_attributes import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
 
 
 class StudyParametersAttribute(MQTAttribute):

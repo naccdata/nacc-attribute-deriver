@@ -4,10 +4,8 @@ Assumes NACC-derived variables are already set
 """
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attributes import (
-    MQTAttribute,
-    SCANAttribute,
-)
+from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.attributes.base.scan_attribute import SCANAttribute
 from nacc_attribute_deriver.utils.date import get_unique_years
 
 

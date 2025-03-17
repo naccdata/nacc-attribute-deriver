@@ -3,7 +3,7 @@
 Right now these should all come from the imported GWAS data under
 <subject>_niagads_availability.json
 """
-from nacc_attribute_deriver.attributes.base.base_attributes import NACCAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -12,7 +12,7 @@ class NIAGADSAttribute(NACCAttribute):
 
     def __init__(self,
                  table: SymbolTable,
-                 form_prefix: str = 'niagads.info.raw.') -> None:
+                 form_prefix: str = 'file.info.raw.niagads.') -> None:
         """Override initializer to set prefix to NIAGAADS-specific data."""
         super().__init__(table, form_prefix)
 
