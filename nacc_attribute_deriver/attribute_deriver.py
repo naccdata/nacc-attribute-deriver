@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from .attributes.attribute_collection import AttributeCollectionRegistry
+from .schema.errors import AttributeDeriverException
 from .schema.schema import AttributeSchema, DeriveEvent
 from .symbol_table import SymbolTable
 
@@ -48,11 +49,13 @@ class AttributeDeriver:
         with rules_file.open('r') as fh:  # type: ignore
             reader = csv.DictReader(fh)
             if not reader.fieldnames:
-                raise ValueError("No CSV headers found")
+                raise AttributeDeriverException(
+                    "No CSV headers found in derive rules file")
 
             for exp_header in ['function', 'location', 'operation']:
                 if exp_header not in reader.fieldnames:
-                    raise ValueError(f"Missing expected header: {exp_header}")
+                    raise AttributeDeriverException(
+                        f"Missing expected header: {exp_header}")
 
             for row in reader:
                 func = row.pop('function')
@@ -77,7 +80,7 @@ class AttributeDeriver:
         """
         # make sure date_key is in metadata
         if self.__date_key not in table or not table[self.__date_key]:
-            raise ValueError(
+            raise AttributeDeriverException(
                 f"Table does not have specified date key: {self.__date_key}")
 
         # collect all attributes beforehand so they're easily hashable
@@ -98,7 +101,7 @@ class AttributeDeriver:
         for attr in self.__rules:
             hook = instance_collections.get(attr.function, None)
             if not hook:
-                raise ValueError(
+                raise AttributeDeriverException(
                     f"Unknown attribute function: {attr.function}")
 
             value = hook['func'](hook['instance'])

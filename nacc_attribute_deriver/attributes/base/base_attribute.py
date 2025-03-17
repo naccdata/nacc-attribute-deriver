@@ -3,6 +3,7 @@ from inspect import stack
 from typing import Any, Dict, List
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.schema.errors import AttributeDeriverException
 
 
 class NACCAttribute(AttributeCollection):
@@ -36,7 +37,7 @@ class MQTAttribute(AttributeCollection):
             if full_field not in self.table:
                 source = stack(
                 )[1].function  # not great but preferable to passing the name every time
-                raise ValueError(
+                raise AttributeDeriverException(
                     f"{full_field} must be derived before {source} can run")
 
             found[r] = self.table[full_field]
