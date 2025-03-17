@@ -24,4 +24,4 @@ pex_binary(
     entry_point="deriver_cli.py",
 )
 
-resource(name="rules", source="bin/derive_rules.csv")
+resource(name="rules", source="config/derive_rules.csv")

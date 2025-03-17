@@ -37,10 +37,10 @@ class AttributeDeriver:
         Args:
             rules_file: Path to load rules from
         """
-        # grab default rules from bin
+        # grab default rules from config
         if not rules_file:
             rules_file = files(  # type: ignore
-                "nacc_attribute_deriver").joinpath("bin/derive_rules.csv")
+                "nacc_attribute_deriver").joinpath("config/derive_rules.csv")
 
         # first aggregate all events to their attribute, since some
         # may have multiple events
