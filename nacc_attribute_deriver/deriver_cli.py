@@ -6,10 +6,9 @@ import logging
 from argparse import ArgumentParser
 
 from .bin.regression_cli import set_regression_cli
-from .bin.schema_generator_cli import set_schema_generator_cli
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger('niagads_gwas_data_transfer')
+log = logging.getLogger(__name__)
 
 
 def entrypoint():
@@ -24,11 +23,6 @@ def entrypoint():
     subparsers = parser.add_subparsers(dest='action',
                                        required=True,
                                        help='Action to run')
-
-    # attribute schema generator
-    schema_generator = subparsers.add_parser('generate-schema',
-                                             help='Generate attribute schema')
-    set_schema_generator_cli(schema_generator)
 
     # regression testing
     regression = subparsers.add_parser('run-regression',

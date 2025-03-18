@@ -4,7 +4,7 @@ Assumes NACC-derived variables are already set
 """
 from typing import Dict, List, Optional, Set
 
-from nacc_attribute_deriver.attributes.base.base_attributes import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
 
 
 class CognitiveAttribute(MQTAttribute):
@@ -140,113 +140,33 @@ class CognitiveAttribute(MQTAttribute):
         return list(mapped_vars)
 
     def _create_contributing_diagnosis(self) -> List[str]:
-        """Mapped from all possible contributing diagnosis.
-
-        Location:
-            subject.info.cognitive.uds.other-diagnosis.initial
-            subject.info.cognitive.uds.other-diagnosis.latest
-            subject.info.cognitive.uds.other-diagnosis.all
-        Operation:
-            initial
-            latest
-            set
-        Type:
-            cognitive
-        Description:
-            Contributing etiological diagnosis
-        """
+        """Mapped from all possible contributing diagnosis."""
         self.assert_required(['naccalzp', 'nacclbdp'])
         return self.grab_mappings(self.DIAGNOSIS_MAPPINGS, target=2)
 
     def _create_dementia(self) -> List[str]:
-        """Mapped from all dementia types.
-
-        Location:
-            subject.info.cognitive.uds.dementia-type.initial
-            subject.info.cognitive.uds.dementia-type.latest
-            subject.info.cognitive.uds.dementia-type.all
-        Operation:
-            initial
-            latest
-            set
-        Type:
-            cognitive
-        Description:
-            Type of Dementia syndrome
-        """
+        """Mapped from all dementia types."""
         self.assert_required(['naccppa', 'naccbvft', 'nacclbds'])
         results = self.grab_mappings(self.DEMENTIA_MAPPINGS, target=1)
         return results
 
     def _create_cognitive_status(self) -> Optional[str]:
-        """Mapped from NACCUDSD.
-
-        Location:
-            subject.info.cognitive.uds.cognitive-status.initial
-            subject.info.cognitive.uds.cognitive-status.latest
-            subject.info.cognitive.uds.cognitive-status.all
-        Operation:
-            initial
-            latest
-            set
-        Type:
-            cognitive
-        Description:
-            Cognitive Status
-        """
+        """Mapped from NACCUDSD."""
         result = self.assert_required(['naccudsd'])
         return self.NACCUDSD_MAPPING.get(result['naccudsd'], None)
 
     def _create_etpr(self) -> str:
-        """Mapped from NACCETPR.
-
-        Location:
-            subject.info.cognitive.uds.etpr.initial
-            subject.info.cognitive.uds.etpr.latest
-            subject.info.cognitive.uds.etpr.all
-        Operation:
-            initial
-            latest
-            set
-        Type:
-            cognitive
-        Description:
-            Primary etiologic diagnosis
-        """
+        """Mapped from NACCETPR."""
         result = self.assert_required(['naccetpr'])
         return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(result['naccetpr'],
                                                    "Missing/unknown")
 
     def _create_global_cdr(self) -> Optional[str]:
-        """Mapped from CDRGLOB.
-
-        Location:
-            subject.info.cognitive.uds.cdrglob.initial
-            subject.info.cognitive.uds.cdrglob.latest
-            subject.info.cognitive.uds.cdrglob.all
-        Operation:
-            initial
-            latest
-            set
-        Type:
-            cognitive
-        Description:
-            Global CDR
-        """
+        """Mapped from CDRGLOB."""
         cdrglob = self.get_value('cdrglob')
         return str(cdrglob) if cdrglob else None
 
     def _create_normal_cognition(self) -> bool:
-        """Mapped from NACCNORM.
-
-        Location:
-            subject.info.derived.naccnorm
-        Operation:
-            min
-        Type:
-            cognitive
-        Description:
-            Normal Cognition
-        """
+        """Mapped from NACCNORM."""
         result = self.assert_required(['naccnorm'])
         return bool(result['naccnorm'])

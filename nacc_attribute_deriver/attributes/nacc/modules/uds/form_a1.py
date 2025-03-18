@@ -193,17 +193,8 @@ class UDSFormA1Attribute(UDSAttribute):
     }
 
     def _create_naccage(self) -> Optional[int]:
-        """Creates DOB from BIRTHMO and BIRTHYR and compares to form date.
-
-        Location:
-            file.info.derived.naccage
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Subject's age at visit
-        """
+        """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
+        compares to form date."""
         dob = self.generate_uds_dob()
         visitdate = self.get_value('visitdate', None)
         visitdate = datetime_from_form_date(visitdate)
@@ -213,17 +204,7 @@ class UDSFormA1Attribute(UDSAttribute):
         return calculate_age(dob, visitdate)
 
     def _create_naccnihr(self) -> int:
-        """Creates NACCNIHR (race)
-
-        Location:
-            file.info.derived.naccnihr
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Subject's age at visit
-        """
+        """Creates NACCNIHR (race)"""
         return self.generate_naccnihr(race=self.get_value('race'),
                                       racex=self.get_value('racex'),
                                       racesec=self.get_value('racesec'),

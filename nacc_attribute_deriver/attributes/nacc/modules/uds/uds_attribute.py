@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attributes import NACCAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
 
 
 class UDSAttribute(NACCAttribute):

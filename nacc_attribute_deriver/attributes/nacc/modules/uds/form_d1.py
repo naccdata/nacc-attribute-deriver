@@ -40,18 +40,8 @@ class UDSFormD1Attribute(UDSAttribute):
         return None
 
     def _create_mci(self) -> int:
-        """Create MCI, which is not a derived variable itself but is used to
-        calculate other derived variables.
-
-        Location:
-            tmp.mci
-        Operation:
-            update
-        Type:
-            intermediate
-        Description:
-            Mild cognitive impairment
-        """
+        """Mild cognitive impairment Create MCI, which is not a derived
+        variable itself but is used to calculate other derived variables."""
 
         # all of these fields are null, 0, or 1
         return 1 if any([
@@ -64,15 +54,8 @@ class UDSFormD1Attribute(UDSAttribute):
     def _create_naccalzp(self) -> int:
         """From d1structrdd.sas.
 
-        Location:
-            file.info.derived.naccalzp
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Primary, contributing, or non-contributing cause of observed
-            cognitive impairment -- Alzheimer's disease (AD)
+        Primary, contributing, or non-contributing cause of observed
+        cognitive impairment -- Alzheimer's disease (AD)
         """
         if self.get_value('normcog') == 1:
             return 8
@@ -88,15 +71,8 @@ class UDSFormD1Attribute(UDSAttribute):
     def _create_nacclbde(self) -> Optional[int]:
         """From d1structrdd.sas.
 
-        Location:
-            file.info.derived.nacclbde
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Presumptive etilogic diagnosis of the cognitive disorder
-            - Lewy body disease (LBD)
+        Presumptive etilogic diagnosis of the cognitive disorder
+        - Lewy body disease (LBD)
         """
         if self.get_value('normcog') == 1:
             return 8
@@ -120,15 +96,8 @@ class UDSFormD1Attribute(UDSAttribute):
         """From d1structrdd.sas. Also relies on another derived variable
         nacclbde.
 
-        Location:
-            file.info.derived.nacclbdp
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Primary, contributing, or non-contributing cause of
-            cognitive impairment -- Lewy body disease (LBD)
+        Primary, contributing, or non-contributing cause of cognitive
+        impairment -- Lewy body disease (LBD)
         """
         if self.get_value('normcog') == 1:
             return 8
@@ -150,14 +119,7 @@ class UDSFormD1Attribute(UDSAttribute):
     def _create_naccudsd(self) -> Optional[int]:
         """From Create NACCUDSD.R which in turn is from derive.sas.
 
-        Location:
-            file.info.derived.naccudsd
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Cognitive status at UDS visit
+        Cognitive status at UDS visit
         """
         if self._create_mci() == 1:
             return 3
@@ -174,17 +136,8 @@ class UDSFormD1Attribute(UDSAttribute):
         """From Create NACCETPR, PRIMDX, SYNMULT.R which in turn comes from
         getd1all.sas.
 
-        Looking for primary status here.
-
-        Location:
-            file.info.derived.naccetpr
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Primary etiologic diagnosis (MCI), impaired,
-            not MCI, or dementia
+        Primary etiologic diagnosis (MCI), impaired, not MCI, or
+        dementia
         """
 
         if self.get_value('normcog') == 1:
@@ -242,15 +195,7 @@ class UDSFormD1Attribute(UDSAttribute):
     def _create_naccppa(self) -> int:
         """From d1structdd.sas.
 
-        Location:
-            file.info.derived.naccppa
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Primary progressive aphasia (PPA) with
-            cognitive impairment
+        Primary progressive aphasia (PPA) with cognitive impairment
         """
         ppaph = self.get_value('ppaph')
         ppasyn = self.get_value('ppasyn')
@@ -277,15 +222,7 @@ class UDSFormD1Attribute(UDSAttribute):
     def _create_naccbvft(self) -> int:
         """From d1structdd.sas.
 
-        Location:
-            file.info.derived.naccbvft
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Dementia syndrome -- behavioral variant
-            FTD syndrome (bvFTD)
+        Dementia syndrome -- behavioral variant FTD syndrome (bvFTD)
         """
         if self.get_value('demented') != 1:
             return 8
@@ -304,14 +241,7 @@ class UDSFormD1Attribute(UDSAttribute):
     def _create_nacclbds(self) -> int:
         """From d1structdd.sas.
 
-        Location:
-            file.info.derived.nacclbds
-        Operation:
-            update
-        Type:
-            longitudinal
-        Description:
-            Dementia syndrome -- Lewy body dementia syndrome
+        Dementia syndrome -- Lewy body dementia syndrome
         """
         if self.get_value('demented') != 1:
             return 8
@@ -330,17 +260,7 @@ class UDSFormD1Attribute(UDSAttribute):
     def _create_naccnorm(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
 
-        This one is a static variable that needs to know if
-        subject.info.derived.naccnorm exists.
-
-        Location:
-            file.info.derived.naccnorm
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Normal cognition at all visits to date
+        Normal cognition at all visits to date
         """
         naccnorm = self.table.get('subject.info.derived.naccnorm')
         if naccnorm == 0:

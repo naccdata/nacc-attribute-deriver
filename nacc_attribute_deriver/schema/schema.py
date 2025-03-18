@@ -30,22 +30,3 @@ class AttributeSchema(BaseModel):
     # this is more for human readibility, not necessary for any processing
     type: Optional[str] = None
     description: Optional[str] = None
-
-
-class CurationSchema(BaseModel):
-    """Defines the overall curation schema, defining all attributes to be
-    derived."""
-    nacc_derived_vars: List[AttributeSchema]
-    mqt_derived_vars: List[AttributeSchema]
-
-    date_key: str  # dot-notation string key that determines the order of
-
-    # longitudinal events like initial/latest
-
-    def curation_order(self) -> List[AttributeSchema]:
-        """Return the curation order.
-
-        Should evaluate all NACC variables first, then MQT derived
-        variables.
-        """
-        return self.nacc_derived_vars + self.mqt_derived_vars

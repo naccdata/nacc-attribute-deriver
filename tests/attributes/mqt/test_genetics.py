@@ -9,17 +9,15 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def attr() -> GeneticAttribute:
     """Create dummy data and return it in an attribute object."""
     data = {
-        'ncrad': {
-            'info': {
-                'raw': {
-                    'apoe': 5,
-                    'a1': 'E4',
-                    'a2': 'E2'
-                }
-            }
-        },
         'file': {
             'info': {
+                'raw': {
+                    'ncrad': {
+                        'apoe': 5,
+                        'a1': 'E4',
+                        'a2': 'E2'
+                    }
+                },
                 'derived': {
                     "ngdsexom": 1,
                     "ngdsgwas": 1,

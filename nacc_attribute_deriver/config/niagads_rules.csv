@@ -1,0 +1,9 @@
+function,location,operation,type,description
+ngdsgwas,file.info.derived.ngdsgwas,update,,
+ngdsexom,file.info.derived.ngdsexom,update,,
+ngdswgs,file.info.derived.ngdswgs,update,,
+ngdswes,file.info.derived.ngdswes,update,,
+ngdsgwas_mqt,subject.info.genetics.ngdsgwas,update,,
+ngdsexom_mqt,subject.info.genetics.ngdsexom,update,,
+ngdswes_mqt,subject.info.genetics.ngdswes,update,,
+ngdswgs_mqt,subject.info.genetics.ngdswgs,update,,

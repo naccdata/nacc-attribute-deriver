@@ -1,7 +1,7 @@
 """Derived variables from neuropathology form."""
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attributes import NACCAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -73,14 +73,7 @@ class NPFormAttribute(NACCAttribute):
     def _create_naccbraa(self) -> int:
         """Create the NACCBRAA variable.
 
-        Location:
-            file.info.derived.naccbraa
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Braak stage for neurofibrillary degeneration (B score)
+        Braak stage for neurofibrillary degeneration (B score)
         """
         formver = self.get_value('formver')
         npbraak = self.get_value('npbraak')
@@ -103,14 +96,7 @@ class NPFormAttribute(NACCAttribute):
     def _create_naccneur(self) -> int:
         """Create the NACCNEUR variable.
 
-        Location:
-            file.info.derived.naccneur
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Density of neocortical neuritic plaques (CERAD score) (C score)
+        Density of neocortical neuritic plaques (CERAD score) (C score)
         """
         formver = self.get_value('formver')
         npneur = self.get_value('npneur')
@@ -131,14 +117,7 @@ class NPFormAttribute(NACCAttribute):
     def _create_naccmicr(self) -> int:
         """Create the NACCMICR variable.
 
-        Location:
-            file.info.derived.naccmicr
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Microinfarcts
+        Microinfarcts
         """
         formver = self.get_value('formver')
         npold = self.get_value('npold')
@@ -160,14 +139,7 @@ class NPFormAttribute(NACCAttribute):
     def _create_nacchem(self) -> Optional[int]:
         """Create the NACCHEM variable.
 
-        Location:
-            file.info.derived.nacchem
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Hemorrhages and microbleeds
+        Hemorrhages and microbleeds
         """
         formver = self.get_value('formver')
         nphem = self.get_value('nphem')
@@ -200,14 +172,7 @@ class NPFormAttribute(NACCAttribute):
     def _create_naccarte(self) -> Optional[int]:
         """Create the NACCARTE variable.
 
-        Location:
-            file.info.derived.naccarte
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Arteriolosclerosis
+        Arteriolosclerosis
         """
         formver = self.get_value('formver')
         nparter = self.get_value('nparter')
@@ -228,14 +193,7 @@ class NPFormAttribute(NACCAttribute):
     def _create_nacclewy(self) -> Optional[int]:
         """Create the NACCLEWY variable.
 
-        Location:
-            file.info.derived.nacclewy
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Lewy body disease
+        Lewy body disease
         """
         formver = self.get_value('formver')
         nacclewy = None
