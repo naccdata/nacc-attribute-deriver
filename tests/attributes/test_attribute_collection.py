@@ -2,8 +2,8 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.schema.errors import AttributeDeriverException
 from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.schema.errors import AttributeDeriverException
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

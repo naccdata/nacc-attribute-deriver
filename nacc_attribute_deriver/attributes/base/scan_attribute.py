@@ -16,6 +16,7 @@ class MRIPrefix(str, Enum):
     SCAN_MRI_QC = 'scan_mri_qc.'
     MRI_SBM = 'mri_sbm.'
 
+
 class PETPrefix(str, Enum):
 
     SCAN_PET_QC = 'scan_pet_qc.'
@@ -28,9 +29,7 @@ class PETPrefix(str, Enum):
     def analysis_files(cls):
         """Returns all analysis PET files."""
         return [
-            cls.AMYLOID_PET_GAAIN,
-            cls.AMYLOID_PET_NPDKA,
-            cls.FDG_PET_NPDKA,
+            cls.AMYLOID_PET_GAAIN, cls.AMYLOID_PET_NPDKA, cls.FDG_PET_NPDKA,
             cls.TAU_PET_NPDKA
         ]
 
@@ -72,7 +71,10 @@ class SCANAttribute(AttributeCollection):
         self.__mri_prefix = mri_prefix
         self.__pet_prefix = pet_prefix
 
-    def get_mri_value(self, key: str, subprefix: MRIPrefix, default: Any = None) -> Any:
+    def get_mri_value(self,
+                      key: str,
+                      subprefix: MRIPrefix,
+                      default: Any = None) -> Any:
         """Get MRI-specific value.
 
         Args:
@@ -80,9 +82,14 @@ class SCANAttribute(AttributeCollection):
             subprefix: The MRI-specific sub-prefix
             default: Default value to return if key is not found
         """
-        return self.get_value(key, default, prefix=f'{self.__mri_prefix}{subprefix.value}')
+        return self.get_value(key,
+                              default,
+                              prefix=f'{self.__mri_prefix}{subprefix.value}')
 
-    def get_pet_value(self, key: str, subprefix: PETPrefix, default: Any = None) -> Any:
+    def get_pet_value(self,
+                      key: str,
+                      subprefix: PETPrefix,
+                      default: Any = None) -> Any:
         """Get PET-specific value.
 
         Args:
@@ -90,7 +97,9 @@ class SCANAttribute(AttributeCollection):
             subprefix: The MRI-specific sub-prefix
             default: Default value to return if key is not found
         """
-        return self.get_value(key, default, prefix=f'{self.__pet_prefix}{subprefix.value}')
+        return self.get_value(key,
+                              default,
+                              prefix=f'{self.__pet_prefix}{subprefix.value}')
 
     # get functions for common values
     def get_tracer(self, field: str, subprefix: PETPrefix) -> Optional[str]:

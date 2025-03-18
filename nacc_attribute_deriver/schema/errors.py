@@ -1,6 +1,5 @@
-"""
-Errors and exception handling
-"""
+"""Errors and exception handling."""
+
 
 class AttributeDeriverException(Exception):
     pass

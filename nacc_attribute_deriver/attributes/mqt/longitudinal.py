@@ -12,17 +12,8 @@ class LongitudinalAttribute(MQTAttribute):
     def _create_total_uds_visits(self) -> int:
         """Total number of UDS visits.
 
-        This is an accumulative variable, assumes its called
-        for each form
-
-        Location:
-            subject.info.longitudinal-data.uds.count.latest
-        Operation:
-            latest
-        Type:
-            mqt-longitudinal
-        Description:
-            Total number of UDS visits
+        This is an accumulative variable, assumes its called for each
+        form
         """
         count = self.table.get(
             'subject.info.longitudinal-data.uds.count.latest.value', 0)
@@ -34,17 +25,7 @@ class LongitudinalAttribute(MQTAttribute):
         return count
 
     def _create_years_of_uds(self) -> int:
-        """Creates subject.info.longitudinal-data.uds.year-count.
-
-        Location:
-            subject.info.longitudinal-data.uds.year-count
-        Operation:
-            max
-        Type:
-            mqt-longitudinal
-        Description:
-            Number of years of UDS visits available
-        """
+        """Creates subject.info.longitudinal-data.uds.year-count."""
         result = self.assert_required(['uds_visitdates'],
                                       prefix='subject.info.derived.')
         return len(get_unique_years(result['uds_visitdates']))

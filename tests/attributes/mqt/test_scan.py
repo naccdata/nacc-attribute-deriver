@@ -67,8 +67,8 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_mri_scan_types() is None
 
     def test_create_scan_volume_analysis_indicator(self, table):
-        """Tests _create_scan_volume_analysis_indicator, which looks at cerebrumtcv
-        when series_type == T1w."""
+        """Tests _create_scan_volume_analysis_indicator, which looks at
+        cerebrumtcv when series_type == T1w."""
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_volume_analysis_indicator()
 
@@ -82,7 +82,7 @@ class TestMQTSCANAttribute:
         assert not attr._create_scan_volume_analysis_indicator()
 
     def test_create_scan_flair_wmh_indicator(self, table):
-        """Tests _create_scan_flair_wmh_indicator, which looks at wmh"""
+        """Tests _create_scan_flair_wmh_indicator, which looks at wmh."""
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_flair_wmh_indicator()
 

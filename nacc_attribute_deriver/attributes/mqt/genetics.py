@@ -40,17 +40,7 @@ class GeneticAttribute(MQTAttribute):
         return self.get_value(key, default, prefix=self.__niagads_prefix)
 
     def _create_apoe(self) -> str:
-        """Mapped from NACCAPOE.
-
-        Location:
-            subject.info.genetics.naccapoe
-        Operation:
-            update
-        Type:
-            genetics
-        Description:
-            APOE genotype
-        """
+        """Mapped from NACCAPOE."""
         a1 = self.get_ncrad_value('a1')
         a2 = self.get_ncrad_value('a2')
 
@@ -60,61 +50,21 @@ class GeneticAttribute(MQTAttribute):
         return f'{a1},{a2}'.lower()
 
     def _create_ngdsgwas_mqt(self) -> bool:
-        """Mapped from NGDSGWAS.
-
-        Location:
-            subject.info.genetics.ngdsgwas
-        Operation:
-            update
-        Type:
-            genetics
-        Description:
-            GWAS available at NIAGADS
-        """
+        """Mapped from NGDSGWAS."""
         result = self.assert_required(['ngdsgwas'])
         return bool(result['ngdsgwas'])
 
     def _create_ngdsexom_mqt(self) -> bool:
-        """Mapped from NGDSEXOM.
-
-        Location:
-            subject.info.genetics.ngdsexom
-        Operation:
-            update
-        Type:
-            genetics
-        Description:
-            ExomeChip available at NIAGADS
-        """
+        """Mapped from NGDSEXOM."""
         result = self.assert_required(['ngdsexom'])
         return bool(result['ngdsexom'])
 
     def _create_ngdswgs_mqt(self) -> bool:
-        """Mapped from NGDSWGS.
-
-        Location:
-            subject.info.genetics.ngdswgs
-        Operation:
-            update
-        Type:
-            genetics
-        Description:
-            Whole genome sequencing available at NIAGADS
-        """
+        """Mapped from NGDSWGS."""
         result = self.assert_required(['ngdswgs'])
         return bool(result['ngdswgs'])
 
     def _create_ngdswes_mqt(self) -> bool:
-        """Mapped from NGDSWES.
-
-        Location:
-            subject.info.genetics.ngdswes
-        Operation:
-            update
-        Type:
-            genetics
-        Description:
-            Whole exome sequencing available at NIAGADS
-        """
+        """Mapped from NGDSWES."""
         result = self.assert_required(['ngdswes'])
         return bool(result['ngdswes'])

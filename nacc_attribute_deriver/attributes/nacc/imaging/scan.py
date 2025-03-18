@@ -15,15 +15,6 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
 
     def _create_scan_mri_dates(self) -> Optional[str]:
         """Gets the date of the MRI scan - temporary derived variable.
-
-        Location:
-            subject.info.derived.scan_mri_dates
-        Operation:
-            sortedlist
-        Type:
-            longitudinal
-        Description:
-            Date of MRI SCAN
         """
         # TODO: either studydate (mridashboard) or scandt (ucdmrisbm)
         # need to confirm how the data is represented in the table
@@ -37,15 +28,6 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
 
     def _create_scan_pet_dates(self) -> Optional[str]:
         """Gets the date of the PET scan - temporary derived variable
-
-        Location:
-            subject.info.derived.scan_pet_dates
-        Operation:
-            sortedlist
-        Type:
-            longitudinal
-        Description:
-            Date of PET SCAN
         """
         # TODO: either or scan_date(petdashboard) scandate (berkeley files)
         # need to confirm how the data is represented in the table

@@ -115,17 +115,7 @@ class CrossModuleAttribute(UDSAttribute):
         return datetime_from_form_date(death_date)
 
     def _create_naccdage(self) -> int:
-        """From derive.sas and derivenew.sas.
-
-        Location:
-            file.info.derived.naccdage
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Age at death
-        """
+        """From derive.sas and derivenew.sas."""
         # NP, grab from NPDAGE
         npdage = self.get_np_value('npdage')
         if npdage:
@@ -147,15 +137,6 @@ class CrossModuleAttribute(UDSAttribute):
     def _create_naccdied(self) -> int:
         """Creates NACCDIED - determined if death
         has been reported by NP or Milestone form.
-
-        Location:
-            file.info.derived.naccdied
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            Subject is known to be deceased
         """
         if self.get_np_value('npdage') is not None \
             or self.get_mile_value('deceased') in [1, '1']:

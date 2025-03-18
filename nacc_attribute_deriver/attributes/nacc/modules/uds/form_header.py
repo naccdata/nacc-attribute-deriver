@@ -10,16 +10,6 @@ class UDSHeaderAttribute(UDSAttribute):
     """Class to collect UDS header attributes."""
 
     def _create_uds_visitdates(self) -> Optional[str]:
-        """Gets the visitdate - temporary derived variable.
-
-        Location:
-            subject.info.derived.uds_visitdates
-        Operation:
-            sortedlist
-        Type:
-            longitudinal
-        Description:
-            UDS visitdate, as a string
-        """
+        """Gets the visitdate - temporary derived variable."""
         visitdate = datetime_from_form_date(self.get_value('visitdate'))
         return str(visitdate.date()) if visitdate else None

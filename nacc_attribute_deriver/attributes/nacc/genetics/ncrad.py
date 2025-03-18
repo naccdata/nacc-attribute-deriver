@@ -20,15 +20,6 @@ class NCRADAttribute(NACCAttribute):
         """Comes from derive.sas and derivenew.sas (same code)
 
         Should come from the actual imported APOE data
-            <subject>_apoe_availability.json
-
-        Location:
-            file.info.derived.naccapoe
-        Operation:
-            update
-        Type:
-            cross-sectional
-        Description:
-            APOE genotype
+        <subject>_apoe_availability.json
         """
         return self.get_value('apoe', 9)
