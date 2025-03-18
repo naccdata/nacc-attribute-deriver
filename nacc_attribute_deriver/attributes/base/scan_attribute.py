@@ -3,31 +3,6 @@
 Raw values are split across 7 files - deriving a variable should be isolated
 to a single file as much as possible, otherwise we need to somehow map cross-file
 attributes.
-
-'file': {
-    'info': {
-        'raw': {
-            "mri": {
-                "mri_sbm": {  # ucdmrisbm
-                },
-                "scan_mri_qc": {  # scan_mridashboard
-                }
-            },
-            "pet": {
-                "amyloid_pet_gaain": {  # v_ucberkeley_amyloid_mrifree_gaain
-                },
-                "amyloid_pet_npdka": {  # v_ucberkeley_amyloid_mrifree_npdka
-                },
-                "fdg_pet_npdka": {  # v_ucberkeley_fdg_metaroi_npdka
-                },
-                "tau_pet_npdka": {  # v_ucberkeley_tau_mrifree_npdka
-                },
-                "scan_pet_qc": {    # scan_petdashboard
-                }
-            }
-        }
-    }
-}
 """
 from enum import Enum
 from typing import Any, Optional
