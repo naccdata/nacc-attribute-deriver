@@ -1,8 +1,63 @@
-"""SCAN attribute, derive directly from AttributeCollection."""
+"""SCAN attribute, derive directly from AttributeCollection.
+
+Raw values are split across 7 files - deriving a variable should be isolated
+to a single file as much as possible, otherwise we need to somehow map cross-file
+attributes.
+
+'file': {
+    'info': {
+        'raw': {
+            "mri": {
+                "mri_sbm": {  # ucdmrisbm
+                },
+                "scan_mri_qc": {  # scan_mridashboard
+                }
+            },
+            "pet": {
+                "amyloid_pet_gaain": {  # v_ucberkeley_amyloid_mrifree_gaain
+                },
+                "amyloid_pet_npdka": {  # v_ucberkeley_amyloid_mrifree_npdka
+                },
+                "fdg_pet_npdka": {  # v_ucberkeley_fdg_metaroi_npdka
+                },
+                "tau_pet_npdka": {  # v_ucberkeley_tau_mrifree_npdka
+                },
+                "scan_pet_qc": {    # scan_petdashboard
+                }
+            }
+        }
+    }
+}
+"""
+from enum import Enum
 from typing import Any, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
+
+class MRIPrefix(str, Enum):
+
+    SCAN_MRI_QC = 'scan_mri_qc.'
+    MRI_SBM = 'mri_sbm.'
+
+class PETPrefix(str, Enum):
+
+    SCAN_PET_QC = 'scan_pet_qc.'
+    AMYLOID_PET_GAAIN = 'amyloid_pet_gaain.'
+    AMYLOID_PET_NPDKA = 'amyloid_pet_npdka.'
+    FDG_PET_NPDKA = 'fdg_pet_npdka.'
+    TAU_PET_NPDKA = 'tau_pet_npdka.'
+
+    @classmethod
+    def analysis_files(cls):
+        """Returns all analysis PET files."""
+        return [
+            cls.AMYLOID_PET_GAAIN,
+            cls.AMYLOID_PET_NPDKA,
+            cls.FDG_PET_NPDKA,
+            cls.TAU_PET_NPDKA
+        ]
 
 
 class SCANAttribute(AttributeCollection):
@@ -42,51 +97,43 @@ class SCANAttribute(AttributeCollection):
         self.__mri_prefix = mri_prefix
         self.__pet_prefix = pet_prefix
 
-    def get_mri_value(self, key: str, default: Any = None) -> Any:
+    def get_mri_value(self, key: str, subprefix: MRIPrefix, default: Any = None) -> Any:
         """Get MRI-specific value.
 
         Args:
             key: Key to grab value for
+            subprefix: The MRI-specific sub-prefix
             default: Default value to return if key is not found
         """
-        return self.get_value(key, default, prefix=self.__mri_prefix)
+        return self.get_value(key, default, prefix=f'{self.__mri_prefix}{subprefix.value}')
 
-    def get_pet_value(self, key: str, default: Any = None) -> Any:
+    def get_pet_value(self, key: str, subprefix: PETPrefix, default: Any = None) -> Any:
         """Get PET-specific value.
 
         Args:
             key: Key to grab value for
+            subprefix: The MRI-specific sub-prefix
             default: Default value to return if key is not found
         """
-        return self.get_value(key, default, prefix=self.__pet_prefix)
+        return self.get_value(key, default, prefix=f'{self.__pet_prefix}{subprefix.value}')
 
     # get functions for common values
-    def get_tracer(self) -> Optional[str]:
+    def get_tracer(self, field: str, subprefix: PETPrefix) -> Optional[str]:
         """Get the tracer string."""
         tracer = None
         try:
-            tracer = int(self.get_pet_value("radiotracer"))
+            tracer = int(self.get_pet_value(field, subprefix))
         except (ValueError, TypeError):
             pass
 
         return self.TRACER_MAPPING.get(tracer, None)  # type: ignore
 
-    def get_scan_type(self) -> Optional[str]:
+    def get_scan_type(self, field: str, subprefix: PETPrefix) -> Optional[str]:
         """Get the scan type from the tracer."""
         tracer = None
         try:
-            tracer = int(self.get_pet_value("radiotracer"))
+            tracer = int(self.get_pet_value(field, subprefix))
         except (ValueError, TypeError):
             pass
 
         return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)  # type: ignore
-
-    def get_centiloid(self) -> Optional[float]:
-        """Get the centiloid value."""
-        centiloid = None
-        try:
-            centiloid = float(self.get_pet_value("centiloids"))
-        except (ValueError, TypeError):
-            pass
-
-        return centiloid

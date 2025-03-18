@@ -5,7 +5,11 @@ Assumes NACC-derived variables are already set
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
-from nacc_attribute_deriver.attributes.base.scan_attribute import SCANAttribute
+from nacc_attribute_deriver.attributes.base.scan_attribute import (
+    MRIPrefix,
+    PETPrefix,
+    SCANAttribute,
+)
 from nacc_attribute_deriver.utils.date import get_unique_years
 
 
@@ -24,25 +28,21 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN MRI scan types available
         """
-        return self.get_mri_value('seriestype')
+        return self.get_mri_value('seriestype', MRIPrefix.SCAN_MRI_QC)
 
-    def _is_indicator(self, seriestype: str, target: str) -> bool:
-        """Returns whether or not the given target is.
-
-        an indicator for the series - checks by seeing if
-        the target can be conveted to a float.
+    def _is_mri_indicator(self, target: str, subprefix: str) -> bool:
+        """Returns whether or not the given target is an MRI
+        indicator - checks by seeing if the target can be
+        converted to a float.
 
         Args:
-            seriestype: The expected series type
             target: The target field
+            subprefix: Subprefix file to look in
         Returns:
             Whether or not this is an indicator
         """
-        if self.get_mri_value('seriestype') != seriestype:
-            return False
-
         try:
-            float(self.get_mri_value(target))
+            float(self.get_mri_value(target, subprefix))
         except (ValueError, TypeError):
             return False
 
@@ -50,8 +50,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         return True
 
     def _create_volume_analysis_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file) and cerebrumtcv
-        (ucdmrisbm file)
+        """Check if cerebrumtcv (ucdmrisbm file) exists
 
         Location:
             subject.info.imaging.mri.scan.t1.brain-volume
@@ -62,39 +61,10 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN T1 brain volume analysis results available
         """
-        return self._is_indicator('T1w', 'cerebrumtcv')
-
-    def _create_t1_wmh_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file) and wmh (ucdmrisbm file)
-
-        Location:
-            subject.info.imaging.mri.scan.t1.wmh
-        Operation:
-            max
-        Type:
-            scan
-        Description:
-            SCAN T1 WMH analysis available available
-        """
-        return self._is_indicator('T1w', 'wmh')
-
-    def _create_flair_volume_analysis_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file) and cerebrumtcv
-        (ucdmrisbm file)
-
-        Location:
-            subject.info.imaging.mri.scan.flair.brain-volume
-        Operation:
-            max
-        Type:
-            scan
-        Description:
-            SCAN FLAIR brain volume analysis results available
-        """
-        return self._is_indicator('T2w', 'cerebrumtcv')
+        return self._is_mri_indicator('cerebrumtcv', MRIPrefix.MRI_SBM)
 
     def _create_flair_wmh_indicator(self) -> bool:
-        """Access SeriesType (scan_mridashboard file) and wmh (ucdmrisbm file)
+        """Check if wmh (ucdmrisbm file) exists
 
         Location:
             subject.info.imaging.mri.scan.flair.wmh
@@ -103,9 +73,9 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Type:
             scan
         Description:
-            SCAN FLAIR WMH analysis available
+            SCAN FLAIR WMH analysis available available
         """
-        return self._is_indicator('T2w', 'wmh')
+        return self._is_mri_indicator('wmh', MRIPrefix.MRI_SBM)
 
     # Note: Probably should be "tracer_types"
     def _create_scan_pet_scan_types(self) -> Optional[str]:
@@ -122,7 +92,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN PET types available
         """
-        return self.get_tracer()
+        return self.get_tracer('radiotracer', PETPrefix.SCAN_PET_QC)
 
     def _create_scan_pet_amyloid_tracers(self) -> Optional[str]:
         """Access radiotracer (scan_petdashboard) and map to names of tracers.
@@ -136,10 +106,38 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN Amyloid tracers available
         """
-        if self.get_scan_type() == "amyloid":
-            return self.get_tracer()
+        if self.get_scan_type('radiotracer', PETPrefix.SCAN_PET_QC) == "amyloid":
+            return self.get_tracer('radiotracer', PETPrefix.SCAN_PET_QC)
 
         return None
+
+    def _create_scan_pet_tau_tracers(self) -> Optional[str]:
+        """Access radiotracer (scan_petdashboard) and map to names of tracers.
+
+        Location:
+            subject.info.imaging.pet.scan.tau.tracers
+        Operation:
+            set
+        Type:
+            scan
+        Description:
+            SCAN tau tracers available
+        """
+        if self.get_scan_type('radiotracer', PETPrefix.SCAN_PET_QC) == "tau":
+            return self.get_tracer('radiotracer', PETPrefix.SCAN_PET_QC)
+
+        return None
+
+    def get_centiloid(self) -> Optional[float]:
+        """Get the centiloid value."""
+        centiloid = None
+        try:
+            centiloid = float(self.get_pet_value("centiloids", PETPrefix.AMYLOID_PET_GAAIN))
+        except (ValueError, TypeError):
+            pass
+
+        return centiloid
+
 
     # Note: Be careful about the float return type here with the min computation.
     def _create_scan_pet_centaloid(self) -> Optional[float]:
@@ -168,7 +166,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN Amyloid PET scans with PIB centiloid min
         """
-        if self.get_tracer() == "pib":
+        if self.get_tracer('tracer', PETPrefix.AMYLOID_PET_GAAIN) == "pib":
             return self.get_centiloid()
 
         return None
@@ -185,7 +183,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN Amyloid PET scans with Florbetapir centiloid min
         """
-        if self.get_tracer() == "florbetapir":
+        if self.get_tracer('tracer', PETPrefix.AMYLOID_PET_GAAIN) == "florbetapir":
             return self.get_centiloid()
 
         return None
@@ -202,7 +200,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN Amyloid PET scans with Florbetaben centiloid min
         """
-        if self.get_tracer() == "florbetaben":
+        if self.get_tracer('tracer', PETPrefix.AMYLOID_PET_GAAIN) == "florbetaben":
             return self.get_centiloid()
 
         return None
@@ -219,7 +217,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Description:
             SCAN Amyloid PET scans with NAV4694 centiloid min
         """
-        if self.get_tracer() == "nav4694":
+        if self.get_tracer('tracer', PETPrefix.AMYLOID_PET_GAAIN) == "nav4694":
             return self.get_centiloid()
 
         return None
@@ -238,28 +236,12 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
             SCAN Amyloid positive scans available
         """
         try:
-            status = int(self.get_pet_value("amyloid_status"))
+            status = int(self.get_pet_value("amyloid_status", PETPrefix.AMYLOID_PET_GAAIN))
         except (TypeError, ValueError):
             return False
 
         return bool(status)
 
-    def _create_scan_pet_tau_tracers(self) -> Optional[str]:
-        """Access radiotracer (scan_petdashboard) and map to names of tracers.
-
-        Location:
-            subject.info.imaging.pet.scan.tau.tracers
-        Operation:
-            set
-        Type:
-            scan
-        Description:
-            SCAN tau tracers available
-        """
-        if self.get_scan_type() == "tau":
-            return self.get_tracer()
-
-        return None
 
     def _create_scan_mri_count(self):
         """Number of SCAN MRI scans available.
