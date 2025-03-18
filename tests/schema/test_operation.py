@@ -83,6 +83,15 @@ class TestOperation():
                 }
             }
 
+        # test adding another list/set
+        op.evaluate(table, [4, 5, 6], location)
+        assert table.to_dict() == {
+            'test': {
+                'date': '2025-01-01',
+                'location': [1, 2, 3, 4, 5, 6]
+            }
+        }
+
     def test_sorted_list(self, table, location):
         """Tests the sorted list operation."""
         op = SortedListOperation()

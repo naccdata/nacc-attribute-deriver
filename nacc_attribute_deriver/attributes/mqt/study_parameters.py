@@ -5,6 +5,7 @@ Assumes NACC-derived variables are already set
 from typing import List
 
 from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.schema.errors import AttributeDeriverException
 
 
 class StudyParametersAttribute(MQTAttribute):
@@ -18,6 +19,10 @@ class StudyParametersAttribute(MQTAttribute):
         versions = set(versions) if versions else set()
 
         if formver:
-            versions.add(formver)
+            try:
+                versions.add(int(formver))
+            except (ValueError, TypeError):
+                raise AttributeDeriverException(
+                    "UDS form version must be an integer")
 
-        return versions
+        return list(versions)

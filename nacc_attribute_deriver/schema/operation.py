@@ -74,7 +74,7 @@ class SetOperation(Operation):
         cur_set = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
-            cur_set.union(set(value))
+            cur_set = cur_set.union(set(value))
         elif value is not None:
             cur_set.add(value)
 
@@ -113,11 +113,11 @@ class DateOperation(Operation):
             raise OperationException(
                 f"Cannot parse date for date operation: {e}") from e
 
-        if not cur_date or not dest_date:
-            return
-
         if self.LABEL not in ['initial', 'latest']:
             raise OperationException(f"Unknown date operation: {self.LABEL}")
+
+        if not cur_date:
+            raise OperationException(f"Current date cannot be determined")
 
         if value is None:
             return

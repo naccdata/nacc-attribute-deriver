@@ -64,8 +64,8 @@ class SCANAttribute(AttributeCollection):
     def __init__(self,
                  table: SymbolTable,
                  form_prefix: str = 'file.info.raw.',
-                 mri_prefix: str = 'file.info.raw.mri.',
-                 pet_prefix: str = 'file.info.raw.pet.') -> None:
+                 mri_prefix: str = 'file.info.raw.mri.scan.',
+                 pet_prefix: str = 'file.info.raw.pet.scan.') -> None:
         """Override initializer to set prefix to SCAN-specific data."""
         super().__init__(table, form_prefix)
         self.__mri_prefix = mri_prefix
