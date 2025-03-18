@@ -8,18 +8,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 @pytest.fixture(scope='function')
 def attr() -> NCRADAttribute:
     """Create dummy data and return it in an attribute object."""
-    data = {
-        'file': {
-            'info': {
-                'raw': {
-                    'ncrad': {
-                        'a1': 'e3',
-                        'a2': 'e3'
-                    }
-                }
-            }
-        }
-    }
+    data = {'file': {'info': {'raw': {'ncrad': {'a1': 'e3', 'a2': 'e3'}}}}}
 
     return NCRADAttribute(SymbolTable(data))
 
