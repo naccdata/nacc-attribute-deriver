@@ -49,7 +49,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         # true if valid float
         return True
 
-    def _create_volume_analysis_indicator(self) -> bool:
+    def _create_scan_volume_analysis_indicator(self) -> bool:
         """Check if cerebrumtcv (ucdmrisbm file) exists
 
         Location:
@@ -63,7 +63,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         """
         return self._is_mri_indicator('cerebrumtcv', MRIPrefix.MRI_SBM)
 
-    def _create_flair_wmh_indicator(self) -> bool:
+    def _create_scan_flair_wmh_indicator(self) -> bool:
         """Check if wmh (ucdmrisbm file) exists
 
         Location:

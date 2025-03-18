@@ -66,34 +66,34 @@ class TestMQTSCANAttribute:
         attr = MQTSCANAttribute(SymbolTable({}))
         assert attr._create_scan_mri_scan_types() is None
 
-    def test_create_volume_analysis_indicator(self, table):
-        """Tests _create_volume_analysis_indicator, which looks at cerebrumtcv
+    def test_create_scan_volume_analysis_indicator(self, table):
+        """Tests _create_scan_volume_analysis_indicator, which looks at cerebrumtcv
         when series_type == T1w."""
         attr = MQTSCANAttribute(table)
-        assert attr._create_volume_analysis_indicator()
+        assert attr._create_scan_volume_analysis_indicator()
 
         # 0 case, is a valid number so should return True
         table['file.info.raw.mri.mri_sbm.cerebrumtcv'] = '0'
         attr = MQTSCANAttribute(table)
-        assert attr._create_volume_analysis_indicator()
+        assert attr._create_scan_volume_analysis_indicator()
 
         # empty
         attr = MQTSCANAttribute(SymbolTable({}))
-        assert not attr._create_volume_analysis_indicator()
+        assert not attr._create_scan_volume_analysis_indicator()
 
-    def test_create_flair_wmh_indicator(self, table):
-        """Tests _create_flair_wmh_indicator, which looks at wmh"""
+    def test_create_scan_flair_wmh_indicator(self, table):
+        """Tests _create_scan_flair_wmh_indicator, which looks at wmh"""
         attr = MQTSCANAttribute(table)
-        assert attr._create_flair_wmh_indicator()
+        assert attr._create_scan_flair_wmh_indicator()
 
         # 0 case, is a valid number so should return True
         table['file.info.raw.mri.mri_sbm.wmh'] = '0'
         attr = MQTSCANAttribute(table)
-        assert attr._create_flair_wmh_indicator()
+        assert attr._create_scan_flair_wmh_indicator()
 
         # empty
         attr = MQTSCANAttribute(SymbolTable({}))
-        assert not attr._create_flair_wmh_indicator()
+        assert not attr._create_scan_flair_wmh_indicator()
 
     def test_create_scan_pet_scan_types(self, table):
         """Tests _create_scan_pet_scan_types, loop over all options."""
