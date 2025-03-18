@@ -94,7 +94,7 @@ class SCANAttribute(AttributeCollection):
 
         Args:
             key: Key to grab value for
-            subprefix: The MRI-specific sub-prefix
+            subprefix: The PET-specific sub-prefix
             default: Default value to return if key is not found
         """
         return self.get_value(key,
@@ -106,18 +106,18 @@ class SCANAttribute(AttributeCollection):
         """Get the tracer string."""
         tracer = None
         try:
-            tracer = int(self.get_pet_value(field, subprefix))
+            tracer = float(self.get_pet_value(field, subprefix))
         except (ValueError, TypeError):
-            pass
+            return None
 
-        return self.TRACER_MAPPING.get(tracer, None)  # type: ignore
+        return self.TRACER_MAPPING.get(tracer, None)
 
     def get_scan_type(self, field: str, subprefix: PETPrefix) -> Optional[str]:
         """Get the scan type from the tracer."""
         tracer = None
         try:
-            tracer = int(self.get_pet_value(field, subprefix))
+            tracer = float(self.get_pet_value(field, subprefix))
         except (ValueError, TypeError):
-            pass
+            return None
 
-        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)  # type: ignore
+        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)

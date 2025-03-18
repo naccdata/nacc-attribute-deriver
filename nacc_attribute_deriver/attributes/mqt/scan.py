@@ -54,11 +54,9 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
     # Note: Probably should be "tracer_types"
     def _create_scan_pet_scan_types(self) -> Optional[str]:
         """SCAN PET types available Access radiotracer (scan_petdashboard) and
-        map to.
-
-        {amyloid, tau, fdg}
+        map to {amyloid, tau, fdg}
         """
-        return self.get_tracer('radiotracer', PETPrefix.SCAN_PET_QC)
+        return self.get_scan_type('radiotracer', PETPrefix.SCAN_PET_QC)
 
     def _create_scan_pet_amyloid_tracers(self) -> Optional[str]:
         """SCAN Amyloid tracers available Access radiotracer
@@ -84,7 +82,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
             centiloid = float(
                 self.get_pet_value("centiloids", PETPrefix.AMYLOID_PET_GAAIN))
         except (ValueError, TypeError):
-            pass
+            return None
 
         return centiloid
 
@@ -135,7 +133,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Is given as an int so check int boolean.
         """
         try:
-            status = int(
+            status = float(
                 self.get_pet_value("amyloid_status",
                                    PETPrefix.AMYLOID_PET_GAAIN))
         except (TypeError, ValueError):

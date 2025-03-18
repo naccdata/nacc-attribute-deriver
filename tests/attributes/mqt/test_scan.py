@@ -97,9 +97,14 @@ class TestMQTSCANAttribute:
 
     def test_create_scan_pet_scan_types(self, table):
         """Tests _create_scan_pet_scan_types, loop over all options."""
-        for k, v in MQTSCANAttribute.TRACER_MAPPING.items():
+        for k, v in MQTSCANAttribute.TRACER_SCAN_TYPE_MAPPING.items():
             # convert to string just to make sure type conversion is correct
             table['file.info.raw.pet.scan_pet_qc.radiotracer'] = str(k)
+            attr = MQTSCANAttribute(table)
+            assert attr._create_scan_pet_scan_types() == v
+
+            # string float case
+            table['file.info.raw.pet.scan_pet_qc.radiotracer'] = str(float(k))
             attr = MQTSCANAttribute(table)
             assert attr._create_scan_pet_scan_types() == v
 
@@ -141,7 +146,7 @@ class TestMQTSCANAttribute:
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_pib() == 1.5
 
-        table['file.info.raw.pet.amyloid_pet_gaain.tracer'] = '3'
+        table['file.info.raw.pet.amyloid_pet_gaain.tracer'] = '3.0'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_florbetapir() == 1.5
 
@@ -164,6 +169,11 @@ class TestMQTSCANAttribute:
     def test_create_scan_pet_amyloid_positivity_indicator(self, table):
         """Tests _create_scan_pet_amyloid_positivity_indicator, which just gets
         amyloid_status."""
+        attr = MQTSCANAttribute(table)
+        assert attr._create_scan_pet_amyloid_positivity_indicator()
+
+        # string float case
+        table['file.info.raw.pet.amyloid_pet_gaain.amyloid_status'] = '1.0'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
