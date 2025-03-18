@@ -141,19 +141,21 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
 
         return bool(status)
 
-    def _create_scan_mri_count(self):
-        """Number of SCAN MRI scans available.
-
-        TODO: Where to to get count?
+    def _create_scan_mri_session_count(self):
+        """Number of SCAN MRI session available. Counts
+        the unique session dates.
         """
-        pass
+        result = self.assert_required(['scan_mri_dates'],
+                                      prefix='subject.info.derived.')
+        return len(result['scan_mri_dates'])
 
-    def _create_scan_pet_count(self):
-        """Number of SCAN PET scans available.
-
-        TODO: Where to to get count?
+    def _create_scan_pet_session_count(self):
+        """Number of SCAN PET sessions available. Counts
+        the unique session dates.
         """
-        pass
+        result = self.assert_required(['scan_pet_dates'],
+                                      prefix='subject.info.derived.')
+        return len(result['scan_pet_dates'])
 
     def _create_scan_mri_year_count(self) -> int:
         """Years of SCAN MRI scans available.
