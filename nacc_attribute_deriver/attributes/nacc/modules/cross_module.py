@@ -116,6 +116,11 @@ class CrossModuleAttribute(UDSAttribute):
 
     def _create_naccdage(self) -> int:
         """From derive.sas and derivenew.sas."""
+        # check that subject is deceased at all
+        mds_deceased = self.get_mds_value('vitalst') in [2, '2']
+        if self._create_naccdied() == 0 and not mds_deceased:
+            return 888
+
         # NP, grab from NPDAGE
         npdage = self.get_np_value('npdage')
         if npdage:
@@ -130,7 +135,7 @@ class CrossModuleAttribute(UDSAttribute):
 
         age = calculate_age(birth_date, death_date)
         if not age:
-            return 888
+            return 999
 
         return age
 
@@ -143,3 +148,22 @@ class CrossModuleAttribute(UDSAttribute):
             return 1
 
         return 0
+
+    def _create_naccautp(self) -> int:
+        """Creates NACCAUTP - similar to NACCDIED but also
+        needs to differentiate if an NP form was submitted
+        or not.
+        """
+        np_deceased = self.get_np_value('npdage') is not None
+        mile_deceased = self.get_mile_value('deceased') in [1, '1']
+
+        # not reported as having died
+        if not np_deceased and not mile_deceased:
+            return 8
+
+        # deceased but no NP data available
+        if mile_deceased and not np_deceased:
+            return 0
+
+        # deceased with NP data avaiable
+        return 1

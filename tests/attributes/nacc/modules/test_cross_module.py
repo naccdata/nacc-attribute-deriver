@@ -81,16 +81,16 @@ class TestCrossModuleAttribute:
         attr.table['file.info.mds.deathyr'] = '9999'
         assert attr._create_naccdage() == 999
 
-    def test_create_naccdied(self, attr):
-        """Tests _create_naccdied.
+        # test death not reported
+        attr.table['file.info.mds'] = None
+        assert attr._create_naccdage() == 888
 
-        TODO: the DED says it doesn't rely on MDS
-            but maybe it should?
-        """
-        # # NP case
+    def test_create_naccdied(self, attr):
+        """Tests _create_naccdied."""
+        # NP case
         assert attr._create_naccdied() == 1
 
-        # # Milestone case
+        # Milestone case
         attr.table['file.info.np'] = {}
         assert attr._create_naccdied() == 1
         attr.table['file.info.milestone.deceased'] = 0
@@ -98,3 +98,16 @@ class TestCrossModuleAttribute:
 
         attr.table['file.info.milestone'] = {}
         assert attr._create_naccdied() == 0
+
+    def test_create_naccautp(self, attr):
+        """Tests _create_naccautp"""
+        # NP data available
+        assert attr._create_naccautp() == 1
+
+        # Only milestone data available
+        attr.table['file.info.np'] = {}
+        assert attr._create_naccautp() == 0
+
+        # Neither available
+        attr.table['file.info.milestone'] = {}
+        assert attr._create_naccautp() == 8
