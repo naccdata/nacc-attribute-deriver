@@ -2,6 +2,7 @@
 
 Currently just used to generate current attributes schema.
 """
+
 import logging
 from argparse import ArgumentParser
 
@@ -14,19 +15,17 @@ log = logging.getLogger(__name__)
 def entrypoint():
     parser = ArgumentParser(prog="NACC Attribute Deriver")
 
-    parser.add_argument('--debug',
-                        dest="debug",
-                        action='store_true',
-                        help='Set logging mode to debug')
+    parser.add_argument(
+        "--debug", dest="debug", action="store_true", help="Set logging mode to debug"
+    )
 
     # set subparsers
-    subparsers = parser.add_subparsers(dest='action',
-                                       required=True,
-                                       help='Action to run')
+    subparsers = parser.add_subparsers(
+        dest="action", required=True, help="Action to run"
+    )
 
     # regression testing
-    regression = subparsers.add_parser('run-regression',
-                                       help="Run regression testing")
+    regression = subparsers.add_parser("run-regression", help="Run regression testing")
     set_regression_cli(regression)
 
     args = parser.parse_args()

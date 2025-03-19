@@ -1,70 +1,61 @@
 """Tests deriving MQT SCAN variables."""
+
 import pytest
 
 from nacc_attribute_deriver.attributes.mqt.scan import MQTSCANAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def table() -> SymbolTable:
     """Create dummy data - since tests need to augment it often just return the
     SymbolTable."""
     data = {
-        'file': {
-            'info': {
-                'raw': {
+        "file": {
+            "info": {
+                "raw": {
                     "mri": {
                         "scan": {
-                            "scan_mri_qc": {
-                                "seriestype": "T1w"
-                            },
-                            "mri_sbm": {
-                                "cerebrumtcv": "2.5",
-                                "wmh": "3.5"
-                            }
+                            "scan_mri_qc": {"seriestype": "T1w"},
+                            "mri_sbm": {"cerebrumtcv": "2.5", "wmh": "3.5"},
                         }
                     },
                     "pet": {
                         "scan": {
-                            "scan_pet_qc": {
-                                "radiotracer": 1
-                            },
+                            "scan_pet_qc": {"radiotracer": 1},
                             "amyloid_pet_gaain": {
                                 "tracer": "1.0",
                                 "centiloids": "1.5",
-                                "amyloid_status": "1"
+                                "amyloid_status": "1",
                             },
                             "amyloid_pet_npdka": {},
                             "fdg_pet_npdka": {},
-                            "tau_pet_npdka": {}
+                            "tau_pet_npdka": {},
                         }
-                    }
+                    },
                 }
             }
         },
-        'subject': {
-            'info': {
-                'derived': {
-                    'scan_mri_dates': [
-                        '1995-01-01',
-                        '1996-01-01',
-                        '1997-01-01',
-                        '1997-02-02',
-                        '1997-03-03'
+        "subject": {
+            "info": {
+                "derived": {
+                    "scan_mri_dates": [
+                        "1995-01-01",
+                        "1996-01-01",
+                        "1997-01-01",
+                        "1997-02-02",
+                        "1997-03-03",
                     ],
-                    'scan_pet_dates': [
-                        '2000-12-12'
-                    ]
+                    "scan_pet_dates": ["2000-12-12"],
                 }
             }
-        }
+        },
     }
 
     return SymbolTable(data)
 
 
 class TestMQTSCANAttribute:
-
     def test_create_scan_mri_scan_types(self, table):
         """Tests _create_scan_mri_scan_types, which should just return the
         seriestype."""
@@ -82,7 +73,7 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_volume_analysis_indicator()
 
         # 0 case, is a valid number so should return True
-        table['file.info.raw.mri.scan.mri_sbm.cerebrumtcv'] = '0'
+        table["file.info.raw.mri.scan.mri_sbm.cerebrumtcv"] = "0"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_volume_analysis_indicator()
 
@@ -96,7 +87,7 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_flair_wmh_indicator()
 
         # 0 case, is a valid number so should return True
-        table['file.info.raw.mri.scan.mri_sbm.wmh'] = '0'
+        table["file.info.raw.mri.scan.mri_sbm.wmh"] = "0"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_flair_wmh_indicator()
 
@@ -108,12 +99,12 @@ class TestMQTSCANAttribute:
         """Tests _create_scan_pet_scan_types, loop over all options."""
         for k, v in MQTSCANAttribute.TRACER_SCAN_TYPE_MAPPING.items():
             # convert to string just to make sure type conversion is correct
-            table['file.info.raw.pet.scan.scan_pet_qc.radiotracer'] = str(k)
+            table["file.info.raw.pet.scan.scan_pet_qc.radiotracer"] = str(k)
             attr = MQTSCANAttribute(table)
             assert attr._create_scan_pet_scan_types() == v
 
             # string float case
-            table['file.info.raw.pet.scan.scan_pet_qc.radiotracer'] = str(float(k))
+            table["file.info.raw.pet.scan.scan_pet_qc.radiotracer"] = str(float(k))
             attr = MQTSCANAttribute(table)
             assert attr._create_scan_pet_scan_types() == v
 
@@ -125,7 +116,7 @@ class TestMQTSCANAttribute:
         """Tests _create_scan_pet_amyloid_tracers, loop over all options."""
         for k, v in MQTSCANAttribute.TRACER_MAPPING.items():
             # convert to string just to make sure type conversion is correct
-            table['file.info.raw.pet.scan.scan_pet_qc.radiotracer'] = str(k)
+            table["file.info.raw.pet.scan.scan_pet_qc.radiotracer"] = str(k)
             attr = MQTSCANAttribute(table)
 
             # needs to == amyloid
@@ -151,24 +142,24 @@ class TestMQTSCANAttribute:
     def test_create_scan_pet_centaloid_x(self, table):
         """Tests _create_scan_pet_centaloid_*, should return centerloid as a
         float if the tracer is the given value."""
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.tracer'] = '2'
+        table["file.info.raw.pet.scan.amyloid_pet_gaain.tracer"] = "2"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_pib() == 1.5
 
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.tracer'] = '3.0'
+        table["file.info.raw.pet.scan.amyloid_pet_gaain.tracer"] = "3.0"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_florbetapir() == 1.5
 
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.tracer'] = '4'
+        table["file.info.raw.pet.scan.amyloid_pet_gaain.tracer"] = "4"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_florbetaben() == 1.5
 
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.tracer'] = '5'
+        table["file.info.raw.pet.scan.amyloid_pet_gaain.tracer"] = "5"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_nav4694() == 1.5
 
         # 99, should all be None
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.tracer'] = '99'
+        table["file.info.raw.pet.scan.amyloid_pet_gaain.tracer"] = "99"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_centaloid_pib() is None
         assert attr._create_scan_pet_centaloid_florbetapir() is None
@@ -182,12 +173,12 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
         # string float case
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.amyloid_status'] = '1.0'
+        table["file.info.raw.pet.scan.amyloid_pet_gaain.amyloid_status"] = "1.0"
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
         # 0 case, should be False
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.amyloid_status'] = '0'
+        table["file.info.raw.pet.scan.amyloid_pet_gaain.amyloid_status"] = "0"
         attr = MQTSCANAttribute(table)
         assert not attr._create_scan_pet_amyloid_positivity_indicator()
 
@@ -205,10 +196,9 @@ class TestMQTSCANAttribute:
 
         # tau scans
         for i in [6, 7, 8, 9]:
-            table['file.info.raw.pet.scan.scan_pet_qc.radiotracer'] = i
+            table["file.info.raw.pet.scan.scan_pet_qc.radiotracer"] = i
             attr = MQTSCANAttribute(table)
-            assert attr._create_scan_pet_tau_tracers() == \
-                attr.TRACER_MAPPING[i]
+            assert attr._create_scan_pet_tau_tracers() == attr.TRACER_MAPPING[i]
 
     def test_create_scan_mri_session_count(self, table):
         """Tests _create_scan_mri_session_count, which should just count
@@ -217,7 +207,7 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_mri_session_count() == 5
 
         # empty
-        table['subject.info.derived.scan_mri_dates'] = []
+        table["subject.info.derived.scan_mri_dates"] = []
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_mri_session_count() == 0
 
@@ -228,28 +218,28 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_pet_session_count() == 1
 
         # empty
-        table['subject.info.derived.scan_pet_dates'] = []
+        table["subject.info.derived.scan_pet_dates"] = []
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_session_count() == 0
 
     def test_create_scan_mri_year_count(self, table):
-        """Tests _create_scan_mri_year_count, which should just count
-        the unique years in scan_mri_dates."""
+        """Tests _create_scan_mri_year_count, which should just count the
+        unique years in scan_mri_dates."""
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_mri_year_count() == 3
 
         # empty
-        table['subject.info.derived.scan_mri_dates'] = []
+        table["subject.info.derived.scan_mri_dates"] = []
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_mri_year_count() == 0
 
     def test_create_scan_pet_year_count(self, table):
-        """Tests _create_scan_pet_year_count, which should just count
-        the unique years in scan_pet_dates."""
+        """Tests _create_scan_pet_year_count, which should just count the
+        unique years in scan_pet_dates."""
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_year_count() == 1
 
         # empty
-        table['subject.info.derived.scan_pet_dates'] = []
+        table["subject.info.derived.scan_pet_dates"] = []
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_year_count() == 0

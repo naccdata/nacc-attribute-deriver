@@ -1,4 +1,5 @@
 """Helper methods related to dates."""
+
 import re
 from datetime import datetime
 from typing import List, Optional, Set
@@ -40,8 +41,9 @@ def calculate_age(d1: datetime, d2: datetime) -> Optional[int]:
     date1 = d1.date()
     date2 = d2.date()
 
-    return (date2.year - date1.year) - \
-           ((date2.month, date2.day) < (date1.month, date1.day))
+    return (date2.year - date1.year) - (
+        (date2.month, date2.day) < (date1.month, date1.day)
+    )
 
 
 def get_unique_years(dates: List[str]) -> Set[int]:

@@ -4,26 +4,26 @@ from nacc_attribute_deriver.attributes.nacc.modules.np.form_np import NPFormAttr
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def np_form_attribute() -> NPFormAttribute:
     """Create dummy data and return it in an attribute object."""
     data = {
-        'file': {
-            'info': {
-                'np': {
-                    'npgross': 2,
-                    'npvasc': 3,
-                    'npneur': 1,
-                    'npold': 1,
-                    'npmicro': 1,
-                    'nphem': 1,
-                    'nparter': 1,
-                    'nplewy': 5,
-                    'formver': 1,
-                    'npbraak': 7,
-                    'nphemo': 1,
-                    'npoldd': 1,
-                    'nplbod': 4
+        "file": {
+            "info": {
+                "np": {
+                    "npgross": 2,
+                    "npvasc": 3,
+                    "npneur": 1,
+                    "npold": 1,
+                    "npmicro": 1,
+                    "nphem": 1,
+                    "nparter": 1,
+                    "nplewy": 5,
+                    "formver": 1,
+                    "npbraak": 7,
+                    "nphemo": 1,
+                    "npoldd": 1,
+                    "nplbod": 4,
                 }
             }
         }
@@ -31,16 +31,15 @@ def np_form_attribute() -> NPFormAttribute:
     return NPFormAttribute(SymbolTable(data))
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def np_form_nulls() -> NPFormAttribute:
     """Create dummy data and return it in an attribute object."""
-    data = {'file': {'info': {'np': {'formver': 1}}}}
+    data = {"file": {"info": {"np": {"formver": 1}}}}
 
     return NPFormAttribute(SymbolTable(data))
 
 
 class TestHelpers:
-
     def test_mapgross_null(self, np_form_nulls):
         assert np_form_nulls._mapgross(None) is None
 
@@ -62,7 +61,7 @@ class TestHelpers:
 
     def test_mapgross(self, np_form_attribute):
         assert np_form_attribute._mapgross(0) == 0
-        np_form_attribute.set_value('npgross', 9)
+        np_form_attribute.set_value("npgross", 9)
         assert np_form_attribute._mapgross(0) == 9
 
     def test_mapsub4(self, np_form_attribute):
@@ -78,10 +77,10 @@ class TestHelpers:
 
     def test_mapvasc(self, np_form_attribute):
         assert np_form_attribute._mapvasc(0) == 0
-        np_form_attribute.set_value('npgross', 9)
+        np_form_attribute.set_value("npgross", 9)
         assert np_form_attribute._mapvasc(0) == 9
-        np_form_attribute.set_value('npvasc', 3)
-        np_form_attribute.set_value('npgross', 1)
+        np_form_attribute.set_value("npvasc", 3)
+        np_form_attribute.set_value("npgross", 1)
         assert np_form_attribute._mapvasc(0) == 8
 
     def test_mapsub1(self, np_form_attribute):
@@ -91,111 +90,102 @@ class TestHelpers:
 
     def test_maplewy(self, np_form_attribute):
         assert np_form_attribute._maplewy() == 0
-        np_form_attribute.set_value('nplewy', 6)
+        np_form_attribute.set_value("nplewy", 6)
         assert np_form_attribute._maplewy() == 8
 
 
 class TestCreateNACCBRAA:
-
     def test_create_naccbraa_null(self, np_form_nulls):
         assert np_form_nulls._create_naccbraa() == 9
-        np_form_nulls.set_value('formver', 8)
+        np_form_nulls.set_value("formver", 8)
         assert np_form_nulls._create_naccbraa() == 9
-        np_form_nulls.set_value('formver', 10)
+        np_form_nulls.set_value("formver", 10)
         assert np_form_nulls._create_naccbraa() == 9
 
     def test_create_naccbraa(self, np_form_attribute):
         assert np_form_attribute._create_naccbraa() == 0
-        np_form_attribute.set_value('formver', 10)
+        np_form_attribute.set_value("formver", 10)
         assert np_form_attribute._create_naccbraa() == 7
 
 
 class TestCreateNACCNEUR:
-
     def test_create_naccneur_null(self, np_form_nulls):
         assert np_form_nulls._create_naccneur() == 9
-        np_form_nulls.set_value('formver', 8)
-        assert np_form_nulls._create_naccneur(
-        ) == 9  # WARNING: Different behavior here!
-        np_form_nulls.set_value('formver', 10)
+        np_form_nulls.set_value("formver", 8)
+        assert (
+            np_form_nulls._create_naccneur() == 9
+        )  # WARNING: Different behavior here!
+        np_form_nulls.set_value("formver", 10)
         assert np_form_nulls._create_naccneur() == 9
 
     def test_create_naccneur(self, np_form_attribute):
         assert np_form_attribute._create_naccneur() == 3
-        np_form_attribute.set_value('formver', 10)
+        np_form_attribute.set_value("formver", 10)
         assert np_form_attribute._create_naccneur() == 1
 
 
 class TestCreateNACCMICR:
-
     def test_create_naccmicr_null(self, np_form_nulls):
         assert np_form_nulls._create_naccmicr() == 9
-        np_form_nulls.set_value('formver', 8)
-        assert np_form_nulls._create_naccmicr(
-        ) == 9  # WARNING: Different behavior here
-        np_form_nulls.set_value('formver', 10)
+        np_form_nulls.set_value("formver", 8)
+        assert np_form_nulls._create_naccmicr() == 9  # WARNING: Different behavior here
+        np_form_nulls.set_value("formver", 10)
         assert np_form_nulls._create_naccmicr() == 9
 
     def test_create_naccmicr(self, np_form_attribute):
         assert np_form_attribute._create_naccmicr() == 1
-        np_form_attribute.set_value('formver', 10)
+        np_form_attribute.set_value("formver", 10)
         assert np_form_attribute._create_naccmicr() == 1
 
     def test_create_naccmicr_v9(self, np_form_nulls):
         """Test V9 NACCMICR."""
-        np_form_nulls.set_value('formver', 9)
+        np_form_nulls.set_value("formver", 9)
         assert np_form_nulls._create_naccmicr() == 9
-        np_form_nulls.set_value('npmicro', 1)
+        np_form_nulls.set_value("npmicro", 1)
         assert np_form_nulls._create_naccmicr() == 1
-        np_form_nulls.set_value('npmicro', 2)
+        np_form_nulls.set_value("npmicro", 2)
         assert np_form_nulls._create_naccmicr() == 0
-        np_form_nulls.set_value('npmicro', 3)
+        np_form_nulls.set_value("npmicro", 3)
         assert np_form_nulls._create_naccmicr() == 8
 
 
 class TestCreateNACCHEM:
-
     def test_create_nacchem_null(self, np_form_nulls):
         assert np_form_nulls._create_nacchem() == 9
-        np_form_nulls.set_value('formver', 8)
-        assert np_form_nulls._create_nacchem(
-        ) == 9  # WARNING: Different behavior here
-        np_form_nulls.set_value('formver', 10)
-        assert np_form_nulls._create_nacchem(
-        ) == 9  # WARNING: Different behavior here
+        np_form_nulls.set_value("formver", 8)
+        assert np_form_nulls._create_nacchem() == 9  # WARNING: Different behavior here
+        np_form_nulls.set_value("formver", 10)
+        assert np_form_nulls._create_nacchem() == 9  # WARNING: Different behavior here
 
     def test_create_nacchem(self, np_form_attribute):
         assert np_form_attribute._create_nacchem() == 1
-        np_form_attribute.set_value('formver', 10)
+        np_form_attribute.set_value("formver", 10)
         assert np_form_attribute._create_nacchem() == 1
 
 
 class TestCreateNACCARTE:
-
     def test_create_naccarte_null(self, np_form_nulls):
         assert np_form_nulls._create_naccarte() == 9
-        np_form_nulls.set_value('formver', 8)
-        assert np_form_nulls._create_naccarte(
-        ) == 9  # WARNING: Different behavior here
-        np_form_nulls.set_value('formver', 10)
+        np_form_nulls.set_value("formver", 8)
+        assert np_form_nulls._create_naccarte() == 9  # WARNING: Different behavior here
+        np_form_nulls.set_value("formver", 10)
         assert np_form_nulls._create_naccarte() == 9
 
     def test_create_naccarte(self, np_form_attribute):
         assert np_form_attribute._create_naccarte() == 0
-        np_form_attribute.set_value('formver', 10)
+        np_form_attribute.set_value("formver", 10)
         assert np_form_attribute._create_naccarte() == 1
 
 
 class TestCreateNACCLEWY:
-
     def test_create_nacclewy_null(self, np_form_nulls):
         assert np_form_nulls._create_nacclewy() == 9
-        np_form_nulls.set_value('formver', 8)
+        np_form_nulls.set_value("formver", 8)
         assert np_form_nulls._create_nacclewy() == 9
-        np_form_nulls.set_value('formver', 10)
+        np_form_nulls.set_value("formver", 10)
         assert np_form_nulls._create_nacclewy() == 9
 
     def test_create_nacclewy(self, np_form_attribute):
         assert np_form_attribute._create_nacclewy() == 0
-        np_form_attribute.set_value('formver', 10)
+        np_form_attribute.set_value("formver", 10)
         assert np_form_attribute._create_nacclewy() == 2

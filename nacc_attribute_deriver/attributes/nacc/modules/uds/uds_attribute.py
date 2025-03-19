@@ -1,4 +1,5 @@
 """Class to define UDS-specific attributes."""
+
 from datetime import datetime
 from typing import Optional
 
@@ -6,12 +7,11 @@ from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
 
 
 class UDSAttribute(NACCAttribute):
-
     def generate_uds_dob(self) -> Optional[datetime]:
         """Creates UDS DOB, which is used to calculate ages."""
-        birthmo = self.get_value('birthmo')
-        birthyr = self.get_value('birthyr')
-        formdate = self.get_value('visitdate')
+        birthmo = self.get_value("birthmo")
+        birthyr = self.get_value("birthyr")
+        formdate = self.get_value("visitdate")
 
         if None in [birthmo, birthyr, formdate]:
             return None

@@ -1,4 +1,5 @@
 """Derived variables from neuropathology form."""
+
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
@@ -6,16 +7,13 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class NPFormAttribute(NACCAttribute):
-
-    def __init__(self,
-                 table: SymbolTable,
-                 form_prefix: str = 'file.info.np.') -> None:
+    def __init__(self, table: SymbolTable, form_prefix: str = "file.info.np.") -> None:
         """Override initializer to set NP prefix."""
         super().__init__(table, form_prefix)
         # TODO - in general need to hash out what our prefixes are
 
     def _mapgross(self, new) -> Optional[int]:
-        npgross = self.get_value('npgross')
+        npgross = self.get_value("npgross")
         if npgross == 2:
             return 0
         if npgross == 9:
@@ -42,8 +40,8 @@ class NPFormAttribute(NACCAttribute):
         return 9
 
     def _mapvasc(self, new) -> int:
-        npgross = self.get_value('npgross')
-        npvasc = self.get_value('npvasc')
+        npgross = self.get_value("npgross")
+        npvasc = self.get_value("npvasc")
         if npgross == 2 or npvasc == 2:
             return 0
         if npgross == 9 or npvasc == 9:
@@ -62,7 +60,7 @@ class NPFormAttribute(NACCAttribute):
         return 9
 
     def _maplewy(self) -> int:
-        nplewy = self.get_value('nplewy')
+        nplewy = self.get_value("nplewy")
         if nplewy == 6:
             return 8
         if nplewy == 5:
@@ -75,8 +73,8 @@ class NPFormAttribute(NACCAttribute):
 
         Braak stage for neurofibrillary degeneration (B score)
         """
-        formver = self.get_value('formver')
-        npbraak = self.get_value('npbraak')
+        formver = self.get_value("formver")
+        npbraak = self.get_value("npbraak")
         naccbraa = npbraak
 
         if formver in [10, 11]:
@@ -98,8 +96,8 @@ class NPFormAttribute(NACCAttribute):
 
         Density of neocortical neuritic plaques (CERAD score) (C score)
         """
-        formver = self.get_value('formver')
-        npneur = self.get_value('npneur')
+        formver = self.get_value("formver")
+        npneur = self.get_value("npneur")
         naccneur = npneur
 
         if formver in [10, 11]:
@@ -119,9 +117,9 @@ class NPFormAttribute(NACCAttribute):
 
         Microinfarcts
         """
-        formver = self.get_value('formver')
-        npold = self.get_value('npold')
-        npmicro = self.get_value('npmicro')
+        formver = self.get_value("formver")
+        npold = self.get_value("npold")
+        npmicro = self.get_value("npmicro")
 
         naccmicr = npold
         if formver in [10, 11]:
@@ -141,13 +139,13 @@ class NPFormAttribute(NACCAttribute):
 
         Hemorrhages and microbleeds
         """
-        formver = self.get_value('formver')
-        nphem = self.get_value('nphem')
+        formver = self.get_value("formver")
+        nphem = self.get_value("nphem")
         nacchem = None
 
         if formver in [10, 11]:
-            nphemo = self.get_value('nphemo')
-            npoldd = self.get_value('npoldd')
+            nphemo = self.get_value("nphemo")
+            npoldd = self.get_value("npoldd")
 
             if nphemo == 1 or npoldd == 1:
                 nacchem = 1
@@ -174,8 +172,8 @@ class NPFormAttribute(NACCAttribute):
 
         Arteriolosclerosis
         """
-        formver = self.get_value('formver')
-        nparter = self.get_value('nparter')
+        formver = self.get_value("formver")
+        nparter = self.get_value("nparter")
         naccarte = None
 
         if formver in [10, 11]:
@@ -195,11 +193,11 @@ class NPFormAttribute(NACCAttribute):
 
         Lewy body disease
         """
-        formver = self.get_value('formver')
+        formver = self.get_value("formver")
         nacclewy = None
 
         if formver in [10, 11]:
-            nplbod = self.get_value('nplbod')
+            nplbod = self.get_value("nplbod")
             nacclewy = nplbod
             if nplbod == 4:
                 nacclewy = 2
@@ -208,7 +206,7 @@ class NPFormAttribute(NACCAttribute):
         elif formver in [7, 8, 9]:
             nacclewy = self._maplewy()
         elif formver == 1:
-            nplewy = self.get_value('nplewy')
+            nplewy = self.get_value("nplewy")
             if nplewy:
                 nacclewy = self._maplewy()
             else:
