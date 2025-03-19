@@ -1,5 +1,5 @@
 """Errors and exception handling."""
 
 
-class AttributeDeriverException(Exception):
+class AttributeDeriverError(Exception):
     pass
