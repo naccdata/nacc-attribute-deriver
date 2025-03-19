@@ -5,9 +5,10 @@ to a single file as much as possible, otherwise we need to somehow map cross-fil
 attributes.
 """
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.schema.errors import MissingRequiredException
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -32,6 +33,18 @@ class PETPrefix(str, Enum):
             cls.AMYLOID_PET_GAAIN, cls.AMYLOID_PET_NPDKA, cls.FDG_PET_NPDKA,
             cls.TAU_PET_NPDKA
         ]
+
+# TODO: make this more elegant
+REQUIRED_FIELDS: Dict[Union[MRIPrefix, PETPrefix], List[str]] = {
+    MRIPrefix.SCAN_MRI_QC: ['studydate', 'seriestype'],
+    MRIPrefix.MRI_SBM: ['scandt', 'cerebrumtcv', 'wmh'],
+
+    PETPrefix.SCAN_PET_QC: ['scan_date', 'radiotracer'],
+    PETPrefix.AMYLOID_PET_GAAIN: ['scandate', 'tracer', 'centiloids', 'amyloid_status'],
+    PETPrefix.AMYLOID_PET_NPDKA: ['scandate'],
+    PETPrefix.FDG_PET_NPDKA: ['scandate'],
+    PETPrefix.TAU_PET_NPDKA: ['scandate']
+}
 
 
 class SCANAttribute(AttributeCollection):
@@ -63,14 +76,27 @@ class SCANAttribute(AttributeCollection):
 
     def __init__(self,
                  table: SymbolTable,
-                 form_prefix: str = 'file.info.raw.',
-                 mri_prefix: str = 'file.info.raw.mri.scan.',
-                 pet_prefix: str = 'file.info.raw.pet.scan.') -> None:
+                 form_prefix: str = 'file.info.raw.') -> None:
+                 # mri_prefix: str = 'file.info.raw.mri.scan.',
+                 # pet_prefix: str = 'file.info.raw.pet.scan.') -> None:
         """Override initializer to set prefix to SCAN-specific data."""
         super().__init__(table, form_prefix)
-        self.__mri_prefix = mri_prefix
-        self.__pet_prefix = pet_prefix
+        # self.__mri_prefix = mri_prefix
+        # self.__pet_prefix = pet_prefix
 
+    def __verify_prefix(self, subprefix: Union[MRIPrefix, PETPrefix]) -> None:
+        if subprefix not in REQUIRED_FIELDS:
+            raise MissingRequiredException(
+                f"Unknown SCAN file: {subprefix.value}")
+
+        for field in REQUIRED_FIELDS[subprefix]:
+            if field not in self.table[self.form_prefix.rstrip('.')]:
+                raise MissingRequiredException(
+                    f"Required field {field} for SCAN data " +
+                    f"{subprefix.value} not found in current file")
+
+    # TODO: combine these two into one since they're now doing the same thing?
+    # although it is nice to have get_mri_value vs get_pet_value distinctions
     def get_mri_value(self,
                       key: str,
                       subprefix: MRIPrefix,
@@ -82,9 +108,8 @@ class SCANAttribute(AttributeCollection):
             subprefix: The MRI-specific sub-prefix
             default: Default value to return if key is not found
         """
-        return self.get_value(key,
-                              default,
-                              prefix=f'{self.__mri_prefix}{subprefix.value}')
+        self.__verify_prefix(subprefix)
+        return self.get_value(key, default)
 
     def get_pet_value(self,
                       key: str,
@@ -97,9 +122,8 @@ class SCANAttribute(AttributeCollection):
             subprefix: The PET-specific sub-prefix
             default: Default value to return if key is not found
         """
-        return self.get_value(key,
-                              default,
-                              prefix=f'{self.__pet_prefix}{subprefix.value}')
+        self.__verify_prefix(subprefix)
+        return self.get_value(key, default)
 
     # get functions for common values
     def get_tracer(self, field: str, subprefix: PETPrefix) -> Optional[str]:

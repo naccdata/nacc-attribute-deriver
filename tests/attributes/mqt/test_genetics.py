@@ -12,14 +12,12 @@ def attr() -> GeneticAttribute:
         'file': {
             'info': {
                 'raw': {
-                    'ncrad': {
-                        'apoe': 5,
-                        'a1': 'E4',
-                        'a2': 'E2'
-                    }
+                    'apoe': 5,
+                    'a1': 'E4',  # NCRAD data
+                    'a2': 'E2'
                 },
                 'derived': {
-                    "ngdsexom": 1,
+                    "ngdsexom": 1,  # NIAGADS derived data
                     "ngdsgwas": 1,
                     "ngdswes": 0,
                     "ngdswgs": 0

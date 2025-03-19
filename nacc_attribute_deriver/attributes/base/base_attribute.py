@@ -37,7 +37,7 @@ class MQTAttribute(AttributeCollection):
             if full_field not in self.table:
                 source = stack(
                 )[1].function  # not great but preferable to passing the name every time
-                raise AttributeDeriverException(
+                raise MissingRequiredException(
                     f"{full_field} must be derived before {source} can run")
 
             found[r] = self.table[full_field]

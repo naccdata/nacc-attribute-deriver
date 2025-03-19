@@ -24,7 +24,7 @@ class AttributeDeriver:
             date_key: Key that determines the order of the forms
             rules_file: Path to raw CSV containing the list of
                 rules to execute. If not provided will use the
-                default derive_rules.csv
+                default to uds_rules.csv
         """
         self.__date_key = date_key
         self.__rules = self.__load_rules(rules_file)
@@ -38,10 +38,10 @@ class AttributeDeriver:
         Args:
             rules_file: Path to load rules from
         """
-        # grab default rules from config
+        # grab uds rules from config
         if not rules_file:
             rules_file = files(  # type: ignore
-                "nacc_attribute_deriver").joinpath("config/all_rules.csv")
+                "nacc_attribute_deriver").joinpath("config/form/uds_rules.csv")
 
         # first aggregate all events to their attribute, since some
         # may have multiple events
