@@ -1,6 +1,6 @@
 # NACC Attribute Deriver
 
-Module for deriving variables
+Module for deriving variables. See the [docs](./docs/index.md) for more information.
 
 ## Building the Distribution
 
