@@ -3,6 +3,7 @@
 Mainly sanity checks to make sure modules run at all.
 """
 from importlib.resources import files
+
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -35,7 +36,9 @@ def test_uds_form():
 
 
 def test_np_form():
-    """Test against a minimal NP form - all derived variables should be 9 with no data."""
+    """Test against a minimal NP form - all derived variables
+    should be 9 with no data.
+    """
     form = SymbolTable()
     form['file.info.forms.json.visitdate'] = '2025-01-01'
     form['file.info.forms.json.module'] = 'np'
@@ -43,8 +46,10 @@ def test_np_form():
     rules_file = files(  # type: ignore
         "nacc_attribute_deriver").joinpath("config/form/np_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file,
-                               date_key='file.info.forms.json.visitdate',)
+    deriver = AttributeDeriver(
+        rules_file=rules_file,
+        date_key='file.info.forms.json.visitdate',
+    )
     deriver.curate(form)
     assert form.to_dict() == {
         'file': {

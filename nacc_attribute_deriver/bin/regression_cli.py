@@ -6,6 +6,7 @@ one should be done once we get better testing sources.
 import json
 import logging
 from argparse import ArgumentParser, Namespace
+from importlib.resources import files
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -80,7 +81,10 @@ def curate_row(deriver: AttributeDeriver,
 
 def run(args: Namespace):
     """Generate the attribute schema."""
-    deriver = AttributeDeriver(date_key='file.info.forms.json.visitdate')
+    rules_file = files(  # type: ignore
+        "nacc_attribute_deriver").joinpath("config/form/uds_rules.csv")
+    deriver = AttributeDeriver(rules_file=rules_file,
+                               date_key='file.info.forms.json.visitdate')
     with args.baseline_json.open('r') as fh:
         baselines = json.load(fh)
 

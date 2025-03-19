@@ -2,7 +2,6 @@
 
 Assumes NACC-derived variables are already set
 """
-from typing import Any
 
 from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
 from nacc_attribute_deriver.schema.errors import MissingRequiredException
@@ -25,7 +24,7 @@ class GeneticAttribute(MQTAttribute):
         # might need to do something similar to how SCAN is doing it and/or
         # explicitly split by ncrad/niagads
         for field in ['a1', 'a2']:
-            if not f'{self.form_prefix}{field}' in self.table:
+            if f'{self.form_prefix}{field}' not in self.table:
                 raise MissingRequiredException(
                     f'{field} required to curate APOE')
 

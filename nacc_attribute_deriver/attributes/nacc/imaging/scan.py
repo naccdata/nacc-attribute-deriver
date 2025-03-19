@@ -1,5 +1,4 @@
 """Derived variables that come from SCAN values."""
-from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
 from nacc_attribute_deriver.attributes.base.scan_attribute import (

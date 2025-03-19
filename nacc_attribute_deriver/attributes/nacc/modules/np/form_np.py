@@ -13,8 +13,7 @@ class NPFormAttribute(NACCAttribute):
 
         module = self.get_value('module')
         if not module or module.upper() != 'NP':
-            raise MissingRequiredException(
-                "Current file is not an NP form")
+            raise MissingRequiredException("Current file is not an NP form")
 
     def _mapgross(self, new) -> Optional[int]:
         npgross = self.get_value('npgross')

@@ -5,19 +5,22 @@ AttributeDeriver (deriver.curate(file)) for all (relevant) files in the
 subject. File must correspond to the curation schema.
 """
 import csv
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Dict, List, Optional
 
 from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverException
-from .schema.schema import AttributeSchema, DeriveEvent
 from .schema.operation import DateOperation
+from .schema.schema import AttributeSchema, DeriveEvent
 from .symbol_table import SymbolTable
 
 
 class AttributeDeriver:
 
-    def __init__(self, rules_file: Path, date_key: Optional[str] = None):
+    def __init__(self,
+                 rules_file: Traversable | Path,
+                 date_key: Optional[str] = None):
         """Initiailzer.
 
         Args:
@@ -29,7 +32,8 @@ class AttributeDeriver:
         self.__date_key = date_key
         self.__rules = self.__load_rules(rules_file)
 
-    def __load_rules(self, rules_file: Path) -> List[AttributeSchema]:
+    def __load_rules(self,
+                     rules_file: Traversable | Path) -> List[AttributeSchema]:
         """Load rules from the given path. All forms called through curate will
         have these rules applied to them.
 
@@ -56,9 +60,11 @@ class AttributeDeriver:
                     attributes[func] = []
 
                 event = DeriveEvent(**row)  # type: ignore
-                if isinstance(event.operation, DateOperation) and not self.__date_key:
+                if isinstance(event.operation,
+                              DateOperation) and not self.__date_key:
                     raise AttributeDeriverException(
-                        f"Date operation defined for {func} but no date key defined")
+                        f"Date operation defined for {func} but no date key defined"
+                    )
 
                 attributes[func].append(event)
 
@@ -81,7 +87,8 @@ class AttributeDeriver:
         if self.__date_key:
             if self.__date_key not in table or not table[self.__date_key]:
                 raise AttributeDeriverException(
-                    f"Table does not have specified date key: {self.__date_key}")
+                    f"Table does not have specified date key: {self.__date_key}"
+                )
 
         # collect all attributes beforehand so they're easily hashable
         collections = {}
@@ -104,12 +111,11 @@ class AttributeDeriver:
 
             # cache an instance if not yet created
             if not hook['instance']:
-                hook['instance'] = hook['class'](table)
+                hook['instance'] = hook['class'](table)  # type: ignore
 
-            value = hook['func'](hook['instance'])
+            value = hook['func'](hook['instance'])  # type: ignore
 
             for event in attr.events:
-                event.operation.evaluate(table,
-                                         value,
-                                         event.location,
-                                         date_key=self.__date_key)
+                event.operation.evaluate(
+                    table, value, event.location,
+                    date_key=self.__date_key)  # type: ignore

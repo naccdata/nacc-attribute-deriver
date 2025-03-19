@@ -34,13 +34,14 @@ class PETPrefix(str, Enum):
             cls.TAU_PET_NPDKA
         ]
 
+
 # TODO: make this more elegant
 REQUIRED_FIELDS: Dict[Union[MRIPrefix, PETPrefix], List[str]] = {
     MRIPrefix.SCAN_MRI_QC: ['studydate', 'seriestype'],
     MRIPrefix.MRI_SBM: ['scandt', 'cerebrumtcv', 'wmh'],
-
     PETPrefix.SCAN_PET_QC: ['scan_date', 'radiotracer'],
-    PETPrefix.AMYLOID_PET_GAAIN: ['scandate', 'tracer', 'centiloids', 'amyloid_status'],
+    PETPrefix.AMYLOID_PET_GAAIN:
+    ['scandate', 'tracer', 'centiloids', 'amyloid_status'],
     PETPrefix.AMYLOID_PET_NPDKA: ['scandate'],
     PETPrefix.FDG_PET_NPDKA: ['scandate'],
     PETPrefix.TAU_PET_NPDKA: ['scandate']
@@ -77,8 +78,8 @@ class SCANAttribute(AttributeCollection):
     def __init__(self,
                  table: SymbolTable,
                  form_prefix: str = 'file.info.raw.') -> None:
-                 # mri_prefix: str = 'file.info.raw.mri.scan.',
-                 # pet_prefix: str = 'file.info.raw.pet.scan.') -> None:
+        # mri_prefix: str = 'file.info.raw.mri.scan.',
+        # pet_prefix: str = 'file.info.raw.pet.scan.') -> None:
         """Override initializer to set prefix to SCAN-specific data."""
         super().__init__(table, form_prefix)
         # self.__mri_prefix = mri_prefix
@@ -90,7 +91,8 @@ class SCANAttribute(AttributeCollection):
                 f"Unknown SCAN file: {subprefix.value}")
 
         for field in REQUIRED_FIELDS[subprefix]:
-            if field not in self.table[self.form_prefix.rstrip('.')]:
+            if field not in self.table[self.form_prefix.rstrip(
+                    '.')]:  # type: ignore
                 raise MissingRequiredException(
                     f"Required field {field} for SCAN data " +
                     f"{subprefix.value} not found in current file")
@@ -131,17 +133,19 @@ class SCANAttribute(AttributeCollection):
         tracer = None
         try:
             tracer = float(self.get_pet_value(field, subprefix))
+            tracer = int(tracer)  # can't call int directly on string-float
         except (ValueError, TypeError):
             return None
 
-        return self.TRACER_MAPPING.get(tracer, None)  # type: ignore
+        return self.TRACER_MAPPING.get(tracer, None)
 
     def get_scan_type(self, field: str, subprefix: PETPrefix) -> Optional[str]:
         """Get the scan type from the tracer."""
         tracer = None
         try:
             tracer = float(self.get_pet_value(field, subprefix))
+            tracer = int(tracer)
         except (ValueError, TypeError):
             return None
 
-        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)  # type: ignore
+        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)

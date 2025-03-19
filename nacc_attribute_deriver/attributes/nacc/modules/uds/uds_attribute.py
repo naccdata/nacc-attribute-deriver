@@ -14,8 +14,7 @@ class UDSAttribute(NACCAttribute):
 
         module = self.get_value('module')
         if not module or module.upper() != 'UDS':
-            raise MissingRequiredException(
-                "Current file is not an UDS form")
+            raise MissingRequiredException("Current file is not an UDS form")
 
     def generate_uds_dob(self) -> Optional[datetime]:
         """Creates UDS DOB, which is used to calculate ages."""

@@ -33,7 +33,7 @@ def scan_mri_qc_attr() -> MQTSCANAttribute:
 
 
 class TestSCANMRIQCAttribute:
-    """From scan_mridashboard.csv"""
+    """From scan_mridashboard.csv."""
 
     def test_create_scan_mri_scan_types(self, scan_mri_qc_attr):
         """Tests _create_scan_mri_scan_types, which should just return the
@@ -91,7 +91,7 @@ def scan_pet_qc_attr() -> MQTSCANAttribute:
 
 
 class TestSCANPETQCAttribute:
-    """From scan_petdashboard.csv"""
+    """From scan_petdashboard.csv."""
 
     def test_create_scan_pet_scan_types(self, scan_pet_qc_attr):
         """Tests _create_scan_pet_scan_types, loop over all options."""
@@ -157,7 +157,8 @@ class TestSCANPETQCAttribute:
         # tau scans
         for i in [6, 7, 8, 9]:
             attr.table['file.info.raw.radiotracer'] = i
-            assert attr._create_scan_pet_tau_tracers() == attr.TRACER_MAPPING[i]
+            assert attr._create_scan_pet_tau_tracers(
+            ) == attr.TRACER_MAPPING[i]
 
 
 @pytest.fixture(scope='function')
@@ -179,7 +180,7 @@ def scan_mri_sbm() -> MQTSCANAttribute:
 
 
 class TestSCANMRISBMAttribute:
-    """From ucbmrisbm.csv"""
+    """From ucbmrisbm.csv."""
 
     def test_create_scan_volume_analysis_indicator(self, scan_mri_sbm):
         """Tests _create_scan_volume_analysis_indicator, which looks at
@@ -211,7 +212,8 @@ class TestSCANMRISBMAttribute:
 
 @pytest.fixture(scope='function')
 def scan_pet_amyloid_gaain() -> MQTSCANAttribute:
-    """Create dummy data for a SCAN PET Amyloid GAAIN (analysis)-focused curation."""
+    """Create dummy data for a SCAN PET Amyloid GAAIN (analysis)-focused
+    curation."""
     data = {
         'file': {
             'info': {
@@ -229,7 +231,7 @@ def scan_pet_amyloid_gaain() -> MQTSCANAttribute:
 
 
 class TestSCANAmyloidPETGAAINAttribute:
-    """From v_berkeley_amyloid_pet_gaain.csv"""
+    """From v_berkeley_amyloid_pet_gaain.csv."""
 
     def test_create_scan_pet_centaloid(self, scan_pet_amyloid_gaain):
         """Tests _create_scan_pet_centaloid, should just return centaloid as a
@@ -264,7 +266,8 @@ class TestSCANAmyloidPETGAAINAttribute:
         assert attr._create_scan_pet_centaloid_florbetaben() is None
         assert attr._create_scan_pet_centaloid_nav4694() is None
 
-    def test_create_scan_pet_amyloid_positivity_indicator(self, scan_pet_amyloid_gaain):
+    def test_create_scan_pet_amyloid_positivity_indicator(
+            self, scan_pet_amyloid_gaain):
         """Tests _create_scan_pet_amyloid_positivity_indicator, which just gets
         amyloid_status."""
         attr = scan_pet_amyloid_gaain

@@ -32,7 +32,7 @@ class NCRADAttribute(NACCAttribute):
         """Override initializer to set prefix to NCRAD-specific data."""
         super().__init__(table, form_prefix)
         for field in ['a1', 'a2']:
-            if not f'{self.form_prefix}{field}' in self.table:
+            if f'{self.form_prefix}{field}' not in self.table:
                 raise MissingRequiredException(
                     f'{field} required to curate NCRAD data')
 

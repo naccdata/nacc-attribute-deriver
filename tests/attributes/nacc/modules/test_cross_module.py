@@ -100,7 +100,7 @@ class TestCrossModuleAttribute:
         assert attr._create_naccdied() == 0
 
     def test_create_naccautp(self, attr):
-        """Tests _create_naccautp"""
+        """Tests _create_naccautp."""
         # NP data available
         assert attr._create_naccautp() == 1
 

@@ -16,9 +16,11 @@ class NIAGADSAttribute(NACCAttribute):
                  form_prefix: str = 'file.info.raw.') -> None:
         """Override initializer to set prefix to NIAGADS-specific data."""
         super().__init__(table, form_prefix)
-        for field in ['niagads_gwas', 'niagads_exomechip',
-                      'niagads_wgs', 'niagads_wes']:
-            if not f'{self.form_prefix}{field}' in self.table:
+        for field in [
+                'niagads_gwas', 'niagads_exomechip', 'niagads_wgs',
+                'niagads_wes'
+        ]:
+            if f'{self.form_prefix}{field}' not in self.table:
                 raise MissingRequiredException(
                     f'{field} required to curate NIAGADS data')
 

@@ -37,7 +37,18 @@ def np_form_attribute() -> NPFormAttribute:
 @pytest.fixture(scope='function')
 def np_form_nulls() -> NPFormAttribute:
     """Create dummy data and return it in an attribute object."""
-    data = {'file': {'info': {'forms': {'json': {'formver': 1, 'module': 'NP'}}}}}
+    data = {
+        'file': {
+            'info': {
+                'forms': {
+                    'json': {
+                        'formver': 1,
+                        'module': 'NP'
+                    }
+                }
+            }
+        }
+    }
 
     return NPFormAttribute(SymbolTable(data))
 
