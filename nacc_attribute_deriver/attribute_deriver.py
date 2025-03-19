@@ -11,18 +11,20 @@ from typing import Dict, List, Optional
 from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverException
 from .schema.schema import AttributeSchema, DeriveEvent
+from .schema.operation import DateOperation
 from .symbol_table import SymbolTable
 
 
 class AttributeDeriver:
 
-    def __init__(self, date_key: str, rules_file: Path):
+    def __init__(self, rules_file: Path, date_key: Optional[str] = None):
         """Initiailzer.
 
         Args:
-            date_key: Key that determines the order of the forms
             rules_file: Path to raw CSV containing the list of
                 rules to execute.
+            date_key: Key that determines the order of the forms. Required
+                if any date operations are defined
         """
         self.__date_key = date_key
         self.__rules = self.__load_rules(rules_file)
@@ -52,7 +54,13 @@ class AttributeDeriver:
                 func = row.pop('function')
                 if func not in attributes:
                     attributes[func] = []
-                attributes[func].append(DeriveEvent(**row))  # type: ignore
+
+                event = DeriveEvent(**row)  # type: ignore
+                if isinstance(event.operation, DateOperation) and not self.__date_key:
+                    raise AttributeDeriverException(
+                        f"Date operation defined for {func} but no date key defined")
+
+                attributes[func].append(event)
 
         # create AttributeSchema for each attribute
         rules = []
@@ -70,9 +78,10 @@ class AttributeDeriver:
             table: Table with file data to curate
         """
         # make sure date_key is in metadata
-        if self.__date_key not in table or not table[self.__date_key]:
-            raise AttributeDeriverException(
-                f"Table does not have specified date key: {self.__date_key}")
+        if self.__date_key:
+            if self.__date_key not in table or not table[self.__date_key]:
+                raise AttributeDeriverException(
+                    f"Table does not have specified date key: {self.__date_key}")
 
         # collect all attributes beforehand so they're easily hashable
         collections = {}
