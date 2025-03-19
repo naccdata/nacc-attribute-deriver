@@ -43,9 +43,10 @@ class Operation(object, metaclass=OperationRegistry):
     @abstractmethod
     def evaluate(
         self,
+        *,
         table: SymbolTable,
         value: Any,
-        location: str,
+        attribute: str,
         date_key: Optional[str] = None,
     ) -> None:
         """Evaluate the operation, and stores the computed value at the
@@ -54,7 +55,7 @@ class Operation(object, metaclass=OperationRegistry):
         Args:
             table: Table to read/write from
             value: Value to perform the operation against
-            location: Target location to write to
+            attribute: Target location to write to
             date_key: Date key string
         """
         pass
@@ -64,10 +65,15 @@ class UpdateOperation(Operation):
     LABEL = "update"
 
     def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str
+        self,
+        *,
+        table: SymbolTable,
+        value: Any,
+        attribute: str,
+        date_key: Optional[str] = None,
     ) -> None:
         """Simply updates the location."""
-        table[location] = value
+        table[attribute] = value
 
 
 class SetOperation(Operation):
@@ -75,14 +81,15 @@ class SetOperation(Operation):
 
     def evaluate(
         self,
+        *,
         table: SymbolTable,
         value: Any,
-        location: str,
+        attribute: str,
         date_key: Optional[str] = None,
     ) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
-        cur_set = table.get(location)
+        cur_set = table.get(attribute)
         cur_set = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
@@ -90,7 +97,7 @@ class SetOperation(Operation):
         elif value is not None:
             cur_set.add(value)
 
-        table[location] = list(cur_set)
+        table[attribute] = list(cur_set)
 
 
 class SortedListOperation(Operation):
@@ -98,20 +105,21 @@ class SortedListOperation(Operation):
 
     def evaluate(
         self,
+        *,
         table: SymbolTable,
         value: Any,
-        location: str,
+        attribute: str,
         date_key: Optional[str] = None,
     ) -> None:
         """Adds the value to a sorted list."""
-        cur_list = table.get(location, [])
+        cur_list = table.get(attribute, [])
 
         if isinstance(value, (list, set)):
             cur_list.extend(list(value))
         elif value is not None:
             cur_list.append(value)
 
-        table[location] = sorted(cur_list)
+        table[attribute] = sorted(cur_list)
 
 
 class DateOperation(Operation):
@@ -119,15 +127,16 @@ class DateOperation(Operation):
 
     def evaluate(
         self,
+        *,
         table: SymbolTable,
         value: Any,
-        location: str,
+        attribute: str,
         date_key: Optional[str] = None,
     ) -> None:
         """Compares dates to determine the result."""
         try:
             cur_date = datetime_from_form_date(table.get(date_key))  # type: ignore
-            dest_date = datetime_from_form_date(table.get(f"{location}.date"))  # type: ignore
+            dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))  # type: ignore
         except ValueError as e:
             raise OperationException(
                 f"Cannot parse date for date operation: {e}"
@@ -147,7 +156,7 @@ class DateOperation(Operation):
             or (self.LABEL == "initial" and cur_date < dest_date)
             or (self.LABEL == "latest" and cur_date > dest_date)
         ):
-            table[location] = {"date": str(cur_date.date()), "value": value}
+            table[attribute] = {"date": str(cur_date.date()), "value": value}
 
 
 class InitialOperation(DateOperation):
@@ -163,17 +172,18 @@ class CountOperation(Operation):
 
     def evaluate(
         self,
+        *,
         table: SymbolTable,
         value: Any,
-        location: str,
+        attribute: str,
         date_key: Optional[str] = None,
     ) -> None:
         """Counts the result."""
         if not value:  # TODO: should we count 0s/Falses?
             return
 
-        cur_count = table.get(location, 0)
-        table[location] = cur_count + 1
+        cur_count = table.get(attribute, 0)
+        table[attribute] = cur_count + 1
 
 
 class ComparisonOperation(Operation):
@@ -181,13 +191,14 @@ class ComparisonOperation(Operation):
 
     def evaluate(
         self,
+        *,
         table: SymbolTable,
         value: Any,
-        location: str,
+        attribute: str,
         date_key: Optional[str] = None,
     ) -> None:
         """Does a comparison between the value and location value."""
-        dest_value = table.get(location)
+        dest_value = table.get(attribute)
 
         if self.LABEL not in ["min", "max"]:
             raise OperationException(f"Unknown comparison operation: {self.LABEL}")
@@ -201,7 +212,7 @@ class ComparisonOperation(Operation):
                 or (self.LABEL == "min" and value < dest_value)
                 or (self.LABEL == "max" and value > dest_value)
             ):
-                table[location] = value
+                table[attribute] = value
         except TypeError as e:
             raise OperationException(
                 f"Cannot compare types for {self.LABEL} operation: {e}"
