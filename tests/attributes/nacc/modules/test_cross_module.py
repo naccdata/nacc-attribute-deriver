@@ -17,7 +17,8 @@ def attr() -> CrossModuleAttribute:
                     'json': {
                         'visitdate': '2025-01-01',
                         'birthmo': 3,
-                        'birthyr': 1990
+                        'birthyr': 1990,
+                        'module': 'UDS'
                     }
                 },
                 'np': {

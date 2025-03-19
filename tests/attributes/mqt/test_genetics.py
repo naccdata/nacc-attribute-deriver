@@ -12,7 +12,6 @@ def attr() -> GeneticAttribute:
         'file': {
             'info': {
                 'raw': {
-                    'apoe': 5,
                     'a1': 'E4',  # NCRAD data
                     'a2': 'E2'
                 },
@@ -36,7 +35,7 @@ class TestGeneticAttribute:
         assert attr._create_apoe() == 'e4,e2'
 
         # test null case
-        attr.table = {}
+        attr.table['file.info.raw'].update({'a1': None, 'a2': None})
         assert attr._create_apoe() == 'Missing/unknown/not assessed'
 
     def test_create_ngds_vars(self, attr):

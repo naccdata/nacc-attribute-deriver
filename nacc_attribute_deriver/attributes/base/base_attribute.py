@@ -3,7 +3,7 @@ from inspect import stack
 from typing import Any, Dict, List
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.schema.errors import AttributeDeriverException
+from nacc_attribute_deriver.schema.errors import MissingRequiredException
 
 
 class NACCAttribute(AttributeCollection):

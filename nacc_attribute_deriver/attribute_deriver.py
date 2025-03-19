@@ -5,7 +5,6 @@ AttributeDeriver (deriver.curate(file)) for all (relevant) files in the
 subject. File must correspond to the curation schema.
 """
 import csv
-from importlib.resources import files
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -17,32 +16,24 @@ from .symbol_table import SymbolTable
 
 class AttributeDeriver:
 
-    def __init__(self, date_key: str, rules_file: Optional[Path] = None):
+    def __init__(self, date_key: str, rules_file: Path):
         """Initiailzer.
 
         Args:
             date_key: Key that determines the order of the forms
             rules_file: Path to raw CSV containing the list of
-                rules to execute. If not provided will use the
-                default to uds_rules.csv
+                rules to execute.
         """
         self.__date_key = date_key
         self.__rules = self.__load_rules(rules_file)
 
-    def __load_rules(self,
-                     rules_file: Optional[Path] = None
-                     ) -> List[AttributeSchema]:
+    def __load_rules(self, rules_file: Path) -> List[AttributeSchema]:
         """Load rules from the given path. All forms called through curate will
         have these rules applied to them.
 
         Args:
             rules_file: Path to load rules from
         """
-        # grab uds rules from config
-        if not rules_file:
-            rules_file = files(  # type: ignore
-                "nacc_attribute_deriver").joinpath("config/form/uds_rules.csv")
-
         # first aggregate all events to their attribute, since some
         # may have multiple events
         attributes: Dict[str, List[DeriveEvent]] = {}
@@ -84,25 +75,27 @@ class AttributeDeriver:
                 f"Table does not have specified date key: {self.__date_key}")
 
         # collect all attributes beforehand so they're easily hashable
-        instance_collections = {}
-        for instance in [
-                c(table) for c in  # type: ignore
-                AttributeCollectionRegistry.collections
-        ]:
-            instance_collections.update({
+        collections = {}
+        for c in AttributeCollectionRegistry.collections:
+            collections.update({
                 k: {
                     'func': v,
-                    'instance': instance
+                    'class': c,
+                    'instance': None
                 }
-                for k, v in instance.get_all_hooks().items()
+                for k, v in c.get_all_hooks().items()
             })
 
         # derive the variables
         for attr in self.__rules:
-            hook = instance_collections.get(attr.function, None)
+            hook = collections.get(attr.function, None)
             if not hook:
                 raise AttributeDeriverException(
                     f"Unknown attribute function: {attr.function}")
+
+            # cache an instance if not yet created
+            if not hook['instance']:
+                hook['instance'] = hook['class'](table)
 
             value = hook['func'](hook['instance'])
 
