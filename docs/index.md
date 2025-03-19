@@ -19,19 +19,19 @@ Next, for each file, both the file's AND parent subject's `.info` metadata is pu
 
 > Since `subject.info` is global, we cannot parallelize mutliple curations on different files if they are writing to the same subject in order to avoid read/write conflicts.
 
-The SymbolTable works exactly like a normal dict, but understands dot-notation. So for example, calling `table['file.info.forms.json.visitdate']` grabs the following field:
+The SymbolTable works exactly like a normal dict, but understands dot-notation. So for example, calling `table['file.info.forms.json.visitdate']` returns `2025-01-01`:
 
 ```json
 {
-	"file": {
-		"info": {
-			"forms": {
-				"json": {
-					"visitdate"
-				}
-			}
-		}
-	}
+    "file": {
+        "info": {
+            "forms": {
+                "json": {
+                    "visitdate": "2025-01-01"
+                }
+            }
+        }
+    }
 }
 ```
 
