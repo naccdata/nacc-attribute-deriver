@@ -37,6 +37,6 @@ uds_primary_language,subject.info.demographics.uds.primary-language.latest,lates
 uds_education_level,subject.info.demographics.uds.education-level.latest,latest,,
 age_at_death,subject.info.derived.naccdage,update,,
 vital_status,subject.info.demographics.uds.vital-status.latest,latest,,
-total_uds_visits,subject.info.longitudinal-data.uds.count.latest,latest,,
+total_uds_visits,subject.info.longitudinal-data.uds.count,max,,
 years_of_uds,subject.info.longitudinal-data.uds.year-count,max,,
 uds_versions_available,subject.info.study-parameters.uds.versions,set,,
