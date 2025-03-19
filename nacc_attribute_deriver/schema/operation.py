@@ -4,7 +4,8 @@ metaclass to keep track of operation types.
 This kind of feels overengineered?
 """
 
-from typing import Any, List
+from abc import abstractmethod
+from typing import Any, Dict, Optional
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
@@ -15,12 +16,12 @@ class OperationException(Exception):
 
 
 class OperationRegistry(type):
-    operations: List["Operation"] = []
+    operations: Dict[str, type] = {}
 
     def __init__(cls, name, bases, attrs):
         if name != "OperationRegistry" and cls.LABEL is not None:
             if name not in OperationRegistry.operations:
-                OperationRegistry.operations.append(cls)
+                OperationRegistry.operations[cls.LABEL] = cls
 
 
 class Operation(object, metaclass=OperationRegistry):
@@ -33,14 +34,19 @@ class Operation(object, metaclass=OperationRegistry):
         Args:
             label: label of the operation
         """
-        for op in OperationRegistry.operations:
-            if op.LABEL == label:
-                return op()  # type: ignore
+        op = OperationRegistry.operations.get(label, None)
+        if op:
+            return op()
 
         raise ValueError(f"Unrecognized operation: {label}")
 
+    @abstractmethod
     def evaluate(
-        self, table: SymbolTable, value: Any, location: str, date_key: str, **kwargs
+        self,
+        table: SymbolTable,
+        value: Any,
+        location: str,
+        date_key: Optional[str] = None,
     ) -> None:
         """Evaluate the operation, and stores the computed value at the
         specified location.
@@ -58,7 +64,7 @@ class UpdateOperation(Operation):
     LABEL = "update"
 
     def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
+        self, table: SymbolTable, value: Any, location: str
     ) -> None:
         """Simply updates the location."""
         table[location] = value
@@ -67,8 +73,12 @@ class UpdateOperation(Operation):
 class SetOperation(Operation):
     LABEL = "set"
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
+    def evaluate(
+        self,
+        table: SymbolTable,
+        value: Any,
+        location: str,
+        date_key: Optional[str] = None,
     ) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
@@ -86,8 +96,12 @@ class SetOperation(Operation):
 class SortedListOperation(Operation):
     LABEL = "sortedlist"
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
+    def evaluate(
+        self,
+        table: SymbolTable,
+        value: Any,
+        location: str,
+        date_key: Optional[str] = None,
     ) -> None:
         """Adds the value to a sorted list."""
         cur_list = table.get(location, [])
@@ -104,7 +118,11 @@ class DateOperation(Operation):
     LABEL: str | None = None
 
     def evaluate(
-        self, table: SymbolTable, value: Any, location: str, date_key: str, **kwargs
+        self,
+        table: SymbolTable,
+        value: Any,
+        location: str,
+        date_key: Optional[str] = None,
     ) -> None:
         """Compares dates to determine the result."""
         try:
@@ -143,8 +161,12 @@ class LatestOperation(DateOperation):
 class CountOperation(Operation):
     LABEL = "count"
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
+    def evaluate(
+        self,
+        table: SymbolTable,
+        value: Any,
+        location: str,
+        date_key: Optional[str] = None,
     ) -> None:
         """Counts the result."""
         if not value:  # TODO: should we count 0s/Falses?
@@ -157,8 +179,12 @@ class CountOperation(Operation):
 class ComparisonOperation(Operation):
     LABEL: str | None = None
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
+    def evaluate(
+        self,
+        table: SymbolTable,
+        value: Any,
+        location: str,
+        date_key: Optional[str] = None,
     ) -> None:
         """Does a comparison between the value and location value."""
         dest_value = table.get(location)
