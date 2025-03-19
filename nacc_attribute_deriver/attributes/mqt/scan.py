@@ -54,8 +54,7 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
     # Note: Probably should be "tracer_types"
     def _create_scan_pet_scan_types(self) -> Optional[str]:
         """SCAN PET types available Access radiotracer (scan_petdashboard) and
-        map to {amyloid, tau, fdg}
-        """
+        map to {amyloid, tau, fdg}"""
         return self.get_scan_type('radiotracer', PETPrefix.SCAN_PET_QC)
 
     def _create_scan_pet_amyloid_tracers(self) -> Optional[str]:
@@ -142,16 +141,18 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         return bool(status)
 
     def _create_scan_mri_session_count(self):
-        """Number of SCAN MRI session available. Counts
-        the unique session dates.
+        """Number of SCAN MRI session available.
+
+        Counts the unique session dates.
         """
         result = self.assert_required(['scan_mri_dates'],
                                       prefix='subject.info.derived.')
         return len(result['scan_mri_dates'])
 
     def _create_scan_pet_session_count(self):
-        """Number of SCAN PET sessions available. Counts
-        the unique session dates.
+        """Number of SCAN PET sessions available.
+
+        Counts the unique session dates.
         """
         result = self.assert_required(['scan_pet_dates'],
                                       prefix='subject.info.derived.')

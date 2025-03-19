@@ -1,7 +1,9 @@
 """Tests deriving MQT study parameters variables."""
 import pytest
 
-from nacc_attribute_deriver.attributes.mqt.study_parameters import StudyParametersAttribute
+from nacc_attribute_deriver.attributes.mqt.study_parameters import (
+    StudyParametersAttribute,  # type: ignore
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -22,9 +24,7 @@ def attr() -> StudyParametersAttribute:
             'info': {
                 'study-parameters': {
                     'uds': {
-                        'versions': [
-                            2
-                        ]
+                        'versions': [2]
                     }
                 }
             }

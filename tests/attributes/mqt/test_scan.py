@@ -46,15 +46,10 @@ def table() -> SymbolTable:
             'info': {
                 'derived': {
                     'scan_mri_dates': [
-                        '1995-01-01',
-                        '1996-01-01',
-                        '1997-01-01',
-                        '1997-02-02',
+                        '1995-01-01', '1996-01-01', '1997-01-01', '1997-02-02',
                         '1997-03-03'
                     ],
-                    'scan_pet_dates': [
-                        '2000-12-12'
-                    ]
+                    'scan_pet_dates': ['2000-12-12']
                 }
             }
         }
@@ -113,7 +108,8 @@ class TestMQTSCANAttribute:
             assert attr._create_scan_pet_scan_types() == v
 
             # string float case
-            table['file.info.raw.pet.scan.scan_pet_qc.radiotracer'] = str(float(k))
+            table['file.info.raw.pet.scan.scan_pet_qc.radiotracer'] = str(
+                float(k))
             attr = MQTSCANAttribute(table)
             assert attr._create_scan_pet_scan_types() == v
 
@@ -182,7 +178,8 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
         # string float case
-        table['file.info.raw.pet.scan.amyloid_pet_gaain.amyloid_status'] = '1.0'
+        table[
+            'file.info.raw.pet.scan.amyloid_pet_gaain.amyloid_status'] = '1.0'
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_amyloid_positivity_indicator()
 
@@ -233,8 +230,8 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_pet_session_count() == 0
 
     def test_create_scan_mri_year_count(self, table):
-        """Tests _create_scan_mri_year_count, which should just count
-        the unique years in scan_mri_dates."""
+        """Tests _create_scan_mri_year_count, which should just count the
+        unique years in scan_mri_dates."""
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_mri_year_count() == 3
 
@@ -244,8 +241,8 @@ class TestMQTSCANAttribute:
         assert attr._create_scan_mri_year_count() == 0
 
     def test_create_scan_pet_year_count(self, table):
-        """Tests _create_scan_pet_year_count, which should just count
-        the unique years in scan_pet_dates."""
+        """Tests _create_scan_pet_year_count, which should just count the
+        unique years in scan_pet_dates."""
         attr = MQTSCANAttribute(table)
         assert attr._create_scan_pet_year_count() == 1
 

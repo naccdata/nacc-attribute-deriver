@@ -134,7 +134,7 @@ class SCANAttribute(AttributeCollection):
         except (ValueError, TypeError):
             return None
 
-        return self.TRACER_MAPPING.get(tracer, None)
+        return self.TRACER_MAPPING.get(tracer, None)  # type: ignore
 
     def get_scan_type(self, field: str, subprefix: PETPrefix) -> Optional[str]:
         """Get the scan type from the tracer."""
@@ -144,4 +144,4 @@ class SCANAttribute(AttributeCollection):
         except (ValueError, TypeError):
             return None
 
-        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
+        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)  # type: ignore
