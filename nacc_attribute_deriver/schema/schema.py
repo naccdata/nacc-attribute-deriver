@@ -58,6 +58,4 @@ class RuleFileModel(BaseModel):
     @property
     def assignment(self) -> AttributeAssignment:
         """Creates an attribute assignment from this rule model."""
-        return AttributeAssignment(
-            attribute=self.location, operation=Operation.create(self.operation)
-        )
+        return AttributeAssignment(attribute=self.location, operation=self.operation)
