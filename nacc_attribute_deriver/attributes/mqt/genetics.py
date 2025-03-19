@@ -22,6 +22,8 @@ class GeneticAttribute(MQTAttribute):
         """Mapped from NACCAPOE."""
         # need to search required field since we're pulling raw data
         # this is duplicate with the NCRAD initializer - better options?
+        # might need to do something similar to how SCAN is doing it and/or
+        # explicitly split by ncrad/niagads
         for field in ['a1', 'a2']:
             if not f'{self.form_prefix}{field}' in self.table:
                 raise MissingRequiredException(
