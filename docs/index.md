@@ -8,7 +8,7 @@ This process is currently actively in development and highly subject to change.
 
 The NACC Attribute deriver works in coordination with the Attribute Curation gear in [flywheel-gear-extensions](https://github.com/naccdata/flywheel-gear-extensions).
 
-The Attribute Curation gear is launched **per project and per curation type**, e.g. all UDS forms. The files are scheduled using a MinHeap ordered by a specified date key, if applicable (some curation types such as NCARD APOE curation have no ordering).
+The Attribute Curation gear is launched **per project and per curation type**, e.g. all UDS forms for a single center. The files are scheduled using a MinHeap ordered by a specified date key, if applicable (some curation types such as NCARD APOE curation have no ordering).
 
 The gear creates an instance of the NACC Attribute Deriver, passing it
 
@@ -16,6 +16,8 @@ The gear creates an instance of the NACC Attribute Deriver, passing it
 2. (Optionally) a date key to order by. This is the same key used to order the above MinHeap, and is only required if the above curation rules require date ordering (e.g. initial or latest)
 
 Next, for each file, both the file's AND parent subject's `.info` metadata is pulled and stored in a SymbolTable under `file.info` and `subject.info` respectively. As a result, the deriver expects to find file-specific fields to curate on in either `file.info.forms.json` (for forms like UDS or NP) or `file.info.raw` (for external raw data like genetic or SCAN data). Similarly, it expects to find global fields required for longitudinal/cross-section derivations under `subject.info`.
+
+> The metadata locations are defined by the Form Importer gear which is generally run during the data's ingestion process. It simply copies the information inside the attached JSON and and puts it under a defined prefix, which we set to `file.info.forms.json` for forms and `file.info.raw` for external raw data.
 
 > Since `subject.info` is global, we cannot parallelize mutliple curations on different files if they are writing to the same subject in order to avoid read/write conflicts.
 
