@@ -71,6 +71,14 @@ The following operations are currently supported (defined under `schema/operatio
 | `min` | Updates the value IF the current value is less than the one already stored in the target `location`. Assumes values can be compared with the `<` operator, e.g. numbers. |
 | `max` | Updates the value IF the current value is greater than the one already stored in the target `location`. Assumes values can be compared with the `>` operator, e.g. numbers. |
 
-#### Rule Guards
+## Adding New Variables
+
+For the most part, adding a new variable just involves defining a new `_create_{func}` rule under the appropriate class in `attributes`, and then adding the corresponding rule(s) to the appropriate config file under `configs`.
+
+You can assume that the attribute instance's SymbolTable will have appropriately populated `file.info.x` and `subject.info`. In some special cases like cross-form variables, you may need to define special supplement paths, which the Attribute Curation gear must also be set up to handle.
+
+It is a good idea to then add tests for your new attribute, which follows a similar directory structure as `attributes` under `tests`. Mosts tests target the specific attribute class, with one test function per attribute.
+
+### Rule Guards
 
 Ideally, all `_create_{func}` attributes have some notion of recognizing whether or not the `file.info` data it is looking at actually belongs to the file it is meant to curate. At the moment, this is accomplished by looking for key fields in the data and throwing an error if the key field is not found. For example, `UDSAttribute` looks for the `module` field and that it equals "UDS"; if that condition is not satisfied, an error is thrown.
