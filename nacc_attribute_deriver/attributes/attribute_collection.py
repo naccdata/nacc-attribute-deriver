@@ -22,6 +22,9 @@ class AttributeExpression(BaseModel):
     attribute collection instantiate on a symbol table.
     """
 
+    class Config:
+        arbitrary_types_allowed = True
+
     function: FunctionType
     instance: "AttributeCollection"
 
