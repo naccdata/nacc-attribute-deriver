@@ -70,3 +70,7 @@ The following operations are currently supported (defined under `schema/operatio
 | `latest` | Updates the value IF the current file's order date is AFTER the one already stored in the target `location` |
 | `min` | Updates the value IF the current value is less than the one already stored in the target `location`. Assumes values can be compared with the `<` operator, e.g. numbers. |
 | `max` | Updates the value IF the current value is greater than the one already stored in the target `location`. Assumes values can be compared with the `>` operator, e.g. numbers. |
+
+#### Rule Guards
+
+Ideally, all `_create_{func}` attributes have some notion of recognizing whether or not the `file.info` data it is looking at actually belongs to the file it is meant to curate. At the moment, this is accomplished by looking for key fields in the data and throwing an error if the key field is not found. For example, `UDSAttribute` looks for the `module` field and that it equals "UDS"; if that condition is not satisfied, an error is thrown.
