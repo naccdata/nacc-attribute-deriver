@@ -102,5 +102,8 @@ class AttributeDeriver:
 
             for assignment in rule.assignments:
                 assignment.operation.evaluate(
-                    table, value, assignment.attribute, date_key=self.__date_key
+                    table=table,
+                    value=value,
+                    attribute=assignment.attribute,
+                    date_key=self.__date_key,
                 )
