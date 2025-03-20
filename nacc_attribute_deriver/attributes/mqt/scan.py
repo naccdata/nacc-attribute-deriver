@@ -145,18 +145,18 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
 
         Counts the unique session dates.
         """
-        result = self.assert_required(['scan_mri_dates'],
+        result = self.assert_required(['scan-mri-dates'],
                                       prefix='subject.info.derived.')
-        return len(result['scan_mri_dates'])
+        return len(result['scan-mri-dates'])
 
     def _create_scan_pet_session_count(self):
         """Number of SCAN PET sessions available.
 
         Counts the unique session dates.
         """
-        result = self.assert_required(['scan_pet_dates'],
+        result = self.assert_required(['scan-pet-dates'],
                                       prefix='subject.info.derived.')
-        return len(result['scan_pet_dates'])
+        return len(result['scan-pet-dates'])
 
     def _create_scan_mri_year_count(self) -> int:
         """Years of SCAN MRI scans available.
@@ -166,12 +166,12 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         a participant has SCAN data in. This create method then just
         counts the distinct years.
         """
-        result = self.assert_required(['scan_mri_dates'],
+        result = self.assert_required(['scan-mri-dates'],
                                       prefix='subject.info.derived.')
-        return len(get_unique_years(result['scan_mri_dates']))
+        return len(get_unique_years(result['scan-mri-dates']))
 
     def _create_scan_pet_year_count(self) -> int:
         """Years of SCAN PET scans available."""
-        result = self.assert_required(['scan_pet_dates'],
+        result = self.assert_required(['scan-pet-dates'],
                                       prefix='subject.info.derived.')
-        return len(get_unique_years(result['scan_pet_dates']))
+        return len(get_unique_years(result['scan-pet-dates']))

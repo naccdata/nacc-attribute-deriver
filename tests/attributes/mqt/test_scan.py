@@ -20,7 +20,7 @@ def scan_mri_qc_attr() -> MQTSCANAttribute:
         'subject': {
             'info': {
                 'derived': {
-                    'scan_mri_dates': [
+                    'scan-mri-dates': [
                         '1995-01-01', '1996-01-01', '1997-01-01', '1997-02-02',
                         '1997-03-03'
                     ]
@@ -47,22 +47,22 @@ class TestSCANMRIQCAttribute:
 
     def test_create_scan_mri_session_count(self, scan_mri_qc_attr):
         """Tests _create_scan_mri_session_count, which should just count
-        scan_mri_dates."""
+        scan-mri-dates."""
         attr = scan_mri_qc_attr
         assert attr._create_scan_mri_session_count() == 5
 
         # empty
-        attr.table['subject.info.derived.scan_mri_dates'] = []
+        attr.table['subject.info.derived.scan-mri-dates'] = []
         assert attr._create_scan_mri_session_count() == 0
 
     def test_create_scan_mri_year_count(self, scan_mri_qc_attr):
         """Tests _create_scan_mri_year_count, which should just count the
-        unique years in scan_mri_dates."""
+        unique years in scan-mri-dates."""
         attr = scan_mri_qc_attr
         assert attr._create_scan_mri_year_count() == 3
 
         # empty
-        attr.table['subject.info.derived.scan_mri_dates'] = []
+        attr.table['subject.info.derived.scan-mri-dates'] = []
         assert attr._create_scan_mri_year_count() == 0
 
 
@@ -81,7 +81,7 @@ def scan_pet_qc_attr() -> MQTSCANAttribute:
         'subject': {
             'info': {
                 'derived': {
-                    'scan_pet_dates': ['2000-12-12']
+                    'scan-pet-dates': ['2000-12-12']
                 }
             }
         }
@@ -111,22 +111,22 @@ class TestSCANPETQCAttribute:
 
     def test_create_scan_pet_session_count(self, scan_pet_qc_attr):
         """Tests _create_scan_pet_session_count, which should just count
-        scan_pet_dates."""
+        scan-pet-dates."""
         attr = scan_pet_qc_attr
         assert attr._create_scan_pet_session_count() == 1
 
         # empty
-        attr.table['subject.info.derived.scan_pet_dates'] = []
+        attr.table['subject.info.derived.scan-pet-dates'] = []
         assert attr._create_scan_pet_session_count() == 0
 
     def test_create_scan_pet_year_count(self, scan_pet_qc_attr):
         """Tests _create_scan_pet_year_count, which should just count the
-        unique years in scan_pet_dates."""
+        unique years in scan-pet-dates."""
         attr = scan_pet_qc_attr
         assert attr._create_scan_pet_year_count() == 1
 
         # empty
-        attr.table['subject.info.derived.scan_pet_dates'] = []
+        attr.table['subject.info.derived.scan-pet-dates'] = []
         assert attr._create_scan_pet_year_count() == 0
 
     def test_create_scan_pet_amyloid_tracers(self, scan_pet_qc_attr):
