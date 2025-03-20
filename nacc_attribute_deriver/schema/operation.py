@@ -141,7 +141,7 @@ class DateOperation(Operation):
         """Compares dates to determine the result."""
         if value is None:
             return
-        
+
         if not date_key:
             raise OperationError("Value for date_key is required")
 

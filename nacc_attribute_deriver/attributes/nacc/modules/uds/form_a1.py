@@ -273,7 +273,7 @@ class UDSFormA1Attribute(UDSAttribute):
         if not dob or not visitdate:
             return None
 
-        return calculate_age(dob, visitdate)
+        return calculate_age(dob, visitdate.date())
 
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)"""

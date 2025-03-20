@@ -1,7 +1,7 @@
 """Helper methods related to dates."""
 
 import re
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional, Set
 
 
@@ -24,7 +24,7 @@ def datetime_from_form_date(date_string: Optional[str]) -> Optional[datetime]:
     return datetime.strptime(date_string, "%m/%d/%Y")
 
 
-def calculate_age(date1: datetime, date2: datetime) -> Optional[int]:
+def calculate_age(date1: date, date2: date) -> Optional[int]:
     """Calculate age in years between two dates.
 
     Args:
@@ -38,8 +38,6 @@ def calculate_age(date1: datetime, date2: datetime) -> Optional[int]:
 
     # use date objects, not doing division with leap year
     # since it's not always precise when visitdate == birthdate
-    date1 = date1.date()
-    date2 = date2.date()
 
     return (date2.year - date1.year) - (
         (date2.month, date2.day) < (date1.month, date1.day)

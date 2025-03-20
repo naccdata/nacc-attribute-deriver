@@ -1,6 +1,6 @@
 """Class to define UDS-specific attributes."""
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
@@ -17,7 +17,7 @@ class UDSAttribute(FormAttribute):
         if not module or module.upper() != "UDS":
             raise MissingRequiredError("Current file is not an UDS form")
 
-    def generate_uds_dob(self) -> Optional[datetime]:
+    def generate_uds_dob(self) -> Optional[date]:
         """Creates UDS DOB, which is used to calculate ages."""
         birthmo = self.get_value("birthmo")
         birthyr = self.get_value("birthyr")
@@ -26,4 +26,4 @@ class UDSAttribute(FormAttribute):
         if None in [birthmo, birthyr, formdate]:
             return None
 
-        return datetime(int(birthyr), int(birthmo), 1)
+        return datetime(int(birthyr), int(birthmo), 1).date()
