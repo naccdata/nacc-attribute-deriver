@@ -2,6 +2,39 @@
 
 This process is currently actively in development and highly subject to change.
 
+## TODOs
+
+* Ingest the SCAN data into all projects so we can test/curate it
+    * I have a [crude script here](https://github.com/naccdata/flywheel-monitoring/blob/feature/add-scan-notebook/notebooks/ingest-scan.ipynb) that kicks off the ingestion pipeline
+* Attribute Curation scheduling needs to be updated to support an unordered heap instead of MinHeap for curation types that have no ordering (e.g. APOE data)
+* Test and review data - I did testing in the Sample Project but would be good to get other eyes on it
+* Release this module (probably version 0.1.0 or similar) and make this repo **public** - this is necessary for `flywheel-gear-extensions` to publically find it
+* Also finalize and release the Attribute Curation gear, and push to Flywheel
+* Write a script to kick off curation for all curation types (UDS, NP, APOE, and SCAN) over all projects
+    * The most important configurations to differentiate them are
+        * `date_key` - should be available for all except APOE
+        * `filename_pattern` - used to find all relevant files to schedule, e.g. for UDS it'd be something like `*FORMS*UDS.json`
+        * `curation_type` - Most should just be `general`, UDS needs to be `uds` because it needs to pull in the NP form as a supplement. I don't think the other curation types need to do something similar, but in case they do it needs to be added/supported by the Attribute Curation gear
+        * `derive_rules` - input file, this needs to be the corresponding rules CSV in this repo's `config` directory. They need to also be uploaded to each project so need to be added and pushed by the templates (could also eventually pull from S3 instead)
+    * The script itself then needs to:
+        * Iterate over all projects
+        * Iterate over all curation types (or could just target specific ones)
+        * Run the Attribute Curation gear on the project for that curation type
+        * Needs to be batched so there aren't too many curation gears running at the same time
+
+Currently the code should be up-to-date with MQT V2. The main thing left to do is to test, which requires 1) ingesting the SCAN data and 2) running the Attribute Curation gear over each project and each file, and then checking the results. We currently do not have an MQT baseline so they will need to be manually checked. The test code in this repo should be fairly in-depth per attribute, but not so much end to end.
+
+Currently I have been running the gear locally, which also means installing this package through a local wheel. There are probably better ways to do this but I generally:
+
+1. Increment/change the package version in `nacc_attribute_deriver/BUILD`, under the `python_distribution`
+    - It needs to be different otherwise pants doesn't know to reinstall the wheel - there might be a command for it that I don't know
+2. Run `pants package ::` and copy the resulting `dist/*.whl` to `flywheel-gear-extensions/dist`
+3. Update the `requirements.txt` in `flywheel-gear-extensions` to match the version in step 1, e.g. something like `nacc_attribute_deriver@ file:///workspaces/flywheel-gear-extensions/dist/nacc_attribute_deriver-0.0.1.dev3-py3-none-any.whl`
+4. Run `cd gear/attribute-curator` and `pants package src/docker` to build the image
+5. Make sure your environment is set up per the "Running a gear locally" dev docs to run it locally
+
+Eventually, the wheel actually needs to be released, and this repo made public so that `flywheel-gear-extensions` can find and install it. The `requirements.txt` line will then instead be `nacc_attribute_deriver@ https://github.com/naccdata/nacc-attribute-deriver/releases/download/v0.0.1/nacc_form_validator-0.0.1-py3-none-any.whl`. The gear in turn can be built and pushed to Flywheel.
+
 ## Workflow
 
 ### Curation Gear
