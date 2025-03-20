@@ -3,17 +3,12 @@
 Assumes NACC-derived variables are already set
 """
 
-from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
-from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class GeneticAttribute(MQTAttribute):
+class GeneticAttribute(RawAttribute):
     """Class to collect genetic attributes."""
-
-    def __init__(self, table: SymbolTable, form_prefix: str = "file.info.raw.") -> None:
-        """Override initializer to set prefix to genetics-specific data."""
-        super().__init__(table, form_prefix)
 
     def _create_apoe(self) -> str:
         """Mapped from NACCAPOE."""

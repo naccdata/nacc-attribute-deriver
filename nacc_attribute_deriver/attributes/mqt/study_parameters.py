@@ -5,11 +5,11 @@ Assumes NACC-derived variables are already set
 
 from typing import List
 
-from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 
 
-class StudyParametersAttribute(MQTAttribute):
+class StudyParametersAttribute(FormAttribute):
     """Class to collect study-parameter attributes."""
 
     def _create_uds_versions_available(self) -> List[str]:

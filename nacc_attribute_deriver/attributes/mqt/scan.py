@@ -5,7 +5,6 @@ Assumes NACC-derived variables are already set
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
 from nacc_attribute_deriver.attributes.base.scan_attribute import (
     MRIPrefix,
     PETPrefix,
@@ -14,7 +13,7 @@ from nacc_attribute_deriver.attributes.base.scan_attribute import (
 from nacc_attribute_deriver.utils.date import get_unique_years
 
 
-class MQTSCANAttribute(MQTAttribute, SCANAttribute):
+class MQTSCANAttribute(SCANAttribute):
     """Class to collect MQT SCAN attributes."""
 
     def _create_scan_mri_scan_types(self) -> Optional[str]:

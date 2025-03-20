@@ -9,7 +9,7 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Any, Dict, List, Optional, Union
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -53,7 +53,7 @@ REQUIRED_FIELDS: Dict[Union[MRIPrefix, PETPrefix], List[str]] = {
 }
 
 
-class SCANAttribute(AttributeCollection):
+class SCANAttribute(RawAttribute):
     TRACER_MAPPING = MappingProxyType(
         {
             1: "fdg",
@@ -84,8 +84,6 @@ class SCANAttribute(AttributeCollection):
     )
 
     def __init__(self, table: SymbolTable, form_prefix: str = "file.info.raw.") -> None:
-        # mri_prefix: str = 'file.info.raw.mri.scan.',
-        # pet_prefix: str = 'file.info.raw.pet.scan.') -> None:
         """Override initializer to set prefix to SCAN-specific data."""
         super().__init__(table, form_prefix)
         # self.__mri_prefix = mri_prefix
