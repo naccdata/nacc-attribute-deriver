@@ -12,6 +12,7 @@ This process is currently actively in development and highly subject to change.
 * Also finalize and release the Attribute Curation gear, and push to Flywheel
 * Write a script to kick off curation for all curation types (UDS, NP, APOE, and SCAN) over all projects
     * Rough draft has been [pushed here](https://github.com/naccdata/flywheel-monitoring/blob/feature/add-scan-notebook/notebooks/curate.ipynb)
+    * The derive rules CSVs under `config` need to be pushed to the corresponding projects as well, the above script assumes they are there
 
 Currently the code should be up-to-date with MQT V2. The main thing left to do is to test, which requires 1) ingesting the SCAN data and 2) running the Attribute Curation gear over each project and each file, and then checking the results. We currently do not have an MQT baseline so they will need to be manually checked. The test code in this repo should be fairly in-depth per attribute, but not so much end to end.
 
@@ -21,6 +22,7 @@ Currently I have been running the gear locally, which also means installing this
     - It needs to be different otherwise pants doesn't know to reinstall the wheel - there might be a command for it that I don't know
 2. Run `pants package ::` and copy the resulting `dist/*.whl` to `flywheel-gear-extensions/dist`
 3. Update the `requirements.txt` in `flywheel-gear-extensions` to match the version in step 1, e.g. something like `nacc_attribute_deriver@ file:///workspaces/flywheel-gear-extensions/dist/nacc_attribute_deriver-0.0.1.dev3-py3-none-any.whl`
+4. Regenerate lockfiles with `pants generate-lockfiles` - combined with the new version this will force reinstall the wheel
 4. Run `cd gear/attribute-curator` and `pants package src/docker` to build the image
 5. Make sure your environment is set up per the "Running a gear locally" dev docs to run it locally
 
@@ -32,7 +34,7 @@ Eventually, the wheel actually needs to be released, and this repo made public s
 
 The NACC Attribute deriver works in coordination with the Attribute Curation gear in [flywheel-gear-extensions](https://github.com/naccdata/flywheel-gear-extensions).
 
-The Attribute Curation gear is launched **per project and per curation type**, e.g. all UDS forms for a single center. The files are scheduled using a MinHeap ordered by a specified date key, if applicable (some curation types such as NCARD APOE curation have no ordering).
+The Attribute Curation gear is launched **per project and curation type**, e.g. all UDS forms for a single center. The files are scheduled using a MinHeap ordered by a specified date key, if applicable (some curation types such as NCARD APOE curation have no ordering).
 
 The gear creates an instance of the NACC Attribute Deriver, passing it
 
