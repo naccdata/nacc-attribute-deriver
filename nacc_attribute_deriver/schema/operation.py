@@ -11,7 +11,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
-class OperationException(Exception):
+class OperationError(Exception):
     pass
 
 
@@ -34,9 +34,9 @@ class Operation(object, metaclass=OperationRegistry):
         Args:
             label: label of the operation
         """
-        op = OperationRegistry.operations.get(label, None)
-        if op:
-            return op()
+        operation = OperationRegistry.operations.get(label, None)
+        if operation:
+            return operation()
 
         raise ValueError(f"Unrecognized operation: {label}")
 
@@ -125,6 +125,11 @@ class SortedListOperation(Operation):
 class DateOperation(Operation):
     LABEL: str | None = None
 
+    @abstractmethod
+    def compare(self, left_value, right_value) -> bool:
+        """Returns the comparison for this object."""
+        raise OperationError(f"Unknown date operation: {self.LABEL}")
+
     def evaluate(
         self,
         *,
@@ -134,37 +139,41 @@ class DateOperation(Operation):
         date_key: Optional[str] = None,
     ) -> None:
         """Compares dates to determine the result."""
-        try:
-            cur_date = datetime_from_form_date(table.get(date_key))  # type: ignore
-            dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))  # type: ignore
-        except ValueError as e:
-            raise OperationException(
-                f"Cannot parse date for date operation: {e}"
-            ) from e
+
+        if not date_key:
+            raise OperationError("Value for date_key is required")
 
         if self.LABEL not in ["initial", "latest"]:
-            raise OperationException(f"Unknown date operation: {self.LABEL}")
+            raise OperationError(f"Unknown date operation: {self.LABEL}")
+
+        try:
+            cur_date = datetime_from_form_date(table.get(date_key))
+            dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
+        except ValueError as e:
+            raise OperationError(f"Cannot parse date for date operation: {e}") from e
 
         if not cur_date:
-            raise OperationException("Current date cannot be determined")
+            raise OperationError("Current date cannot be determined")
 
         if value is None:
             return
 
-        if (
-            not dest_date
-            or (self.LABEL == "initial" and cur_date < dest_date)
-            or (self.LABEL == "latest" and cur_date > dest_date)
-        ):
+        if not dest_date or self.compare(cur_date, dest_date):
             table[attribute] = {"date": str(cur_date.date()), "value": value}
 
 
 class InitialOperation(DateOperation):
     LABEL = "initial"
 
+    def compare(self, left_value, right_value):
+        return left_value < right_value
+
 
 class LatestOperation(DateOperation):
     LABEL = "latest"
+
+    def compare(self, left_value, right_value):
+        return left_value > right_value
 
 
 class CountOperation(Operation):
@@ -189,6 +198,11 @@ class CountOperation(Operation):
 class ComparisonOperation(Operation):
     LABEL: str | None = None
 
+    @abstractmethod
+    def compare(self, left_value, right_value) -> bool:
+        """Returns the comparison for this object."""
+        raise OperationError(f"Unknown comparison operation: {self.LABEL}")
+
     def evaluate(
         self,
         *,
@@ -201,27 +215,29 @@ class ComparisonOperation(Operation):
         dest_value = table.get(attribute)
 
         if self.LABEL not in ["min", "max"]:
-            raise OperationException(f"Unknown comparison operation: {self.LABEL}")
+            raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
         if value is None:
             return
 
         try:
-            if (
-                not dest_value
-                or (self.LABEL == "min" and value < dest_value)
-                or (self.LABEL == "max" and value > dest_value)
-            ):
+            if not dest_value or self.compare(value, dest_value):
                 table[attribute] = value
-        except TypeError as e:
-            raise OperationException(
-                f"Cannot compare types for {self.LABEL} operation: {e}"
-            ) from e
+        except TypeError as error:
+            raise OperationError(
+                f"Cannot compare types for {self.LABEL} operation: {error}"
+            ) from error
 
 
 class MinOperation(ComparisonOperation):
     LABEL = "min"
 
+    def compare(self, left_value, right_value):
+        return left_value < right_value
+
 
 class MaxOperation(ComparisonOperation):
     LABEL = "max"
+
+    def compare(self, left_value, right_value):
+        return left_value > right_value
