@@ -55,7 +55,10 @@ class AttributeDeriver:
                         f"error loading curation rule row: {error}"
                     )
 
-                if rule_schema.operation in ["initial", "latest"]:
+                if (
+                    rule_schema.operation in ["initial", "latest"]
+                    and not self.__date_key
+                ):
                     raise AttributeDeriverError(
                         f"Date operation defined for {rule_schema.function} "
                         "but no date key defined"
@@ -100,7 +103,7 @@ class AttributeDeriver:
                     f"Unknown attribute function: {rule.function}"
                 )
 
-            value = method.apply()
+            value = method.apply(table)
 
             for assignment in rule.assignments:
                 assignment.operation.evaluate(
