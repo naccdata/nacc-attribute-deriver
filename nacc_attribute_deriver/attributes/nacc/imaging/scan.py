@@ -1,6 +1,5 @@
 """Derived variables that come from SCAN values."""
 
-from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
 from nacc_attribute_deriver.attributes.base.scan_attribute import (
     MRIPrefix,
     PETPrefix,
@@ -10,7 +9,7 @@ from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
-class NACCSCANAttribute(NACCAttribute, SCANAttribute):
+class NACCSCANAttribute(SCANAttribute):
     """Class to collect NACC SCAN attributes needed to derive MQT."""
 
     def _create_scan_mri_dates(self) -> str:
