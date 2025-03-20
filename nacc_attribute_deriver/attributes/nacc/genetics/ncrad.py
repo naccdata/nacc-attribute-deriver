@@ -6,12 +6,11 @@ Right now these should all come from the imported APOE data under
 
 from typing import Dict, Tuple
 
-from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class NCRADAttribute(NACCAttribute):
+class NCRADAttribute(FormAttribute):
     """Class to collect NCRAD attributes."""
 
     # NCRAD (a1, a2) to NACC encoding
@@ -27,12 +26,13 @@ class NCRADAttribute(NACCAttribute):
         ("E2", "E2"): 6,
     }
 
-    def __init__(self, table: SymbolTable, form_prefix: str = "file.info.raw.") -> None:
+    def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        super().__init__(table, form_prefix)
-        for field in ["a1", "a2"]:
-            if f"{self.form_prefix}{field}" not in self.table:
-                raise MissingRequiredError(f"{field} required to curate NCRAD data")
+        super().__init__(table)
+        self.assert_required(required=["a1", "a2"])
+        # for field in ["a1", "a2"]:
+        #     if f"{self.form_prefix}{field}" not in self.table:
+        #         raise MissingRequiredError(f"{field} required to curate NCRAD data")
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)

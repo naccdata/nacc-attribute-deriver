@@ -5,10 +5,10 @@ Assumes NACC-derived variables are already set
 
 from typing import Dict, List, Optional, Set
 
-from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
 
 
-class CognitiveAttribute(MQTAttribute):
+class CognitiveAttribute(FormAttribute):
     """Class to collect cognitive attributes."""
 
     NACCUDSD_MAPPING = {

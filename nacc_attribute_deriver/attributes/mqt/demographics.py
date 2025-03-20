@@ -5,10 +5,10 @@ Assumes NACC-derived variables are already set
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
 
 
-class DemographicsAttribute(MQTAttribute):
+class DemographicsAttribute(FormAttribute):
     """Class to collect demographic attributes."""
 
     SEX_MAPPING = {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Don't know"}

@@ -3,7 +3,7 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -60,7 +60,7 @@ class TestMQTAttribute:
         """Test the assert_required method."""
         table = SymbolTable()
         table["file.info.forms.json"] = {}
-        attr = MQTAttribute(table)
+        attr = FormAttribute(table)
 
         # should raise error since there's nothing int able
         with pytest.raises(MissingRequiredError) as e:
