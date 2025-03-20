@@ -20,7 +20,12 @@ def attr() -> UDSFormD1Attribute:
         "file": {
             "info": {
                 "forms": {
-                    "json": {"visitdate": "2025-01-01", "normcog": 1, "formver": 4}
+                    "json": {
+                        "visitdate": "2025-01-01",
+                        "normcog": 1,
+                        "formver": 4,
+                        "module": "uds",
+                    }
                 }
             }
         }

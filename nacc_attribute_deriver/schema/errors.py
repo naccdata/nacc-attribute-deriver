@@ -3,3 +3,7 @@
 
 class AttributeDeriverError(Exception):
     pass
+
+
+class MissingRequiredException(Exception):
+    pass

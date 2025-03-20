@@ -4,7 +4,7 @@ import pytest
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.schema.errors import MissingRequiredException
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -29,6 +29,7 @@ class TestAttributeCollection:
     def test_set_value(self):
         """Tests setting value."""
         table = SymbolTable()
+        table["test"] = {}
         attr = AttributeCollection(table, form_prefix="test.")
         attr.set_value("value", 5)
 
@@ -58,10 +59,11 @@ class TestMQTAttribute:
     def test_assert_required(self):
         """Test the assert_required method."""
         table = SymbolTable()
+        table["file.info.forms.json"] = {}
         attr = MQTAttribute(table)
 
         # should raise error since there's nothing int able
-        with pytest.raises(AttributeDeriverError) as e:
+        with pytest.raises(MissingRequiredException) as e:
             attr.assert_required(["testvar"])
         assert (
             str(e.value)

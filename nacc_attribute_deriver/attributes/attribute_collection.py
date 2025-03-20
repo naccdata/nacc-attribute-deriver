@@ -11,6 +11,9 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
+from pydantic import BaseModel
+
+from nacc_attribute_deriver.schema.errors import MissingRequiredException
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -74,6 +77,9 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
     def __init__(
         self, table: SymbolTable, form_prefix: str = "file.info.forms.json."
     ) -> None:
+    def __init__(
+        self, table: SymbolTable, form_prefix: str = "file.info.forms.json."
+    ) -> None:
         """Initializes the collection. Requires a SymbolTable containing all
         the relevant FW metadata necessary to derive the attributes.
 
@@ -86,12 +92,20 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         self.table = table
         self.form_prefix = form_prefix
 
+        raw_prefix = self.form_prefix.rstrip(".")
+        if raw_prefix not in self.table:
+            raise MissingRequiredException(
+                f"Form prefix {raw_prefix} not found in current file"
+            )
+
     @classmethod
     def get_all_hooks(cls) -> Dict[str, FunctionType]:
         """Grab all available _create_ functions."""
         result = {}
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
+            if isfunction(attr) and attr_name.startswith("_create_"):
+                result[attr_name.lstrip("_")] = attr
             if isfunction(attr) and attr_name.startswith("_create_"):
                 result[attr_name.lstrip("_")] = attr
 
@@ -111,10 +125,15 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             attr = getattr(cls, attr_name)
             if isfunction(attr) and attr_name.startswith("_create_"):
                 if attr_name.lstrip("_") == derive_name:
+            if isfunction(attr) and attr_name.startswith("_create_"):
+                if attr_name.lstrip("_") == derive_name:
                     return attr
 
         return None
 
+    def get_value(
+        self, key: str, default: Optional[Any] = None, prefix: Optional[str] = None
+    ) -> Any:
     def get_value(
         self, key: str, default: Optional[Any] = None, prefix: Optional[str] = None
     ) -> Any:

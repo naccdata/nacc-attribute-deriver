@@ -18,9 +18,9 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
     """Class to collect MQT SCAN attributes."""
 
     def _create_scan_mri_scan_types(self) -> Optional[str]:
-        """SCAN MRI scan types available Access SeriesType (scan_mridashboard
+        """SCAN MRI scan types available Access series_type (scan_mridashboard
         file)"""
-        return self.get_mri_value("seriestype", MRIPrefix.SCAN_MRI_QC)
+        return self.get_mri_value("series_type", MRIPrefix.SCAN_MRI_QC)
 
     def _is_mri_indicator(self, target: str, subprefix: MRIPrefix) -> bool:
         """Returns whether or not the given target is an MRI.
@@ -145,9 +145,9 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Counts the unique session dates.
         """
         result = self.assert_required(
-            ["scan_mri_dates"], prefix="subject.info.derived."
+            ["scan-mri-dates"], prefix="subject.info.derived."
         )
-        return len(result["scan_mri_dates"])
+        return len(result["scan-mri-dates"])
 
     def _create_scan_pet_session_count(self):
         """Number of SCAN PET sessions available.
@@ -155,9 +155,9 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         Counts the unique session dates.
         """
         result = self.assert_required(
-            ["scan_pet_dates"], prefix="subject.info.derived."
+            ["scan-pet-dates"], prefix="subject.info.derived."
         )
-        return len(result["scan_pet_dates"])
+        return len(result["scan-pet-dates"])
 
     def _create_scan_mri_year_count(self) -> int:
         """Years of SCAN MRI scans available.
@@ -168,13 +168,13 @@ class MQTSCANAttribute(MQTAttribute, SCANAttribute):
         counts the distinct years.
         """
         result = self.assert_required(
-            ["scan_mri_dates"], prefix="subject.info.derived."
+            ["scan-mri-dates"], prefix="subject.info.derived."
         )
-        return len(get_unique_years(result["scan_mri_dates"]))
+        return len(get_unique_years(result["scan-mri-dates"]))
 
     def _create_scan_pet_year_count(self) -> int:
         """Years of SCAN PET scans available."""
         result = self.assert_required(
-            ["scan_pet_dates"], prefix="subject.info.derived."
+            ["scan-pet-dates"], prefix="subject.info.derived."
         )
-        return len(get_unique_years(result["scan_pet_dates"]))
+        return len(get_unique_years(result["scan-pet-dates"]))

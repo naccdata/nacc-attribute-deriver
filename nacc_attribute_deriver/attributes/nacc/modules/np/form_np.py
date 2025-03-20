@@ -3,14 +3,17 @@
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
-from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.schema.errors import MissingRequiredException
 
 
 class NPFormAttribute(NACCAttribute):
-    def __init__(self, table: SymbolTable, form_prefix: str = "file.info.np.") -> None:
-        """Override initializer to set NP prefix."""
-        super().__init__(table, form_prefix)
-        # TODO - in general need to hash out what our prefixes are
+    def __init__(self, *args, **kwargs) -> None:
+        """Check that this is an UDS form."""
+        super().__init__(*args, **kwargs)
+
+        module = self.get_value("module")
+        if not module or module.upper() != "NP":
+            raise MissingRequiredException("Current file is not an NP form")
 
     def _mapgross(self, new) -> Optional[int]:
         npgross = self.get_value("npgross")

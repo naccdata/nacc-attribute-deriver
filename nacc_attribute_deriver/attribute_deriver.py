@@ -7,7 +7,7 @@ subject. File must correspond to the curation schema.
 
 import csv
 from collections import defaultdict
-from importlib.resources import files
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -15,35 +15,31 @@ from pydantic import ValidationError
 
 from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverError
+from .schema.operation import DateOperation
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
 
 
 class AttributeDeriver:
-    def __init__(self, date_key: str, rules_file: Optional[Path] = None):
-        """Initializer.
+    def __init__(self, rules_file: Traversable | Path, date_key: Optional[str] = None):
+        """Initiailzer.
 
         Args:
-            date_key: Key that determines the order of the forms
             rules_file: Path to raw CSV containing the list of
-                rules to execute. If not provided will use the
-                default derive_rules.csv
+                rules to execute.
+            date_key: Key that determines the order of the forms. Required
+                if any date operations are defined
         """
         self.__date_key = date_key
         self.__rules = self.__load_rules(rules_file)
 
-    def __load_rules(self, rules_file: Optional[Path] = None) -> List[CurationRule]:
+    def __load_rules(self, rules_file: Traversable | Path) -> List[CurationRule]:
         """Load rules from the given path. All forms called through curate will
         have these rules applied to them.
 
         Args:
             rules_file: Path to load rules from
         """
-        # grab default rules from config
-        if not rules_file:
-            rules_file = files(  # type: ignore
-                "nacc_attribute_deriver"
-            ).joinpath("config/all_rules.csv")
 
         # aggregate all assignments to their attribute function
         attributes: Dict[str, List[AttributeAssignment]] = defaultdict(list)
@@ -82,9 +78,11 @@ class AttributeDeriver:
         Args:
             table: symbol table with subject and file data to curate
         """
-        if self.__date_key not in table or not table[self.__date_key]:
-            raise AttributeDeriverError(
-                f"Table does not have specified date key: {self.__date_key}"
+        if self.__date_key:
+            if self.__date_key not in table or not table[self.__date_key]:
+                raise AttributeDeriverError(
+                    f"Table does not have specified date key: {self.__date_key}"
+                
             )
 
         # collect all attributes beforehand so they're easily hashable

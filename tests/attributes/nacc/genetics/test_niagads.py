@@ -13,12 +13,10 @@ def attr() -> NIAGADSAttribute:
         "file": {
             "info": {
                 "raw": {
-                    "niagads": {
-                        "niagads_gwas": "NG00000",
-                        "niagads_exomechip": "NG00000, NG00001",
-                        "niagads_wgs": "0",
-                        "niagads_wes": None,
-                    }
+                    "niagads_gwas": "NG00000",
+                    "niagads_exomechip": "NG00000, NG00001",
+                    "niagads_wgs": "0",
+                    "niagads_wes": None,
                 }
             }
         }
