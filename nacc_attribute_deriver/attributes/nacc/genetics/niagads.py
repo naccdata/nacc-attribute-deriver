@@ -22,9 +22,7 @@ class NIAGADSAttribute(NACCAttribute):
             "niagads_wes",
         ]:
             if f"{self.form_prefix}{field}" not in self.table:
-                raise MissingRequiredError(
-                    f"{field} required to curate NIAGADS data"
-                )
+                raise MissingRequiredError(f"{field} required to curate NIAGADS data")
 
     def _evaluate_investigator(self, value: str) -> int:
         """Evaluate investigator. If null/missing (set to None or "0") then
