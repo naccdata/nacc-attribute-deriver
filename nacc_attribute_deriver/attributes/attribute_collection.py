@@ -5,7 +5,7 @@ Heavily based off of
     https://eli.thegreenplace.net/2012/08/07/fundamental-concepts-of-plugin-infrastructures
 """
 
-from inspect import isfunction
+from inspect import isfunction, stack
 from types import FunctionType
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -63,7 +63,7 @@ class AttributeCollectionRegistry(type):
         """
         methods = {}
         for collection_type in cls.collection_types:
-            for name, function in collection_type.get_all_hooks().items():
+            for name, function in collection_type.get_all_hooks().items():  # type: ignore
                 methods[name] = AttributeExpression(
                     function=function, attribute_class=collection_type
                 )
@@ -72,9 +72,7 @@ class AttributeCollectionRegistry(type):
 
 
 class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
-    def __init__(
-        self, table: SymbolTable, form_prefix: str = "file.info.forms.json."
-    ) -> None:
+    def __init__(self, table: SymbolTable, form_prefix: Optional[str] = None) -> None:
         """Initializes the collection. Requires a SymbolTable containing all
         the relevant FW metadata necessary to derive the attributes.
 
@@ -84,8 +82,12 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             form_prefix: Form key prefix, which is where most variables
                 to pull from are expected to live under.
         """
+
+        if not form_prefix:
+            raise MissingRequiredError("Form prefix is required")
+
         self.table = table
-        self.form_prefix = form_prefix
+        self.form_prefix = form_prefix if form_prefix[-1] == "." else f"{form_prefix}."
 
         raw_prefix = self.form_prefix.rstrip(".")
         if raw_prefix not in self.table:
@@ -193,3 +195,31 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             return False
 
         return False
+
+    def assert_required(
+        self, required: List[str], prefix: str = "file.info.derived."
+    ) -> Dict[str, Any]:
+        """Asserts that the given fields in required are in the table for the
+        source.
+
+        Args:
+            required: The required fields
+            prefix: Key prefix the required field is expected to be under
+        Returns:
+            The found required variables, flattened out from the table
+        """
+        found = {}
+        for r in required:
+            full_field = f"{prefix}{r}"
+            # TODO: maybe can implicitly derive even if schema didn't define it?
+            if full_field not in self.table:
+                source = stack()[
+                    1
+                ].function  # not great but preferable to passing the name every time
+                raise MissingRequiredError(
+                    f"{full_field} must be derived before {source} can run"
+                )
+
+            found[r] = self.table[full_field]
+
+        return found
