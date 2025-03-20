@@ -4,7 +4,6 @@ metaclass to keep track of operation types.
 This kind of feels overengineered?
 """
 
-
 from abc import abstractmethod
 from typing import Any, Dict, Optional
 

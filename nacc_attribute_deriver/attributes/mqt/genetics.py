@@ -3,8 +3,6 @@
 Assumes NACC-derived variables are already set
 """
 
-from typing import Any
-
 from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
 from nacc_attribute_deriver.schema.errors import MissingRequiredException
 from nacc_attribute_deriver.symbol_table import SymbolTable
