@@ -40,7 +40,7 @@ class DemographicsAttribute(FormAttribute):
 
     def _create_uds_age(self) -> int:
         """UDS age at form date, mapped from NACCAGE."""
-        result = self.assert_required(["naccage"])
+        result = self.assert_required(["naccage"], prefix="file.info.derived.")
         return result["naccage"]
 
     def _create_uds_sex(self) -> Optional[str]:
@@ -58,7 +58,7 @@ class DemographicsAttribute(FormAttribute):
 
     def _create_uds_race(self) -> str:
         """UDS race."""
-        result = self.assert_required(["naccnihr"])
+        result = self.assert_required(["naccnihr"], prefix="file.info.derived.")
         return self.RACE_MAPPING.get(result["naccnihr"], "Unknown or ambiguous")
 
     def _create_uds_primary_language(self) -> str:
@@ -72,10 +72,10 @@ class DemographicsAttribute(FormAttribute):
 
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
-        result = self.assert_required(["naccdage"])
+        result = self.assert_required(["naccdage"], prefix="file.info.derived.")
         return result["naccdage"]
 
     def _create_vital_status(self) -> str:
         """Creates subject.info.demographics.uds.vital-status.latest."""
-        result = self.assert_required(["naccdied"])
+        result = self.assert_required(["naccdied"], prefix="file.info.derived.")
         return self.VITAL_STATUS_MAPPINGS.get(result["naccdied"], "Unknown")

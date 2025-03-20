@@ -94,7 +94,7 @@ class SCANAttribute(RawAttribute):
             raise MissingRequiredError(f"Unknown SCAN file: {subprefix.value}")
 
         for field in REQUIRED_FIELDS[subprefix]:
-            if field not in self.table[self.form_prefix.rstrip(".")]:  # type: ignore
+            if field not in self.table[self.attribute_prefix.rstrip(".")]:  # type: ignore
                 raise MissingRequiredError(
                     f"Required field {field} for SCAN data "
                     + f"{subprefix.value} not found in current file"

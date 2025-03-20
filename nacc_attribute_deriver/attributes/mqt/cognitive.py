@@ -142,23 +142,23 @@ class CognitiveAttribute(FormAttribute):
 
     def _create_contributing_diagnosis(self) -> List[str]:
         """Mapped from all possible contributing diagnosis."""
-        self.assert_required(["naccalzp", "nacclbdp"])
+        self.assert_required(["naccalzp", "nacclbdp"], prefix="file.info.derived.")
         return self.grab_mappings(self.DIAGNOSIS_MAPPINGS, target=2)
 
     def _create_dementia(self) -> List[str]:
         """Mapped from all dementia types."""
-        self.assert_required(["naccppa", "naccbvft", "nacclbds"])
+        self.assert_required(["naccppa", "naccbvft", "nacclbds"], prefix="file.info.derived.")
         results = self.grab_mappings(self.DEMENTIA_MAPPINGS, target=1)
         return results
 
     def _create_cognitive_status(self) -> Optional[str]:
         """Mapped from NACCUDSD."""
-        result = self.assert_required(["naccudsd"])
+        result = self.assert_required(["naccudsd"], prefix="file.info.derived.")
         return self.NACCUDSD_MAPPING.get(result["naccudsd"], None)
 
     def _create_etpr(self) -> str:
         """Mapped from NACCETPR."""
-        result = self.assert_required(["naccetpr"])
+        result = self.assert_required(["naccetpr"], prefix="file.info.derived.")
         return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
             result["naccetpr"], "Missing/unknown"
         )
@@ -170,5 +170,5 @@ class CognitiveAttribute(FormAttribute):
 
     def _create_normal_cognition(self) -> bool:
         """Mapped from NACCNORM."""
-        result = self.assert_required(["naccnorm"])
+        result = self.assert_required(["naccnorm"], prefix="file.info.derived.")
         return bool(result["naccnorm"])
