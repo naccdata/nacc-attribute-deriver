@@ -6,7 +6,7 @@ from nacc_attribute_deriver.attributes.base.scan_attribute import (
     PETPrefix,
     SCANAttribute,
 )
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
@@ -25,7 +25,7 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         scandate = datetime_from_form_date(scandate)
 
         if not scandate:
-            raise MissingRequiredException("study_date (from SCAN_MRI_QC) required")
+            raise MissingRequiredError("study_date (from SCAN_MRI_QC) required")
 
         return str(scandate.date())
 
@@ -41,6 +41,6 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
 
         scandate = datetime_from_form_date(scandate)
         if not scandate:
-            raise MissingRequiredException("scan_date (from SCAN_PET_QC) required")
+            raise MissingRequiredError("scan_date (from SCAN_PET_QC) required")
 
         return str(scandate.date())

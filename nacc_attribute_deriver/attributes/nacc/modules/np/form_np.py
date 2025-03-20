@@ -3,7 +3,7 @@
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 
 
 class NPFormAttribute(NACCAttribute):
@@ -13,7 +13,7 @@ class NPFormAttribute(NACCAttribute):
 
         module = self.get_value("module")
         if not module or module.upper() != "NP":
-            raise MissingRequiredException("Current file is not an NP form")
+            raise MissingRequiredError("Current file is not an NP form")
 
     def _mapgross(self, new) -> Optional[int]:
         npgross = self.get_value("npgross")

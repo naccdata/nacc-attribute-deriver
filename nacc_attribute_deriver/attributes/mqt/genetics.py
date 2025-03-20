@@ -4,7 +4,7 @@ Assumes NACC-derived variables are already set
 """
 
 from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -23,7 +23,7 @@ class GeneticAttribute(MQTAttribute):
         # explicitly split by ncrad/niagads
         for field in ["a1", "a2"]:
             if f"{self.form_prefix}{field}" not in self.table:
-                raise MissingRequiredException(f"{field} required to curate APOE")
+                raise MissingRequiredError(f"{field} required to curate APOE")
 
         a1 = self.get_value("a1")
         a2 = self.get_value("a2")

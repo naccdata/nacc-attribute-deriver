@@ -5,7 +5,7 @@ Right now these should all come from the imported GWAS data under
 """
 
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -22,7 +22,7 @@ class NIAGADSAttribute(NACCAttribute):
             "niagads_wes",
         ]:
             if f"{self.form_prefix}{field}" not in self.table:
-                raise MissingRequiredException(
+                raise MissingRequiredError(
                     f"{field} required to curate NIAGADS data"
                 )
 

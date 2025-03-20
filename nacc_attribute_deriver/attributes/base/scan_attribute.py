@@ -10,7 +10,7 @@ from types import MappingProxyType
 from typing import Any, Dict, List, Optional, Union
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -93,11 +93,11 @@ class SCANAttribute(AttributeCollection):
 
     def __verify_prefix(self, subprefix: Union[MRIPrefix, PETPrefix]) -> None:
         if subprefix not in REQUIRED_FIELDS:
-            raise MissingRequiredException(f"Unknown SCAN file: {subprefix.value}")
+            raise MissingRequiredError(f"Unknown SCAN file: {subprefix.value}")
 
         for field in REQUIRED_FIELDS[subprefix]:
             if field not in self.table[self.form_prefix.rstrip(".")]:  # type: ignore
-                raise MissingRequiredException(
+                raise MissingRequiredError(
                     f"Required field {field} for SCAN data "
                     + f"{subprefix.value} not found in current file"
                 )

@@ -7,7 +7,7 @@ Right now these should all come from the imported APOE data under
 from typing import Dict, Tuple
 
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -32,7 +32,7 @@ class NCRADAttribute(NACCAttribute):
         super().__init__(table, form_prefix)
         for field in ["a1", "a2"]:
             if f"{self.form_prefix}{field}" not in self.table:
-                raise MissingRequiredException(f"{field} required to curate NCRAD data")
+                raise MissingRequiredError(f"{field} required to curate NCRAD data")
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)

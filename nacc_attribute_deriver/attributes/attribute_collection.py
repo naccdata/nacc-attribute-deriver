@@ -11,7 +11,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -89,7 +89,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
 
         raw_prefix = self.form_prefix.rstrip(".")
         if raw_prefix not in self.table:
-            raise MissingRequiredException(
+            raise MissingRequiredError(
                 f"Form prefix {raw_prefix} not found in current file"
             )
 

@@ -4,7 +4,7 @@ from inspect import stack
 from typing import Any, Dict, List
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 
 
 class NACCAttribute(AttributeCollection):
@@ -39,7 +39,7 @@ class MQTAttribute(AttributeCollection):
                 source = stack()[
                     1
                 ].function  # not great but preferable to passing the name every time
-                raise MissingRequiredException(
+                raise MissingRequiredError(
                     f"{full_field} must be derived before {source} can run"
                 )
 
