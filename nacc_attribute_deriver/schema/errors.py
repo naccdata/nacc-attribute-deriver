@@ -5,5 +5,5 @@ class AttributeDeriverError(Exception):
     pass
 
 
-class MissingRequiredException(Exception):
+class MissingRequiredError(Exception):
     pass
