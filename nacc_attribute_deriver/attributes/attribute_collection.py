@@ -27,31 +27,32 @@ class AttributeExpression(BaseModel):
         arbitrary_types_allowed = True
 
     function: FunctionType
-    instance: "AttributeCollection"
+    attribute_class: type
 
-    def apply(self) -> Any:
+    def apply(self, table: SymbolTable) -> Any:
         """Calls the function on the instance.
 
         Returns:
           the value returned by the function applied to the instance
+        Raises:
+            MissingRequiredError if the attribute class cannot be instantiated
+            on the table
         """
-        return self.function(self.instance)
+        return self.function(self.attribute_class(table))
 
 
 class AttributeCollectionRegistry(type):
-    collections: List[type] = []
+    collection_types: List[type] = []
 
     def __init__(cls, name, bases, attrs):
         """Registers the class in the registry when the class has this class as
         a metaclass."""
         if name != "AttributeCollection":
-            if name not in AttributeCollectionRegistry.collections:
-                AttributeCollectionRegistry.collections.append(cls)
+            if name not in AttributeCollectionRegistry.collection_types:
+                AttributeCollectionRegistry.collection_types.append(cls)
 
     @classmethod
-    def get_attribute_methods(
-        cls, table: SymbolTable
-    ) -> Dict[str, AttributeExpression]:
+    def get_attribute_methods(cls) -> Dict[str, AttributeExpression]:
         """Returns dictionary of the attribute methods in the registered
         collections.
 
@@ -61,11 +62,10 @@ class AttributeCollectionRegistry(type):
           a dictionary mapping a function name to the attribute expression
         """
         methods = {}
-        for collection in cls.collections:
-            instance = collection(table)
-            for name, function in instance.get_all_hooks().items():
+        for collection_type in cls.collection_types:
+            for name, function in collection_type.get_all_hooks().items():
                 methods[name] = AttributeExpression(
-                    function=function, instance=instance
+                    function=function, attribute_class=collection_type
                 )
 
         return methods
@@ -99,8 +99,6 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         result = {}
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
-            if isfunction(attr) and attr_name.startswith("_create_"):
-                result[attr_name.lstrip("_")] = attr
             if isfunction(attr) and attr_name.startswith("_create_"):
                 result[attr_name.lstrip("_")] = attr
 
