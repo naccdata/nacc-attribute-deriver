@@ -1,4 +1,5 @@
 """Derived variables from form A1."""
+
 from typing import Optional
 
 from nacc_attribute_deriver.utils.date import (
@@ -14,7 +15,7 @@ class UDSFormA1Attribute(UDSAttribute):
 
     # TODO: additional worry that SAS-code was extremely case-sensitive?
     WHITEX_RESPONSES = {
-        'racex': {
+        "racex": {
             "arab",
             "arabic",
             "armenian",
@@ -53,7 +54,7 @@ class UDSFormA1Attribute(UDSAttribute):
             "turkish",
             "ukrain",
         },
-        'racesecx': {  # ONLY IF RACE == 1 and RACESEC == 50
+        "racesecx": {  # ONLY IF RACE == 1 and RACESEC == 50
             # in RACEX
             "arabic",
             "armenian",
@@ -100,95 +101,151 @@ class UDSFormA1Attribute(UDSAttribute):
             "sephardicjewish",
             "spanish",
             "turkish/arab",
-            "westerneurope"
+            "westerneurope",
         },
-        'raceterx': {"jewish", "portuguese", "romanian", "scotch"}
+        "raceterx": {"jewish", "portuguese", "romanian", "scotch"},
     }
 
     BLACKX_RESPONSES = {
-        'racesecx': {
-            'black/african-american', 'africanamerican', 'bahamanian',
-            'caribian', 'caribbean', 'haitian', 'hatian', 'jamaican',
-            'westindian', 'westindies'
+        "racesecx": {
+            "black/african-american",
+            "africanamerican",
+            "bahamanian",
+            "caribian",
+            "caribbean",
+            "haitian",
+            "hatian",
+            "jamaican",
+            "westindian",
+            "westindies",
         },
-        'racex': {
-            "africanamerican", "westindian", 'westindies', "bahamas",
-            "barbadian", "barbardian", "eritrian", 'haitian', "hatian",
-            'jamaician', 'jamaica', 'jamaican', "hispanicdominican",
-            'dominican/hispanic', "nigerian", "trinidadian", 'westindies'
-        }
+        "racex": {
+            "africanamerican",
+            "westindian",
+            "westindies",
+            "bahamas",
+            "barbadian",
+            "barbardian",
+            "eritrian",
+            "haitian",
+            "hatian",
+            "jamaician",
+            "jamaica",
+            "jamaican",
+            "hispanicdominican",
+            "dominican/hispanic",
+            "nigerian",
+            "trinidadian",
+            "westindies",
+        },
     }
 
-    NATIVEX_RESPONSES = {'racex': {'nativeamerican', 'nativeamerica'}}
+    NATIVEX_RESPONSES = {"racex": {"nativeamerican", "nativeamerica"}}
 
-    HAWAIIX_RESPONSES = {'racex': {'tahitian'}, 'racesecx': {'samoan'}}
+    HAWAIIX_RESPONSES = {"racex": {"tahitian"}, "racesecx": {"samoan"}}
 
     ASIANX_RESPONSES = {
-        'racex': {
-            'asian', 'asianindian', 'chinese', 'chineseamerican', 'eastindian',
-            'filipino', 'filipinoamerican', 'korean', 'japanese',
-            'japaneseamerican', 'india', 'indian', 'indiasouthindian', 'malay',
-            'okanawajapanese', 'phillipino', 'southasian', 'srilankan',
-            'vietnamese'
+        "racex": {
+            "asian",
+            "asianindian",
+            "chinese",
+            "chineseamerican",
+            "eastindian",
+            "filipino",
+            "filipinoamerican",
+            "korean",
+            "japanese",
+            "japaneseamerican",
+            "india",
+            "indian",
+            "indiasouthindian",
+            "malay",
+            "okanawajapanese",
+            "phillipino",
+            "southasian",
+            "srilankan",
+            "vietnamese",
         },
-        'racesecx': {'asianindian', 'eastindian', 'korean'}
+        "racesecx": {"asianindian", "eastindian", "korean"},
     }
 
     MULTIX_RESPONSES = {
-        'racex': {
-            'blackhispanic',
-            'bi-racial',
-            'biracial',
-            'caucasian/asian',
-            'dutchindonesian',
-            'halfhisp/halfwhite',
-            'hispanic-mestiza',
-            'japanesecaucasian',
-            'mestino',
-            'mestito',
-            'mestiza',
-            'mestizo',
+        "racex": {
+            "blackhispanic",
+            "bi-racial",
+            "biracial",
+            "caucasian/asian",
+            "dutchindonesian",
+            "halfhisp/halfwhite",
+            "hispanic-mestiza",
+            "japanesecaucasian",
+            "mestino",
+            "mestito",
+            "mestiza",
+            "mestizo",
             "meztizo",
-            'mixblackandwhite',
-            'mixed',
-            'mixedrace',
-            'mulato',
-            'moreno/mestizo',
-            'mulato/blackandwhite',
-            'multiracial',
-            'mixedcuban',
-            'mututo',
-            'white/africanamerican',
+            "mixblackandwhite",
+            "mixed",
+            "mixedrace",
+            "mulato",
+            "moreno/mestizo",
+            "mulato/blackandwhite",
+            "multiracial",
+            "mixedcuban",
+            "mututo",
+            "white/africanamerican",
         }
     }
 
     MULTIPX_RESPONSES = {
-        'racex': {
-            'africanandamericanindian', 'mixblackandwhite',
-            'mixedblackandwhite', 'wht/blk'
+        "racex": {
+            "africanandamericanindian",
+            "mixblackandwhite",
+            "mixedblackandwhite",
+            "wht/blk",
         },
-        'racesecx': {
-            'caribbeanindian',
-            'dutchindonesian',
-            'eastindian',
-            'korean',
-            'panamanian',
-            'puertorican',
-            'jamaicanindian',
-            'canadianindian',
-            'eastindian/jamacican',
-            'sicilian',
-        }
+        "racesecx": {
+            "caribbeanindian",
+            "dutchindonesian",
+            "eastindian",
+            "korean",
+            "panamanian",
+            "puertorican",
+            "jamaicanindian",
+            "canadianindian",
+            "eastindian/jamacican",
+            "sicilian",
+        },
     }
 
     UNX_RESPONSES = {
-        'racex': {
-            'brazilian', 'columbian', 'criollo', 'cuban', 'guyanese',
-            'hispanic', 'hispanic/latino', 'hspanic', 'human', 'humana',
-            'indian', 'indio', 'latin,trigueno', 'latina', 'latinahispanic',
-            'latino', 'mexicanamerican', 'other', 'puertorican',
-            'puertorician', 'refused', 'seereport', 'brown', 'indigenous',
-            'mexican', 'usa'
+        "racex": {
+            "brazilian",
+            "columbian",
+            "criollo",
+            "cuban",
+            "guyanese",
+            "hispanic",
+            "hispanic/latino",
+            "hspanic",
+            "human",
+            "humana",
+            "indian",
+            "indio",
+            "latin,trigueno",
+            "latina",
+            "latinahispanic",
+            "latino",
+            "mexicanamerican",
+            "other",
+            "puertorican",
+            "puertorician",
+            "refused",
+            "seereport",
+            "brown",
+            "indigenous",
+            "mexican",
+            "usa",
         }
     }
 
@@ -196,7 +253,7 @@ class UDSFormA1Attribute(UDSAttribute):
         """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
         compares to form date."""
         dob = self.generate_uds_dob()
-        visitdate = self.get_value('visitdate', None)
+        visitdate = self.get_value("visitdate", None)
         visitdate = datetime_from_form_date(visitdate)
         if not dob or not visitdate:
             return None
@@ -205,36 +262,44 @@ class UDSFormA1Attribute(UDSAttribute):
 
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)"""
-        return self.generate_naccnihr(race=self.get_value('race'),
-                                      racex=self.get_value('racex'),
-                                      racesec=self.get_value('racesec'),
-                                      racesecx=self.get_value('racesecx'),
-                                      raceter=self.get_value('raceter'),
-                                      raceterx=self.get_value('raceterx'))
+        return self.generate_naccnihr(
+            race=self.get_value("race"),
+            racex=self.get_value("racex"),
+            racesec=self.get_value("racesec"),
+            racesecx=self.get_value("racesecx"),
+            raceter=self.get_value("raceter"),
+            raceterx=self.get_value("raceterx"),
+        )
 
     @classmethod
-    def is_multiracial(cls, racex: Optional[str],
-                       racesecx: Optional[str]) -> bool:
+    def is_multiracial(cls, racex: Optional[str], racesecx: Optional[str]) -> bool:
         """Returns whether or not the write-in values denote multiracial."""
         if racex:
-            mult_satisfied = any([
-                x in racex
-                for x in ['muiti', 'mult', 'muti', 'multi', 'mulit', 'mutl']
-            ])
-            if mult_satisfied and 'racial' in racex:
+            mult_satisfied = any(
+                [
+                    x in racex
+                    for x in ["muiti", "mult", "muti", "multi", "mulit", "mutl"]
+                ]
+            )
+            if mult_satisfied and "racial" in racex:
                 return True
 
         if racesecx:
-            if 'multi' in racesecx and 'racial' in racesecx:
+            if "multi" in racesecx and "racial" in racesecx:
                 return True
 
         return False
 
     @classmethod
-    def generate_naccnihr(cls, race: Optional[int], racex: Optional[str],
-                          racesec: Optional[int], racesecx: Optional[str],
-                          raceter: Optional[int],
-                          raceterx: Optional[str]) -> int:
+    def generate_naccnihr(
+        cls,
+        race: Optional[int],
+        racex: Optional[str],
+        racesec: Optional[int],
+        racesecx: Optional[str],
+        raceter: Optional[int],
+        raceterx: Optional[str],
+    ) -> int:
         """"NACCNIHR values:
 
         1: "White"
@@ -252,9 +317,9 @@ class UDSFormA1Attribute(UDSAttribute):
         # remove whitespace and lowercase all
         # TODO: not sure if the SAS code was extremely case-sensitive
         #   e.g. some capitalizations in RACEX and others in RACESECX
-        racex = racex.replace(' ', '').lower() if racex else racex
-        racesecx = racesecx.replace(' ', '').lower() if racesecx else racesecx
-        raceterx = raceterx.replace(' ', '').lower() if raceterx else raceterx
+        racex = racex.replace(" ", "").lower() if racex else racex
+        racesecx = racesecx.replace(" ", "").lower() if racesecx else racesecx
+        raceterx = raceterx.replace(" ", "").lower() if raceterx else raceterx
 
         whitex = 0
         blackx = 0
@@ -266,70 +331,69 @@ class UDSFormA1Attribute(UDSAttribute):
         unx = 0
 
         # whitex
-        if racex in cls.WHITEX_RESPONSES['racex']:
+        if racex in cls.WHITEX_RESPONSES["racex"]:
             whitex = 1
-        if race == 1 and racesec == 50 and racesecx in cls.WHITEX_RESPONSES[
-                'racesecx']:
+        if race == 1 and racesec == 50 and racesecx in cls.WHITEX_RESPONSES["racesecx"]:
             whitex = 1
-        if raceterx in cls.WHITEX_RESPONSES['raceterx']:
+        if raceterx in cls.WHITEX_RESPONSES["raceterx"]:
             whitex = 1
 
         # blackx
-        if racesecx in cls.BLACKX_RESPONSES['racesecx']:
+        if racesecx in cls.BLACKX_RESPONSES["racesecx"]:
             blackx = 1
-        if racex in cls.BLACKX_RESPONSES['racex']:
+        if racex in cls.BLACKX_RESPONSES["racex"]:
             blackx = 1
 
         # nativex
-        if racex in cls.NATIVEX_RESPONSES['racex']:
+        if racex in cls.NATIVEX_RESPONSES["racex"]:
             nativex = 1
 
         # hawaiix
-        if racesecx in cls.HAWAIIX_RESPONSES['racesecx']:
+        if racesecx in cls.HAWAIIX_RESPONSES["racesecx"]:
             hawaiix = 1
-        if racex in cls.HAWAIIX_RESPONSES['racex']:
+        if racex in cls.HAWAIIX_RESPONSES["racex"]:
             hawaiix = 1
 
         # asianx
-        if racex in cls.ASIANX_RESPONSES['racex']:
+        if racex in cls.ASIANX_RESPONSES["racex"]:
             asianx = 1
-        if racesecx in cls.ASIANX_RESPONSES['racesecx']:
+        if racesecx in cls.ASIANX_RESPONSES["racesecx"]:
             asianx = 1
 
         # multix
-        if racex in cls.MULTIX_RESPONSES['racex']:
+        if racex in cls.MULTIX_RESPONSES["racex"]:
             multix = 1
         if cls.is_multiracial(racex, racesecx):
             multix = 1
 
         # multipx
-        if racex in cls.MULTIPX_RESPONSES['racex']:
+        if racex in cls.MULTIPX_RESPONSES["racex"]:
             multipx = 1
-        if racesecx in cls.MULTIPX_RESPONSES['racesecx']:
+        if racesecx in cls.MULTIPX_RESPONSES["racesecx"]:
             multipx = 1
-        if race in {2, 3, 4, 5} and racesecx == 'irish':
+        if race in {2, 3, 4, 5} and racesecx == "irish":
             multipx = 1
-        if race == 1 and raceter == 50 and raceterx == 'irish':
+        if race == 1 and raceter == 50 and raceterx == "irish":
             multipx = 1
-        if race == 50 and racesecx == 'german' and raceterx == 'centralamericanindian':
+        if race == 50 and racesecx == "german" and raceterx == "centralamericanindian":
             multipx = 1
-        if race == 3 and raceterx == 'irish':
+        if race == 3 and raceterx == "irish":
             multipx = 1
-        if racesec == 3 and racex == 'european':
+        if racesec == 3 and racex == "european":
             multipx = 1
-        if race == 4 and racesecx == 'filipino':
+        if race == 4 and racesecx == "filipino":
             multipx = 1
-        if race == 1 and raceterx == 'nativeamerican':
+        if race == 1 and raceterx == "nativeamerican":
             multipx = 1
-        if race == 5 and racesecx == 'portuguese' and raceterx == 'sloven':
+        if race == 5 and racesecx == "portuguese" and raceterx == "sloven":
             multipx = 1
-        if race == 5 and racesecx == 'korean' and raceterx == 'portuguese':
+        if race == 5 and racesecx == "korean" and raceterx == "portuguese":
             multipx = 1
-        if race == 1 and racesecx == 'westindian':
+        if race == 1 and racesecx == "westindian":
             multipx = 1
 
         # unx
-        if racex in cls.UNX_RESPONSES['racex']:
+        if racex in cls.UNX_RESPONSES["racex"]:
             unx = 1
 
         naccnihr = race
@@ -344,9 +408,7 @@ class UDSFormA1Attribute(UDSAttribute):
             naccnihr = 1
         elif blackx == 1 and race == 50 and racesec == 5:
             naccnihr = 6
-        elif blackx == 1 and race == 50 and racesec == 1 and raceter in {
-                2, 3, 4, 5
-        }:
+        elif blackx == 1 and race == 50 and racesec == 1 and raceter in {2, 3, 4, 5}:
             naccnihr = 6
         elif race == 50 and racesec == 2 and raceter == 3:
             naccnihr = 6
@@ -403,8 +465,15 @@ class UDSFormA1Attribute(UDSAttribute):
             naccnihr = 6
         elif racesec == 5 and raceter in {1, 2, 3}:
             naccnihr = 6
-        elif (race == 50 and whitex != 1 and blackx != 1 and hawaiix != 1
-              and asianx != 1 and multix != 1 and multipx != 1):
+        elif (
+            race == 50
+            and whitex != 1
+            and blackx != 1
+            and hawaiix != 1
+            and asianx != 1
+            and multix != 1
+            and multipx != 1
+        ):
             naccnihr = 99
         elif race == 99 and racesec in {2, 3}:
             naccnihr = 99

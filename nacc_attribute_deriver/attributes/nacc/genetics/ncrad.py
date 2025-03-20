@@ -3,6 +3,7 @@
 Right now these should all come from the imported APOE data under
 <subject>_apoe_availability.json
 """
+
 from typing import Dict, Tuple
 
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
@@ -23,18 +24,15 @@ class NCRADAttribute(NACCAttribute):
         ("E4", "E4"): 4,
         ("E4", "E2"): 5,
         ("E2", "E4"): 5,
-        ("E2", "E2"): 6
+        ("E2", "E2"): 6,
     }
 
-    def __init__(self,
-                 table: SymbolTable,
-                 form_prefix: str = 'file.info.raw.') -> None:
+    def __init__(self, table: SymbolTable, form_prefix: str = "file.info.raw.") -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
         super().__init__(table, form_prefix)
-        for field in ['a1', 'a2']:
-            if f'{self.form_prefix}{field}' not in self.table:
-                raise MissingRequiredException(
-                    f'{field} required to curate NCRAD data')
+        for field in ["a1", "a2"]:
+            if f"{self.form_prefix}{field}" not in self.table:
+                raise MissingRequiredException(f"{field} required to curate NCRAD data")
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
@@ -42,11 +40,10 @@ class NCRADAttribute(NACCAttribute):
         Should come from the actual imported APOE data
         <subject>_apoe_availability.json
         """
-        a1 = self.get_value('a1')
-        a2 = self.get_value('a2')
+        a1 = self.get_value("a1")
+        a2 = self.get_value("a2")
 
         if not a1 or not a2:
             return 9
 
-        return self.APOE_ENCODINGS.get(
-            (a1.strip().upper(), a2.strip().upper()), 9)
+        return self.APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)

@@ -1,4 +1,5 @@
 """Tests create_naccnihr specifically."""
+
 from typing import Callable
 
 import pytest
@@ -8,7 +9,7 @@ from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import (
 )
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def generate_naccnihr() -> Callable:
     return UDSFormA1Attribute.generate_naccnihr
 
@@ -37,14 +38,12 @@ class TestCreateNACCNIHR:
 
     def test_original_primary_writein(self, generate_naccnihr):
         assert generate_naccnihr(50, "Arab", None, None, None, None) == 1
-        assert generate_naccnihr(50, "African American", None, None, None,
-                                 None) == 2
-        assert generate_naccnihr(50, "NATIVE AMERICAN", None, None, None,
-                                 None) == 3
+        assert generate_naccnihr(50, "African American", None, None, None, None) == 2
+        assert generate_naccnihr(50, "NATIVE AMERICAN", None, None, None, None) == 3
 
         # TODO: check what SAS/R code returns for this
         # won't return 4
-        #assert generate_naccnihr(50, "Samoan", None, None, None, None) == 4
+        # assert generate_naccnihr(50, "Samoan", None, None, None, None) == 4
         # this version will return 4 (must be racesecx)
         assert generate_naccnihr(50, None, None, "Samoan", None, None) == 4
 
@@ -52,8 +51,10 @@ class TestCreateNACCNIHR:
 
         assert generate_naccnihr(50, "Asian", None, None, None, None) == 5
         assert generate_naccnihr(50, "Biracial", None, None, None, None) == 6
-        assert generate_naccnihr(50, "African and American Indian", None, None,
-                                 None, None) == 6
+        assert (
+            generate_naccnihr(50, "African and American Indian", None, None, None, None)
+            == 6
+        )
         assert generate_naccnihr(50, "HUMAN", None, None, None, None) == 99
 
     def test_original_ignore(self, generate_naccnihr):

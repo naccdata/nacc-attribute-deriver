@@ -5,9 +5,9 @@ from typing import Any, Dict, Iterator, MutableMapping, Optional
 class SymbolTable(MutableMapping):
     """Implements a dictionary like object for using metadata paths as keys."""
 
-    def __init__(self,
-                 symbol_dict: Optional[MutableMapping] = None,
-                 separator: str = '.') -> None:
+    def __init__(
+        self, symbol_dict: Optional[MutableMapping] = None, separator: str = "."
+    ) -> None:
         self.__table: Dict[Any, Any] = {}
         self.__separator = separator
 

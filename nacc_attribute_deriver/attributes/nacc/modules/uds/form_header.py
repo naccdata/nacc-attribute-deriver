@@ -1,4 +1,5 @@
 """Derived variables that come from the header variables."""
+
 from typing import Optional
 
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
@@ -11,5 +12,5 @@ class UDSHeaderAttribute(UDSAttribute):
 
     def _create_uds_visitdates(self) -> Optional[str]:
         """Gets the visitdate - temporary derived variable."""
-        visitdate = datetime_from_form_date(self.get_value('visitdate'))
+        visitdate = datetime_from_form_date(self.get_value("visitdate"))
         return str(visitdate.date()) if visitdate else None

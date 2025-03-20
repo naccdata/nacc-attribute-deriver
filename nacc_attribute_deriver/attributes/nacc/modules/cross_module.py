@@ -1,4 +1,5 @@
 """Derived variables that rely on multiple modules."""
+
 from datetime import datetime
 from typing import Any, Optional
 
@@ -17,12 +18,14 @@ class CrossModuleAttribute(UDSAttribute):
     Based from the UDS Attributes.
     """
 
-    def __init__(self,
-                 table: SymbolTable,
-                 form_prefix: str = 'file.info.forms.json.',
-                 np_prefix: str = 'file.info.np.',
-                 mds_prefix: str = 'file.info.mds.',
-                 mile_prefix: str = 'file.info.milestone.') -> None:
+    def __init__(
+        self,
+        table: SymbolTable,
+        form_prefix: str = "file.info.forms.json.",
+        np_prefix: str = "file.info.np.",
+        mds_prefix: str = "file.info.mds.",
+        mile_prefix: str = "file.info.milestone.",
+    ) -> None:
         """Override initializer to set other module prefixes."""
         super().__init__(table, form_prefix)
         self.__np_prefix = np_prefix
@@ -71,30 +74,30 @@ class CrossModuleAttribute(UDSAttribute):
         dyr, dmo, ddy = None, None, None
 
         # NP form - all seem required but check on NPDAGE anyways
-        if self.get_np_value('npdage') is not None:
-            dyr = self.get_np_value('npdodyr')
-            dmo = self.get_np_value('npdodmo')
-            ddy = self.get_np_value('npdoddy')
+        if self.get_np_value("npdage") is not None:
+            dyr = self.get_np_value("npdodyr")
+            dmo = self.get_np_value("npdodmo")
+            ddy = self.get_np_value("npdoddy")
             if dyr and dmo and ddy:
                 found = True
 
         # Milestone form - DECEASED == 1 == Subject has died
-        if not found and self.get_mile_value('deceased') in [1, '1']:
-            dyr = self.get_mile_value('deathyr')
-            dmo = self.get_mile_value('deathmo')  # can be 99
-            ddy = self.get_mile_value('deathdy')  # can be 99
+        if not found and self.get_mile_value("deceased") in [1, "1"]:
+            dyr = self.get_mile_value("deathyr")
+            dmo = self.get_mile_value("deathmo")  # can be 99
+            ddy = self.get_mile_value("deathdy")  # can be 99
             if dyr and dmo and ddy:
                 found = True
 
         # MDS form - VITALST == 2 == Dead
-        if not found and self.get_mds_value('vitalst') in [2, '2']:
-            dyr = self.get_mds_value('deathyr')  # can be 9999
-            dmo = self.get_mds_value('deathmo')  # can be 99
-            ddy = self.get_mds_value('deathday')  # can be 99
+        if not found and self.get_mds_value("vitalst") in [2, "2"]:
+            dyr = self.get_mds_value("deathyr")  # can be 9999
+            dmo = self.get_mds_value("deathmo")  # can be 99
+            ddy = self.get_mds_value("deathday")  # can be 99
             if dyr and dmo and ddy:
                 found = True
 
-        if not found or dyr in ['9999', 9999]:
+        if not found or dyr in ["9999", 9999]:
             return None
 
         # cast to ints and handle unknown dates
@@ -111,18 +114,18 @@ class CrossModuleAttribute(UDSAttribute):
         except (TypeError, ValueError):
             return None
 
-        death_date = f'{dyr}-{dmo:02d}-{ddy:02d}'
+        death_date = f"{dyr}-{dmo:02d}-{ddy:02d}"
         return datetime_from_form_date(death_date)
 
     def _create_naccdage(self) -> int:
         """From derive.sas and derivenew.sas."""
         # check that subject is deceased at all
-        mds_deceased = self.get_mds_value('vitalst') in [2, '2']
+        mds_deceased = self.get_mds_value("vitalst") in [2, "2"]
         if self._create_naccdied() == 0 and not mds_deceased:
             return 888
 
         # NP, grab from NPDAGE
-        npdage = self.get_np_value('npdage')
+        npdage = self.get_np_value("npdage")
         if npdage:
             return npdage
 
@@ -143,8 +146,9 @@ class CrossModuleAttribute(UDSAttribute):
         """Creates NACCDIED - determined if death
         has been reported by NP or Milestone form.
         """
-        if self.get_np_value('npdage') is not None \
-            or self.get_mile_value('deceased') in [1, '1']:
+        if self.get_np_value("npdage") is not None or self.get_mile_value(
+            "deceased"
+        ) in [1, "1"]:
             return 1
 
         return 0
@@ -154,8 +158,8 @@ class CrossModuleAttribute(UDSAttribute):
         needs to differentiate if an NP form was submitted
         or not.
         """
-        np_deceased = self.get_np_value('npdage') is not None
-        mile_deceased = self.get_mile_value('deceased') in [1, '1']
+        np_deceased = self.get_np_value("npdage") is not None
+        mile_deceased = self.get_mile_value("deceased") in [1, "1"]
 
         # not reported as having died
         if not np_deceased and not mile_deceased:

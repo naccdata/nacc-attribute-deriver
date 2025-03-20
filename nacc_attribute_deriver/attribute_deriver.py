@@ -4,6 +4,7 @@ Gear needs to iterate over all subjects, and for each subject, call this
 AttributeDeriver (deriver.curate(file)) for all (relevant) files in the
 subject. File must correspond to the curation schema.
 """
+
 import csv
 from importlib.resources.abc import Traversable
 from pathlib import Path
@@ -17,10 +18,7 @@ from .symbol_table import SymbolTable
 
 
 class AttributeDeriver:
-
-    def __init__(self,
-                 rules_file: Traversable | Path,
-                 date_key: Optional[str] = None):
+    def __init__(self, rules_file: Traversable | Path, date_key: Optional[str] = None):
         """Initiailzer.
 
         Args:
@@ -32,8 +30,7 @@ class AttributeDeriver:
         self.__date_key = date_key
         self.__rules = self.__load_rules(rules_file)
 
-    def __load_rules(self,
-                     rules_file: Traversable | Path) -> List[AttributeSchema]:
+    def __load_rules(self, rules_file: Traversable | Path) -> List[AttributeSchema]:
         """Load rules from the given path. All forms called through curate will
         have these rules applied to them.
 
@@ -43,25 +40,26 @@ class AttributeDeriver:
         # first aggregate all events to their attribute, since some
         # may have multiple events
         attributes: Dict[str, List[DeriveEvent]] = {}
-        with rules_file.open('r') as fh:  # type: ignore
+        with rules_file.open("r") as fh:  # type: ignore
             reader = csv.DictReader(fh)
             if not reader.fieldnames:
                 raise AttributeDeriverException(
-                    "No CSV headers found in derive rules file")
+                    "No CSV headers found in derive rules file"
+                )
 
-            for exp_header in ['function', 'location', 'operation']:
+            for exp_header in ["function", "location", "operation"]:
                 if exp_header not in reader.fieldnames:
                     raise AttributeDeriverException(
-                        f"Missing expected header: {exp_header}")
+                        f"Missing expected header: {exp_header}"
+                    )
 
             for row in reader:
-                func = row.pop('function')
+                func = row.pop("function")
                 if func not in attributes:
                     attributes[func] = []
 
                 event = DeriveEvent(**row)  # type: ignore
-                if isinstance(event.operation,
-                              DateOperation) and not self.__date_key:
+                if isinstance(event.operation, DateOperation) and not self.__date_key:
                     raise AttributeDeriverException(
                         f"Date operation defined for {func} but no date key defined"
                     )
@@ -71,8 +69,7 @@ class AttributeDeriver:
         # create AttributeSchema for each attribute
         rules = []
         for func, events in attributes.items():
-            rules.append(
-                AttributeSchema(function=f'create_{func}', events=events))
+            rules.append(AttributeSchema(function=f"create_{func}", events=events))
 
         return rules
 
@@ -93,29 +90,28 @@ class AttributeDeriver:
         # collect all attributes beforehand so they're easily hashable
         collections = {}
         for c in AttributeCollectionRegistry.collections:
-            collections.update({
-                k: {
-                    'func': v,
-                    'class': c,
-                    'instance': None
+            collections.update(
+                {
+                    k: {"func": v, "class": c, "instance": None}
+                    for k, v in c.get_all_hooks().items()
                 }
-                for k, v in c.get_all_hooks().items()
-            })
+            )
 
         # derive the variables
         for attr in self.__rules:
             hook = collections.get(attr.function, None)
             if not hook:
                 raise AttributeDeriverException(
-                    f"Unknown attribute function: {attr.function}")
+                    f"Unknown attribute function: {attr.function}"
+                )
 
             # cache an instance if not yet created
-            if not hook['instance']:
-                hook['instance'] = hook['class'](table)  # type: ignore
+            if not hook["instance"]:
+                hook["instance"] = hook["class"](table)  # type: ignore
 
-            value = hook['func'](hook['instance'])  # type: ignore
+            value = hook["func"](hook["instance"])  # type: ignore
 
             for event in attr.events:
                 event.operation.evaluate(
-                    table, value, event.location,
-                    date_key=self.__date_key)  # type: ignore
+                    table, value, event.location, date_key=self.__date_key
+                )  # type: ignore

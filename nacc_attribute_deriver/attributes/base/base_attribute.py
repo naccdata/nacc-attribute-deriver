@@ -1,4 +1,5 @@
 """Base attributes, derive directly from AttributeCollection."""
+
 from inspect import stack
 from typing import Any, Dict, List
 
@@ -18,9 +19,9 @@ class MQTAttribute(AttributeCollection):
     derived NACC variable has already been set.
     """
 
-    def assert_required(self,
-                        required: List[str],
-                        prefix: str = 'file.info.derived.') -> Dict[str, Any]:
+    def assert_required(
+        self, required: List[str], prefix: str = "file.info.derived."
+    ) -> Dict[str, Any]:
         """Asserts that the given fields in required are in the table for the
         source.
 
@@ -32,13 +33,15 @@ class MQTAttribute(AttributeCollection):
         """
         found = {}
         for r in required:
-            full_field = f'{prefix}{r}'
+            full_field = f"{prefix}{r}"
             # TODO: maybe can implicitly derive even if schema didn't define it?
             if full_field not in self.table:
-                source = stack(
-                )[1].function  # not great but preferable to passing the name every time
+                source = stack()[
+                    1
+                ].function  # not great but preferable to passing the name every time
                 raise MissingRequiredException(
-                    f"{full_field} must be derived before {source} can run")
+                    f"{full_field} must be derived before {source} can run"
+                )
 
             found[r] = self.table[full_field]
 

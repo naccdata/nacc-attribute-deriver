@@ -1,4 +1,5 @@
 """Defines the curation schema."""
+
 from typing import List, Optional
 
 from pydantic import BaseModel, field_validator
@@ -16,7 +17,7 @@ class DeriveEvent(BaseModel):
     location: str
     operation: Operation
 
-    @field_validator('operation', mode='before')
+    @field_validator("operation", mode="before")
     def generate_operation(cls, value: str) -> Operation:
         return Operation.create(value)
 
@@ -24,6 +25,7 @@ class DeriveEvent(BaseModel):
 class AttributeSchema(BaseModel):
     """Defines the derive schema for a single attribute, e.g. how something
     should be derived."""
+
     function: str  # Maps to an attribute function
     events: List[DeriveEvent]  # target DeriveEvents for that function
 

@@ -17,16 +17,15 @@ class AttributeCollectionRegistry(type):
     collections: List["AttributeCollection"] = []
 
     def __init__(cls, name, bases, attrs):
-        if name != 'AttributeCollection':
+        if name != "AttributeCollection":
             if name not in AttributeCollectionRegistry.collections:
                 AttributeCollectionRegistry.collections.append(cls)
 
 
 class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
-
-    def __init__(self,
-                 table: SymbolTable,
-                 form_prefix: str = 'file.info.forms.json.') -> None:
+    def __init__(
+        self, table: SymbolTable, form_prefix: str = "file.info.forms.json."
+    ) -> None:
         """Initializes the collection. Requires a SymbolTable containing all
         the relevant FW metadata necessary to derive the attributes.
 
@@ -39,10 +38,11 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         self.table = table
         self.form_prefix = form_prefix
 
-        raw_prefix = self.form_prefix.rstrip('.')
+        raw_prefix = self.form_prefix.rstrip(".")
         if raw_prefix not in self.table:
             raise MissingRequiredException(
-                f"Form prefix {raw_prefix} not found in current file")
+                f"Form prefix {raw_prefix} not found in current file"
+            )
 
     @classmethod
     def get_all_hooks(cls) -> Dict[str, FunctionType]:
@@ -50,8 +50,8 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         result = {}
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
-            if isfunction(attr) and attr_name.startswith('_create_'):
-                result[attr_name.lstrip('_')] = attr
+            if isfunction(attr) and attr_name.startswith("_create_"):
+                result[attr_name.lstrip("_")] = attr
 
         return result
 
@@ -67,16 +67,15 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         """
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
-            if isfunction(attr) and attr_name.startswith('_create_'):
-                if attr_name.lstrip('_') == derive_name:
+            if isfunction(attr) and attr_name.startswith("_create_"):
+                if attr_name.lstrip("_") == derive_name:
                     return attr
 
         return None
 
-    def get_value(self,
-                  key: str,
-                  default: Optional[Any] = None,
-                  prefix: Optional[str] = None) -> Any:
+    def get_value(
+        self, key: str, default: Optional[Any] = None, prefix: Optional[str] = None
+    ) -> Any:
         """Grab value from the table using the key and prefix, if provided. If
         not specified, prefix will default to self.form_prefix.
 
@@ -89,12 +88,9 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         if prefix is None:
             prefix = self.form_prefix
 
-        return self.table.get(f'{prefix}{key}', default)
+        return self.table.get(f"{prefix}{key}", default)
 
-    def set_value(self,
-                  key: str,
-                  value: Any,
-                  prefix: Optional[str] = None) -> None:
+    def set_value(self, key: str, value: Any, prefix: Optional[str] = None) -> None:
         """Set the value from the table using the specified key and prefix.
 
         Args:
@@ -105,12 +101,14 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         if prefix is None:
             prefix = self.form_prefix
 
-        self.table[f'{prefix}{key}'] = value
+        self.table[f"{prefix}{key}"] = value
 
-    def aggregate_variables(self,
-                            fields: List[str],
-                            default: Optional[Any] = None,
-                            prefix: Optional[str] = None) -> Dict[str, Any]:
+    def aggregate_variables(
+        self,
+        fields: List[str],
+        default: Optional[Any] = None,
+        prefix: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """Aggregates all the specified fields.
 
         Args:
