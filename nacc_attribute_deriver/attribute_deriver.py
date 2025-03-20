@@ -93,7 +93,7 @@ class AttributeDeriver:
                 )
 
         # collect all attributes beforehand so they're easily hashable
-        instance_collections = AttributeCollectionRegistry.get_attribute_methods(table)
+        instance_collections = AttributeCollectionRegistry.get_attribute_methods()
 
         # derive the variables
         for rule in self.__rules:
