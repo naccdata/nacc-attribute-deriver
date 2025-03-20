@@ -6,11 +6,11 @@ Right now these should all come from the imported APOE data under
 
 from typing import Dict, Tuple
 
-from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class NCRADAttribute(FormAttribute):
+class NCRADAttribute(RawAttribute):
     """Class to collect NCRAD attributes."""
 
     # NCRAD (a1, a2) to NACC encoding
