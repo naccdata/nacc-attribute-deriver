@@ -55,9 +55,10 @@ class AttributeDeriver:
                         f"error loading curation rule row: {error}"
                     )
 
-                if rule_schema.operation in ['initial', 'latest']:
-                    raise AttributeDeriverException(
-                        f"Date operation defined for {rule_schema.function} but no date key defined"
+                if rule_schema.operation in ["initial", "latest"]:
+                    raise AttributeDeriverError(
+                        f"Date operation defined for {rule_schema.function} "
+                        "but no date key defined"
                     )
 
                 attributes[rule_schema.function].append(rule_schema.assignment)

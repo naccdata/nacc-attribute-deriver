@@ -11,8 +11,6 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
-from pydantic import BaseModel
-
 from nacc_attribute_deriver.schema.errors import MissingRequiredException
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -77,9 +75,6 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
     def __init__(
         self, table: SymbolTable, form_prefix: str = "file.info.forms.json."
     ) -> None:
-    def __init__(
-        self, table: SymbolTable, form_prefix: str = "file.info.forms.json."
-    ) -> None:
         """Initializes the collection. Requires a SymbolTable containing all
         the relevant FW metadata necessary to derive the attributes.
 
@@ -125,15 +120,10 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             attr = getattr(cls, attr_name)
             if isfunction(attr) and attr_name.startswith("_create_"):
                 if attr_name.lstrip("_") == derive_name:
-            if isfunction(attr) and attr_name.startswith("_create_"):
-                if attr_name.lstrip("_") == derive_name:
                     return attr
 
         return None
 
-    def get_value(
-        self, key: str, default: Optional[Any] = None, prefix: Optional[str] = None
-    ) -> Any:
     def get_value(
         self, key: str, default: Optional[Any] = None, prefix: Optional[str] = None
     ) -> Any:
