@@ -72,7 +72,9 @@ class AttributeCollectionRegistry(type):
 
 
 class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
-    def __init__(self, table: SymbolTable, form_prefix: Optional[str] = None) -> None:
+    def __init__(
+        self, table: SymbolTable, attribute_prefix: Optional[str] = None
+    ) -> None:
         """Initializes the collection. Requires a SymbolTable containing all
         the relevant FW metadata necessary to derive the attributes.
 
@@ -83,13 +85,15 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                 to pull from are expected to live under.
         """
 
-        if not form_prefix:
+        if not attribute_prefix:
             raise MissingRequiredError("Form prefix is required")
 
         self.table = table
-        self.form_prefix = form_prefix if form_prefix[-1] == "." else f"{form_prefix}."
+        self.attribute_prefix = (
+            attribute_prefix if attribute_prefix[-1] == "." else f"{attribute_prefix}."
+        )
 
-        raw_prefix = self.form_prefix.rstrip(".")
+        raw_prefix = self.attribute_prefix.rstrip(".")
         if raw_prefix not in self.table:
             raise MissingRequiredError(
                 f"Form prefix {raw_prefix} not found in current file"
@@ -137,7 +141,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                 to explicitly not set a prefix.
         """
         if prefix is None:
-            prefix = self.form_prefix
+            prefix = self.attribute_prefix
 
         return self.table.get(f"{prefix}{key}", default)
 
@@ -150,7 +154,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             prefix: Prefix to attach to key
         """
         if prefix is None:
-            prefix = self.form_prefix
+            prefix = self.attribute_prefix
 
         self.table[f"{prefix}{key}"] = value
 
@@ -197,7 +201,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         return False
 
     def assert_required(
-        self, required: List[str], prefix: str = "file.info.derived."
+        self, required: List[str], prefix: Optional[str] = None
     ) -> Dict[str, Any]:
         """Asserts that the given fields in required are in the table for the
         source.
@@ -208,6 +212,9 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         Returns:
             The found required variables, flattened out from the table
         """
+        if not prefix:
+            prefix = self.attribute_prefix
+
         found = {}
         for r in required:
             full_field = f"{prefix}{r}"
