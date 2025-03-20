@@ -22,7 +22,7 @@ def attr() -> LongitudinalAttribute:
         'subject': {
             'info': {
                 'derived': {
-                    'uds_visitdates': [
+                    'uds-visitdates': [
                         '1980-05-06', '1980-10-10', '2023-12-12', '2024-01-01',
                         '2024-02-02', '2025-03-03'
                     ]

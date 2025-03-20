@@ -9,6 +9,7 @@ from inspect import isfunction
 from types import FunctionType
 from typing import Any, Callable, Dict, List, Optional, Union
 
+from nacc_attribute_deriver.schema.errors import MissingRequiredException
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -37,6 +38,11 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         """
         self.table = table
         self.form_prefix = form_prefix
+
+        raw_prefix = self.form_prefix.rstrip('.')
+        if raw_prefix not in self.table:
+            raise MissingRequiredException(
+                f"Form prefix {raw_prefix} not found in current file")
 
     @classmethod
     def get_all_hooks(cls) -> Dict[str, FunctionType]:

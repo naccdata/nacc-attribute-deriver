@@ -10,20 +10,23 @@ def np_form_attribute() -> NPFormAttribute:
     data = {
         'file': {
             'info': {
-                'np': {
-                    'npgross': 2,
-                    'npvasc': 3,
-                    'npneur': 1,
-                    'npold': 1,
-                    'npmicro': 1,
-                    'nphem': 1,
-                    'nparter': 1,
-                    'nplewy': 5,
-                    'formver': 1,
-                    'npbraak': 7,
-                    'nphemo': 1,
-                    'npoldd': 1,
-                    'nplbod': 4
+                'forms': {
+                    'json': {
+                        'npgross': 2,
+                        'npvasc': 3,
+                        'npneur': 1,
+                        'npold': 1,
+                        'npmicro': 1,
+                        'nphem': 1,
+                        'nparter': 1,
+                        'nplewy': 5,
+                        'npbraak': 7,
+                        'nphemo': 1,
+                        'npoldd': 1,
+                        'nplbod': 4,
+                        'formver': 1,
+                        'module': 'NP'
+                    }
                 }
             }
         }
@@ -34,7 +37,18 @@ def np_form_attribute() -> NPFormAttribute:
 @pytest.fixture(scope='function')
 def np_form_nulls() -> NPFormAttribute:
     """Create dummy data and return it in an attribute object."""
-    data = {'file': {'info': {'np': {'formver': 1}}}}
+    data = {
+        'file': {
+            'info': {
+                'forms': {
+                    'json': {
+                        'formver': 1,
+                        'module': 'NP'
+                    }
+                }
+            }
+        }
+    }
 
     return NPFormAttribute(SymbolTable(data))
 

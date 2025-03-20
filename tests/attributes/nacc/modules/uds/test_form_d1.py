@@ -22,7 +22,8 @@ def attr() -> UDSFormD1Attribute:
                     'json': {
                         'visitdate': '2025-01-01',
                         'normcog': 1,
-                        'formver': 4
+                        'formver': 4,
+                        'module': 'uds'
                     }
                 }
             }

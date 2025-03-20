@@ -1,0 +1,7 @@
+function,location,operation,type,description
+scan_pet_centaloid,subject.info.imaging.pet.scan.amyloid.centiloid.min,min,,
+scan_pet_centaloid_pib,subject.info.imaging.pet.scan.amyloid.pib.centiloid.min,min,,
+scan_pet_centaloid_florbetapir,subject.info.imaging.pet.scan.amyloid.florbetapir.centiloid.min,min,,
+scan_pet_centaloid_florbetaben,subject.info.imaging.pet.scan.amyloid.florbetaben.centiloid.min,min,,
+scan_pet_centaloid_nav4694,subject.info.imaging.pet.scan.amyloid.nav4694.centiloid.min,min,,
+scan_pet_amyloid_positivity_indicator,subject.info.imaging.pet.scan.amyloid.positive-scans,max,,

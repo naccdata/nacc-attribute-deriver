@@ -117,7 +117,7 @@ class DateOperation(Operation):
             raise OperationException(f"Unknown date operation: {self.LABEL}")
 
         if not cur_date:
-            raise OperationException(f"Current date cannot be determined")
+            raise OperationException("Current date cannot be determined")
 
         if value is None:
             return

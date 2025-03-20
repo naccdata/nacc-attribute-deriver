@@ -4,6 +4,7 @@ Right now these should all come from the imported GWAS data under
 <subject>_niagads_availability.json
 """
 from nacc_attribute_deriver.attributes.base.base_attribute import NACCAttribute
+from nacc_attribute_deriver.schema.errors import MissingRequiredException
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -12,9 +13,16 @@ class NIAGADSAttribute(NACCAttribute):
 
     def __init__(self,
                  table: SymbolTable,
-                 form_prefix: str = 'file.info.raw.niagads.') -> None:
-        """Override initializer to set prefix to NIAGAADS-specific data."""
+                 form_prefix: str = 'file.info.raw.') -> None:
+        """Override initializer to set prefix to NIAGADS-specific data."""
         super().__init__(table, form_prefix)
+        for field in [
+                'niagads_gwas', 'niagads_exomechip', 'niagads_wgs',
+                'niagads_wes'
+        ]:
+            if f'{self.form_prefix}{field}' not in self.table:
+                raise MissingRequiredException(
+                    f'{field} required to curate NIAGADS data')
 
     def _evaluate_investigator(self, value: str) -> int:
         """Evaluate investigator. If null/missing (set to None or "0") then
