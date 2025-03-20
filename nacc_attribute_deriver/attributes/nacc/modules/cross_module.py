@@ -21,13 +21,12 @@ class CrossModuleAttribute(UDSAttribute):
     def __init__(
         self,
         table: SymbolTable,
-        form_prefix: str = "file.info.forms.json.",
         np_prefix: str = "file.info.np.",
         mds_prefix: str = "file.info.mds.",
         mile_prefix: str = "file.info.milestone.",
     ) -> None:
         """Override initializer to set other module prefixes."""
-        super().__init__(table, form_prefix)
+        super().__init__(table)
         self.__np_prefix = np_prefix
         self.__mds_prefix = mds_prefix
         self.__mile_prefix = mile_prefix
