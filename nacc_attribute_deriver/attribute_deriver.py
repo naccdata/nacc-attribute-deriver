@@ -15,7 +15,6 @@ from pydantic import ValidationError
 
 from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverError
-from .schema.operation import DateOperation
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
 
@@ -56,6 +55,11 @@ class AttributeDeriver:
                         f"error loading curation rule row: {error}"
                     )
 
+                if rule_schema.operation in ['initial', 'latest']:
+                    raise AttributeDeriverException(
+                        f"Date operation defined for {rule_schema.function} but no date key defined"
+                    )
+
                 attributes[rule_schema.function].append(rule_schema.assignment)
 
         # create rule for each attribute
@@ -82,8 +86,7 @@ class AttributeDeriver:
             if self.__date_key not in table or not table[self.__date_key]:
                 raise AttributeDeriverError(
                     f"Table does not have specified date key: {self.__date_key}"
-                
-            )
+                )
 
         # collect all attributes beforehand so they're easily hashable
         instance_collections = AttributeCollectionRegistry.get_attribute_methods(table)
