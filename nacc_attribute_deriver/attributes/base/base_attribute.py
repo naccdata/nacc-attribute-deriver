@@ -18,3 +18,12 @@ class RawAttribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable, form_prefix: str = "file.info.raw.") -> None:
         super().__init__(table, form_prefix)
+
+
+class DerivedAttribute(AttributeCollection):
+    """Base class for attributes over file.info.derived."""
+
+    def __init__(
+        self, table: SymbolTable, attribute_prefix="file.info.derived."
+    ) -> None:
+        super().__init__(table, attribute_prefix)
