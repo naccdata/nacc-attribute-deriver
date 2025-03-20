@@ -46,8 +46,8 @@ class TestSCANMRIQCAttribute:
         assert attr._create_scan_mri_scan_types() is None
 
     def test_create_scan_mri_session_count(self, scan_mri_qc_attr):
-        """Tests _create_scan_mri_session_count, which should just count
-        scan-mri-dates."""
+        """Tests _create_scan_mri_session_count, which should just count scan-
+        mri-dates."""
         attr = scan_mri_qc_attr
         assert attr._create_scan_mri_session_count() == 5
 
@@ -110,8 +110,8 @@ class TestSCANPETQCAttribute:
         assert attr._create_scan_pet_scan_types() is None
 
     def test_create_scan_pet_session_count(self, scan_pet_qc_attr):
-        """Tests _create_scan_pet_session_count, which should just count
-        scan-pet-dates."""
+        """Tests _create_scan_pet_session_count, which should just count scan-
+        pet-dates."""
         attr = scan_pet_qc_attr
         assert attr._create_scan_pet_session_count() == 1
 

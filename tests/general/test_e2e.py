@@ -149,12 +149,9 @@ def test_niagads_investigator():
 
 
 def test_scan_mri_qc():
-    """Test against minimal SCAN MRI QC data"""
+    """Test against minimal SCAN MRI QC data."""
     form = SymbolTable()
-    form['file.info.raw'] = {
-        "series_type": "T1w",
-        "study_date": "2025-01-01"
-    }
+    form['file.info.raw'] = {"series_type": "T1w", "study_date": "2025-01-01"}
     rules_file = files(  # type: ignore
         "nacc_attribute_deriver").joinpath("config/scan/scan_mri_qc_rules.csv")
 
@@ -172,16 +169,12 @@ def test_scan_mri_qc():
         'subject': {
             'info': {
                 'derived': {
-                    'scan-mri-dates': [
-                        '2025-01-01'
-                    ]
+                    'scan-mri-dates': ['2025-01-01']
                 },
                 'imaging': {
                     'mri': {
                         'scan': {
-                            'types': [
-                                'T1w'
-                            ],
+                            'types': ['T1w'],
                             'count': 1,
                             'year-count': 1
                         }
@@ -193,12 +186,9 @@ def test_scan_mri_qc():
 
 
 def test_scan_pet_qc():
-    """Test against minimal SCAN PET QC data"""
+    """Test against minimal SCAN PET QC data."""
     form = SymbolTable()
-    form['file.info.raw'] = {
-        "radiotracer": '2.0',
-        "scan_date": "2025-01-01"
-    }
+    form['file.info.raw'] = {"radiotracer": '2.0', "scan_date": "2025-01-01"}
     rules_file = files(  # type: ignore
         "nacc_attribute_deriver").joinpath("config/scan/scan_pet_qc_rules.csv")
 
@@ -216,22 +206,16 @@ def test_scan_pet_qc():
         'subject': {
             'info': {
                 'derived': {
-                    'scan-pet-dates': [
-                        '2025-01-01'
-                    ]
+                    'scan-pet-dates': ['2025-01-01']
                 },
                 'imaging': {
                     'pet': {
                         'scan': {
-                            'types': [
-                                'amyloid'
-                            ],
+                            'types': ['amyloid'],
                             'count': 1,
                             'year-count': 1,
                             'amyloid': {
-                                'tracers': [
-                                    'pib'
-                                ]
+                                'tracers': ['pib']
                             },
                             'tau': {
                                 'tracers': []
@@ -245,7 +229,7 @@ def test_scan_pet_qc():
 
 
 def test_scan_mri_sbm():
-    """Test against minimal SCAN MRI SBM data"""
+    """Test against minimal SCAN MRI SBM data."""
     form = SymbolTable()
     form['file.info.raw'] = {
         "cerebrumtcv": "2.5",
@@ -253,7 +237,8 @@ def test_scan_mri_sbm():
         "scandt": "2025-01-01"
     }
     rules_file = files(  # type: ignore
-        "nacc_attribute_deriver").joinpath("config/scan/scan_mri_sbm_rules.csv")
+        "nacc_attribute_deriver").joinpath(
+            "config/scan/scan_mri_sbm_rules.csv")
 
     deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
@@ -287,7 +272,7 @@ def test_scan_mri_sbm():
 
 
 def test_scan_amyloid_gaain():
-    """Test against minimal SCAN PET Amyloid GAAIN data"""
+    """Test against minimal SCAN PET Amyloid GAAIN data."""
     form = SymbolTable()
     form['file.info.raw'] = {
         "tracer": "3.0",
@@ -296,7 +281,8 @@ def test_scan_amyloid_gaain():
         "scandate": "2025-01-01"
     }
     rules_file = files(  # type: ignore
-        "nacc_attribute_deriver").joinpath("config/scan/scan_amyloid_pet_gaain_rules.csv")
+        "nacc_attribute_deriver").joinpath(
+            "config/scan/scan_amyloid_pet_gaain_rules.csv")
 
     deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
@@ -320,7 +306,7 @@ def test_scan_amyloid_gaain():
                                 'centiloid': {
                                     'min': 1.5
                                 },
-                                'florbetapir': {    # tracer == 3.0
+                                'florbetapir': {  # tracer == 3.0
                                     'centiloid': {
                                         'min': 1.5
                                     }
