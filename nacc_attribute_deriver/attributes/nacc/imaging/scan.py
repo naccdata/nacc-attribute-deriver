@@ -19,7 +19,7 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
         # TODO: either studydate (mridashboard) or scandt (ucdmrisbm)
         # need to confirm how the data is represented in the table
         # do mridashboard then ucdmrisbm
-        scandate = self.get_mri_value('studydate', MRIPrefix.SCAN_MRI_QC)
+        scandate = self.get_mri_value('study_date', MRIPrefix.SCAN_MRI_QC)
         # if not scandate:
         #     scandate = self.get_mri_value('scandt', MRIPrefix.MRI_SBM)
 
@@ -27,7 +27,7 @@ class NACCSCANAttribute(NACCAttribute, SCANAttribute):
 
         if not scandate:
             raise MissingRequiredException(
-                "studydate (from SCAN_MRI_QC) required")
+                "study_date (from SCAN_MRI_QC) required")
 
         return str(scandate.date())
 

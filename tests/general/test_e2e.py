@@ -152,8 +152,8 @@ def test_scan_mri_qc():
     """Test against minimal SCAN MRI QC data"""
     form = SymbolTable()
     form['file.info.raw'] = {
-        "seriestype": "T1w",
-        "studydate": "2025-01-01"
+        "series_type": "T1w",
+        "study_date": "2025-01-01"
     }
     rules_file = files(  # type: ignore
         "nacc_attribute_deriver").joinpath("config/scan/scan_mri_qc_rules.csv")
@@ -164,8 +164,8 @@ def test_scan_mri_qc():
         'file': {
             'info': {
                 'raw': {
-                    "seriestype": "T1w",
-                    "studydate": "2025-01-01"
+                    "series_type": "T1w",
+                    "study_date": "2025-01-01"
                 }
             }
         },

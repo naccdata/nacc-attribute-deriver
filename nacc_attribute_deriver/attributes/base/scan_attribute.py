@@ -37,7 +37,7 @@ class PETPrefix(str, Enum):
 
 # TODO: make this more elegant
 REQUIRED_FIELDS: Dict[Union[MRIPrefix, PETPrefix], List[str]] = {
-    MRIPrefix.SCAN_MRI_QC: ['studydate', 'seriestype'],
+    MRIPrefix.SCAN_MRI_QC: ['study_date', 'series_type'],
     MRIPrefix.MRI_SBM: ['scandt', 'cerebrumtcv', 'wmh'],
     PETPrefix.SCAN_PET_QC: ['scan_date', 'radiotracer'],
     PETPrefix.AMYLOID_PET_GAAIN:

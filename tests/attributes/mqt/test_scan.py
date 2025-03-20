@@ -12,8 +12,8 @@ def scan_mri_qc_attr() -> MQTSCANAttribute:
         'file': {
             'info': {
                 'raw': {
-                    "seriestype": "T1w",
-                    "studydate": "2025-01-01"
+                    "series_type": "T1w",
+                    "study_date": "2025-01-01"
                 }
             }
         },
@@ -37,12 +37,12 @@ class TestSCANMRIQCAttribute:
 
     def test_create_scan_mri_scan_types(self, scan_mri_qc_attr):
         """Tests _create_scan_mri_scan_types, which should just return the
-        seriestype."""
+        series_type."""
         attr = scan_mri_qc_attr
         assert attr._create_scan_mri_scan_types() == "T1w"
 
         # empty
-        attr.table['file.info.raw.seriestype'] = None
+        attr.table['file.info.raw.series_type'] = None
         assert attr._create_scan_mri_scan_types() is None
 
     def test_create_scan_mri_session_count(self, scan_mri_qc_attr):
