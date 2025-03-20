@@ -108,7 +108,10 @@ class CognitiveAttribute(MQTAttribute):
         "file.info.forms.json.": {
             "amndem": "Amnestic multidomain dementia syndrome",
             "pca": "Posterior cortical atrophy syndrome",
-            "namndem": "Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome",
+            "namndem": (
+                "Non-amnestic multidomain dementia, not PCA, PPA, "
+                "bvFTD, or DLb syndrome"
+            ),
         },
         "file.info.derived.": {
             "naccppa": "Primary progressive aphasia (PPA) with cognitive impairment",

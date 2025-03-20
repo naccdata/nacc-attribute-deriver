@@ -300,7 +300,7 @@ class UDSFormA1Attribute(UDSAttribute):
         raceter: Optional[int],
         raceterx: Optional[str],
     ) -> int:
-        """"NACCNIHR values:
+        """NACCNIHR values:
 
         1: "White"
         2: "Black or African American"
