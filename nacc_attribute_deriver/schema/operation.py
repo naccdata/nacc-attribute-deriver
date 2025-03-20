@@ -139,24 +139,20 @@ class DateOperation(Operation):
         date_key: Optional[str] = None,
     ) -> None:
         """Compares dates to determine the result."""
-
+        if value is None:
+            return
+        
         if not date_key:
             raise OperationError("Value for date_key is required")
 
         if self.LABEL not in ["initial", "latest"]:
             raise OperationError(f"Unknown date operation: {self.LABEL}")
 
-        try:
-            cur_date = datetime_from_form_date(table.get(date_key))
-            dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
-        except ValueError as e:
-            raise OperationError(f"Cannot parse date for date operation: {e}") from e
+        cur_date = datetime_from_form_date(table.get(date_key))
+        dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
 
         if not cur_date:
             raise OperationError("Current date cannot be determined")
-
-        if value is None:
-            return
 
         if not dest_date or self.compare(cur_date, dest_date):
             table[attribute] = {"date": str(cur_date.date()), "value": value}
