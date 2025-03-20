@@ -147,7 +147,9 @@ class CognitiveAttribute(FormAttribute):
 
     def _create_dementia(self) -> List[str]:
         """Mapped from all dementia types."""
-        self.assert_required(["naccppa", "naccbvft", "nacclbds"], prefix="file.info.derived.")
+        self.assert_required(
+            ["naccppa", "naccbvft", "nacclbds"], prefix="file.info.derived."
+        )
         results = self.grab_mappings(self.DEMENTIA_MAPPINGS, target=1)
         return results
 
