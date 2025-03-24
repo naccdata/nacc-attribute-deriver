@@ -6,11 +6,12 @@ Right now these should all come from the imported APOE data under
 
 from typing import Dict, Tuple
 
+from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class NCRADAttribute(RawAttribute):
+class NCRADAttributeCollection(AttributeCollection):
     """Class to collect NCRAD attributes."""
 
     # NCRAD (a1, a2) to NACC encoding
@@ -28,8 +29,8 @@ class NCRADAttribute(RawAttribute):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        super().__init__(table)
-        self.assert_required(required=["a1", "a2"])
+        self.__apoe = RawAttribute(table)
+        self.__apoe.assert_required(required=["a1", "a2"])
         # for field in ["a1", "a2"]:
         #     if f"{self.form_prefix}{field}" not in self.table:
         #         raise MissingRequiredError(f"{field} required to curate NCRAD data")
@@ -40,8 +41,8 @@ class NCRADAttribute(RawAttribute):
         Should come from the actual imported APOE data
         <subject>_apoe_availability.json
         """
-        a1 = self.get_value("a1")
-        a2 = self.get_value("a2")
+        a1 = self.__apoe.get_value("a1")
+        a2 = self.__apoe.get_value("a2")
 
         if not a1 or not a2:
             return 9

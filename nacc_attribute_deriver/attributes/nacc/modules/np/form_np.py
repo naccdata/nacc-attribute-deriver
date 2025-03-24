@@ -1,23 +1,26 @@
 """Derived variables from neuropathology form."""
 
+from datetime import date
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.date import create_death_date
 
 
-class NPFormAttribute(FormAttribute):
+class NPFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is an NP form."""
-        super().__init__(table)
+        self.__np = FormAttribute(table)
 
-        module = self.get_value("module")
+        module = self.__np.get_value("module")
         if not module or module.upper() != "NP":
             raise MissingRequiredError("Current file is not an NP form")
 
     def _mapgross(self, new) -> Optional[int]:
-        npgross = self.get_value("npgross")
+        npgross = self.__np.get_value("npgross")
         if npgross == 2:
             return 0
         if npgross == 9:
@@ -44,8 +47,8 @@ class NPFormAttribute(FormAttribute):
         return 9
 
     def _mapvasc(self, new) -> int:
-        npgross = self.get_value("npgross")
-        npvasc = self.get_value("npvasc")
+        npgross = self.__np.get_value("npgross")
+        npvasc = self.__np.get_value("npvasc")
         if npgross == 2 or npvasc == 2:
             return 0
         if npgross == 9 or npvasc == 9:
@@ -64,7 +67,7 @@ class NPFormAttribute(FormAttribute):
         return 9
 
     def _maplewy(self) -> int:
-        nplewy = self.get_value("nplewy")
+        nplewy = self.__np.get_value("nplewy")
         if nplewy == 6:
             return 8
         if nplewy == 5:
@@ -77,8 +80,8 @@ class NPFormAttribute(FormAttribute):
 
         Braak stage for neurofibrillary degeneration (B score)
         """
-        formver = self.get_value("formver")
-        npbraak = self.get_value("npbraak")
+        formver = self.__np.get_value("formver")
+        npbraak = self.__np.get_value("npbraak")
         naccbraa = npbraak
 
         if formver in [10, 11]:
@@ -100,8 +103,8 @@ class NPFormAttribute(FormAttribute):
 
         Density of neocortical neuritic plaques (CERAD score) (C score)
         """
-        formver = self.get_value("formver")
-        npneur = self.get_value("npneur")
+        formver = self.__np.get_value("formver")
+        npneur = self.__np.get_value("npneur")
         naccneur = npneur
 
         if formver in [10, 11]:
@@ -121,9 +124,9 @@ class NPFormAttribute(FormAttribute):
 
         Microinfarcts
         """
-        formver = self.get_value("formver")
-        npold = self.get_value("npold")
-        npmicro = self.get_value("npmicro")
+        formver = self.__np.get_value("formver")
+        npold = self.__np.get_value("npold")
+        npmicro = self.__np.get_value("npmicro")
 
         naccmicr = npold
         if formver in [10, 11]:
@@ -143,13 +146,13 @@ class NPFormAttribute(FormAttribute):
 
         Hemorrhages and microbleeds
         """
-        formver = self.get_value("formver")
-        nphem = self.get_value("nphem")
+        formver = self.__np.get_value("formver")
+        nphem = self.__np.get_value("nphem")
         nacchem = None
 
         if formver in [10, 11]:
-            nphemo = self.get_value("nphemo")
-            npoldd = self.get_value("npoldd")
+            nphemo = self.__np.get_value("nphemo")
+            npoldd = self.__np.get_value("npoldd")
 
             if nphemo == 1 or npoldd == 1:
                 nacchem = 1
@@ -176,8 +179,8 @@ class NPFormAttribute(FormAttribute):
 
         Arteriolosclerosis
         """
-        formver = self.get_value("formver")
-        nparter = self.get_value("nparter")
+        formver = self.__np.get_value("formver")
+        nparter = self.__np.get_value("nparter")
         naccarte = None
 
         if formver in [10, 11]:
@@ -197,11 +200,11 @@ class NPFormAttribute(FormAttribute):
 
         Lewy body disease
         """
-        formver = self.get_value("formver")
+        formver = self.__np.get_value("formver")
         nacclewy = None
 
         if formver in [10, 11]:
-            nplbod = self.get_value("nplbod")
+            nplbod = self.__np.get_value("nplbod")
             nacclewy = nplbod
             if nplbod == 4:
                 nacclewy = 2
@@ -210,7 +213,7 @@ class NPFormAttribute(FormAttribute):
         elif formver in [7, 8, 9]:
             nacclewy = self._maplewy()
         elif formver == 1:
-            nplewy = self.get_value("nplewy")
+            nplewy = self.__np.get_value("nplewy")
             if nplewy:
                 nacclewy = self._maplewy()
             else:
@@ -218,3 +221,16 @@ class NPFormAttribute(FormAttribute):
                 nacclewy = self._mapgross(nacclewy)
 
         return nacclewy if nacclewy is not None else 9
+
+    def _create_np_death_age(self) -> Optional[int]:
+        return self.__np.get_value("npdage")
+
+    def _create_np_death_date(self) -> Optional[date]:
+        if self.__np.get_value("npdage") is None:
+            return None
+
+        year = self.__np.get_value("npdodyr")
+        month = self.__np.get_value("npdodmo")
+        day = self.__np.get_value("npdoddy")
+
+        return create_death_date(year=year, month=month, day=day)

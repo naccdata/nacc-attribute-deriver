@@ -3,6 +3,8 @@
 from types import MappingProxyType
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     datetime_from_form_date,
@@ -11,8 +13,11 @@ from nacc_attribute_deriver.utils.date import (
 from .uds_attribute import UDSAttribute
 
 
-class UDSFormA1Attribute(UDSAttribute):
+class UDSFormA1Attribute(AttributeCollection):
     """Class to collect UDS A1 attributes."""
+
+    def __init__(self, table: SymbolTable):
+        self.__uds = UDSAttribute(table)
 
     # TODO: additional worry that SAS-code was extremely case-sensitive?
     WHITEX_RESPONSES = MappingProxyType(
@@ -267,8 +272,8 @@ class UDSFormA1Attribute(UDSAttribute):
     def _create_naccage(self) -> Optional[int]:
         """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
         compares to form date."""
-        dob = self.generate_uds_dob()
-        visitdate = self.get_value("visitdate", None)
+        dob = self.__uds.generate_uds_dob()
+        visitdate = self.__uds.get_value("visitdate", None)
         visitdate = datetime_from_form_date(visitdate)
         if not dob or not visitdate:
             return None
@@ -278,12 +283,12 @@ class UDSFormA1Attribute(UDSAttribute):
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)"""
         return self.generate_naccnihr(
-            race=self.get_value("race"),
-            racex=self.get_value("racex"),
-            racesec=self.get_value("racesec"),
-            racesecx=self.get_value("racesecx"),
-            raceter=self.get_value("raceter"),
-            raceterx=self.get_value("raceterx"),
+            race=self.__uds.get_value("race"),
+            racex=self.__uds.get_value("racex"),
+            racesec=self.__uds.get_value("racesec"),
+            racesecx=self.__uds.get_value("racesecx"),
+            raceter=self.__uds.get_value("raceter"),
+            raceterx=self.__uds.get_value("raceterx"),
         )
 
     @classmethod

@@ -4,17 +4,18 @@ Right now these should all come from the imported GWAS data under
 <subject>_niagads_availability.json
 """
 
+from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class NIAGADSAttribute(RawAttribute):
+class NIAGADSAttributeCollection(AttributeCollection):
     """Class to collect NIAGADS attributes."""
 
-    def __init__(self, table: SymbolTable, form_prefix: str = "file.info.raw.") -> None:
+    def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NIAGADS-specific data."""
-        super().__init__(table, form_prefix)
-        self.assert_required(
+        self.__niagads = RawAttribute(table)
+        self.__niagads.assert_required(
             required=[
                 "niagads_gwas",
                 "niagads_exomechip",
@@ -42,16 +43,18 @@ class NIAGADSAttribute(RawAttribute):
 
     def _create_ngdsgwas(self) -> int:
         """NIAGADS GWAS investigator availability."""
-        return self._evaluate_investigator(self.get_value("niagads_gwas"))
+        return self._evaluate_investigator(self.__niagads.get_value("niagads_gwas"))
 
     def _create_ngdsexom(self) -> int:
         """NIAGADS ExomeChip investigator availability."""
-        return self._evaluate_investigator(self.get_value("niagads_exomechip"))
+        return self._evaluate_investigator(
+            self.__niagads.get_value("niagads_exomechip")
+        )
 
     def _create_ngdswgs(self) -> int:
         """NIAGADS WGS investigator availability."""
-        return self._evaluate_investigator(self.get_value("niagads_wgs"))
+        return self._evaluate_investigator(self.__niagads.get_value("niagads_wgs"))
 
     def _create_ngdswes(self) -> int:
         """NIAGADS WES investigator availability."""
-        return self._evaluate_investigator(self.get_value("niagads_wes"))
+        return self._evaluate_investigator(self.__niagads.get_value("niagads_wes"))
