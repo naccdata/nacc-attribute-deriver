@@ -5,6 +5,7 @@ This kind of feels overengineered?
 """
 
 from abc import abstractmethod
+from datetime import date
 from typing import Any, Dict, Optional
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -73,6 +74,9 @@ class UpdateOperation(Operation):
         date_key: Optional[str] = None,
     ) -> None:
         """Simply updates the location."""
+        if isinstance(value, date):
+            value = str(value)
+
         table[attribute] = value
 
 
