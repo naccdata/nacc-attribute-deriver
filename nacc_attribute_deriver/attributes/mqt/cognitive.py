@@ -173,14 +173,14 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_cognitive_status(self) -> Optional[str]:
         """Mapped from NACCUDSD."""
-        result = self.__derived.assert_required(["naccudsd"])
-        return self.NACCUDSD_MAPPING.get(result["naccudsd"], None)
+        self.__derived.assert_required(["naccudsd"])
+        return self.NACCUDSD_MAPPING.get(self.__derived.get_value("naccudsd"), None)
 
     def _create_etpr(self) -> str:
         """Mapped from NACCETPR."""
-        result = self.__derived.assert_required(["naccetpr"])
+        self.__derived.assert_required(["naccetpr"])
         return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
-            result["naccetpr"], "Missing/unknown"
+            self.__derived.get_value("naccetpr"), "Missing/unknown"
         )
 
     def _create_global_cdr(self) -> Optional[str]:
@@ -190,5 +190,5 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_normal_cognition(self) -> bool:
         """Mapped from NACCNORM."""
-        result = self.__derived.assert_required(["naccnorm"])
-        return bool(result["naccnorm"])
+        self.__derived.assert_required(["naccnorm"])
+        return bool(self.__derived.get_value("naccnorm"))

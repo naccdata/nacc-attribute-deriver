@@ -2,7 +2,7 @@
 
 import logging
 from abc import ABC
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -47,25 +47,23 @@ class BaseAttribute(ABC):
         """
         return self.__table.get(f"{self.prefix}{key}", default)
 
-    def assert_required(self, required: List[str]) -> Dict[str, Any]:
+    def assert_required(self, required: List[str]) -> bool:
         """Asserts that the given fields in required are in the table for the
         source.
 
         Args:
-            required: The required fields
-            prefix: Key prefix the required field is expected to be under
+            required: The list of required fields
         Returns:
-            The found required variables, flattened out from the table
+          True if all required fields are present
+        Raises:
+          MissingRequiredError if a required field is missing
         """
-        found = {}
-        for r in required:
-            full_field = f"{self.prefix}{r}"
+        for attribute in required:
+            full_field = f"{self.prefix}{attribute}"
             if full_field not in self.__table:
                 raise MissingRequiredError(field=full_field)
 
-            found[r] = self.__table[full_field]
-
-        return found
+        return True
 
 
 class FormAttribute(BaseAttribute):

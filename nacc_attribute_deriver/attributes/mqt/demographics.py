@@ -64,8 +64,8 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_age(self) -> int:
         """UDS age at form date, mapped from NACCAGE."""
-        result = self.__derived.assert_required(["naccage"])
-        return result["naccage"]
+        self.__derived.assert_required(["naccage"])
+        return self.__derived.get_value("naccage")
 
     RACE_MAPPING = MappingProxyType(
         {
@@ -83,17 +83,21 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_race(self) -> str:
         """UDS race."""
-        result = self.__derived.assert_required(["naccnihr"])
-        return self.RACE_MAPPING.get(result["naccnihr"], "Unknown or ambiguous")
+        self.__derived.assert_required(["naccnihr"])
+        return self.RACE_MAPPING.get(
+            self.__derived.get_value("naccnihr"), "Unknown or ambiguous"
+        )
 
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
-        result = self.__derived.assert_required(["naccdage"])
-        return result["naccdage"]
+        self.__derived.assert_required(["naccdage"])
+        return self.__derived.get_value("naccdage")
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "Not deceased/unknown", 1: "Deceased"})
 
     def _create_vital_status(self) -> str:
         """Creates subject.info.demographics.uds.vital-status.latest."""
-        result = self.__derived.assert_required(["naccdied"])
-        return self.VITAL_STATUS_MAPPINGS.get(result["naccdied"], "Unknown")
+        self.__derived.assert_required(["naccdied"])
+        return self.VITAL_STATUS_MAPPINGS.get(
+            self.__derived.get_value("naccdied"), "Unknown"
+        )

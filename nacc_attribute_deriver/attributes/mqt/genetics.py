@@ -38,20 +38,20 @@ class GeneticAttributeCollection(AttributeCollection):
 
     def _create_ngdsgwas_mqt(self) -> bool:
         """Mapped from NGDSGWAS."""
-        result = self.__derived.assert_required(["ngdsgwas"])
-        return bool(result["ngdsgwas"])
+        self.__derived.assert_required(["ngdsgwas"])
+        return bool(self.__derived.get_value("ngdsgwas"))
 
     def _create_ngdsexom_mqt(self) -> bool:
         """Mapped from NGDSEXOM."""
-        result = self.__derived.assert_required(["ngdsexom"])
-        return bool(result["ngdsexom"])
+        self.__derived.assert_required(["ngdsexom"])
+        return bool(self.__derived.get_value("ngdsexom"))
 
     def _create_ngdswgs_mqt(self) -> bool:
         """Mapped from NGDSWGS."""
-        result = self.__derived.assert_required(["ngdswgs"])
-        return bool(result["ngdswgs"])
+        self.__derived.assert_required(["ngdswgs"])
+        return bool(self.__derived.get_value("ngdswgs"))
 
     def _create_ngdswes_mqt(self) -> bool:
         """Mapped from NGDSWES."""
-        result = self.__derived.assert_required(["ngdswes"])
-        return bool(result["ngdswes"])
+        self.__derived.assert_required(["ngdswes"])
+        return bool(self.__derived.get_value("ngdswes"))

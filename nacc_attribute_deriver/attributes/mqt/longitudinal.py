@@ -40,5 +40,5 @@ class LongitudinalAttributeCollection(AttributeCollection):
 
     def _create_years_of_uds(self) -> int:
         """Creates subject.info.longitudinal-data.uds.year-count."""
-        result = self.__subject_derived.assert_required(["uds-visitdates"])
-        return len(get_unique_years(result["uds-visitdates"]))
+        self.__subject_derived.assert_required(["uds-visitdates"])
+        return len(get_unique_years(self.__subject_derived.get_value("uds-visitdates")))
