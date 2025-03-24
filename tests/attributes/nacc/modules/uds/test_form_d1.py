@@ -7,10 +7,11 @@ from nacc_attribute_deriver.attributes.nacc.modules.uds.form_d1 import (
     UDSFormD1Attribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def attr() -> UDSFormD1Attribute:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object.
 
     In this case most will want to manually set fields so only leave
@@ -31,81 +32,102 @@ def attr() -> UDSFormD1Attribute:
         }
     }
 
-    return UDSFormD1Attribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestUDSFormD1Attribute:
-    def test_create_mci(self, attr):
+    def test_create_mci(self, table, form_prefix):
         """Tests creating MCI."""
+        attr = UDSFormD1Attribute(table)
         assert attr._create_mci() == 0
 
         for field in ["mciamem", "mciaplus", "mcinon1", "mcinon2"]:
-            attr.set_value(field, 1)
+            set_attribute(table, form_prefix, field, 1)
+            attr = UDSFormD1Attribute(table)
             assert attr._create_mci() == 1
-            attr.set_value(field, 0)
+            attr = UDSFormD1Attribute(table)
+            set_attribute(table, form_prefix, field, 0)
 
         assert attr._create_mci() == 0
 
-    def test_create_naccalzp(self, attr):
+    def test_create_naccalzp(self, table, form_prefix):
         """Tests creating NACCALZP."""
+        attr = UDSFormD1Attribute(table)
         assert attr._create_naccalzp() == 8
 
-        attr.set_value("normcog", 0)
+        set_attribute(table, form_prefix, "normcog", 0)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_naccalzp() == 7
 
         for field in ["probadif", "possadif", "alzdisif"]:
             for status in ContributionStatus.all():
-                attr.set_value(field, status)
+                set_attribute(table, form_prefix, field, status)
+                attr = UDSFormD1Attribute(table)
                 assert attr._create_naccalzp() == status
-                attr.set_value(field, None)
+                set_attribute(table, form_prefix, field, None)
 
-        attr.set_value("probadif", 3)
-        attr.set_value("possadif", 2)
-        attr.set_value("alzdisif", 1)
+        set_attribute(table, form_prefix, "probadif", 3)
+        set_attribute(table, form_prefix, "possadif", 2)
+        set_attribute(table, form_prefix, "alzdisif", 1)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_naccalzp() == 1
 
-    def test_create_nacclbde(self, attr):
+    def test_create_nacclbde(self, table, form_prefix):
         """Tests creating NACCLBDE."""
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() == 8
 
-        attr.set_value("normcog", 0)
+        set_attribute(table, form_prefix, "normcog", 0)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() is None
 
         for value in [0, 1]:
-            attr.set_value("lbdis", value)
+            set_attribute(table, form_prefix, "lbdis", value)
+            attr = UDSFormD1Attribute(table)
             assert attr._create_nacclbde() == value
-        attr.set_value("lbdis", 3)
+        set_attribute(table, form_prefix, "lbdis", 3)
 
-        attr.set_value("park", 0)
+        set_attribute(table, form_prefix, "park", 0)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() is None
-        attr.set_value("dlb", 0)
+        set_attribute(table, form_prefix, "dlb", 0)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() == 0
 
-        attr.set_value("dlb", 1)
+        set_attribute(table, form_prefix, "dlb", 1)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() == 1
 
-        attr.set_value("formver", 3)
+        set_attribute(table, form_prefix, "formver", 3)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() is None
 
-    def test_create_nacclbdp(self, attr):
+    def test_create_nacclbdp(self, table, form_prefix):
         """Tests creating NACCLBDP."""
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbdp() == 8
 
-        attr.set_value("normcog", 0)
+        set_attribute(table, form_prefix, "normcog", 0)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbdp() is None
 
         # relies on nacclbde == 0
-        attr.set_value("lbdis", 0)
+        set_attribute(table, form_prefix, "lbdis", 0)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbdp() == 7
 
         for status in ContributionStatus.all():
-            attr.set_value("lbdif", status)
+            set_attribute(table, form_prefix, "lbdif", status)
+            attr = UDSFormD1Attribute(table)
             assert attr._create_nacclbdp() == status
 
-        attr.set_value("dlbif", 3)
+        set_attribute(table, form_prefix, "dlbif", 3)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbdp() == 3
-        attr.set_value("parkif", 1)
+        set_attribute(table, form_prefix, "parkif", 1)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbdp() == 1
 
-        attr.set_value("formver", 3)
+        set_attribute(table, form_prefix, "formver", 3)
+        attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbdp() == 3  # where lbdif left off

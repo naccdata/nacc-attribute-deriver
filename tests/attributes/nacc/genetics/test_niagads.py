@@ -2,12 +2,14 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.nacc.genetics.niagads import NIAGADSAttribute
+from nacc_attribute_deriver.attributes.nacc.genetics.niagads import (
+    NIAGADSAttributeCollection,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def attr() -> NIAGADSAttribute:
+def attr() -> NIAGADSAttributeCollection:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
@@ -22,7 +24,7 @@ def attr() -> NIAGADSAttribute:
         }
     }
 
-    return NIAGADSAttribute(SymbolTable(data))
+    return NIAGADSAttributeCollection(SymbolTable(data))
 
 
 class TestNIAGADSAttribute:

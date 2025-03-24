@@ -45,6 +45,10 @@ def test_np_form():
     form = SymbolTable()
     form["file.info.forms.json.visitdate"] = "2025-01-01"
     form["file.info.forms.json.module"] = "np"
+    form["file.info.forms.json.npdage"] = 80
+    form["file.info.forms.json.npdodyr"] = "2024"
+    form["file.info.forms.json.npdodmo"] = "12"
+    form["file.info.forms.json.npdoddy"] = "19"
 
     rules_file = files(  # type: ignore
         "nacc_attribute_deriver"
@@ -58,7 +62,16 @@ def test_np_form():
     assert form.to_dict() == {
         "file": {
             "info": {
-                "forms": {"json": {"visitdate": "2025-01-01", "module": "np"}},
+                "forms": {
+                    "json": {
+                        "visitdate": "2025-01-01",
+                        "module": "np",
+                        "npdage": 80,
+                        "npdodyr": "2024",
+                        "npdodmo": "12",
+                        "npdoddy": "19",
+                    }
+                },
                 "derived": {
                     "naccarte": 9,
                     "naccbraa": 9,
@@ -68,7 +81,10 @@ def test_np_form():
                     "naccneur": 9,
                 },
             }
-        }
+        },
+        "subject": {
+            "info": {"derived": {"np_death_age": 80, "np_death_date": "2024-12-19"}}
+        },
     }
 
 
