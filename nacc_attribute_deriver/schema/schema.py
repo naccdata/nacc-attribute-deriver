@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from .operation import Operation
 
@@ -14,8 +14,7 @@ class AttributeAssignment(BaseModel):
     assigned to the attribute
     """
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     attribute: str
     operation: Operation
