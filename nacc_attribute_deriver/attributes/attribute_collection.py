@@ -5,14 +5,17 @@ Heavily based off of
     https://eli.thegreenplace.net/2012/08/07/fundamental-concepts-of-plugin-infrastructures
 """
 
-from inspect import isfunction, stack
+import logging
+from inspect import isfunction
 from types import FunctionType
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
+log = logging.getLogger(__name__)
 
 
 class AttributeExpression(BaseModel):
@@ -23,8 +26,7 @@ class AttributeExpression(BaseModel):
     attribute collection instantiate on a symbol table.
     """
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     function: FunctionType
     attribute_class: type
@@ -72,32 +74,25 @@ class AttributeCollectionRegistry(type):
 
 
 class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
-    def __init__(
-        self, table: SymbolTable, attribute_prefix: Optional[str] = None
-    ) -> None:
-        """Initializes the collection. Requires a SymbolTable containing all
-        the relevant FW metadata necessary to derive the attributes.
+    def __init__(self, table: SymbolTable) -> None:
+        pass
+
+    @classmethod
+    def create(cls, table: SymbolTable) -> Optional["AttributeCollection"]:
+        """Creates an attribute collection for the symbol table.
+
+        Will return None if the collection is not applicable to the table.
 
         Args:
-            table: SymbolTable which contains all necessary
-                FW metadata information
-            form_prefix: Form key prefix, which is where most variables
-                to pull from are expected to live under.
+          table: the symbol table
+        Returns:
+          the attribute collection if it can use the table. None otherwise.
         """
-
-        if not attribute_prefix:
-            raise MissingRequiredError("Form prefix is required")
-
-        self.table = table
-        self.attribute_prefix = (
-            attribute_prefix if attribute_prefix[-1] == "." else f"{attribute_prefix}."
-        )
-
-        raw_prefix = self.attribute_prefix.rstrip(".")
-        if raw_prefix not in self.table:
-            raise MissingRequiredError(
-                f"Form prefix {raw_prefix} not found in current file"
-            )
+        try:
+            return cls(table)
+        except MissingRequiredError as error:
+            log.warning(error)
+            return None
 
     @classmethod
     def get_all_hooks(cls) -> Dict[str, FunctionType]:
@@ -128,59 +123,6 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
 
         return None
 
-    def get_value(
-        self, key: str, default: Optional[Any] = None, prefix: Optional[str] = None
-    ) -> Any:
-        """Grab value from the table using the key and prefix, if provided. If
-        not specified, prefix will default to self.form_prefix.
-
-        Args:
-            key: Key to grab value for
-            default: Default value to return if key is not found
-            prefix: Prefix to attach to key. Use the empty string
-                to explicitly not set a prefix.
-        """
-        if prefix is None:
-            prefix = self.attribute_prefix
-
-        return self.table.get(f"{prefix}{key}", default)
-
-    def set_value(self, key: str, value: Any, prefix: Optional[str] = None) -> None:
-        """Set the value from the table using the specified key and prefix.
-
-        Args:
-            key: Key to set to the value to
-            value: Value to set
-            prefix: Prefix to attach to key
-        """
-        if prefix is None:
-            prefix = self.attribute_prefix
-
-        self.table[f"{prefix}{key}"] = value
-
-    def aggregate_variables(
-        self,
-        fields: List[str],
-        default: Optional[Any] = None,
-        prefix: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Aggregates all the specified fields.
-
-        Args:
-            fields: Fields to iterate over. Grabs the field and sets it
-                     to the found/derived value.
-            default: Default value to set aggregation to if not found
-            prefix: Prefix key to pull mapped values out of. This prefix
-                will be applied to ALL keys in the map.
-        Returns:
-            The aggregated variables
-        """
-        result = {}
-        for field in fields:
-            result[field] = self.get_value(field, default, prefix)
-
-        return result
-
     @staticmethod
     def is_int_value(value: Union[int, str], target: int) -> bool:
         """Check whether the value is the specified target int. This might be
@@ -197,36 +139,3 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             return int(value) == target
         except ValueError:
             return False
-
-        return False
-
-    def assert_required(
-        self, required: List[str], prefix: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """Asserts that the given fields in required are in the table for the
-        source.
-
-        Args:
-            required: The required fields
-            prefix: Key prefix the required field is expected to be under
-        Returns:
-            The found required variables, flattened out from the table
-        """
-        if not prefix:
-            prefix = self.attribute_prefix
-
-        found = {}
-        for r in required:
-            full_field = f"{prefix}{r}"
-            # TODO: maybe can implicitly derive even if schema didn't define it?
-            if full_field not in self.table:
-                source = stack()[
-                    1
-                ].function  # not great but preferable to passing the name every time
-                raise MissingRequiredError(
-                    f"{full_field} must be derived before {source} can run"
-                )
-
-            found[r] = self.table[full_field]
-
-        return found

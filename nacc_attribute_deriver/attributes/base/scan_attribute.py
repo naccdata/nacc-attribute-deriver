@@ -7,11 +7,9 @@ attributes.
 
 from enum import Enum
 from types import MappingProxyType
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
-from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class MRIPrefix(str, Enum):
@@ -44,7 +42,7 @@ class PETPrefix(str, Enum):
 # TODO: make this more elegant
 REQUIRED_FIELDS: Dict[Union[MRIPrefix, PETPrefix], List[str]] = {
     MRIPrefix.SCAN_MRI_QC: ["study_date", "series_type"],
-    MRIPrefix.MRI_SBM: ["scandt", "cerebrumtcv"],
+    MRIPrefix.MRI_SBM: ["scandt", "cerebrumtcv", "wmh"],
     PETPrefix.SCAN_PET_QC: ["scan_date"],
     PETPrefix.AMYLOID_PET_GAAIN: ["scandate", "tracer", "amyloid_status"],
     PETPrefix.AMYLOID_PET_NPDKA: ["scandate"],
@@ -83,53 +81,13 @@ class SCANAttribute(RawAttribute):
         }
     )
 
-    def __init__(self, table: SymbolTable, form_prefix: str = "file.info.raw.") -> None:
-        """Override initializer to set prefix to SCAN-specific data."""
-        super().__init__(table, form_prefix)
-        # self.__mri_prefix = mri_prefix
-        # self.__pet_prefix = pet_prefix
-
-    def __verify_prefix(self, subprefix: Union[MRIPrefix, PETPrefix]) -> None:
-        if subprefix not in REQUIRED_FIELDS:
-            raise MissingRequiredError(f"Unknown SCAN file: {subprefix.value}")
-
-        for field in REQUIRED_FIELDS[subprefix]:
-            if field not in self.table[self.attribute_prefix.rstrip(".")]:  # type: ignore
-                raise MissingRequiredError(
-                    f"Required field {field} for SCAN data "
-                    + f"{subprefix.value} not found in current file"
-                )
-
-    # TODO: combine these two into one since they're now doing the same thing?
-    # although it is nice to have get_mri_value vs get_pet_value distinctions
-    def get_mri_value(self, key: str, subprefix: MRIPrefix, default: Any = None) -> Any:
-        """Get MRI-specific value.
-
-        Args:
-            key: Key to grab value for
-            subprefix: The MRI-specific sub-prefix
-            default: Default value to return if key is not found
-        """
-        self.__verify_prefix(subprefix)
-        return self.get_value(key, default)
-
-    def get_pet_value(self, key: str, subprefix: PETPrefix, default: Any = None) -> Any:
-        """Get PET-specific value.
-
-        Args:
-            key: Key to grab value for
-            subprefix: The PET-specific sub-prefix
-            default: Default value to return if key is not found
-        """
-        self.__verify_prefix(subprefix)
-        return self.get_value(key, default)
-
     # get functions for common values
     def get_tracer(self, field: str, subprefix: PETPrefix) -> Optional[str]:
         """Get the tracer string."""
         tracer = None
         try:
-            tracer = float(self.get_pet_value(field, subprefix))
+            self.assert_required(REQUIRED_FIELDS[subprefix])
+            tracer = float(self.get_value(field))
             tracer = int(tracer)  # can't call int directly on string-float
         except (ValueError, TypeError):
             return None
@@ -140,7 +98,8 @@ class SCANAttribute(RawAttribute):
         """Get the scan type from the tracer."""
         tracer = None
         try:
-            tracer = float(self.get_pet_value(field, subprefix))
+            self.assert_required(REQUIRED_FIELDS[subprefix])
+            tracer = float(self.get_value(field))
             tracer = int(tracer)
         except (ValueError, TypeError):
             return None
