@@ -1,4 +1,6 @@
 function,location,operation,type,description
+np_death_age,subject.info.derived.np_death_age,update,,
+np_death_date,subject.info.derived.np_death_date,update,,
 naccbraa,file.info.derived.naccbraa,update,,
 naccneur,file.info.derived.naccneur,update,,
 naccmicr,file.info.derived.naccmicr,update,,
