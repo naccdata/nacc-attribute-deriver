@@ -52,3 +52,37 @@ def get_unique_years(dates: List[str]) -> Set[int]:
     """
     years = [datetime_from_form_date(x) for x in dates]
     return set(x.year for x in years if x is not None)
+
+
+def create_death_date(
+    *, year: Optional[str], month: Optional[str], day: Optional[str]
+) -> Optional[date]:
+    """Creates the death date, handling conventions for unknown dates."""
+
+    if not year:
+        return None
+    if not month:
+        month = "7"
+    if not day:
+        day = "1"
+
+    try:
+        dyr = int(year)
+        dmo = int(month)
+        ddy = int(day)
+    except (TypeError, ValueError):
+        return None
+
+    if dyr == 9999:
+        return None
+
+    if dmo > 12:
+        dmo = 7
+    if ddy > 31:
+        ddy = 1
+
+    date_value = datetime_from_form_date(f"{dyr}-{dmo:02d}-{ddy:02d}")
+    if not date_value:
+        return None
+
+    return date_value.date()
