@@ -9,7 +9,7 @@ import csv
 from collections import defaultdict
 from importlib.resources.abc import Traversable
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from pydantic import ValidationError
 
@@ -20,16 +20,13 @@ from .symbol_table import SymbolTable
 
 
 class AttributeDeriver:
-    def __init__(self, rules_file: Traversable | Path, date_key: Optional[str] = None):
-        """Initiailzer.
+    def __init__(self, rules_file: Traversable | Path):
+        """Initializer.
 
         Args:
             rules_file: Path to raw CSV containing the list of
                 rules to execute.
-            date_key: Key that determines the order of the forms. Required
-                if any date operations are defined
         """
-        self.__date_key = date_key
         self.__rules = self.__load_rules(rules_file)
 
     def __load_rules(self, rules_file: Traversable | Path) -> List[CurationRule]:
@@ -55,15 +52,6 @@ class AttributeDeriver:
                         f"error loading curation rule row: {error}"
                     )
 
-                if (
-                    rule_schema.operation in ["initial", "latest"]
-                    and not self.__date_key
-                ):
-                    raise AttributeDeriverError(
-                        f"Date operation defined for {rule_schema.function} "
-                        "but no date key defined"
-                    )
-
                 attributes[rule_schema.function].append(rule_schema.assignment)
 
         # create rule for each attribute
@@ -86,11 +74,6 @@ class AttributeDeriver:
         Args:
             table: symbol table with subject and file data to curate
         """
-        if self.__date_key:
-            if self.__date_key not in table or not table[self.__date_key]:
-                raise AttributeDeriverError(
-                    f"Table does not have specified date key: {self.__date_key}"
-                )
 
         # collect all attributes beforehand so they're easily hashable
         instance_collections = AttributeCollectionRegistry.get_attribute_methods()
@@ -107,8 +90,5 @@ class AttributeDeriver:
 
             for assignment in rule.assignments:
                 assignment.operation.evaluate(
-                    table=table,
-                    value=value,
-                    attribute=assignment.attribute,
-                    date_key=self.__date_key,
+                    table=table, value=value, attribute=assignment.attribute
                 )
