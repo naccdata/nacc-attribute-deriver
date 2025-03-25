@@ -4,7 +4,9 @@ from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import (
+    FormNamespace,
+)
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
@@ -13,13 +15,13 @@ from nacc_attribute_deriver.utils.date import create_death_date
 class NPFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is an NP form."""
-        self.__np = FormAttribute(table)
+        self.__np = FormNamespace(table)
 
         module = self.__np.get_value("module")
         if not module or module.upper() != "NP":
             raise MissingRequiredError("Current file is not an NP form")
 
-    def _mapgross(self, new) -> Optional[int]:
+    def _map_gross(self, new) -> Optional[int]:
         npgross = self.__np.get_value("npgross")
         if npgross == 2:
             return 0
@@ -28,7 +30,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return new
 
-    def _mapsub4(self, old) -> int:
+    def _map_sub4(self, old) -> int:
         if old in [1, 2, 3, 4]:
             return 4 - old
         if old == 5:
@@ -36,7 +38,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9
 
-    def _mapv9(self, old) -> int:
+    def _map_v9(self, old) -> int:
         if old == 1:
             return 1
         if old == 2:
@@ -46,7 +48,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9
 
-    def _mapvasc(self, new) -> int:
+    def _map_vasc(self, new) -> int:
         npgross = self.__np.get_value("npgross")
         npvasc = self.__np.get_value("npvasc")
         if npgross == 2 or npvasc == 2:
@@ -58,7 +60,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return new
 
-    def _mapsub1(self, old):
+    def _map_sub1(self, old):
         if old in [1, 2, 3, 4]:
             return old - 1
         if old == 5:
@@ -66,7 +68,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9
 
-    def _maplewy(self) -> int:
+    def _map_lewy(self) -> int:
         nplewy = self.__np.get_value("nplewy")
         if nplewy == 6:
             return 8
@@ -94,7 +96,7 @@ class NPFormAttributeCollection(AttributeCollection):
                 if npbraak == 7:
                     naccbraa = 0
             else:
-                naccbraa = self._mapgross(naccbraa)
+                naccbraa = self._map_gross(naccbraa)
 
         return naccbraa if naccbraa is not None else 9
 
@@ -110,12 +112,12 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccneur = self._mapsub4(npneur)
+            naccneur = self._map_sub4(npneur)
         elif formver == 1:
             if npneur:
-                naccneur = self._mapsub4(npneur)
+                naccneur = self._map_sub4(npneur)
             else:
-                naccneur = self._mapgross(naccneur)
+                naccneur = self._map_gross(naccneur)
 
         return naccneur if naccneur is not None else 9
 
@@ -132,12 +134,12 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccmicr = self._mapv9(npmicro)
+            naccmicr = self._map_v9(npmicro)
         elif formver == 1:
             if npmicro:
-                naccmicr = self._mapv9(npmicro)
+                naccmicr = self._map_v9(npmicro)
             else:
-                naccmicr = self._mapvasc(naccmicr)
+                naccmicr = self._map_vasc(naccmicr)
 
         return naccmicr if naccmicr is not None else 9
 
@@ -164,13 +166,13 @@ class NPFormAttributeCollection(AttributeCollection):
                 nacchem = 9
         elif formver in [7, 8, 9]:
             nacchem = nphem
-            nacchem = self._mapv9(nphem)
+            nacchem = self._map_v9(nphem)
         elif formver == 1:
             nacchem = nphem
             if nphem:
-                nacchem = self._mapv9(nphem)
+                nacchem = self._map_v9(nphem)
             else:
-                nacchem = self._mapvasc(nacchem)
+                nacchem = self._map_vasc(nacchem)
 
         return nacchem if nacchem is not None else 9
 
@@ -186,12 +188,12 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             naccarte = nparter
         elif formver in [7, 8, 9]:
-            naccarte = self._mapsub1(nparter)
+            naccarte = self._map_sub1(nparter)
         elif formver == 1:
             if nparter:
-                naccarte = self._mapsub1(nparter)
+                naccarte = self._map_sub1(nparter)
             else:
-                naccarte = self._mapvasc(naccarte)
+                naccarte = self._map_vasc(naccarte)
 
         return naccarte if naccarte is not None else 9
 
@@ -211,14 +213,14 @@ class NPFormAttributeCollection(AttributeCollection):
             if nplbod == 5:
                 nacclewy = 4
         elif formver in [7, 8, 9]:
-            nacclewy = self._maplewy()
+            nacclewy = self._map_lewy()
         elif formver == 1:
             nplewy = self.__np.get_value("nplewy")
             if nplewy:
-                nacclewy = self._maplewy()
+                nacclewy = self._map_lewy()
             else:
                 nacclewy = nplewy
-                nacclewy = self._mapgross(nacclewy)
+                nacclewy = self._map_gross(nacclewy)
 
         return nacclewy if nacclewy is not None else 9
 
