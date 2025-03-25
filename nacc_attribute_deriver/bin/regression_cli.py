@@ -90,9 +90,7 @@ def run(args: Namespace):
     rules_file = files(  # type: ignore
         "nacc_attribute_deriver"
     ).joinpath("config/form/uds_rules.csv")
-    deriver = AttributeDeriver(
-        rules_file=rules_file, date_key="file.info.forms.json.visitdate"
-    )
+    deriver = AttributeDeriver(rules_file=rules_file)
     with args.baseline_json.open("r") as fh:
         baselines = json.load(fh)
 
