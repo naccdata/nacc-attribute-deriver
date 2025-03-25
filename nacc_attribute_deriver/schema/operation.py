@@ -65,6 +65,8 @@ class UpdateOperation(Operation):
         """Simply updates the location."""
         if isinstance(value, date):
             value = str(value)
+        if isinstance(value, AttributeValue):
+            value = value.value
 
         table[attribute] = value
 
@@ -96,6 +98,8 @@ class SortedListOperation(Operation):
         """Adds the value to a sorted list."""
         cur_list = table.get(attribute, [])
 
+        if isinstance(value, AttributeValue):
+            value = value.value
         if isinstance(value, (list, set)):
             cur_list.extend(list(value))
         elif value is not None:
@@ -157,7 +161,9 @@ class CountOperation(Operation):
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Counts the result."""
         if not value:  # TODO: should we count 0s/Falses?
-            return
+            return None
+        if isinstance(value, AttributeValue) and not value.value:
+            return None
 
         cur_count = table.get(attribute, 0)
         table[attribute] = cur_count + 1
@@ -180,6 +186,8 @@ class ComparisonOperation(Operation):
 
         if value is None:
             return
+        if isinstance(value, AttributeValue):
+            value = value.value
 
         try:
             if not dest_value or self.compare(value, dest_value):
