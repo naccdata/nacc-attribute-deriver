@@ -6,8 +6,9 @@ This kind of feels overengineered?
 
 from abc import abstractmethod
 from datetime import date
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
+from nacc_attribute_deriver.attributes.base.base_attribute import AttributeValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
@@ -42,14 +43,7 @@ class Operation(object, metaclass=OperationRegistry):
         raise ValueError(f"Unrecognized operation: {label}")
 
     @abstractmethod
-    def evaluate(
-        self,
-        *,
-        table: SymbolTable,
-        value: Any,
-        attribute: str,
-        date_key: Optional[str] = None,
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Evaluate the operation, and stores the computed value at the
         specified location.
 
@@ -66,12 +60,7 @@ class UpdateOperation(Operation):
     LABEL = "update"
 
     def evaluate(  # type: ignore
-        self,
-        *,
-        table: SymbolTable,
-        value: Any,
-        attribute: str,
-        date_key: Optional[str] = None,
+        self, *, table: SymbolTable, value: Any, attribute: str
     ) -> None:
         """Simply updates the location."""
         if isinstance(value, date):
@@ -83,18 +72,14 @@ class UpdateOperation(Operation):
 class SetOperation(Operation):
     LABEL = "set"
 
-    def evaluate(
-        self,
-        *,
-        table: SymbolTable,
-        value: Any,
-        attribute: str,
-        date_key: Optional[str] = None,
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
         cur_set = table.get(attribute)
         cur_set = set(cur_set) if cur_set else set()
+
+        if isinstance(value, AttributeValue):
+            value = value.value
 
         if isinstance(value, (list, set)):
             cur_set = cur_set.union(set(value))
@@ -107,14 +92,7 @@ class SetOperation(Operation):
 class SortedListOperation(Operation):
     LABEL = "sortedlist"
 
-    def evaluate(
-        self,
-        *,
-        table: SymbolTable,
-        value: Any,
-        attribute: str,
-        date_key: Optional[str] = None,
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
         cur_list = table.get(attribute, [])
 
@@ -130,63 +108,53 @@ class DateOperation(Operation):
     LABEL: str | None = None
 
     @abstractmethod
-    def compare(self, left_value, right_value) -> bool:
+    def compare(self, left_value: date, right_value: date) -> bool:
         """Returns the comparison for this object."""
         raise OperationError(f"Unknown date operation: {self.LABEL}")
 
-    def evaluate(
-        self,
-        *,
-        table: SymbolTable,
-        value: Any,
-        attribute: str,
-        date_key: Optional[str] = None,
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Compares dates to determine the result."""
         if value is None:
             return
 
-        if not date_key:
-            raise OperationError("Value for date_key is required")
+        if not isinstance(value, AttributeValue):
+            raise OperationError(
+                f"Unable to perform {self.LABEL} operation without date"
+            )
+
+        if value.value is None:
+            return
 
         if self.LABEL not in ["initial", "latest"]:
             raise OperationError(f"Unknown date operation: {self.LABEL}")
 
-        cur_date = datetime_from_form_date(table.get(date_key))
+        if not value.date:
+            raise OperationError(f"Current date is required: {value.model_dump()}")
+
         dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
 
-        if not cur_date:
-            raise OperationError("Current date cannot be determined")
-
-        if not dest_date or self.compare(cur_date, dest_date):
-            table[attribute] = {"date": str(cur_date.date()), "value": value}
+        if not dest_date or self.compare(value.date, dest_date.date()):
+            table[attribute] = value.model_dump()
 
 
 class InitialOperation(DateOperation):
     LABEL = "initial"
 
-    def compare(self, left_value, right_value):
+    def compare(self, left_value: date, right_value: date):
         return left_value < right_value
 
 
 class LatestOperation(DateOperation):
     LABEL = "latest"
 
-    def compare(self, left_value, right_value):
+    def compare(self, left_value: date, right_value: date):
         return left_value > right_value
 
 
 class CountOperation(Operation):
     LABEL = "count"
 
-    def evaluate(
-        self,
-        *,
-        table: SymbolTable,
-        value: Any,
-        attribute: str,
-        date_key: Optional[str] = None,
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Counts the result."""
         if not value:  # TODO: should we count 0s/Falses?
             return
@@ -203,14 +171,7 @@ class ComparisonOperation(Operation):
         """Returns the comparison for this object."""
         raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
-    def evaluate(
-        self,
-        *,
-        table: SymbolTable,
-        value: Any,
-        attribute: str,
-        date_key: Optional[str] = None,
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Does a comparison between the value and location value."""
         dest_value = table.get(attribute)
 
