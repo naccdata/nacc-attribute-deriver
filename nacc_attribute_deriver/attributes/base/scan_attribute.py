@@ -9,7 +9,7 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Dict, List, Optional, Union
 
-from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import RawNamespace
 
 
 class MRIPrefix(str, Enum):
@@ -51,7 +51,7 @@ REQUIRED_FIELDS: Dict[Union[MRIPrefix, PETPrefix], List[str]] = {
 }
 
 
-class SCANAttribute(RawAttribute):
+class SCANNamespace(RawNamespace):
     TRACER_MAPPING = MappingProxyType(
         {
             1: "fdg",
