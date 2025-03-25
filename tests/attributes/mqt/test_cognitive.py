@@ -60,12 +60,12 @@ class TestCognitiveAttributeCollection:
             )
 
         attr = CognitiveAttributeCollection.create(table)
-        assert set(attr._create_contributing_diagnosis()) == set(expected_values)
+        assert set(attr._create_contributing_diagnosis().value) == set(expected_values)
 
     def test_dementia(self, table):
         """Tests _create_dementia."""
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_dementia() == [
+        assert attr._create_dementia().value == [
             CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]
         ]
 
@@ -75,7 +75,7 @@ class TestCognitiveAttributeCollection:
 
         attr = CognitiveAttributeCollection.create(table)
 
-        assert set(attr._create_dementia()) == set(
+        assert set(attr._create_dementia().value) == set(
             [
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["amndem"],
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["pca"],
@@ -88,20 +88,20 @@ class TestCognitiveAttributeCollection:
         for k, v in CognitiveAttributeCollection.NACCUDSD_MAPPING.items():
             table["file.info.derived.naccudsd"] = k
             attr = CognitiveAttributeCollection.create(table)
-            assert attr._create_cognitive_status() == v
+            assert attr._create_cognitive_status().value == v
 
     def test_etpr(self, table):
         """Tests _create_etpr, which just comes from NACCETPR."""
         for k, v in CognitiveAttributeCollection.PRIMARY_DIAGNOSIS_MAPPINGS.items():
             table["file.info.derived.naccetpr"] = k
             attr = CognitiveAttributeCollection.create(table)
-            assert attr._create_etpr() == v
+            assert attr._create_etpr().value == v
 
     def test_global_cdr(self, table):
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr() == "0.5"
+        assert attr._create_global_cdr().value == "0.5"
 
         table["file.info.forms.json.cdrglob"] = None
         attr = CognitiveAttributeCollection.create(table)

@@ -2,12 +2,14 @@
 
 import pytest
 
+from nacc_attribute_deriver.attributes.base.base_attribute import AttributeValue
 from nacc_attribute_deriver.schema.operation import (
     CountOperation,
     InitialOperation,
     LatestOperation,
     MaxOperation,
     MinOperation,
+    OperationError,
     OperationRegistry,
     SetOperation,
     SortedListOperation,
@@ -111,12 +113,16 @@ class TestOperation:
             "test": {"date": "2025-01-01", "location": [1, 2, 2, 3, 4]}
         }
 
-    def test_initial(self, table, location, date_key):
+    def test_initial(self, table, location):
         """Tests the initial operation; will NOT be set since current date >
         destination date."""
         op = InitialOperation()
         assert op.LABEL == "initial"
-        op.evaluate(table=table, value=5, attribute=location, date_key=date_key)
+        op.evaluate(
+            table=table,
+            value=AttributeValue(value=5, date="2025-01-01"),
+            attribute=location,
+        )
 
         assert table.to_dict() == {
             "test": {
@@ -125,12 +131,21 @@ class TestOperation:
             }
         }
 
-    def test_latest(self, table, location, date_key):
+        with pytest.raises(
+            OperationError, match=r"Unable to perform initial operation without date"
+        ):
+            op.evaluate(table=table, value=5, attribute=location)
+
+    def test_latest(self, table, location):
         """Tests the latest operation; WILL be set since current date >
         destination date."""
         op = LatestOperation()
         assert op.LABEL == "latest"
-        op.evaluate(table=table, value=5, attribute=location, date_key=date_key)
+        op.evaluate(
+            table=table,
+            value=AttributeValue(value=5, date="2025-01-01"),
+            attribute=location,
+        )
 
         assert table.to_dict() == {
             "test": {
@@ -138,6 +153,11 @@ class TestOperation:
                 "location": {"date": "2025-01-01", "value": 5},
             }
         }
+
+        with pytest.raises(
+            OperationError, match=r"Unable to perform latest operation without date"
+        ):
+            op.evaluate(table=table, value=5, attribute=location)
 
     def test_count(self, table, location):
         """Tests the count operation."""

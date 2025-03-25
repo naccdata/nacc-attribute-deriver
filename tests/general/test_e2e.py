@@ -31,9 +31,7 @@ def test_uds_form():
         "nacc_attribute_deriver"
     ).joinpath("config/form/uds_rules.csv")
 
-    deriver = AttributeDeriver(
-        rules_file=rules_file, date_key="file.info.forms.json.visitdate"
-    )
+    deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
     # UDS has too much data/is messy to do a direct comparison
 
@@ -54,10 +52,7 @@ def test_np_form():
         "nacc_attribute_deriver"
     ).joinpath("config/form/np_rules.csv")
 
-    deriver = AttributeDeriver(
-        rules_file=rules_file,
-        date_key="file.info.forms.json.visitdate",
-    )
+    deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
     assert form.to_dict() == {
         "file": {
