@@ -3,12 +3,12 @@
 from datetime import date, datetime
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import FormNamespace
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class UDSAttribute(FormAttribute):
+class UDSNamespace(FormNamespace):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is a UDS form."""
         super().__init__(table)
