@@ -2,7 +2,7 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.base.base_attribute import AttributeValue
+from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
 from nacc_attribute_deriver.schema.operation import (
     CountOperation,
     InitialOperation,

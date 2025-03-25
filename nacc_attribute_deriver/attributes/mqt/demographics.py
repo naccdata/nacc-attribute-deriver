@@ -7,11 +7,11 @@ from types import MappingProxyType
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import (
+from nacc_attribute_deriver.attributes.base.namespace import (
     AttributeValue,
     DerivedNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_attribute import (
+from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

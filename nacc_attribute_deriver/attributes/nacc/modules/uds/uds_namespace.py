@@ -3,7 +3,7 @@
 from datetime import date, datetime
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.base_attribute import FormNamespace
+from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 

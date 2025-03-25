@@ -3,12 +3,12 @@
 from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import (
+from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from .uds_attribute import UDSNamespace
+from .uds_namespace import UDSNamespace
 
 
 class ContributionStatus:

@@ -10,7 +10,7 @@ from nacc_attribute_deriver.utils.date import (
     datetime_from_form_date,
 )
 
-from .uds_attribute import UDSNamespace
+from .uds_namespace import UDSNamespace
 
 
 class UDSFormA1Attribute(AttributeCollection):

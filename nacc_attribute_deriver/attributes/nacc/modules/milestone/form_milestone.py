@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import FormNamespace
+from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 

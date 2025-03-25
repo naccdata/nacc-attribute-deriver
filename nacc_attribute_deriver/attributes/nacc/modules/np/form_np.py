@@ -4,7 +4,7 @@ from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import (
+from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
 )
 from nacc_attribute_deriver.schema.errors import MissingRequiredError

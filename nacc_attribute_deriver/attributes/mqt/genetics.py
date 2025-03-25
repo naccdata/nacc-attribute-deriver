@@ -4,7 +4,7 @@ Assumes NACC-derived variables are already set
 """
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import (
+from nacc_attribute_deriver.attributes.base.namespace import (
     DerivedNamespace,
     RawNamespace,
 )

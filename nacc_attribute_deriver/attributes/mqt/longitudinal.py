@@ -4,11 +4,11 @@ Assumes NACC-derived variables are already set
 """
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import (
+from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
     SubjectInfoNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_attribute import (
+from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.utils.date import get_unique_years

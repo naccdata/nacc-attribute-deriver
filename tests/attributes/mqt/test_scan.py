@@ -2,7 +2,7 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.base.scan_attribute import SCANNamespace
+from nacc_attribute_deriver.attributes.base.scan_namespace import SCANNamespace
 from nacc_attribute_deriver.attributes.mqt.scan import MQTSCANAttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
 

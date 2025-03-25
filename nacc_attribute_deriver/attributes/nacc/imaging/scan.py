@@ -1,7 +1,7 @@
 """Derived variables that come from SCAN values."""
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.scan_attribute import (
+from nacc_attribute_deriver.attributes.base.scan_namespace import (
     REQUIRED_FIELDS,
     MRIPrefix,
     PETPrefix,

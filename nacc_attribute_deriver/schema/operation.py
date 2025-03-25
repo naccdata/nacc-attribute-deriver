@@ -8,7 +8,7 @@ from abc import abstractmethod
 from datetime import date
 from typing import Any, Dict
 
-from nacc_attribute_deriver.attributes.base.base_attribute import AttributeValue
+from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 

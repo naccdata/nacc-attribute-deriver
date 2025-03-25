@@ -1,6 +1,6 @@
 import pytest
 
-from nacc_attribute_deriver.attributes.base.base_attribute import BaseNamespace
+from nacc_attribute_deriver.attributes.base.namespace import BaseNamespace
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 

@@ -6,10 +6,10 @@ Assumes NACC-derived variables are already set
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import (
+from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
 )
-from nacc_attribute_deriver.attributes.base.scan_attribute import (
+from nacc_attribute_deriver.attributes.base.scan_namespace import (
     REQUIRED_FIELDS,
     MRIPrefix,
     PETPrefix,

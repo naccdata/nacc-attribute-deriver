@@ -6,8 +6,8 @@ Assumes NACC-derived variables are already set
 from typing import List
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import SubjectInfoNamespace
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_attribute import (
+from nacc_attribute_deriver.attributes.base.namespace import SubjectInfoNamespace
+from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError

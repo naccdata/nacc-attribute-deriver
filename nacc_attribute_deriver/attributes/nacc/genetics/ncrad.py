@@ -7,7 +7,7 @@ Right now these should all come from the imported APOE data under
 from typing import Dict, Tuple
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import RawNamespace
+from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
