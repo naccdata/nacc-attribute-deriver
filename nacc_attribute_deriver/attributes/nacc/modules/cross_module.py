@@ -5,10 +5,10 @@ from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import (
-    SubjectDerivedAttribute,
+    SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_attribute import (
-    UDSAttribute,
+    UDSNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
@@ -28,8 +28,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         table: SymbolTable,
     ) -> None:
         """Override initializer to set other module prefixes."""
-        self.__uds = UDSAttribute(table)
-        self.__subject_derived = SubjectDerivedAttribute(table)
+        self.__uds = UDSNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table)
 
     def _determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.

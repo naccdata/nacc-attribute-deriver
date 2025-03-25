@@ -5,8 +5,8 @@ Assumes NACC-derived variables are already set
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import (
-    DerivedAttribute,
-    RawAttribute,
+    DerivedNamespace,
+    RawNamespace,
 )
 
 
@@ -14,8 +14,8 @@ class GeneticAttributeCollection(AttributeCollection):
     """Class to collect genetic attributes."""
 
     def __init__(self, table):
-        self.__raw = RawAttribute(table)
-        self.__derived = DerivedAttribute(table)
+        self.__raw = RawNamespace(table)
+        self.__derived = DerivedNamespace(table)
 
     def _create_apoe(self) -> str:
         """Mapped from NACCAPOE."""

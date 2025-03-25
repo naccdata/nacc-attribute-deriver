@@ -5,11 +5,11 @@ Assumes NACC-derived variables are already set
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import (
-    SubjectDerivedAttribute,
-    SubjectInfoAttribute,
+    SubjectDerivedNamespace,
+    SubjectInfoNamespace,
 )
 from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_attribute import (
-    UDSAttribute,
+    UDSNamespace,
 )
 from nacc_attribute_deriver.utils.date import get_unique_years
 
@@ -18,9 +18,9 @@ class LongitudinalAttributeCollection(AttributeCollection):
     """Class to collect longitudinal attributes."""
 
     def __init__(self, table):
-        self.__uds = UDSAttribute(table)
-        self.__subject_derived = SubjectDerivedAttribute(table)
-        self.__subject_info = SubjectInfoAttribute(table)
+        self.__uds = UDSNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table)
+        self.__subject_info = SubjectInfoNamespace(table)
 
     def _create_total_uds_visits(self) -> int:
         """Total number of UDS visits.

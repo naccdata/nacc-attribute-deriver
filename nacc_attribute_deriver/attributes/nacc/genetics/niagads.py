@@ -5,7 +5,7 @@ Right now these should all come from the imported GWAS data under
 """
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import RawNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -14,7 +14,7 @@ class NIAGADSAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NIAGADS-specific data."""
-        self.__niagads = RawAttribute(table)
+        self.__niagads = RawNamespace(table)
         self.__niagads.assert_required(
             required=[
                 "niagads_gwas",

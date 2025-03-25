@@ -2,7 +2,7 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.base.scan_attribute import SCANAttribute
+from nacc_attribute_deriver.attributes.base.scan_attribute import SCANNamespace
 from nacc_attribute_deriver.attributes.mqt.scan import MQTSCANAttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -83,7 +83,7 @@ class TestSCANPETQCAttribute:
 
     def test_create_scan_pet_scan_types(self, scan_pet_qc_table):
         """Tests _create_scan_pet_scan_types, loop over all options."""
-        for k, v in SCANAttribute.TRACER_SCAN_TYPE_MAPPING.items():
+        for k, v in SCANNamespace.TRACER_SCAN_TYPE_MAPPING.items():
             # convert to string just to make sure type conversion is correct
             scan_pet_qc_table["file.info.raw.radiotracer"] = str(k)
             attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
@@ -123,7 +123,7 @@ class TestSCANPETQCAttribute:
     def test_create_scan_pet_amyloid_tracers(self, scan_pet_qc_table):
         """Tests _create_scan_pet_amyloid_tracers, loop over all options."""
         attr = scan_pet_qc_table
-        for k, v in SCANAttribute.TRACER_MAPPING.items():
+        for k, v in SCANNamespace.TRACER_MAPPING.items():
             # convert to string just to make sure type conversion is correct
             scan_pet_qc_table["file.info.raw.radiotracer"] = str(k)
             attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
@@ -152,7 +152,7 @@ class TestSCANPETQCAttribute:
             scan_pet_qc_table["file.info.raw.radiotracer"] = i
             attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
             assert (
-                attr._create_scan_pet_tau_tracers() == SCANAttribute.TRACER_MAPPING[i]
+                attr._create_scan_pet_tau_tracers() == SCANNamespace.TRACER_MAPPING[i]
             )
 
 

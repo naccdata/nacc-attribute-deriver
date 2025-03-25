@@ -10,14 +10,14 @@ from nacc_attribute_deriver.utils.date import (
     datetime_from_form_date,
 )
 
-from .uds_attribute import UDSAttribute
+from .uds_attribute import UDSNamespace
 
 
 class UDSFormA1Attribute(AttributeCollection):
     """Class to collect UDS A1 attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSAttribute(table)
+        self.__uds = UDSNamespace(table)
 
     # TODO: additional worry that SAS-code was extremely case-sensitive?
     WHITEX_RESPONSES = MappingProxyType(

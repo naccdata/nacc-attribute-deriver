@@ -2,14 +2,14 @@ from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import FormAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import FormNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 
 
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__milestone = FormAttribute(table)
+        self.__milestone = FormNamespace(table)
 
     def _create_milestone_death_date(self) -> Optional[date]:
         if not self.is_int_value(self.__milestone.get_value("deceased"), 1):

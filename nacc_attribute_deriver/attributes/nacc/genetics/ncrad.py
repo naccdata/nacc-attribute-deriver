@@ -7,7 +7,7 @@ Right now these should all come from the imported APOE data under
 from typing import Dict, Tuple
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import RawAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import RawNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -29,7 +29,7 @@ class NCRADAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        self.__apoe = RawAttribute(table)
+        self.__apoe = RawNamespace(table)
         self.__apoe.assert_required(required=["a1", "a2"])
         # for field in ["a1", "a2"]:
         #     if f"{self.form_prefix}{field}" not in self.table:

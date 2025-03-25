@@ -4,11 +4,11 @@ from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import (
-    SubjectDerivedAttribute,
+    SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from .uds_attribute import UDSAttribute
+from .uds_attribute import UDSNamespace
 
 
 class ContributionStatus:
@@ -24,8 +24,8 @@ class ContributionStatus:
 
 class UDSFormD1Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSAttribute(table)
-        self.__subject = SubjectDerivedAttribute(table)
+        self.__uds = UDSNamespace(table)
+        self.__subject = SubjectDerivedNamespace(table)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.

@@ -7,13 +7,13 @@ from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import (
-    SubjectDerivedAttribute,
+    SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.scan_attribute import (
     REQUIRED_FIELDS,
     MRIPrefix,
     PETPrefix,
-    SCANAttribute,
+    SCANNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
@@ -23,8 +23,8 @@ class MQTSCANAttributeCollection(AttributeCollection):
     """Class to collect MQT SCAN attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__scan = SCANAttribute(table)
-        self.__subject_derived = SubjectDerivedAttribute(table)
+        self.__scan = SCANNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table)
 
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """SCAN MRI scan types available Access series_type (scan_mridashboard
