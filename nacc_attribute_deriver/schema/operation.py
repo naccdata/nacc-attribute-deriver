@@ -63,10 +63,14 @@ class UpdateOperation(Operation):
         self, *, table: SymbolTable, value: Any, attribute: str
     ) -> None:
         """Simply updates the location."""
-        if isinstance(value, date):
-            value = str(value)
+
         if isinstance(value, AttributeValue):
             value = value.value
+        if value is None:
+            return
+
+        if isinstance(value, date):
+            value = str(value)
 
         table[attribute] = value
 
@@ -77,11 +81,13 @@ class SetOperation(Operation):
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
-        cur_set = table.get(attribute)
-        cur_set = set(cur_set) if cur_set else set()
-
         if isinstance(value, AttributeValue):
             value = value.value
+        if value is None:
+            return
+
+        cur_set = table.get(attribute)
+        cur_set = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
             cur_set = cur_set.union(set(value))
@@ -96,10 +102,12 @@ class SortedListOperation(Operation):
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
-        cur_list = table.get(attribute, [])
-
         if isinstance(value, AttributeValue):
             value = value.value
+        if value is None:
+            return
+
+        cur_list = table.get(attribute, [])
         if isinstance(value, (list, set)):
             cur_list.extend(list(value))
         elif value is not None:
@@ -184,10 +192,10 @@ class ComparisonOperation(Operation):
         if self.LABEL not in ["min", "max"]:
             raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
-        if value is None:
-            return
         if isinstance(value, AttributeValue):
             value = value.value
+        if value is None:
+            return
 
         try:
             if not dest_value or self.compare(value, dest_value):
