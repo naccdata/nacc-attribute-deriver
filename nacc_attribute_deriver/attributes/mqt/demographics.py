@@ -7,9 +7,12 @@ from types import MappingProxyType
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.base_attribute import DerivedAttribute
+from nacc_attribute_deriver.attributes.base.base_attribute import (
+    AttributeValue,
+    DerivedNamespace,
+)
 from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_attribute import (
-    UDSAttribute,
+    UDSNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -18,20 +21,22 @@ class DemographicsAttributeCollection(AttributeCollection):
     """Class to collect demographic attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSAttribute(table)
+        self.__uds = UDSNamespace(table)
 
     SEX_MAPPING = MappingProxyType(
         {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Don't know"}
     )
 
-    def _create_uds_sex(self) -> Optional[str]:
+    def _create_uds_sex(self) -> Optional[AttributeValue]:
         """UDS sex."""
         sex = self.__uds.get_value("sex")
         if sex is None:
             return None
 
         try:
-            return self.SEX_MAPPING.get(int(sex), None)
+            return AttributeValue(
+                value=self.SEX_MAPPING.get(int(sex), None), date=self.__uds.get_date()
+            )
         except TypeError:
             return None
 
@@ -48,24 +53,30 @@ class DemographicsAttributeCollection(AttributeCollection):
         }
     )
 
-    def _create_uds_primary_language(self) -> str:
+    def _create_uds_primary_language(self) -> AttributeValue:
         """UDS primary language."""
         primlang = self.__uds.get_value("primlang", 9)
-        return self.PRIMARY_LANGUAGE_MAPPING.get(primlang, "Unknown")
+        return AttributeValue(
+            value=self.PRIMARY_LANGUAGE_MAPPING.get(primlang, "Unknown"),
+            date=self.__uds.get_date(),
+        )
 
-    def _create_uds_education_level(self) -> int:
+    def _create_uds_education_level(self) -> AttributeValue:
         """UDS education level."""
-        return self.__uds.get_value("educ", None)
+        return self.__uds.get_dated_value("educ", None)
 
 
 class DerivedDemographicsAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__derived = DerivedAttribute(table)
+        self.__uds = UDSNamespace(table)
+        self.__derived = DerivedNamespace(table)
 
-    def _create_uds_age(self) -> int:
+    def _create_uds_age(self) -> AttributeValue:
         """UDS age at form date, mapped from NACCAGE."""
         self.__derived.assert_required(["naccage"])
-        return self.__derived.get_value("naccage")
+        return AttributeValue(
+            value=self.__derived.get_value("naccage"), date=self.__uds.get_date()
+        )
 
     RACE_MAPPING = MappingProxyType(
         {
@@ -81,11 +92,14 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         }
     )
 
-    def _create_uds_race(self) -> str:
+    def _create_uds_race(self) -> AttributeValue:
         """UDS race."""
         self.__derived.assert_required(["naccnihr"])
-        return self.RACE_MAPPING.get(
-            self.__derived.get_value("naccnihr"), "Unknown or ambiguous"
+        return AttributeValue(
+            value=self.RACE_MAPPING.get(
+                self.__derived.get_value("naccnihr"), "Unknown or ambiguous"
+            ),
+            date=self.__uds.get_date(),
         )
 
     def _create_age_at_death(self) -> int:
@@ -95,9 +109,12 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "Not deceased/unknown", 1: "Deceased"})
 
-    def _create_vital_status(self) -> str:
+    def _create_vital_status(self) -> AttributeValue:
         """Creates subject.info.demographics.uds.vital-status.latest."""
         self.__derived.assert_required(["naccdied"])
-        return self.VITAL_STATUS_MAPPINGS.get(
-            self.__derived.get_value("naccdied"), "Unknown"
+        return AttributeValue(
+            value=self.VITAL_STATUS_MAPPINGS.get(
+                self.__derived.get_value("naccdied"), "Unknown"
+            ),
+            date=self.__uds.get_date(),
         )

@@ -7,10 +7,11 @@ from typing import Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.base_attribute import (
-    DerivedAttribute,
+    AttributeValue,
+    DerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_attribute import (
-    UDSAttribute,
+    UDSNamespace,
 )
 
 
@@ -18,8 +19,8 @@ class CognitiveAttributeCollection(AttributeCollection):
     """Class to collect cognitive attributes."""
 
     def __init__(self, table):
-        self.__uds = UDSAttribute(table)
-        self.__derived = DerivedAttribute(table)
+        self.__uds = UDSNamespace(table)
+        self.__derived = DerivedNamespace(table, date_attribute="visitdate")
 
     NACCUDSD_MAPPING = {
         1: "Normal cognition",
@@ -161,32 +162,54 @@ class CognitiveAttributeCollection(AttributeCollection):
         )
         return list({mapping[attribute] for attribute in attributes})
 
-    def _create_contributing_diagnosis(self) -> List[str]:
+    def _create_contributing_diagnosis(self) -> AttributeValue:
         """Mapped from all possible contributing diagnosis."""
         self.__derived.assert_required(["naccalzp", "nacclbdp"])
-        return self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2)
-
-    def _create_dementia(self) -> List[str]:
-        """Mapped from all dementia types."""
-        self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
-        return self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1)
-
-    def _create_cognitive_status(self) -> Optional[str]:
-        """Mapped from NACCUDSD."""
-        self.__derived.assert_required(["naccudsd"])
-        return self.NACCUDSD_MAPPING.get(self.__derived.get_value("naccudsd"), None)
-
-    def _create_etpr(self) -> str:
-        """Mapped from NACCETPR."""
-        self.__derived.assert_required(["naccetpr"])
-        return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
-            self.__derived.get_value("naccetpr"), "Missing/unknown"
+        return AttributeValue(
+            value=self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2),
+            date=self.__uds.get_date(),
         )
 
-    def _create_global_cdr(self) -> Optional[str]:
+    def _create_dementia(self) -> AttributeValue:
+        """Mapped from all dementia types."""
+        self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
+        return AttributeValue(
+            value=self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1),
+            date=self.__uds.get_date(),
+        )
+
+    def _create_cognitive_status(self) -> Optional[AttributeValue]:
+        """Mapped from NACCUDSD."""
+        self.__derived.assert_required(["naccudsd"])
+        cognitive_status = self.NACCUDSD_MAPPING.get(
+            self.__derived.get_value("naccudsd"), None
+        )
+        if not cognitive_status:
+            return None
+
+        return AttributeValue(
+            value=cognitive_status,
+            date=self.__uds.get_date(),
+        )
+
+    def _create_etpr(self) -> AttributeValue:
+        """Mapped from NACCETPR."""
+        self.__derived.assert_required(["naccetpr"])
+        return AttributeValue(
+            value=self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
+                self.__derived.get_value("naccetpr"), "Missing/unknown"
+            ),
+            date=self.__uds.get_date(),
+        )
+
+    def _create_global_cdr(self) -> Optional[AttributeValue]:
         """Mapped from CDRGLOB."""
         cdrglob = self.__uds.get_value("cdrglob")
-        return str(cdrglob) if cdrglob else None
+        global_cdr = str(cdrglob) if cdrglob else None
+        if not global_cdr:
+            return None
+
+        return AttributeValue(value=global_cdr, date=self.__uds.get_date())
 
     def _create_normal_cognition(self) -> bool:
         """Mapped from NACCNORM."""
