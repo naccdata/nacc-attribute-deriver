@@ -77,7 +77,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return nplewy
 
-    def _create_naccbraa(self) -> int:
+    def _create_np_braa(self) -> int:
         """Create the NACCBRAA variable.
 
         Braak stage for neurofibrillary degeneration (B score)
@@ -100,7 +100,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccbraa if naccbraa is not None else 9
 
-    def _create_naccneur(self) -> int:
+    def _create_np_neur(self) -> int:
         """Create the NACCNEUR variable.
 
         Density of neocortical neuritic plaques (CERAD score) (C score)
@@ -121,7 +121,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccneur if naccneur is not None else 9
 
-    def _create_naccmicr(self) -> int:
+    def _create_np_micr(self) -> int:
         """Create the NACCMICR variable.
 
         Microinfarcts
@@ -143,7 +143,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccmicr if naccmicr is not None else 9
 
-    def _create_nacchem(self) -> Optional[int]:
+    def _create_np_hem(self) -> Optional[int]:
         """Create the NACCHEM variable.
 
         Hemorrhages and microbleeds
@@ -176,7 +176,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return nacchem if nacchem is not None else 9
 
-    def _create_naccarte(self) -> Optional[int]:
+    def _create_np_arte(self) -> Optional[int]:
         """Create the NACCARTE variable.
 
         Arteriolosclerosis
@@ -197,7 +197,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccarte if naccarte is not None else 9
 
-    def _create_nacclewy(self) -> Optional[int]:
+    def _create_np_lewy(self) -> Optional[int]:
         """Create the NACCLEWY variable.
 
         Lewy body disease
