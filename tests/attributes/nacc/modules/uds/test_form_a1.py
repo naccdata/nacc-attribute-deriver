@@ -6,10 +6,11 @@ from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import (
     UDSFormA1Attribute,  # type: ignore
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def attr() -> UDSFormA1Attribute:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
@@ -26,30 +27,33 @@ def attr() -> UDSFormA1Attribute:
         }
     }
 
-    return UDSFormA1Attribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestUDSFormA1Attribute:
-    def test_create_naccage(self, attr):
+    def test_create_naccage(self, table, form_prefix):
         """Tests creating NACCAGE."""
-        assert attr._create_naccage() == 34
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_naccage() == 34  # noqa: SLF001
 
         # exact birthday
-        attr.set_value("birthmo", 1)
-        assert attr._create_naccage() == 35
+        set_attribute(table, form_prefix, "birthmo", 1)
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_naccage() == 35  # noqa: SLF001
 
-    def test_NACC961734(self, attr):
+    def test_visit_on_birthday(self, table, form_prefix):
         """Case that has issue due to visitdate == birthday."""
-        attr.set_value("visitdate", "2007-06-01")
-        attr.set_value("birthmo", 6)
-        attr.set_value("birthyr", 1910)
+        set_attribute(table, form_prefix, "visitdate", "2007-06-01")
+        set_attribute(table, form_prefix, "birthmo", 6)
+        set_attribute(table, form_prefix, "birthyr", 1910)
+        attr = UDSFormA1Attribute(table)
 
-        assert attr._create_naccage() == 97
+        assert attr._create_naccage() == 97  # noqa: SLF001
 
-    def test_NACC190430(self, attr):
         """Case that has issue due to visitdate == birthday."""
-        attr.set_value("visitdate", "2010-03-01")
-        attr.set_value("birthmo", 3)
-        attr.set_value("birthyr", 1956)
+        set_attribute(table, form_prefix, "visitdate", "2010-03-01")
+        set_attribute(table, form_prefix, "birthmo", 3)
+        set_attribute(table, form_prefix, "birthyr", 1956)
+        attr = UDSFormA1Attribute(table)
 
-        assert attr._create_naccage() == 54
+        assert attr._create_naccage() == 54  # noqa: SLF001

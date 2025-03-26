@@ -1,0 +1,3 @@
+function,location,operation,type,description
+mds_death_date,subject.info.derived.mds_death_date,update,,
+mds_vitalst,subject.info.derived.mds_vital_status,update,,

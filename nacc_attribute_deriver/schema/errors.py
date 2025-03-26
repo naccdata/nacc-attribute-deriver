@@ -1,9 +1,11 @@
 """Errors and exception handling."""
 
 
-class AttributeDeriverException(Exception):
+class AttributeDeriverError(Exception):
     pass
 
 
-class MissingRequiredException(Exception):
-    pass
+class MissingRequiredError(Exception):
+    def __init__(self, field: str, message: str = ""):
+        super().__init__(message)
+        self.field = field

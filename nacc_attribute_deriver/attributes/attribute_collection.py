@@ -5,44 +5,101 @@ Heavily based off of
     https://eli.thegreenplace.net/2012/08/07/fundamental-concepts-of-plugin-infrastructures
 """
 
+import logging
 from inspect import isfunction
 from types import FunctionType
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Union
 
-from nacc_attribute_deriver.schema.errors import MissingRequiredException
+from pydantic import BaseModel, ConfigDict
+
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
+log = logging.getLogger(__name__)
+
+
+class AttributeExpression(BaseModel):
+    """An attribute expression is implemented as an application of a create
+    function to the symbol table.
+
+    This object holds the function object and the instance of an
+    attribute collection instantiate on a symbol table.
+    """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    function: FunctionType
+    attribute_class: type
+
+    def apply(self, table: SymbolTable) -> Any:
+        """Calls the function on the instance.
+
+        Returns:
+          the value returned by the function applied to the instance
+        Raises:
+            MissingRequiredError if the attribute class cannot be instantiated
+            on the table
+        """
+        try:
+            return self.function(self.attribute_class(table))
+        except MissingRequiredError as error:
+            log.warning(f"Unable to apply {self.function}: missing field {error.field}")
+
+        return None
 
 
 class AttributeCollectionRegistry(type):
-    collections: List["AttributeCollection"] = []
+    collection_types: ClassVar[List[type]] = []
 
     def __init__(cls, name, bases, attrs):
-        if name != "AttributeCollection":
-            if name not in AttributeCollectionRegistry.collections:
-                AttributeCollectionRegistry.collections.append(cls)
+        """Registers the class in the registry when the class has this class as
+        a metaclass."""
+        if (
+            name != "AttributeCollection"
+            and name not in AttributeCollectionRegistry.collection_types
+        ):
+            AttributeCollectionRegistry.collection_types.append(cls)
+
+    @classmethod
+    def get_attribute_methods(cls) -> Dict[str, AttributeExpression]:
+        """Returns dictionary of the attribute methods in the registered
+        collections.
+
+        Args:
+          table: the symbol table
+        Returns:
+          a dictionary mapping a function name to the attribute expression
+        """
+        methods = {}
+        for collection_type in cls.collection_types:
+            for name, function in collection_type.get_all_hooks().items():  # type: ignore
+                methods[name] = AttributeExpression(
+                    function=function, attribute_class=collection_type
+                )
+
+        return methods
 
 
 class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
-    def __init__(
-        self, table: SymbolTable, form_prefix: str = "file.info.forms.json."
-    ) -> None:
-        """Initializes the collection. Requires a SymbolTable containing all
-        the relevant FW metadata necessary to derive the attributes.
+    def __init__(self, table: SymbolTable) -> None:
+        pass
+
+    @classmethod
+    def create(cls, table: SymbolTable) -> Optional["AttributeCollection"]:
+        """Creates an attribute collection for the symbol table.
+
+        Will return None if the collection is not applicable to the table.
 
         Args:
-            table: SymbolTable which contains all necessary
-                FW metadata information
-            form_prefix: Form key prefix, which is where most variables
-                to pull from are expected to live under.
+          table: the symbol table
+        Returns:
+          the attribute collection if it can use the table. None otherwise.
         """
-        self.table = table
-        self.form_prefix = form_prefix
-
-        raw_prefix = self.form_prefix.rstrip(".")
-        if raw_prefix not in self.table:
-            raise MissingRequiredException(
-                f"Form prefix {raw_prefix} not found in current file"
-            )
+        try:
+            return cls(table)
+        except MissingRequiredError as error:
+            log.warning(error)
+            return None
 
     @classmethod
     def get_all_hooks(cls) -> Dict[str, FunctionType]:
@@ -67,64 +124,14 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         """
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
-            if isfunction(attr) and attr_name.startswith("_create_"):
-                if attr_name.lstrip("_") == derive_name:
-                    return attr
+            if (
+                isfunction(attr)
+                and attr_name.startswith("_create_")
+                and attr_name.lstrip("_") == derive_name
+            ):
+                return attr
 
         return None
-
-    def get_value(
-        self, key: str, default: Optional[Any] = None, prefix: Optional[str] = None
-    ) -> Any:
-        """Grab value from the table using the key and prefix, if provided. If
-        not specified, prefix will default to self.form_prefix.
-
-        Args:
-            key: Key to grab value for
-            default: Default value to return if key is not found
-            prefix: Prefix to attach to key. Use the empty string
-                to explicitly not set a prefix.
-        """
-        if prefix is None:
-            prefix = self.form_prefix
-
-        return self.table.get(f"{prefix}{key}", default)
-
-    def set_value(self, key: str, value: Any, prefix: Optional[str] = None) -> None:
-        """Set the value from the table using the specified key and prefix.
-
-        Args:
-            key: Key to set to the value to
-            value: Value to set
-            prefix: Prefix to attach to key
-        """
-        if prefix is None:
-            prefix = self.form_prefix
-
-        self.table[f"{prefix}{key}"] = value
-
-    def aggregate_variables(
-        self,
-        fields: List[str],
-        default: Optional[Any] = None,
-        prefix: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Aggregates all the specified fields.
-
-        Args:
-            fields: Fields to iterate over. Grabs the field and sets it
-                     to the found/derived value.
-            default: Default value to set aggregation to if not found
-            prefix: Prefix key to pull mapped values out of. This prefix
-                will be applied to ALL keys in the map.
-        Returns:
-            The aggregated variables
-        """
-        result = {}
-        for field in fields:
-            result[field] = self.get_value(field, default, prefix)
-
-        return result
 
     @staticmethod
     def is_int_value(value: Union[int, str], target: int) -> bool:
@@ -142,5 +149,3 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             return int(value) == target
         except ValueError:
             return False
-
-        return False

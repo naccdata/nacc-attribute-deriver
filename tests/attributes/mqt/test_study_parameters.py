@@ -3,23 +3,24 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.mqt.study_parameters import (
-    StudyParametersAttribute,  # type: ignore
+    StudyParametersAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def attr() -> StudyParametersAttribute:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
-        "file": {"info": {"forms": {"json": {"formver": "4"}}}},
+        "file": {"info": {"forms": {"json": {"formver": "4", "module": "UDS"}}}},
         "subject": {"info": {"study-parameters": {"uds": {"versions": [2]}}}},
     }
 
-    return StudyParametersAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
-class TestStudyParametersAttribute:
-    def test_create_uds_versions_available(self, attr):
+class TestStudyParametersAttributeCollection:
+    def test_create_uds_versions_available(self, table):
         """Tests _create_uds_versions_available."""
-        assert attr._create_uds_versions_available() == [2, 4]
+        attr = StudyParametersAttributeCollection.create(table)
+        assert attr._create_uds_versions_available() == [2, 4]  # noqa: SLF001

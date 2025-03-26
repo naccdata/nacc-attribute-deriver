@@ -2,12 +2,14 @@
 
 import pytest
 
+from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
 from nacc_attribute_deriver.schema.operation import (
     CountOperation,
     InitialOperation,
     LatestOperation,
     MaxOperation,
     MinOperation,
+    OperationError,
     OperationRegistry,
     SetOperation,
     SortedListOperation,
@@ -40,7 +42,24 @@ def table(location, date_key) -> SymbolTable:
 class TestOperation:
     def test_registry(self):
         """Test registry is instantiated correctly."""
-        assert OperationRegistry.operations == [
+        assert (
+            len(
+                set(OperationRegistry.operations.keys()).difference(
+                    {
+                        "update",
+                        "set",
+                        "sortedlist",
+                        "initial",
+                        "latest",
+                        "count",
+                        "min",
+                        "max",
+                    }
+                )
+            )
+            == 0
+        )
+        assert list(OperationRegistry.operations.values()) == [
             UpdateOperation,
             SetOperation,
             SortedListOperation,
@@ -55,7 +74,7 @@ class TestOperation:
         """Tests the update operation."""
         op = UpdateOperation()
         assert op.LABEL == "update"
-        op.evaluate(table, 5, location)
+        op.evaluate(table=table, value=5, attribute=location)
 
         assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
 
@@ -64,7 +83,7 @@ class TestOperation:
         op = SetOperation()
         assert op.LABEL == "set"
         table[location] = [1, 2, 3, 4]
-        op.evaluate(table, 5, location)
+        op.evaluate(table=table, value=5, attribute=location)
 
         assert table.to_dict() == {
             "test": {"date": "2025-01-01", "location": [1, 2, 3, 4, 5]}
@@ -72,13 +91,13 @@ class TestOperation:
 
         # test doing it again will not change since it's a set
         for i in range(1, 6):
-            op.evaluate(table, i, location)
+            op.evaluate(table=table, value=i, attribute=location)
             assert table.to_dict() == {
                 "test": {"date": "2025-01-01", "location": [1, 2, 3, 4, 5]}
             }
 
         # test adding another list/set
-        op.evaluate(table, [4, 5, 6], location)
+        op.evaluate(table=table, value=[4, 5, 6], attribute=location)
         assert table.to_dict() == {
             "test": {"date": "2025-01-01", "location": [1, 2, 3, 4, 5, 6]}
         }
@@ -88,18 +107,22 @@ class TestOperation:
         op = SortedListOperation()
         assert op.LABEL == "sortedlist"
         table[location] = [1, 2, 3, 4]
-        op.evaluate(table, 2, location)
+        op.evaluate(table=table, value=2, attribute=location)
 
         assert table.to_dict() == {
             "test": {"date": "2025-01-01", "location": [1, 2, 2, 3, 4]}
         }
 
-    def test_initial(self, table, location, date_key):
+    def test_initial(self, table, location):
         """Tests the initial operation; will NOT be set since current date >
         destination date."""
         op = InitialOperation()
         assert op.LABEL == "initial"
-        op.evaluate(table, 5, location, date_key)
+        op.evaluate(
+            table=table,
+            value=AttributeValue(value=5, date="2025-01-01"),
+            attribute=location,
+        )
 
         assert table.to_dict() == {
             "test": {
@@ -108,12 +131,21 @@ class TestOperation:
             }
         }
 
-    def test_latest(self, table, location, date_key):
+        with pytest.raises(
+            OperationError, match=r"Unable to perform initial operation without date"
+        ):
+            op.evaluate(table=table, value=5, attribute=location)
+
+    def test_latest(self, table, location):
         """Tests the latest operation; WILL be set since current date >
         destination date."""
         op = LatestOperation()
         assert op.LABEL == "latest"
-        op.evaluate(table, 5, location, date_key)
+        op.evaluate(
+            table=table,
+            value=AttributeValue(value=5, date="2025-01-01"),
+            attribute=location,
+        )
 
         assert table.to_dict() == {
             "test": {
@@ -122,12 +154,17 @@ class TestOperation:
             }
         }
 
+        with pytest.raises(
+            OperationError, match=r"Unable to perform latest operation without date"
+        ):
+            op.evaluate(table=table, value=5, attribute=location)
+
     def test_count(self, table, location):
         """Tests the count operation."""
         op = CountOperation()
         assert op.LABEL == "count"
         table[location] = 5
-        op.evaluate(table, True, location)
+        op.evaluate(table=table, value=True, attribute=location)
 
         assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 6}}
 
@@ -137,7 +174,7 @@ class TestOperation:
         assert op.LABEL == "min"
 
         table[location] = 10
-        op.evaluate(table, 5, location)
+        op.evaluate(table=table, value=5, attribute=location)
 
         assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
 
@@ -147,6 +184,6 @@ class TestOperation:
         assert op.LABEL == "max"
 
         table[location] = 10
-        op.evaluate(table, 5, location)
+        op.evaluate(table=table, value=5, attribute=location)
 
         assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 10}}

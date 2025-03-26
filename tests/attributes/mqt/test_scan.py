@@ -2,12 +2,13 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.mqt.scan import MQTSCANAttribute
+from nacc_attribute_deriver.attributes.base.scan_namespace import SCANNamespace
+from nacc_attribute_deriver.attributes.mqt.scan import MQTSCANAttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def scan_mri_qc_attr() -> MQTSCANAttribute:
+def scan_mri_qc_table() -> SymbolTable:
     """Create dummy data for a SCAN MRI QC-focused curation."""
     data = {
         "file": {"info": {"raw": {"series_type": "T1w", "study_date": "2025-01-01"}}},
@@ -26,126 +27,137 @@ def scan_mri_qc_attr() -> MQTSCANAttribute:
         },
     }
 
-    return MQTSCANAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestSCANMRIQCAttribute:
     """From scan_mridashboard.csv."""
 
-    def test_create_scan_mri_scan_types(self, scan_mri_qc_attr):
+    def test_create_scan_mri_scan_types(self, scan_mri_qc_table):
         """Tests _create_scan_mri_scan_types, which should just return the
         series_type."""
-        attr = scan_mri_qc_attr
-        assert attr._create_scan_mri_scan_types() == "T1w"
+        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        assert attr._create_scan_mri_scan_types() == "T1w"  # noqa: SLF001
 
         # empty
-        attr.table["file.info.raw.series_type"] = None
-        assert attr._create_scan_mri_scan_types() is None
+        scan_mri_qc_table["file.info.raw.series_type"] = None
+        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        assert attr._create_scan_mri_scan_types() is None  # noqa: SLF001
 
-    def test_create_scan_mri_session_count(self, scan_mri_qc_attr):
+    def test_create_scan_mri_session_count(self, scan_mri_qc_table):
         """Tests _create_scan_mri_session_count, which should just count scan-
         mri-dates."""
-        attr = scan_mri_qc_attr
-        assert attr._create_scan_mri_session_count() == 5
+        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        assert attr._create_scan_mri_session_count() == 5  # noqa: SLF001
 
         # empty
-        attr.table["subject.info.derived.scan-mri-dates"] = []
-        assert attr._create_scan_mri_session_count() == 0
+        scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
+        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        assert attr._create_scan_mri_session_count() == 0  # noqa: SLF001
 
-    def test_create_scan_mri_year_count(self, scan_mri_qc_attr):
+    def test_create_scan_mri_year_count(self, scan_mri_qc_table):
         """Tests _create_scan_mri_year_count, which should just count the
         unique years in scan-mri-dates."""
-        attr = scan_mri_qc_attr
-        assert attr._create_scan_mri_year_count() == 3
+        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        assert attr._create_scan_mri_year_count() == 3  # noqa: SLF001
 
         # empty
-        attr.table["subject.info.derived.scan-mri-dates"] = []
-        assert attr._create_scan_mri_year_count() == 0
+        scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
+        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        assert attr._create_scan_mri_year_count() == 0  # noqa: SLF001
 
 
 @pytest.fixture(scope="function")
-def scan_pet_qc_attr() -> MQTSCANAttribute:
+def scan_pet_qc_table() -> SymbolTable:
     """Create dummy data for a SCAN PET QC-focused curation."""
     data = {
         "file": {"info": {"raw": {"radiotracer": 1, "scan_date": "2025-01-01"}}},
         "subject": {"info": {"derived": {"scan-pet-dates": ["2000-12-12"]}}},
     }
 
-    return MQTSCANAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestSCANPETQCAttribute:
     """From scan_petdashboard.csv."""
 
-    def test_create_scan_pet_scan_types(self, scan_pet_qc_attr):
+    def test_create_scan_pet_scan_types(self, scan_pet_qc_table):
         """Tests _create_scan_pet_scan_types, loop over all options."""
-        attr = scan_pet_qc_attr
-        for k, v in MQTSCANAttribute.TRACER_SCAN_TYPE_MAPPING.items():
+        for k, v in SCANNamespace.TRACER_SCAN_TYPE_MAPPING.items():
             # convert to string just to make sure type conversion is correct
-            attr.table["file.info.raw.radiotracer"] = str(k)
-            assert attr._create_scan_pet_scan_types() == v
+            scan_pet_qc_table["file.info.raw.radiotracer"] = str(k)
+            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+            assert attr._create_scan_pet_scan_types() == v  # noqa: SLF001
 
             # string float case
-            attr.table["file.info.raw.radiotracer"] = str(float(k))
-            assert attr._create_scan_pet_scan_types() == v
+            scan_pet_qc_table["file.info.raw.radiotracer"] = str(float(k))
+            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+            assert attr._create_scan_pet_scan_types() == v  # noqa: SLF001
 
         # None case
-        attr.table["file.info.raw.radiotracer"] = ""
-        assert attr._create_scan_pet_scan_types() is None
+        scan_pet_qc_table["file.info.raw.radiotracer"] = ""
+        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        assert attr._create_scan_pet_scan_types() is None  # noqa: SLF001
 
-    def test_create_scan_pet_session_count(self, scan_pet_qc_attr):
+    def test_create_scan_pet_session_count(self, scan_pet_qc_table):
         """Tests _create_scan_pet_session_count, which should just count scan-
         pet-dates."""
-        attr = scan_pet_qc_attr
-        assert attr._create_scan_pet_session_count() == 1
+        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        assert attr._create_scan_pet_session_count() == 1  # noqa: SLF001
 
         # empty
-        attr.table["subject.info.derived.scan-pet-dates"] = []
-        assert attr._create_scan_pet_session_count() == 0
+        scan_pet_qc_table["subject.info.derived.scan-pet-dates"] = []
+        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        assert attr._create_scan_pet_session_count() == 0  # noqa: SLF001
 
-    def test_create_scan_pet_year_count(self, scan_pet_qc_attr):
+    def test_create_scan_pet_year_count(self, scan_pet_qc_table):
         """Tests _create_scan_pet_year_count, which should just count the
         unique years in scan-pet-dates."""
-        attr = scan_pet_qc_attr
-        assert attr._create_scan_pet_year_count() == 1
+        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        assert attr._create_scan_pet_year_count() == 1  # noqa: SLF001
 
         # empty
-        attr.table["subject.info.derived.scan-pet-dates"] = []
-        assert attr._create_scan_pet_year_count() == 0
+        scan_pet_qc_table["subject.info.derived.scan-pet-dates"] = []
+        assert attr._create_scan_pet_year_count() == 0  # noqa: SLF001
 
-    def test_create_scan_pet_amyloid_tracers(self, scan_pet_qc_attr):
+    def test_create_scan_pet_amyloid_tracers(self, scan_pet_qc_table):
         """Tests _create_scan_pet_amyloid_tracers, loop over all options."""
-        attr = scan_pet_qc_attr
-        for k, v in MQTSCANAttribute.TRACER_MAPPING.items():
+        attr = scan_pet_qc_table
+        for k, v in SCANNamespace.TRACER_MAPPING.items():
             # convert to string just to make sure type conversion is correct
-            attr.table["file.info.raw.radiotracer"] = str(k)
+            scan_pet_qc_table["file.info.raw.radiotracer"] = str(k)
+            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
 
             # needs to == amyloid
             if k in [2, 3, 4, 5]:
-                assert attr._create_scan_pet_amyloid_tracers() == v
+                assert attr._create_scan_pet_amyloid_tracers() == v  # noqa: SLF001
             else:
-                assert attr._create_scan_pet_amyloid_tracers() is None
+                assert attr._create_scan_pet_amyloid_tracers() is None  # noqa: SLF001
 
         # None case
-        attr.table["file.info.raw.radiotracer"] = None
-        assert attr._create_scan_pet_amyloid_tracers() is None
+        scan_pet_qc_table["file.info.raw.radiotracer"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        assert attr._create_scan_pet_amyloid_tracers() is None  # noqa: SLF001
 
-    def test_create_scan_pet_tau_tracers(self, scan_pet_qc_attr):
+    def test_create_scan_pet_tau_tracers(self, scan_pet_qc_table):
         """Tests _create_scan_pet_tau_tracers, which just checks if scan_type.
 
         == tau and returns tracer string if so.
         """
-        attr = scan_pet_qc_attr
-        assert attr._create_scan_pet_tau_tracers() is None
+        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        assert attr._create_scan_pet_tau_tracers() is None  # noqa: SLF001
 
         # tau scans
         for i in [6, 7, 8, 9]:
-            attr.table["file.info.raw.radiotracer"] = i
-            assert attr._create_scan_pet_tau_tracers() == attr.TRACER_MAPPING[i]
+            scan_pet_qc_table["file.info.raw.radiotracer"] = i
+            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+            assert (
+                attr._create_scan_pet_tau_tracers() == SCANNamespace.TRACER_MAPPING[i]  # noqa: SLF001
+            )
 
 
 @pytest.fixture(scope="function")
-def scan_mri_sbm() -> MQTSCANAttribute:
+def scan_mri_sbm() -> SymbolTable:
     """Create dummy data for a SCAN MRI SBM (analysis)-focused curation."""
     data = {
         "file": {
@@ -155,7 +167,7 @@ def scan_mri_sbm() -> MQTSCANAttribute:
         }
     }
 
-    return MQTSCANAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestSCANMRISBMAttribute:
@@ -164,33 +176,37 @@ class TestSCANMRISBMAttribute:
     def test_create_scan_volume_analysis_indicator(self, scan_mri_sbm):
         """Tests _create_scan_volume_analysis_indicator, which looks at
         cerebrumtcv when series_type == T1w."""
-        attr = scan_mri_sbm
-        assert attr._create_scan_volume_analysis_indicator()
+        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        assert attr._create_scan_volume_analysis_indicator()  # noqa: SLF001
 
         # 0 case, is a valid number so should return True
-        attr.table["file.info.raw.cerebrumtcv"] = "0"
-        assert attr._create_scan_volume_analysis_indicator()
+        scan_mri_sbm["file.info.raw.cerebrumtcv"] = "0"
+        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        assert attr._create_scan_volume_analysis_indicator()  # noqa: SLF001
 
         # empty
-        attr.table["file.info.raw.cerebrumtcv"] = None
-        assert not attr._create_scan_volume_analysis_indicator()
+        scan_mri_sbm["file.info.raw.cerebrumtcv"] = None
+        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        assert not attr._create_scan_volume_analysis_indicator()  # noqa: SLF001
 
     def test_create_scan_flair_wmh_indicator(self, scan_mri_sbm):
         """Tests _create_scan_flair_wmh_indicator, which looks at wmh."""
-        attr = scan_mri_sbm
-        assert attr._create_scan_flair_wmh_indicator()
+        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        assert attr._create_scan_flair_wmh_indicator()  # noqa: SLF001
 
         # 0 case, is a valid number so should return True
-        attr.table["file.info.raw.wmh"] = "0"
-        assert attr._create_scan_flair_wmh_indicator()
+        scan_mri_sbm["file.info.raw.wmh"] = "0"
+        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        assert attr._create_scan_flair_wmh_indicator()  # noqa: SLF001
 
         # empty
-        attr.table["file.info.raw.wmh"] = None
-        assert not attr._create_scan_flair_wmh_indicator()
+        scan_mri_sbm["file.info.raw.wmh"] = None
+        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        assert not attr._create_scan_flair_wmh_indicator()  # noqa: SLF001
 
 
 @pytest.fixture(scope="function")
-def scan_pet_amyloid_gaain() -> MQTSCANAttribute:
+def scan_pet_amyloid_gaain() -> SymbolTable:
     """Create dummy data for a SCAN PET Amyloid GAAIN (analysis)-focused
     curation."""
     data = {
@@ -206,7 +222,7 @@ def scan_pet_amyloid_gaain() -> MQTSCANAttribute:
         }
     }
 
-    return MQTSCANAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestSCANAmyloidPETGAAINAttribute:
@@ -215,50 +231,59 @@ class TestSCANAmyloidPETGAAINAttribute:
     def test_create_scan_pet_centaloid(self, scan_pet_amyloid_gaain):
         """Tests _create_scan_pet_centaloid, should just return centaloid as a
         float."""
-        attr = scan_pet_amyloid_gaain
-        assert attr._create_scan_pet_centaloid() == 1.5
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_centaloid() == 1.5  # noqa: SLF001
 
         # empty
-        attr.table["file.info.raw.centiloids"] = None
-        assert attr._create_scan_pet_centaloid() is None
+        scan_pet_amyloid_gaain["file.info.raw.centiloids"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_centaloid() is None  # noqa: SLF001
 
     def test_create_scan_pet_centaloid_x(self, scan_pet_amyloid_gaain):
         """Tests _create_scan_pet_centaloid_*, should return centerloid as a
         float if the tracer is the given value."""
         attr = scan_pet_amyloid_gaain
-        attr.table["file.info.raw.tracer"] = "2"
-        assert attr._create_scan_pet_centaloid_pib() == 1.5
+        scan_pet_amyloid_gaain["file.info.raw.tracer"] = "2"
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_centaloid_pib() == 1.5  # noqa: SLF001
 
-        attr.table["file.info.raw.tracer"] = "3.0"
-        assert attr._create_scan_pet_centaloid_florbetapir() == 1.5
+        scan_pet_amyloid_gaain["file.info.raw.tracer"] = "3.0"
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_centaloid_florbetapir() == 1.5  # noqa: SLF001
 
-        attr.table["file.info.raw.tracer"] = "4"
-        assert attr._create_scan_pet_centaloid_florbetaben() == 1.5
+        scan_pet_amyloid_gaain["file.info.raw.tracer"] = "4"
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_centaloid_florbetaben() == 1.5  # noqa: SLF001
 
-        attr.table["file.info.raw.tracer"] = "5"
-        assert attr._create_scan_pet_centaloid_nav4694() == 1.5
+        scan_pet_amyloid_gaain["file.info.raw.tracer"] = "5"
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_centaloid_nav4694() == 1.5  # noqa: SLF001
 
         # 99, should all be None
-        attr.table["file.info.raw.tracer"] = "99"
-        assert attr._create_scan_pet_centaloid_pib() is None
-        assert attr._create_scan_pet_centaloid_florbetapir() is None
-        assert attr._create_scan_pet_centaloid_florbetaben() is None
-        assert attr._create_scan_pet_centaloid_nav4694() is None
+        scan_pet_amyloid_gaain["file.info.raw.tracer"] = "99"
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_centaloid_pib() is None  # noqa: SLF001
+        assert attr._create_scan_pet_centaloid_florbetapir() is None  # noqa: SLF001
+        assert attr._create_scan_pet_centaloid_florbetaben() is None  # noqa: SLF001
+        assert attr._create_scan_pet_centaloid_nav4694() is None  # noqa: SLF001
 
     def test_create_scan_pet_amyloid_positivity_indicator(self, scan_pet_amyloid_gaain):
         """Tests _create_scan_pet_amyloid_positivity_indicator, which just gets
         amyloid_status."""
-        attr = scan_pet_amyloid_gaain
-        assert attr._create_scan_pet_amyloid_positivity_indicator()
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_amyloid_positivity_indicator()  # noqa: SLF001
 
         # string float case
-        attr.table["file.info.raw.amyloid_status"] = "1.0"
-        assert attr._create_scan_pet_amyloid_positivity_indicator()
+        scan_pet_amyloid_gaain["file.info.raw.amyloid_status"] = "1.0"
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_amyloid_positivity_indicator()  # noqa: SLF001
 
         # 0 case, should be False
-        attr.table["file.info.raw.amyloid_status"] = "0"
-        assert not attr._create_scan_pet_amyloid_positivity_indicator()
+        scan_pet_amyloid_gaain["file.info.raw.amyloid_status"] = "0"
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert not attr._create_scan_pet_amyloid_positivity_indicator()  # noqa: SLF001
 
         # empty
-        attr.table["file.info.raw.amyloid_status"] = None
-        assert not attr._create_scan_pet_amyloid_positivity_indicator()
+        scan_pet_amyloid_gaain["file.info.raw.amyloid_status"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert not attr._create_scan_pet_amyloid_positivity_indicator()  # noqa: SLF001

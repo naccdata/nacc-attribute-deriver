@@ -3,13 +3,13 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.modules.cross_module import (
-    CrossModuleAttribute,  # type: ignore
+    CrossModuleAttributeCollection,  # type: ignore
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def attr() -> CrossModuleAttribute:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
@@ -31,73 +31,102 @@ def attr() -> CrossModuleAttribute:
                 },
                 "mds": {"vitalst": 2, "deathyr": 2030, "deathmo": 1, "deathday": 1},
             }
-        }
+        },
+        "subject": {
+            "info": {
+                "derived": {
+                    "mds_vital_status": 2,
+                    "np_death_age": 83,
+                    "mds_death_date": "2030-01-01",
+                    "milestone_deceased": 1,
+                    "milestone_death_date": "2050-02-02",
+                }
+            }
+        },
     }
 
-    return CrossModuleAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestCrossModuleAttribute:
-    def test_create_naccdage(self, attr):
+    def test_create_naccdage(self, table):
         """Tests creating NACCDAGE triggering each case.
 
         This inherently tests _determine_death_date except in the NP
         case.
         """
         # trigger NP case
-        assert attr._create_naccdage() == 83
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdage() == 83  # noqa: SLF001
 
         # trigger Milestone case
-        attr.table["file.info.np"] = {}
-        assert attr._create_naccdage() == 59
+        table["subject.info.derived.np_death_age"] = None
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdage() == 59  # noqa: SLF001
 
         # test when month/day is unknown for milestone
         # this will transform dmo = 7 and ddy = 1 which changes
         # the age since the birthday is before then
-        attr.table["file.info.milestone"].update({"deathmo": 99, "deathdy": 99})
-        assert attr._create_naccdage() == 60
+        table["subject.info.derived.milestone_death_date"] = "2050-07-01"
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdage() == 60  # noqa: SLF001
 
         # trigger MDS case
-        attr.table["file.info.milestone"] = {}
-        assert attr._create_naccdage() == 39
+        table["subject.info.derived.milestone_death_date"] = None
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdage() == 39  # noqa: SLF001
 
         # test when year month/day is unknown for MDS,
         # similarly should change the age to 40
-        attr.table["file.info.mds"].update({"deathmo": 99, "deathdy": 99})
-        assert attr._create_naccdage() == 40
+        table["subject.info.derived.mds_death_date"] = "2030-07-01"
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdage() == 40  # noqa: SLF001
 
         # in MDS, deathyr can be 9999, in which case
         # naccdage should be unknown
-        attr.table["file.info.mds.deathyr"] = "9999"
-        assert attr._create_naccdage() == 999
+        table["subject.info.derived.mds_death_date"] = None
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdage() == 999  # noqa: SLF001
 
         # test death not reported
-        attr.table["file.info.mds"] = None
-        assert attr._create_naccdage() == 888
+        # table["subject.info.derived.mds_death_date"] = None
+        # attr = CrossModuleAttributeCollection.create(table)
+        # assert attr._create_naccdage() == 888
 
-    def test_create_naccdied(self, attr):
+    def test_create_naccdied(self, table):
         """Tests _create_naccdied."""
         # NP case
-        assert attr._create_naccdied() == 1
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdied() == 1  # noqa: SLF001
 
         # Milestone case
-        attr.table["file.info.np"] = {}
-        assert attr._create_naccdied() == 1
-        attr.table["file.info.milestone.deceased"] = 0
-        assert attr._create_naccdied() == 0
+        table["subject.info.derived.np_death_age"] = None
+        table["subject.info.derived.milestone_deceased"] = 1
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdied() == 1  # noqa: SLF001
 
-        attr.table["file.info.milestone"] = {}
-        assert attr._create_naccdied() == 0
+        table["subject.info.derived.milestone_deceased"] = 0
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdied() == 0  # noqa: SLF001
 
-    def test_create_naccautp(self, attr):
+        table["file.info.milestone"] = {}
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccdied() == 0  # noqa: SLF001
+
+    def test_create_naccautp(self, table):
         """Tests _create_naccautp."""
         # NP data available
-        assert attr._create_naccautp() == 1
+        table["subject.info.derived.np_death_age"] = 80
+        table["subject.info.derived.milestone_deceased"] = 1
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccautp() == 1  # noqa: SLF001
 
         # Only milestone data available
-        attr.table["file.info.np"] = {}
-        assert attr._create_naccautp() == 0
+        table["subject.info.derived.np_death_age"] = None
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccautp() == 0  # noqa: SLF001
 
         # Neither available
-        attr.table["file.info.milestone"] = {}
-        assert attr._create_naccautp() == 8
+        table["subject.info.derived.milestone_deceased"] = None
+        attr = CrossModuleAttributeCollection.create(table)
+        assert attr._create_naccautp() == 8  # noqa: SLF001

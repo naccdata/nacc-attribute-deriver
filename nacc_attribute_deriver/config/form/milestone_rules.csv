@@ -1,0 +1,3 @@
+function,location,operation,type,description
+milestone_death_date,subject.info.derived.milestone_death_date,update,,
+milestone_deceased,subject.info.derived.milestone_deceased,update,,

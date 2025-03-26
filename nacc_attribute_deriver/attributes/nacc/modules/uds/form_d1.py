@@ -2,7 +2,13 @@
 
 from typing import List, Optional
 
-from .uds_attribute import UDSAttribute
+from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.namespace import (
+    SubjectDerivedNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
+
+from .uds_namespace import UDSNamespace
 
 
 class ContributionStatus:
@@ -16,26 +22,30 @@ class ContributionStatus:
         return [cls.PRIMARY, cls.CONTRIBUTING, cls.NON_CONTRIBUTING]
 
 
-class UDSFormD1Attribute(UDSAttribute):
+class UDSFormD1Attribute(AttributeCollection):
+    def __init__(self, table: SymbolTable):
+        self.__uds = UDSNamespace(table)
+        self.__subject = SubjectDerivedNamespace(table)
+
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
         Assumes all fields have values null or 1, 2, or 3 (primary,
         contributing, or non-contributing)
 
         Args:
-            table: Table with all FW metadata
             fields: Fields to get overall status from
         Returns:
             The overall contributed status, None if none satisfy
         """
+        # TODO: seems like this could be a set
         all_statuses = []
 
         for field in fields:
-            all_statuses.append(self.get_value(field))
+            all_statuses.append(self.__uds.get_value(field))
 
-        for i in ContributionStatus.all():
-            if any([x == i for x in all_statuses]):
-                return i
+        for status in ContributionStatus.all():
+            if any([x == status for x in all_statuses]):
+                return status
 
         return None
 
@@ -48,10 +58,10 @@ class UDSFormD1Attribute(UDSAttribute):
             1
             if any(
                 [
-                    self.get_value("mciamem"),
-                    self.get_value("mciaplus"),
-                    self.get_value("mcinon1"),
-                    self.get_value("mcinon2"),
+                    self.__uds.get_value("mciamem"),
+                    self.__uds.get_value("mciaplus"),
+                    self.__uds.get_value("mcinon1"),
+                    self.__uds.get_value("mcinon2"),
                 ]
             )
             else 0
@@ -63,7 +73,7 @@ class UDSFormD1Attribute(UDSAttribute):
         Primary, contributing, or non-contributing cause of observed
         cognitive impairment -- Alzheimer's disease (AD)
         """
-        if self.get_value("normcog") == 1:
+        if self.__uds.get_value("normcog") == 1:
             return 8
 
         contr_status = self.get_contr_status(["probadif", "possadif", "alzdisif"])
@@ -79,19 +89,19 @@ class UDSFormD1Attribute(UDSAttribute):
         Presumptive etilogic diagnosis of the cognitive disorder
         - Lewy body disease (LBD)
         """
-        if self.get_value("normcog") == 1:
+        if self.__uds.get_value("normcog") == 1:
             return 8
 
-        if self.get_value("formver") != 3:
-            dlb = self.get_value("dlb")
-            park = self.get_value("park")
+        if self.__uds.get_value("formver") != 3:
+            dlb = self.__uds.get_value("dlb")
+            park = self.__uds.get_value("park")
 
             if dlb == 1 or park == 1:
                 return 1
             if dlb == 0 and park == 0:
                 return 0
 
-        lbdis = self.get_value("lbdis")
+        lbdis = self.__uds.get_value("lbdis")
         if lbdis in [0, 1]:
             return lbdis
 
@@ -104,10 +114,10 @@ class UDSFormD1Attribute(UDSAttribute):
         Primary, contributing, or non-contributing cause of cognitive
         impairment -- Lewy body disease (LBD)
         """
-        if self.get_value("normcog") == 1:
+        if self.__uds.get_value("normcog") == 1:
             return 8
 
-        if self.get_value("formver") != 3:
+        if self.__uds.get_value("formver") != 3:
             contr_status = self.get_contr_status(["dlbif", "parkif"])
             if contr_status:
                 return contr_status
@@ -128,11 +138,11 @@ class UDSFormD1Attribute(UDSAttribute):
         """
         if self._create_mci() == 1:
             return 3
-        if self.get_value("demented") == 1:
+        if self.__uds.get_value("demented") == 1:
             return 4
-        if self.get_value("normcog") == 1:
+        if self.__uds.get_value("normcog") == 1:
             return 1
-        if self.get_value("impnomci") == 1:
+        if self.__uds.get_value("impnomci") == 1:
             return 2
 
         return None
@@ -145,7 +155,7 @@ class UDSFormD1Attribute(UDSAttribute):
         dementia
         """
 
-        if self.get_value("normcog") == 1:
+        if self.__uds.get_value("normcog") == 1:
             return 88
 
         # assuming normcog == 0 != 1 after this point
@@ -154,7 +164,7 @@ class UDSFormD1Attribute(UDSAttribute):
         all_status = [
             self.get_contr_status(["probadif", "possadif", "alzdisif"]),
             self.get_contr_status(["dlbif", "parkif"])
-            if self.get_value("formver") != 3
+            if self.__uds.get_value("formver") != 3
             else self.get_contr_status(["lbdif"]),
             # could just grab directly for those with only 1 but this is more readable
             self.get_contr_status(["msaif"]),
@@ -200,24 +210,24 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Primary progressive aphasia (PPA) with cognitive impairment
         """
-        ppaph = self.get_value("ppaph")
-        ppasyn = self.get_value("ppasyn")
+        ppaph = self.__uds.get_value("ppaph")
+        ppasyn = self.__uds.get_value("ppasyn")
 
-        if self.get_value("demented") == 1:
+        if self.__uds.get_value("demented") == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-        nodx = self.get_value("nodx")
+        nodx = self.__uds.get_value("nodx")
 
-        if self.get_value("impnomci") == 1 or self._create_mci() == 1:
+        if self.__uds.get_value("impnomci") == 1 or self._create_mci() == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:
                 return 0
-            if (self.get_value("formver") != 3 and nodx == 1) or (
-                self.get_value("formver") == 3
+            if (self.__uds.get_value("formver") != 3 and nodx == 1) or (
+                self.__uds.get_value("formver") == 3
             ):
                 return 7
 
@@ -228,12 +238,12 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Dementia syndrome -- behavioral variant FTD syndrome (bvFTD)
         """
-        if self.get_value("demented") != 1:
+        if self.__uds.get_value("demented") != 1:
             return 8
 
         # assuming demented == 1 after this point
-        ftd = self.get_value("ftd")
-        ftdsyn = self.get_value("ftdsyn")
+        ftd = self.__uds.get_value("ftd")
+        ftdsyn = self.__uds.get_value("ftdsyn")
 
         if ftd in [0, 1]:
             return ftd
@@ -247,12 +257,12 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Dementia syndrome -- Lewy body dementia syndrome
         """
-        if self.get_value("demented") != 1:
+        if self.__uds.get_value("demented") != 1:
             return 8
 
         # assuming demented == 1 after this point
-        dlb = self.get_value("dlb")
-        lbdsyn = self.get_value("lbdsyn")
+        dlb = self.__uds.get_value("dlb")
+        lbdsyn = self.__uds.get_value("lbdsyn")
 
         if dlb in [0, 1]:
             return dlb
@@ -266,8 +276,8 @@ class UDSFormD1Attribute(UDSAttribute):
 
         Normal cognition at all visits to date
         """
-        naccnorm = self.table.get("subject.info.derived.naccnorm")
+        naccnorm = self.__subject.get_value("naccnorm")
         if naccnorm == 0:
             return naccnorm
 
-        return self.get_value("normcog")
+        return self.__uds.get_value("normcog")

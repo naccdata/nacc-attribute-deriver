@@ -2,12 +2,15 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.mqt.genetics import GeneticAttribute
+from nacc_attribute_deriver.attributes.mqt.genetics import GeneticAttributeCollection
+from nacc_attribute_deriver.attributes.nacc.genetics.niagads import (
+    NIAGADSAttributeCollection,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def attr() -> GeneticAttribute:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
@@ -26,33 +29,50 @@ def attr() -> GeneticAttribute:
         }
     }
 
-    return GeneticAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
-class TestGeneticAttribute:
-    def test_create_apoe(self, attr):
+@pytest.fixture(scope="function")
+def niagads_table() -> SymbolTable:
+    table = SymbolTable()
+    table["file.info.raw"] = {
+        "niagads_gwas": 1,
+        "niagads_exomechip": 1,
+        "niagads_wgs": 0,
+        "niagads_wes": 0,
+    }
+
+    return table
+
+
+class TestGeneticAttributeCollection:
+    def test_create_apoe(self, table):
         """Tests creating apoe."""
-        assert attr._create_apoe() == "e4,e2"
+        attr = GeneticAttributeCollection.create(table)
+        assert attr._create_apoe() == "e4,e2"  # noqa: SLF001
 
         # test null case
-        attr.table["file.info.raw"].update({"a1": None, "a2": None})
-        assert attr._create_apoe() == "Missing/unknown/not assessed"
+        table["file.info.raw"].update({"a1": None, "a2": None})
+        attr = GeneticAttributeCollection.create(table)
+        assert attr._create_apoe() == "Missing/unknown/not assessed"  # noqa: SLF001
 
-    def test_create_ngds_vars(self, attr):
+    def test_create_ngds_vars(self, niagads_table):
         """Tests creating the NIAGADS availability variables."""
-        assert attr._create_ngdsgwas_mqt()
-        assert attr._create_ngdsexom_mqt()
-        assert not attr._create_ngdswgs_mqt()
-        assert not attr._create_ngdswes_mqt()
+        attr = NIAGADSAttributeCollection.create(niagads_table)
+        assert attr._create_niagads_gwas()  # noqa: SLF001
+        assert attr._create_niagads_exome()  # noqa: SLF001
+        assert not attr._create_niagads_wgs()  # noqa: SLF001
+        assert not attr._create_niagads_wes()  # noqa: SLF001
 
         # test null case
-        attr.table["file.info.derived"] = {
-            "ngdsexom": None,
-            "ngdsgwas": None,
-            "ngdswes": None,
-            "ngdswgs": None,
+        niagads_table["file.info.raw"] = {
+            "niagads_gwas": None,
+            "niagads_exomechip": None,
+            "niagads_wgs": None,
+            "niagads_wes": None,
         }
-        assert not attr._create_ngdsgwas_mqt()
-        assert not attr._create_ngdsexom_mqt()
-        assert not attr._create_ngdswgs_mqt()
-        assert not attr._create_ngdswes_mqt()
+        attr = NIAGADSAttributeCollection.create(niagads_table)
+        assert not attr._create_niagads_gwas()  # noqa: SLF001
+        assert not attr._create_niagads_exome()  # noqa: SLF001
+        assert not attr._create_niagads_wgs()  # noqa: SLF001
+        assert not attr._create_niagads_wes()  # noqa: SLF001

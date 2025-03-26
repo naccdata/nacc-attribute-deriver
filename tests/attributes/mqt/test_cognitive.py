@@ -2,12 +2,12 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.mqt.cognitive import CognitiveAttribute
+from nacc_attribute_deriver.attributes.mqt.cognitive import CognitiveAttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def attr() -> CognitiveAttribute:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
@@ -30,6 +30,7 @@ def attr() -> CognitiveAttribute:
                         "pca": 0,
                         "namndem": None,
                         "cdrglob": 0.5,
+                        "module": "uds",
                         # rest of fields will be None
                     }
                 },
@@ -46,61 +47,75 @@ def attr() -> CognitiveAttribute:
         }
     }
 
-    return CognitiveAttribute(SymbolTable(data))
+    return SymbolTable(data)
 
 
-class TestCognitiveAttribute:
-    def test_contributing_diagnosis(self, attr):
+class TestCognitiveAttributeCollection:
+    def test_contributing_diagnosis(self, table):
         """Tests _create_contributing_diagnosis."""
         expected_values = []
         for field in ["pspif", "cortif", "ftldmoif", "cvdif"]:  # all == 2
             expected_values.append(
-                CognitiveAttribute.DIAGNOSIS_MAPPINGS["file.info.forms.json."][field]
+                CognitiveAttributeCollection.DIAGNOSIS_MAPPINGS[field]
             )
 
-        assert set(attr._create_contributing_diagnosis()) == set(expected_values)
+        attr = CognitiveAttributeCollection.create(table)
+        assert set(attr._create_contributing_diagnosis().value) == set(expected_values)  # noqa: SLF001
 
-    def test_dementia(self, attr):
+    def test_dementia(self, table):
         """Tests _create_dementia."""
-        assert attr._create_dementia() == [
-            CognitiveAttribute.DEMENTIA_MAPPINGS["file.info.derived."]["nacclbds"]
+        attr = CognitiveAttributeCollection.create(table)
+        assert attr._create_dementia().value == [  # noqa: SLF001
+            CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]
         ]
 
         # test multiple
-        attr.set_value("amndem", 1)
-        attr.set_value("pca", 1)
+        table["file.info.forms.json.amndem"] = 1
+        table["file.info.forms.json.pca"] = 1
 
-        assert set(attr._create_dementia()) == set(
+        attr = CognitiveAttributeCollection.create(table)
+
+        assert set(attr._create_dementia().value) == set(  # noqa: SLF001
             [
-                CognitiveAttribute.DEMENTIA_MAPPINGS["file.info.forms.json."]["amndem"],
-                CognitiveAttribute.DEMENTIA_MAPPINGS["file.info.forms.json."]["pca"],
-                CognitiveAttribute.DEMENTIA_MAPPINGS["file.info.derived."]["nacclbds"],
+                CognitiveAttributeCollection.DEMENTIA_MAPPINGS["amndem"],
+                CognitiveAttributeCollection.DEMENTIA_MAPPINGS["pca"],
+                CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"],
             ]
         )
 
-    def test_cognitive_status(self, attr):
+    def test_cognitive_status(self, table):
         """Tests _create_cognitive_status, which just comes from NACCUDSD."""
-        for k, v in CognitiveAttribute.NACCUDSD_MAPPING.items():
-            attr.table["file.info.derived.naccudsd"] = k
-            assert attr._create_cognitive_status() == v
+        for k, v in CognitiveAttributeCollection.NACCUDSD_MAPPING.items():
+            table["file.info.derived.naccudsd"] = k
+            attr = CognitiveAttributeCollection.create(table)
+            assert attr._create_cognitive_status().value == v  # noqa: SLF001
 
-    def test_etpr(self, attr):
+    def test_etpr(self, table):
         """Tests _create_etpr, which just comes from NACCETPR."""
-        for k, v in CognitiveAttribute.PRIMARY_DIAGNOSIS_MAPPINGS.items():
-            attr.table["file.info.derived.naccetpr"] = k
-            assert attr._create_etpr() == v
+        for k, v in CognitiveAttributeCollection.PRIMARY_DIAGNOSIS_MAPPINGS.items():
+            table["file.info.derived.naccetpr"] = k
+            attr = CognitiveAttributeCollection.create(table)
+            assert attr._create_etpr().value == v  # noqa: SLF001
 
-    def test_global_cdr(self, attr):
+    def test_global_cdr(self, table):
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
-        assert attr._create_global_cdr() == "0.5"
-        attr.table["file.info.forms.json.cdrglob"] = None
-        assert attr._create_global_cdr() is None
+        attr = CognitiveAttributeCollection.create(table)
+        assert attr._create_global_cdr().value == "0.5"  # noqa: SLF001
 
-    def test_create_normal_cognition(self, attr):
+        table["file.info.forms.json.cdrglob"] = None
+        attr = CognitiveAttributeCollection.create(table)
+        assert attr._create_global_cdr() is None  # noqa: SLF001
+
+    def test_create_normal_cognition(self, table):
         """Tests _create_normal_cognition which just comes from NACCNORM."""
-        assert not attr._create_normal_cognition()
-        attr.table["file.info.derived.naccnorm"] = 1
-        assert attr._create_normal_cognition()
-        attr.table["file.info.derived.naccnorm"] = None
-        assert not attr._create_normal_cognition()
+        attr = CognitiveAttributeCollection.create(table)
+        assert not attr._create_normal_cognition()  # noqa: SLF001
+
+        table["file.info.derived.naccnorm"] = 1
+        attr = CognitiveAttributeCollection.create(table)
+        assert attr._create_normal_cognition()  # noqa: SLF001
+
+        table["file.info.derived.naccnorm"] = None
+        attr = CognitiveAttributeCollection.create(table)
+        assert not attr._create_normal_cognition()  # noqa: SLF001

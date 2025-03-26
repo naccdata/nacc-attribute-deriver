@@ -3,67 +3,84 @@
 Assumes NACC-derived variables are already set
 """
 
-from typing import Dict, List, Optional, Set
+from types import MappingProxyType
+from typing import List, Mapping, Optional
 
-from nacc_attribute_deriver.attributes.base.base_attribute import MQTAttribute
+from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.namespace import (
+    AttributeValue,
+    DerivedNamespace,
+)
+from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
+    UDSNamespace,
+)
 
 
-class CognitiveAttribute(MQTAttribute):
+class CognitiveAttributeCollection(AttributeCollection):
     """Class to collect cognitive attributes."""
 
-    NACCUDSD_MAPPING = {
-        1: "Normal cognition",
-        2: "Impaired-not-MCI",
-        3: "MCI",
-        4: "Dementia",
-        5: "All of the above",
-    }
+    def __init__(self, table):
+        self.__uds = UDSNamespace(table)
+        self.__derived = DerivedNamespace(table, date_attribute="visitdate")
+
+    NACCUDSD_MAPPING = MappingProxyType(
+        {
+            1: "Normal cognition",
+            2: "Impaired-not-MCI",
+            3: "MCI",
+            4: "Dementia",
+            5: "All of the above",
+        }
+    )
 
     # several labels not consistent with DIAGNOSIS_MAPPINGS
-    PRIMARY_DIAGNOSIS_MAPPINGS = {
-        1: "Alzheimer’s disease (AD)",
-        2: "Lewy body disease (LBD)",
-        3: "Multiple system atrophy (MSA)",
-        4: "Progressive supranuclear palsy (PSP)",
-        5: "Corticobasal degeneration (CBD)",
-        6: "FTLD with motor neuron disease (e.g., ALS)",
-        7: "FTLD, other",
-        8: "Vascular brain injury or vascular dementia including stroke",
-        9: "Essential tremor",
-        10: "Down syndrome",
-        11: "Huntington’s disease",
-        12: "Prion disease (CJD, other)",
-        13: "Traumatic brain injury (TBI)",
-        14: "Normal-pressure hydrocephalus (NPH)",
-        15: "Epilepsy",  # not consistent
-        16: "CNS neoplasm",
-        17: "Human immunodeficiency virus (HIV)",  # not consistent
-        18: "Other neurological, genetic, or infection condition",
-        19: "Depression",
-        20: "Bipolar disorder",
-        21: "Schizophrenia or other psychosis",
-        22: "Anxiety disorder",  # not consistent
-        23: "Delirium",
-        24: "Post-traumatic stress disorder (PTSD)",  # not consistent
-        25: "Other psychiatric disease",
-        26: "Cognitive impairment due to alcohol abuse",  # not consistent
-        27: "Cognitive impairment due to other substance abuse",  # not consistent
-        28:  # not consistent
-        "Cognitive impairment due to systemic disease or medical illness",
-        29: "Cognitive impairment due to medications",  # not consistent
-        30:  # not consistent
-        "Cognitive impairment for other specified reasons (i.e., written-in values)",
-        88: "Not applicable",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
-        99: "Missing/unknown",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
-    }
+    PRIMARY_DIAGNOSIS_MAPPINGS = MappingProxyType(
+        {
+            1: "Alzheimer\u0027s disease (AD)",
+            2: "Lewy body disease (LBD)",
+            3: "Multiple system atrophy (MSA)",
+            4: "Progressive supranuclear palsy (PSP)",
+            5: "Corticobasal degeneration (CBD)",
+            6: "FTLD with motor neuron disease (e.g., ALS)",
+            7: "FTLD, other",
+            8: "Vascular brain injury or vascular dementia including stroke",
+            9: "Essential tremor",
+            10: "Down syndrome",
+            11: "Huntington\u0027s disease",
+            12: "Prion disease (CJD, other)",
+            13: "Traumatic brain injury (TBI)",
+            14: "Normal-pressure hydrocephalus (NPH)",
+            15: "Epilepsy",  # not consistent
+            16: "CNS neoplasm",
+            17: "Human immunodeficiency virus (HIV)",  # not consistent
+            18: "Other neurological, genetic, or infection condition",
+            19: "Depression",
+            20: "Bipolar disorder",
+            21: "Schizophrenia or other psychosis",
+            22: "Anxiety disorder",  # not consistent
+            23: "Delirium",
+            24: "Post-traumatic stress disorder (PTSD)",  # not consistent
+            25: "Other psychiatric disease",
+            26: "Cognitive impairment due to alcohol abuse",  # not consistent
+            27: "Cognitive impairment due to other substance abuse",  # not consistent
+            28:  # not consistent
+            "Cognitive impairment due to systemic disease or medical illness",
+            29: "Cognitive impairment due to medications",  # not consistent
+            30:  # not consistent
+            (
+                "Cognitive impairment for other "
+                "specified reasons (i.e., written-in values)"
+            ),
+            88: "Not applicable",  # no corresponding value in DIAGNOSIS_MAPPINGS
+            99: "Missing/unknown",  # no corresponding value in DIAGNOSIS_MAPPINGS
+        }
+    )
 
     # maps each diagnosis to their string value
-    DIAGNOSIS_MAPPINGS = {
-        "file.info.derived.": {
-            "naccalzp": "Alzheimer’s disease (AD)",
+    DIAGNOSIS_MAPPINGS = MappingProxyType(
+        {
+            "naccalzp": "Alzheimer\u0027s disease (AD)",
             "nacclbdp": "Lewy body disease (LBD)",
-        },
-        "file.info.forms.json.": {
             "msaif": "Multiple system atrophy (MSA)",
             "pspif": "Primary supranuclear palsy (PSP)",
             "cortif": "Corticobasal degeneration (CBD)",
@@ -78,7 +95,7 @@ class CognitiveAttribute(MQTAttribute):
             "strokeif": "Stroke",
             "esstreif": "Essential tremor",
             "downsif": "Down syndrome",
-            "huntif": "Huntington’s disease",
+            "huntif": "Huntington\u0027s disease",
             "prionif": "Prion disease (CJD, other)",
             "brninjif": "Traumatic brain injury (TBI)",
             "hycephif": "Normal-pressure hydrocephalus (NPH)",
@@ -101,74 +118,115 @@ class CognitiveAttribute(MQTAttribute):
             "cogothif": "Other",
             "cogoth2f": "Other",
             "cogoth3f": "Other",
-        },
-    }
+        }
+    )
 
-    DEMENTIA_MAPPINGS = {
-        "file.info.forms.json.": {
+    DEMENTIA_MAPPINGS = MappingProxyType(
+        {
             "amndem": "Amnestic multidomain dementia syndrome",
             "pca": "Posterior cortical atrophy syndrome",
             "namndem": (
-                "Non-amnestic multidomain dementia, not PCA, PPA, "
-                "bvFTD, or DLb syndrome"
+                "Non-amnestic multidomain dementia, "
+                "not PCA, PPA, bvFTD, or DLb syndrome"
             ),
-        },
-        "file.info.derived.": {
             "naccppa": "Primary progressive aphasia (PPA) with cognitive impairment",
             "naccbvft": "Behavioral variant FTD syndrome (bvFTD)",
             "nacclbds": "Lewy body dementia syndrome",
-        },
-    }
+        }
+    )
 
-    def grab_mappings(
-        self, mapping: Dict[str, Dict[str, str]], target: int
+    def __filter_attributes(self, attributes: List[str], expected_value: int):
+        """Returns a list of the attributes that have the expected value.
+
+        Args:
+          attributes: the list of attributes to filter
+          expected_value: the value to test against in filtering
+        Returns:
+          the list of attributes whose value matches the expected_value
+        """
+        attribute_list: List[str] = []
+        for attribute in attributes:
+            value = self.__uds.get_value(attribute)
+            if not value:
+                value = self.__derived.get_value(attribute)
+            if not value:
+                continue
+
+            if not self.is_int_value(value, expected_value):
+                continue
+
+            attribute_list.append(attribute)
+
+        return attribute_list
+
+    def map_attributes(
+        self, mapping: Mapping[str, str], expected_value: int
     ) -> List[str]:
-        """Grab mappings."""
-        mapped_vars: Set[str] = set()
+        """Returns the list of string values for the attributes in the mapping
+        for which the value matches the expected value.
 
-        for prefix, fields in mapping.items():
-            aggr = self.aggregate_variables(list(fields.keys()), prefix=prefix)
-            mapped_vars = mapped_vars.union(
-                set(
-                    [
-                        mapping[prefix][k]
-                        for k, v in aggr.items()
-                        if self.is_int_value(v, target)
-                    ]
-                )
-            )
+        Args:
+          mapping: the attribute mapping
+          expected_value: the expected value to test for
+        Returns:
+          the list of string values from the attribute mapping for attributes
+          with the expected value
+        """
+        attributes = self.__filter_attributes(
+            attributes=list(mapping.keys()), expected_value=expected_value
+        )
+        return list({mapping[attribute] for attribute in attributes})
 
-        return list(mapped_vars)
-
-    def _create_contributing_diagnosis(self) -> List[str]:
+    def _create_contributing_diagnosis(self) -> AttributeValue:
         """Mapped from all possible contributing diagnosis."""
-        self.assert_required(["naccalzp", "nacclbdp"])
-        return self.grab_mappings(self.DIAGNOSIS_MAPPINGS, target=2)
-
-    def _create_dementia(self) -> List[str]:
-        """Mapped from all dementia types."""
-        self.assert_required(["naccppa", "naccbvft", "nacclbds"])
-        results = self.grab_mappings(self.DEMENTIA_MAPPINGS, target=1)
-        return results
-
-    def _create_cognitive_status(self) -> Optional[str]:
-        """Mapped from NACCUDSD."""
-        result = self.assert_required(["naccudsd"])
-        return self.NACCUDSD_MAPPING.get(result["naccudsd"], None)
-
-    def _create_etpr(self) -> str:
-        """Mapped from NACCETPR."""
-        result = self.assert_required(["naccetpr"])
-        return self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
-            result["naccetpr"], "Missing/unknown"
+        self.__derived.assert_required(["naccalzp", "nacclbdp"])
+        return AttributeValue(
+            value=self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2),
+            date=self.__uds.get_date(),
         )
 
-    def _create_global_cdr(self) -> Optional[str]:
+    def _create_dementia(self) -> AttributeValue:
+        """Mapped from all dementia types."""
+        self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
+        return AttributeValue(
+            value=self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1),
+            date=self.__uds.get_date(),
+        )
+
+    def _create_cognitive_status(self) -> Optional[AttributeValue]:
+        """Mapped from NACCUDSD."""
+        self.__derived.assert_required(["naccudsd"])
+        cognitive_status = self.NACCUDSD_MAPPING.get(
+            self.__derived.get_value("naccudsd"), None
+        )
+        if not cognitive_status:
+            return None
+
+        return AttributeValue(
+            value=cognitive_status,
+            date=self.__uds.get_date(),
+        )
+
+    def _create_etpr(self) -> AttributeValue:
+        """Mapped from NACCETPR."""
+        self.__derived.assert_required(["naccetpr"])
+        return AttributeValue(
+            value=self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
+                self.__derived.get_value("naccetpr"), "Missing/unknown"
+            ),
+            date=self.__uds.get_date(),
+        )
+
+    def _create_global_cdr(self) -> Optional[AttributeValue]:
         """Mapped from CDRGLOB."""
-        cdrglob = self.get_value("cdrglob")
-        return str(cdrglob) if cdrglob else None
+        cdrglob = self.__uds.get_value("cdrglob")
+        global_cdr = str(cdrglob) if cdrglob else None
+        if not global_cdr:
+            return None
+
+        return AttributeValue(value=global_cdr, date=self.__uds.get_date())
 
     def _create_normal_cognition(self) -> bool:
         """Mapped from NACCNORM."""
-        result = self.assert_required(["naccnorm"])
-        return bool(result["naccnorm"])
+        self.__derived.assert_required(["naccnorm"])
+        return bool(self.__derived.get_value("naccnorm"))

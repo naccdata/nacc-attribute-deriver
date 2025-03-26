@@ -4,23 +4,29 @@ metaclass to keep track of operation types.
 This kind of feels overengineered?
 """
 
-from typing import Any, List
+from abc import abstractmethod
+from datetime import date
+from typing import Any, ClassVar, Dict
 
+from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
-class OperationException(Exception):
+class OperationError(Exception):
     pass
 
 
 class OperationRegistry(type):
-    operations: List["Operation"] = []
+    operations: ClassVar[Dict[str, type]] = {}
 
     def __init__(cls, name, bases, attrs):
-        if name != "OperationRegistry" and cls.LABEL is not None:
-            if name not in OperationRegistry.operations:
-                OperationRegistry.operations.append(cls)
+        if (
+            name != "OperationRegistry"
+            and cls.LABEL is not None
+            and name not in OperationRegistry.operations
+        ):
+            OperationRegistry.operations[cls.LABEL] = cls
 
 
 class Operation(object, metaclass=OperationRegistry):
@@ -33,22 +39,21 @@ class Operation(object, metaclass=OperationRegistry):
         Args:
             label: label of the operation
         """
-        for op in OperationRegistry.operations:
-            if op.LABEL == label:
-                return op()  # type: ignore
+        operation = OperationRegistry.operations.get(label, None)
+        if operation:
+            return operation()
 
         raise ValueError(f"Unrecognized operation: {label}")
 
-    def evaluate(
-        self, table: SymbolTable, value: Any, location: str, date_key: str, **kwargs
-    ) -> None:
+    @abstractmethod
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Evaluate the operation, and stores the computed value at the
         specified location.
 
         Args:
             table: Table to read/write from
             value: Value to perform the operation against
-            location: Target location to write to
+            attribute: Target location to write to
             date_key: Date key string
         """
         pass
@@ -58,21 +63,33 @@ class UpdateOperation(Operation):
     LABEL = "update"
 
     def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
+        self, *, table: SymbolTable, value: Any, attribute: str
     ) -> None:
         """Simply updates the location."""
-        table[location] = value
+
+        if isinstance(value, AttributeValue):
+            value = value.value
+        if value is None:
+            return
+
+        if isinstance(value, date):
+            value = str(value)
+
+        table[attribute] = value
 
 
 class SetOperation(Operation):
     LABEL = "set"
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
-        cur_set = table.get(location)
+        if isinstance(value, AttributeValue):
+            value = value.value
+        if value is None:
+            return
+
+        cur_set = table.get(attribute)
         cur_set = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
@@ -80,111 +97,127 @@ class SetOperation(Operation):
         elif value is not None:
             cur_set.add(value)
 
-        table[location] = list(cur_set)
+        table[attribute] = list(cur_set)
 
 
 class SortedListOperation(Operation):
     LABEL = "sortedlist"
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
-        cur_list = table.get(location, [])
+        if isinstance(value, AttributeValue):
+            value = value.value
+        if value is None:
+            return
 
+        cur_list = table.get(attribute, [])
         if isinstance(value, (list, set)):
             cur_list.extend(list(value))
         elif value is not None:
             cur_list.append(value)
 
-        table[location] = sorted(cur_list)
+        table[attribute] = sorted(cur_list)
 
 
 class DateOperation(Operation):
     LABEL: str | None = None
 
-    def evaluate(
-        self, table: SymbolTable, value: Any, location: str, date_key: str, **kwargs
-    ) -> None:
+    @abstractmethod
+    def compare(self, left_value: date, right_value: date) -> bool:
+        """Returns the comparison for this object."""
+        raise OperationError(f"Unknown date operation: {self.LABEL}")
+
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Compares dates to determine the result."""
-        try:
-            cur_date = datetime_from_form_date(table.get(date_key))  # type: ignore
-            dest_date = datetime_from_form_date(table.get(f"{location}.date"))  # type: ignore
-        except ValueError as e:
-            raise OperationException(
-                f"Cannot parse date for date operation: {e}"
-            ) from e
-
-        if self.LABEL not in ["initial", "latest"]:
-            raise OperationException(f"Unknown date operation: {self.LABEL}")
-
-        if not cur_date:
-            raise OperationException("Current date cannot be determined")
-
         if value is None:
             return
 
-        if (
-            not dest_date
-            or (self.LABEL == "initial" and cur_date < dest_date)
-            or (self.LABEL == "latest" and cur_date > dest_date)
-        ):
-            table[location] = {"date": str(cur_date.date()), "value": value}
+        if not isinstance(value, AttributeValue):
+            raise OperationError(
+                f"Unable to perform {self.LABEL} operation without date"
+            )
+
+        if value.value is None:
+            return
+
+        if self.LABEL not in ["initial", "latest"]:
+            raise OperationError(f"Unknown date operation: {self.LABEL}")
+
+        if not value.date:
+            raise OperationError(f"Current date is required: {value.model_dump()}")
+
+        dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
+
+        if not dest_date or self.compare(value.date, dest_date.date()):
+            table[attribute] = value.model_dump()
 
 
 class InitialOperation(DateOperation):
     LABEL = "initial"
 
+    def compare(self, left_value: date, right_value: date):
+        return left_value < right_value
+
 
 class LatestOperation(DateOperation):
     LABEL = "latest"
+
+    def compare(self, left_value: date, right_value: date):
+        return left_value > right_value
 
 
 class CountOperation(Operation):
     LABEL = "count"
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Counts the result."""
         if not value:  # TODO: should we count 0s/Falses?
-            return
+            return None
+        if isinstance(value, AttributeValue) and not value.value:
+            return None
 
-        cur_count = table.get(location, 0)
-        table[location] = cur_count + 1
+        cur_count = table.get(attribute, 0)
+        table[attribute] = cur_count + 1
 
 
 class ComparisonOperation(Operation):
     LABEL: str | None = None
 
-    def evaluate(  # type: ignore
-        self, table: SymbolTable, value: Any, location: str, **kwargs
-    ) -> None:
+    @abstractmethod
+    def compare(self, left_value, right_value) -> bool:
+        """Returns the comparison for this object."""
+        raise OperationError(f"Unknown comparison operation: {self.LABEL}")
+
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Does a comparison between the value and location value."""
-        dest_value = table.get(location)
+        dest_value = table.get(attribute)
 
         if self.LABEL not in ["min", "max"]:
-            raise OperationException(f"Unknown comparison operation: {self.LABEL}")
+            raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
+        if isinstance(value, AttributeValue):
+            value = value.value
         if value is None:
             return
 
         try:
-            if (
-                not dest_value
-                or (self.LABEL == "min" and value < dest_value)
-                or (self.LABEL == "max" and value > dest_value)
-            ):
-                table[location] = value
-        except TypeError as e:
-            raise OperationException(
-                f"Cannot compare types for {self.LABEL} operation: {e}"
-            ) from e
+            if not dest_value or self.compare(value, dest_value):
+                table[attribute] = value
+        except TypeError as error:
+            raise OperationError(
+                f"Cannot compare types for {self.LABEL} operation: {error}"
+            ) from error
 
 
 class MinOperation(ComparisonOperation):
     LABEL = "min"
 
+    def compare(self, left_value, right_value):
+        return left_value < right_value
+
 
 class MaxOperation(ComparisonOperation):
     LABEL = "max"
+
+    def compare(self, left_value, right_value):
+        return left_value > right_value

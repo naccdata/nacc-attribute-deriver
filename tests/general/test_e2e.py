@@ -20,6 +20,10 @@ def test_uds_form():
                         "module": "uds",
                         "birthmo": 1,
                         "birthyr": 1960,
+                        "probadif": 1,
+                        "dlbif": 2,
+                        "demented": 1,
+                        "normcog": 1,
                     }
                 }
             }
@@ -31,45 +35,115 @@ def test_uds_form():
         "nacc_attribute_deriver"
     ).joinpath("config/form/uds_rules.csv")
 
-    deriver = AttributeDeriver(
-        rules_file=rules_file, date_key="file.info.forms.json.visitdate"
-    )
+    deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
-    # UDS has too much data/is messy to do a direct comparison
+    assert form["file.info.derived"] == {
+        "naccage": 65,
+        "naccalzp": 8,
+        "naccautp": 8,
+        "naccbvft": 8,
+        "naccdage": 888,
+        "naccdied": 0,
+        "naccetpr": 88,
+        "nacclbds": 8,
+        "naccnihr": 99,
+        "naccppa": 8,
+        "nacclbde": 8,
+        "nacclbdp": 8,
+        "naccnorm": 1,
+        "naccudsd": 4,
+    }
 
 
 def test_np_form():
     """Test against a minimal NP form - all derived variables
     should be 9 with no data.
     """
-    form = SymbolTable()
-    form["file.info.forms.json.visitdate"] = "2025-01-01"
-    form["file.info.forms.json.module"] = "np"
+    np_table = SymbolTable()
+    np_table["file.info.forms.json.visitdate"] = "2025-01-01"
+    np_table["file.info.forms.json.module"] = "np"
+    np_table["file.info.forms.json.npdage"] = 80
+    np_table["file.info.forms.json.npdodyr"] = "2024"
+    np_table["file.info.forms.json.npdodmo"] = "12"
+    np_table["file.info.forms.json.npdoddy"] = "19"
 
     rules_file = files(  # type: ignore
         "nacc_attribute_deriver"
     ).joinpath("config/form/np_rules.csv")
 
-    deriver = AttributeDeriver(
-        rules_file=rules_file,
-        date_key="file.info.forms.json.visitdate",
-    )
-    deriver.curate(form)
-    assert form.to_dict() == {
+    deriver = AttributeDeriver(rules_file=rules_file)
+    deriver.curate(np_table)
+    assert np_table.to_dict() == {
         "file": {
             "info": {
-                "forms": {"json": {"visitdate": "2025-01-01", "module": "np"}},
-                "derived": {
-                    "naccarte": 9,
-                    "naccbraa": 9,
-                    "nacchem": 9,
-                    "nacclewy": 9,
-                    "naccmicr": 9,
-                    "naccneur": 9,
+                "forms": {
+                    "json": {
+                        "visitdate": "2025-01-01",
+                        "module": "np",
+                        "npdage": 80,
+                        "npdodyr": "2024",
+                        "npdodmo": "12",
+                        "npdoddy": "19",
+                    }
                 },
             }
-        }
+        },
+        "subject": {
+            "info": {
+                "derived": {
+                    "np_death_age": 80,
+                    "np_death_date": "2024-12-19",
+                    "np_arte": 9,
+                    "np_braa": 9,
+                    "np_hem": 9,
+                    "np_lewy": 9,
+                    "np_micr": 9,
+                    "np_neur": 9,
+                }
+            }
+        },
     }
+
+    uds_table = SymbolTable()
+    uds_table["subject.info.derived"] = np_table["subject.info.derived"]
+    uds_table["file.info.forms.json"] = {
+        "visitdate": "2025-01-01",
+        "module": "uds",
+        "birthmo": 1,
+        "birthyr": 1960,
+        "normcog": 1,
+    }
+
+    rules_file = files(  # type: ignore
+        "nacc_attribute_deriver"
+    ).joinpath("config/form/uds_rules.csv")
+
+    deriver = AttributeDeriver(rules_file=rules_file)
+    deriver.curate(uds_table)
+    assert (
+        uds_table["file.info.derived.naccarte"]
+        == np_table["subject.info.derived.np_arte"]
+    )
+    assert (
+        uds_table["file.info.derived.naccbraa"]
+        == np_table["subject.info.derived.np_braa"]
+    )
+    assert (
+        uds_table["file.info.derived.nacchem"]
+        == np_table["subject.info.derived.np_hem"]
+    )
+    assert (
+        uds_table["file.info.derived.nacclewy"]
+        == np_table["subject.info.derived.np_lewy"]
+    )
+    assert (
+        uds_table["file.info.derived.naccmicr"]
+        == np_table["subject.info.derived.np_micr"]
+    )
+    assert (
+        uds_table["file.info.derived.naccneur"]
+        == np_table["subject.info.derived.np_neur"]
+    )
 
 
 def test_ncrad_apoe():
@@ -82,10 +156,8 @@ def test_ncrad_apoe():
 
     deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
-    assert form.to_dict() == {
-        "file": {"info": {"raw": {"a1": "E4", "a2": "E2"}, "derived": {"naccapoe": 5}}},
-        "subject": {"info": {"genetics": {"apoe": "e4,e2"}}},
-    }
+    assert form["subject.info.genetics"] == {"apoe": "e4,e2"}
+    assert form["subject.info.derived"] == {"naccapoe": 5}
 
 
 def test_niagads_investigator():
@@ -103,28 +175,19 @@ def test_niagads_investigator():
 
     deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
-    assert form.to_dict() == {
-        "file": {
-            "info": {
-                "raw": {
-                    "niagads_gwas": "NG00000",
-                    "niagads_exomechip": "NG00000, NG00001",
-                    "niagads_wgs": "0",
-                    "niagads_wes": None,
-                },
-                "derived": {"ngdsgwas": 1, "ngdsexom": 1, "ngdswgs": 0, "ngdswes": 0},
-            }
-        },
-        "subject": {
-            "info": {
-                "genetics": {
-                    "ngdsgwas": True,
-                    "ngdsexom": True,
-                    "ngdswgs": False,
-                    "ngdswes": False,
-                }
-            }
-        },
+
+    assert "file.info.derived" not in form
+    assert form["subject.info.derived"] == {
+        "niagads_exome": 1,
+        "niagads_gwas": 1,
+        "niagads_wes": 0,
+        "niagads_wgs": 0,
+    }
+    assert form["subject.info.genetics"] == {
+        "ngdsgwas": True,
+        "ngdsexom": True,
+        "ngdswgs": False,
+        "ngdswes": False,
     }
 
 
@@ -161,24 +224,16 @@ def test_scan_pet_qc():
 
     deriver = AttributeDeriver(rules_file=rules_file)
     deriver.curate(form)
-    assert form.to_dict() == {
-        "file": {"info": {"raw": {"radiotracer": "2.0", "scan_date": "2025-01-01"}}},
-        "subject": {
-            "info": {
-                "derived": {"scan-pet-dates": ["2025-01-01"]},
-                "imaging": {
-                    "pet": {
-                        "scan": {
-                            "types": ["amyloid"],
-                            "count": 1,
-                            "year-count": 1,
-                            "amyloid": {"tracers": ["pib"]},
-                            "tau": {"tracers": []},
-                        }
-                    }
-                },
+    assert form["subject.info.derived"] == {"scan-pet-dates": ["2025-01-01"]}
+    assert form["subject.info.imaging"] == {
+        "pet": {
+            "scan": {
+                "types": ["amyloid"],
+                "count": 1,
+                "year-count": 1,
+                "amyloid": {"tracers": ["pib"]},
             }
-        },
+        }
     }
 
 
