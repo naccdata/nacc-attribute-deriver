@@ -35,4 +35,3 @@ class GeneticAttributeCollection(AttributeCollection):
             return "Missing/unknown/not assessed"
 
         return f"{a1},{a2}".lower()
-
