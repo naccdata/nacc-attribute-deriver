@@ -13,6 +13,8 @@ from typing import Dict, List
 
 from pydantic import ValidationError
 
+from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
+
 from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverError
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
@@ -87,6 +89,10 @@ class AttributeDeriver:
                 )
 
             value = method.apply(table)
+            if value is None:
+                continue
+            if isinstance(value, AttributeValue) and value.value is None:
+                continue
 
             for assignment in rule.assignments:
                 assignment.operation.evaluate(

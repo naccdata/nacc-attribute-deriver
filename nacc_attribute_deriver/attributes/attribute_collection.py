@@ -40,7 +40,12 @@ class AttributeExpression(BaseModel):
             MissingRequiredError if the attribute class cannot be instantiated
             on the table
         """
-        return self.function(self.attribute_class(table))
+        try:
+            return self.function(self.attribute_class(table))
+        except MissingRequiredError as error:
+            log.warning(f"Unable to apply {self.function}: missing field {error.field}")
+
+        return None
 
 
 class AttributeCollectionRegistry(type):
