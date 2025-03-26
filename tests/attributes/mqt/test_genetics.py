@@ -49,20 +49,20 @@ class TestGeneticAttributeCollection:
     def test_create_apoe(self, table):
         """Tests creating apoe."""
         attr = GeneticAttributeCollection.create(table)
-        assert attr._create_apoe() == "e4,e2"
+        assert attr._create_apoe() == "e4,e2"  # noqa: SLF001
 
         # test null case
         table["file.info.raw"].update({"a1": None, "a2": None})
         attr = GeneticAttributeCollection.create(table)
-        assert attr._create_apoe() == "Missing/unknown/not assessed"
+        assert attr._create_apoe() == "Missing/unknown/not assessed"  # noqa: SLF001
 
     def test_create_ngds_vars(self, niagads_table):
         """Tests creating the NIAGADS availability variables."""
         attr = NIAGADSAttributeCollection.create(niagads_table)
-        assert attr._create_niagads_gwas()
-        assert attr._create_niagads_exome()
-        assert not attr._create_niagads_wgs()
-        assert not attr._create_niagads_wes()
+        assert attr._create_niagads_gwas()  # noqa: SLF001
+        assert attr._create_niagads_exome()  # noqa: SLF001
+        assert not attr._create_niagads_wgs()  # noqa: SLF001
+        assert not attr._create_niagads_wes()  # noqa: SLF001
 
         # test null case
         niagads_table["file.info.raw"] = {
@@ -72,7 +72,7 @@ class TestGeneticAttributeCollection:
             "niagads_wes": None,
         }
         attr = NIAGADSAttributeCollection.create(niagads_table)
-        assert not attr._create_niagads_gwas()
-        assert not attr._create_niagads_exome()
-        assert not attr._create_niagads_wgs()
-        assert not attr._create_niagads_wes()
+        assert not attr._create_niagads_gwas()  # noqa: SLF001
+        assert not attr._create_niagads_exome()  # noqa: SLF001
+        assert not attr._create_niagads_wgs()  # noqa: SLF001
+        assert not attr._create_niagads_wes()  # noqa: SLF001

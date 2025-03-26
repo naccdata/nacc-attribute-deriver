@@ -2,7 +2,6 @@
 
 import datetime
 import logging
-from abc import ABC
 from typing import Any, List, Optional
 
 from pydantic import BaseModel, ConfigDict, field_serializer
@@ -27,7 +26,7 @@ class AttributeValue(BaseModel):
         return str(date)
 
 
-class BaseNamespace(ABC):
+class BaseNamespace:
     """Abstract base class for wrapping a symbol table to enable accessing
     attribute values by name, without the full prefix."""
 

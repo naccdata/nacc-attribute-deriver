@@ -30,7 +30,9 @@ class StudyParametersAttributeCollection(AttributeCollection):
         if formver:
             try:
                 versions.add(int(formver))
-            except (ValueError, TypeError):
-                raise AttributeDeriverError("UDS form version must be an integer")
+            except (ValueError, TypeError) as error:
+                raise AttributeDeriverError(
+                    "UDS form version must be an integer"
+                ) from error
 
         return list(versions)

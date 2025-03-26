@@ -6,7 +6,7 @@ This kind of feels overengineered?
 
 from abc import abstractmethod
 from datetime import date
-from typing import Any, Dict
+from typing import Any, ClassVar, Dict
 
 from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -18,12 +18,15 @@ class OperationError(Exception):
 
 
 class OperationRegistry(type):
-    operations: Dict[str, type] = {}
+    operations: ClassVar[Dict[str, type]] = {}
 
     def __init__(cls, name, bases, attrs):
-        if name != "OperationRegistry" and cls.LABEL is not None:
-            if name not in OperationRegistry.operations:
-                OperationRegistry.operations[cls.LABEL] = cls
+        if (
+            name != "OperationRegistry"
+            and cls.LABEL is not None
+            and name not in OperationRegistry.operations
+        ):
+            OperationRegistry.operations[cls.LABEL] = cls
 
 
 class Operation(object, metaclass=OperationRegistry):

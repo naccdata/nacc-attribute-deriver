@@ -3,6 +3,7 @@
 Assumes NACC-derived variables are already set
 """
 
+from types import MappingProxyType
 from typing import Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
@@ -22,105 +23,117 @@ class CognitiveAttributeCollection(AttributeCollection):
         self.__uds = UDSNamespace(table)
         self.__derived = DerivedNamespace(table, date_attribute="visitdate")
 
-    NACCUDSD_MAPPING = {
-        1: "Normal cognition",
-        2: "Impaired-not-MCI",
-        3: "MCI",
-        4: "Dementia",
-        5: "All of the above",
-    }
+    NACCUDSD_MAPPING = MappingProxyType(
+        {
+            1: "Normal cognition",
+            2: "Impaired-not-MCI",
+            3: "MCI",
+            4: "Dementia",
+            5: "All of the above",
+        }
+    )
 
     # several labels not consistent with DIAGNOSIS_MAPPINGS
-    PRIMARY_DIAGNOSIS_MAPPINGS = {
-        1: "Alzheimer’s disease (AD)",
-        2: "Lewy body disease (LBD)",
-        3: "Multiple system atrophy (MSA)",
-        4: "Progressive supranuclear palsy (PSP)",
-        5: "Corticobasal degeneration (CBD)",
-        6: "FTLD with motor neuron disease (e.g., ALS)",
-        7: "FTLD, other",
-        8: "Vascular brain injury or vascular dementia including stroke",
-        9: "Essential tremor",
-        10: "Down syndrome",
-        11: "Huntington’s disease",
-        12: "Prion disease (CJD, other)",
-        13: "Traumatic brain injury (TBI)",
-        14: "Normal-pressure hydrocephalus (NPH)",
-        15: "Epilepsy",  # not consistent
-        16: "CNS neoplasm",
-        17: "Human immunodeficiency virus (HIV)",  # not consistent
-        18: "Other neurological, genetic, or infection condition",
-        19: "Depression",
-        20: "Bipolar disorder",
-        21: "Schizophrenia or other psychosis",
-        22: "Anxiety disorder",  # not consistent
-        23: "Delirium",
-        24: "Post-traumatic stress disorder (PTSD)",  # not consistent
-        25: "Other psychiatric disease",
-        26: "Cognitive impairment due to alcohol abuse",  # not consistent
-        27: "Cognitive impairment due to other substance abuse",  # not consistent
-        28:  # not consistent
-        "Cognitive impairment due to systemic disease or medical illness",
-        29: "Cognitive impairment due to medications",  # not consistent
-        30:  # not consistent
-        "Cognitive impairment for other specified reasons (i.e., written-in values)",
-        88: "Not applicable",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
-        99: "Missing/unknown",  # no corresponding/not relevant to DIAGNOSIS_MAPPINGS
-    }
+    PRIMARY_DIAGNOSIS_MAPPINGS = MappingProxyType(
+        {
+            1: "Alzheimer\u0027s disease (AD)",
+            2: "Lewy body disease (LBD)",
+            3: "Multiple system atrophy (MSA)",
+            4: "Progressive supranuclear palsy (PSP)",
+            5: "Corticobasal degeneration (CBD)",
+            6: "FTLD with motor neuron disease (e.g., ALS)",
+            7: "FTLD, other",
+            8: "Vascular brain injury or vascular dementia including stroke",
+            9: "Essential tremor",
+            10: "Down syndrome",
+            11: "Huntington\u0027s disease",
+            12: "Prion disease (CJD, other)",
+            13: "Traumatic brain injury (TBI)",
+            14: "Normal-pressure hydrocephalus (NPH)",
+            15: "Epilepsy",  # not consistent
+            16: "CNS neoplasm",
+            17: "Human immunodeficiency virus (HIV)",  # not consistent
+            18: "Other neurological, genetic, or infection condition",
+            19: "Depression",
+            20: "Bipolar disorder",
+            21: "Schizophrenia or other psychosis",
+            22: "Anxiety disorder",  # not consistent
+            23: "Delirium",
+            24: "Post-traumatic stress disorder (PTSD)",  # not consistent
+            25: "Other psychiatric disease",
+            26: "Cognitive impairment due to alcohol abuse",  # not consistent
+            27: "Cognitive impairment due to other substance abuse",  # not consistent
+            28:  # not consistent
+            "Cognitive impairment due to systemic disease or medical illness",
+            29: "Cognitive impairment due to medications",  # not consistent
+            30:  # not consistent
+            (
+                "Cognitive impairment for other "
+                "specified reasons (i.e., written-in values)"
+            ),
+            88: "Not applicable",  # no corresponding value in DIAGNOSIS_MAPPINGS
+            99: "Missing/unknown",  # no corresponding value in DIAGNOSIS_MAPPINGS
+        }
+    )
 
     # maps each diagnosis to their string value
-    DIAGNOSIS_MAPPINGS = {
-        "naccalzp": "Alzheimer’s disease (AD)",
-        "nacclbdp": "Lewy body disease (LBD)",
-        "msaif": "Multiple system atrophy (MSA)",
-        "pspif": "Primary supranuclear palsy (PSP)",
-        "cortif": "Corticobasal degeneration (CBD)",
-        "ftldmoif": "FTLD with motor neuron disease (MND)",
-        "ftldnosif": "FTLD not otherwise specified (NOS)",
-        "ftdif": "Behavioral frontotemporal dementia (bvFTD)",
-        "ppaphif": "Primary progressive aphasia (PPA)",
-        # vascular
-        "cvdif": "Vascular brain injury",
-        "vascif": "Probable vascular dementia (NINDS/AIREN criteria)",
-        "vascpsif": "Possible vascular dementia (NINDS/AIREN criteria)",
-        "strokeif": "Stroke",
-        "esstreif": "Essential tremor",
-        "downsif": "Down syndrome",
-        "huntif": "Huntington’s disease",
-        "prionif": "Prion disease (CJD, other)",
-        "brninjif": "Traumatic brain injury (TBI)",
-        "hycephif": "Normal-pressure hydrocephalus (NPH)",
-        "epilepif": "Epilepsy Numeric longitudinal",
-        "neopif": "CNS neoplasm",
-        "hivif": "HIV",
-        "othcogif": "Other neurological, genetic, or infection condition",
-        "depif": "Depression",
-        "bipoldif": "Bipolar disorder",
-        "schizoif": "Schizophrenia or other psychosis",
-        "anxietif": "Anxiety",
-        "delirif": "Delirium",
-        "ptsddxif": "PTSD",
-        "othpsyif": "Other psychiatric disease",
-        "alcdemif": "Alcohol abuse",
-        "impsubif": "Other substance abuse",
-        "dysillif": "Systemic disease/medical illness",
-        "medsif": "Medications",
-        "demunif": "Undetermined etiology",
-        "cogothif": "Other",
-        "cogoth2f": "Other",
-        "cogoth3f": "Other",
-    }
+    DIAGNOSIS_MAPPINGS = MappingProxyType(
+        {
+            "naccalzp": "Alzheimer\u0027s disease (AD)",
+            "nacclbdp": "Lewy body disease (LBD)",
+            "msaif": "Multiple system atrophy (MSA)",
+            "pspif": "Primary supranuclear palsy (PSP)",
+            "cortif": "Corticobasal degeneration (CBD)",
+            "ftldmoif": "FTLD with motor neuron disease (MND)",
+            "ftldnosif": "FTLD not otherwise specified (NOS)",
+            "ftdif": "Behavioral frontotemporal dementia (bvFTD)",
+            "ppaphif": "Primary progressive aphasia (PPA)",
+            # vascular
+            "cvdif": "Vascular brain injury",
+            "vascif": "Probable vascular dementia (NINDS/AIREN criteria)",
+            "vascpsif": "Possible vascular dementia (NINDS/AIREN criteria)",
+            "strokeif": "Stroke",
+            "esstreif": "Essential tremor",
+            "downsif": "Down syndrome",
+            "huntif": "Huntington\u0027s disease",
+            "prionif": "Prion disease (CJD, other)",
+            "brninjif": "Traumatic brain injury (TBI)",
+            "hycephif": "Normal-pressure hydrocephalus (NPH)",
+            "epilepif": "Epilepsy Numeric longitudinal",
+            "neopif": "CNS neoplasm",
+            "hivif": "HIV",
+            "othcogif": "Other neurological, genetic, or infection condition",
+            "depif": "Depression",
+            "bipoldif": "Bipolar disorder",
+            "schizoif": "Schizophrenia or other psychosis",
+            "anxietif": "Anxiety",
+            "delirif": "Delirium",
+            "ptsddxif": "PTSD",
+            "othpsyif": "Other psychiatric disease",
+            "alcdemif": "Alcohol abuse",
+            "impsubif": "Other substance abuse",
+            "dysillif": "Systemic disease/medical illness",
+            "medsif": "Medications",
+            "demunif": "Undetermined etiology",
+            "cogothif": "Other",
+            "cogoth2f": "Other",
+            "cogoth3f": "Other",
+        }
+    )
 
-    DEMENTIA_MAPPINGS = {
-        "amndem": "Amnestic multidomain dementia syndrome",
-        "pca": "Posterior cortical atrophy syndrome",
-        "namndem": (
-            "Non-amnestic multidomain dementia, not PCA, PPA, bvFTD, or DLb syndrome"
-        ),
-        "naccppa": "Primary progressive aphasia (PPA) with cognitive impairment",
-        "naccbvft": "Behavioral variant FTD syndrome (bvFTD)",
-        "nacclbds": "Lewy body dementia syndrome",
-    }
+    DEMENTIA_MAPPINGS = MappingProxyType(
+        {
+            "amndem": "Amnestic multidomain dementia syndrome",
+            "pca": "Posterior cortical atrophy syndrome",
+            "namndem": (
+                "Non-amnestic multidomain dementia, "
+                "not PCA, PPA, bvFTD, or DLb syndrome"
+            ),
+            "naccppa": "Primary progressive aphasia (PPA) with cognitive impairment",
+            "naccbvft": "Behavioral variant FTD syndrome (bvFTD)",
+            "nacclbds": "Lewy body dementia syndrome",
+        }
+    )
 
     def __filter_attributes(self, attributes: List[str], expected_value: int):
         """Returns a list of the attributes that have the expected value.

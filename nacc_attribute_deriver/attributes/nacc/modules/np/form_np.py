@@ -114,10 +114,7 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccneur = self._map_sub4(npneur)
         elif formver == 1:
-            if npneur:
-                naccneur = self._map_sub4(npneur)
-            else:
-                naccneur = self._map_gross(naccneur)
+            naccneur = self._map_sub4(npneur) if npneur else self._map_gross(naccneur)
 
         return naccneur if naccneur is not None else 9
 
@@ -136,10 +133,7 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccmicr = self._map_v9(npmicro)
         elif formver == 1:
-            if npmicro:
-                naccmicr = self._map_v9(npmicro)
-            else:
-                naccmicr = self._map_vasc(naccmicr)
+            naccmicr = self._map_v9(npmicro) if npmicro else self._map_vasc(naccmicr)
 
         return naccmicr if naccmicr is not None else 9
 
@@ -169,10 +163,7 @@ class NPFormAttributeCollection(AttributeCollection):
             nacchem = self._map_v9(nphem)
         elif formver == 1:
             nacchem = nphem
-            if nphem:
-                nacchem = self._map_v9(nphem)
-            else:
-                nacchem = self._map_vasc(nacchem)
+            nacchem = self._map_v9(nphem) if nphem else self._map_vasc(nacchem)
 
         return nacchem if nacchem is not None else 9
 
@@ -190,10 +181,7 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccarte = self._map_sub1(nparter)
         elif formver == 1:
-            if nparter:
-                naccarte = self._map_sub1(nparter)
-            else:
-                naccarte = self._map_vasc(naccarte)
+            naccarte = self._map_sub1(nparter) if nparter else self._map_vasc(naccarte)
 
         return naccarte if naccarte is not None else 9
 

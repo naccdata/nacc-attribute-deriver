@@ -60,12 +60,12 @@ class TestCognitiveAttributeCollection:
             )
 
         attr = CognitiveAttributeCollection.create(table)
-        assert set(attr._create_contributing_diagnosis().value) == set(expected_values)
+        assert set(attr._create_contributing_diagnosis().value) == set(expected_values)  # noqa: SLF001
 
     def test_dementia(self, table):
         """Tests _create_dementia."""
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_dementia().value == [
+        assert attr._create_dementia().value == [  # noqa: SLF001
             CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]
         ]
 
@@ -75,7 +75,7 @@ class TestCognitiveAttributeCollection:
 
         attr = CognitiveAttributeCollection.create(table)
 
-        assert set(attr._create_dementia().value) == set(
+        assert set(attr._create_dementia().value) == set(  # noqa: SLF001
             [
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["amndem"],
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["pca"],
@@ -88,34 +88,34 @@ class TestCognitiveAttributeCollection:
         for k, v in CognitiveAttributeCollection.NACCUDSD_MAPPING.items():
             table["file.info.derived.naccudsd"] = k
             attr = CognitiveAttributeCollection.create(table)
-            assert attr._create_cognitive_status().value == v
+            assert attr._create_cognitive_status().value == v  # noqa: SLF001
 
     def test_etpr(self, table):
         """Tests _create_etpr, which just comes from NACCETPR."""
         for k, v in CognitiveAttributeCollection.PRIMARY_DIAGNOSIS_MAPPINGS.items():
             table["file.info.derived.naccetpr"] = k
             attr = CognitiveAttributeCollection.create(table)
-            assert attr._create_etpr().value == v
+            assert attr._create_etpr().value == v  # noqa: SLF001
 
     def test_global_cdr(self, table):
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr().value == "0.5"
+        assert attr._create_global_cdr().value == "0.5"  # noqa: SLF001
 
         table["file.info.forms.json.cdrglob"] = None
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr() is None
+        assert attr._create_global_cdr() is None  # noqa: SLF001
 
     def test_create_normal_cognition(self, table):
         """Tests _create_normal_cognition which just comes from NACCNORM."""
         attr = CognitiveAttributeCollection.create(table)
-        assert not attr._create_normal_cognition()
+        assert not attr._create_normal_cognition()  # noqa: SLF001
 
         table["file.info.derived.naccnorm"] = 1
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_normal_cognition()
+        assert attr._create_normal_cognition()  # noqa: SLF001
 
         table["file.info.derived.naccnorm"] = None
         attr = CognitiveAttributeCollection.create(table)
-        assert not attr._create_normal_cognition()
+        assert not attr._create_normal_cognition()  # noqa: SLF001

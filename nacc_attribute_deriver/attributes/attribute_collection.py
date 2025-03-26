@@ -8,7 +8,7 @@ Heavily based off of
 import logging
 from inspect import isfunction
 from types import FunctionType
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict
 
@@ -49,14 +49,16 @@ class AttributeExpression(BaseModel):
 
 
 class AttributeCollectionRegistry(type):
-    collection_types: List[type] = []
+    collection_types: ClassVar[List[type]] = []
 
     def __init__(cls, name, bases, attrs):
         """Registers the class in the registry when the class has this class as
         a metaclass."""
-        if name != "AttributeCollection":
-            if name not in AttributeCollectionRegistry.collection_types:
-                AttributeCollectionRegistry.collection_types.append(cls)
+        if (
+            name != "AttributeCollection"
+            and name not in AttributeCollectionRegistry.collection_types
+        ):
+            AttributeCollectionRegistry.collection_types.append(cls)
 
     @classmethod
     def get_attribute_methods(cls) -> Dict[str, AttributeExpression]:
@@ -122,9 +124,12 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         """
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
-            if isfunction(attr) and attr_name.startswith("_create_"):
-                if attr_name.lstrip("_") == derive_name:
-                    return attr
+            if (
+                isfunction(attr)
+                and attr_name.startswith("_create_")
+                and attr_name.lstrip("_") == derive_name
+            ):
+                return attr
 
         return None
 

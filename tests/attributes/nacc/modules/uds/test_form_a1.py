@@ -34,12 +34,12 @@ class TestUDSFormA1Attribute:
     def test_create_naccage(self, table, form_prefix):
         """Tests creating NACCAGE."""
         attr = UDSFormA1Attribute(table)
-        assert attr._create_naccage() == 34
+        assert attr._create_naccage() == 34  # noqa: SLF001
 
         # exact birthday
         set_attribute(table, form_prefix, "birthmo", 1)
         attr = UDSFormA1Attribute(table)
-        assert attr._create_naccage() == 35
+        assert attr._create_naccage() == 35  # noqa: SLF001
 
     def test_visit_on_birthday(self, table, form_prefix):
         """Case that has issue due to visitdate == birthday."""
@@ -48,7 +48,7 @@ class TestUDSFormA1Attribute:
         set_attribute(table, form_prefix, "birthyr", 1910)
         attr = UDSFormA1Attribute(table)
 
-        assert attr._create_naccage() == 97
+        assert attr._create_naccage() == 97  # noqa: SLF001
 
         """Case that has issue due to visitdate == birthday."""
         set_attribute(table, form_prefix, "visitdate", "2010-03-01")
@@ -56,4 +56,4 @@ class TestUDSFormA1Attribute:
         set_attribute(table, form_prefix, "birthyr", 1956)
         attr = UDSFormA1Attribute(table)
 
-        assert attr._create_naccage() == 54
+        assert attr._create_naccage() == 54  # noqa: SLF001

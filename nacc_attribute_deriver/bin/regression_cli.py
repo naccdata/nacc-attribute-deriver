@@ -4,6 +4,7 @@ This is very hacked together for the sake of testing - a more formalized
 one should be done once we get better testing sources.
 """
 
+import contextlib
 import json
 import logging
 from argparse import ArgumentParser, Namespace
@@ -28,7 +29,7 @@ SKIP_VALUES = [
 ]
 
 
-def curate_row(
+def curate_row(  # noqa: C901
     deriver: AttributeDeriver,
     key: str,
     row: Dict[str, Any],
@@ -43,10 +44,8 @@ def curate_row(
         try:
             baseline[k] = int(v) if v is not None else v
         except (TypeError, ValueError):
-            try:
+            with contextlib.suppress(TypeError, ValueError):
                 baseline[k] = float(v) if v is not None else v
-            except (TypeError, ValueError):
-                pass
 
     table = SymbolTable(row)
     deriver.curate(table)

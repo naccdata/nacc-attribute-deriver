@@ -52,7 +52,7 @@ class AttributeDeriver:
                 except ValidationError as error:
                     raise AttributeDeriverError(
                         f"error loading curation rule row: {error}"
-                    )
+                    ) from error
 
                 attributes[rule_schema.function].append(rule_schema.assignment)
 
