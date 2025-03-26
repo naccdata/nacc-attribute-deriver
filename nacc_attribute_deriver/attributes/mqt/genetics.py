@@ -36,22 +36,3 @@ class GeneticAttributeCollection(AttributeCollection):
 
         return f"{a1},{a2}".lower()
 
-    def _create_ngdsgwas_mqt(self) -> bool:
-        """Mapped from NGDSGWAS."""
-        self.__derived.assert_required(["ngdsgwas"])
-        return bool(self.__derived.get_value("ngdsgwas"))
-
-    def _create_ngdsexom_mqt(self) -> bool:
-        """Mapped from NGDSEXOM."""
-        self.__derived.assert_required(["ngdsexom"])
-        return bool(self.__derived.get_value("ngdsexom"))
-
-    def _create_ngdswgs_mqt(self) -> bool:
-        """Mapped from NGDSWGS."""
-        self.__derived.assert_required(["ngdswgs"])
-        return bool(self.__derived.get_value("ngdswgs"))
-
-    def _create_ngdswes_mqt(self) -> bool:
-        """Mapped from NGDSWES."""
-        self.__derived.assert_required(["ngdswes"])
-        return bool(self.__derived.get_value("ngdswes"))
