@@ -35,7 +35,7 @@ class NCRADAttributeCollection(AttributeCollection):
         #     if f"{self.form_prefix}{field}" not in self.table:
         #         raise MissingRequiredError(f"{field} required to curate NCRAD data")
 
-    def _create_naccapoe(self) -> int:
+    def _create_ncrad_apoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
 
         Should come from the actual imported APOE data

@@ -21,20 +21,20 @@ class TestNCRADAttributeCollection:
     def test_create_naccapoe(self, table, raw_prefix):
         """Tests creating NACCAPOE."""
         attr = NCRADAttributeCollection.create(table)
-        assert attr._create_naccapoe() == 1
+        assert attr._create_ncrad_apoe() == 1
 
         for key, value in NCRADAttributeCollection.APOE_ENCODINGS.items():
             set_attribute(table, raw_prefix, "a1", key[0])
             set_attribute(table, raw_prefix, "a2", key[1])
             attr = NCRADAttributeCollection.create(table)
 
-            assert attr._create_naccapoe() == value
+            assert attr._create_ncrad_apoe() == value
 
     def test_undefined_pairs(self, table, raw_prefix):
         set_attribute(table, raw_prefix, "a1", "e1")
         set_attribute(table, raw_prefix, "a2", "e7")
         attr = NCRADAttributeCollection.create(table)
-        assert attr._create_naccapoe() == 9
+        assert attr._create_ncrad_apoe() == 9
 
     def test_empty_table(self):
         attr = NCRADAttributeCollection.create(SymbolTable())
