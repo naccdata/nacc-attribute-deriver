@@ -33,19 +33,19 @@ class UDSFormD1Attribute(AttributeCollection):
         contributing, or non-contributing)
 
         Args:
-            table: Table with all FW metadata
             fields: Fields to get overall status from
         Returns:
             The overall contributed status, None if none satisfy
         """
+        # TODO: seems like this could be a set
         all_statuses = []
 
         for field in fields:
             all_statuses.append(self.__uds.get_value(field))
 
-        for i in ContributionStatus.all():
-            if any([x == i for x in all_statuses]):
-                return i
+        for status in ContributionStatus.all():
+            if any([x == status for x in all_statuses]):
+                return status
 
         return None
 
