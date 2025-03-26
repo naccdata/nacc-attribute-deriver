@@ -41,20 +41,20 @@ class NIAGADSAttributeCollection(AttributeCollection):
         """
         return 1 if value and str(value) != "0" else 0
 
-    def _create_ngdsgwas(self) -> int:
+    def _create_niagads_gwas(self) -> int:
         """NIAGADS GWAS investigator availability."""
         return self._evaluate_investigator(self.__niagads.get_value("niagads_gwas"))
 
-    def _create_ngdsexom(self) -> int:
+    def _create_niagads_exome(self) -> int:
         """NIAGADS ExomeChip investigator availability."""
         return self._evaluate_investigator(
             self.__niagads.get_value("niagads_exomechip")
         )
 
-    def _create_ngdswgs(self) -> int:
+    def _create_niagads_wgs(self) -> int:
         """NIAGADS WGS investigator availability."""
         return self._evaluate_investigator(self.__niagads.get_value("niagads_wgs"))
 
-    def _create_ngdswes(self) -> int:
+    def _create_niagads_wes(self) -> int:
         """NIAGADS WES investigator availability."""
         return self._evaluate_investigator(self.__niagads.get_value("niagads_wes"))

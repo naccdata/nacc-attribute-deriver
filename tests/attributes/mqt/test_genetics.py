@@ -3,6 +3,9 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.mqt.genetics import GeneticAttributeCollection
+from nacc_attribute_deriver.attributes.nacc.genetics.niagads import (
+    NIAGADSAttributeCollection,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -29,6 +32,19 @@ def table() -> SymbolTable:
     return SymbolTable(data)
 
 
+@pytest.fixture(scope="function")
+def niagads_table() -> SymbolTable:
+    table = SymbolTable()
+    table["file.info.raw"] = {
+        "niagads_gwas": 1,
+        "niagads_exomechip": 1,
+        "niagads_wgs": 0,
+        "niagads_wes": 0,
+    }
+
+    return table
+
+
 class TestGeneticAttributeCollection:
     def test_create_apoe(self, table):
         """Tests creating apoe."""
@@ -40,23 +56,23 @@ class TestGeneticAttributeCollection:
         attr = GeneticAttributeCollection.create(table)
         assert attr._create_apoe() == "Missing/unknown/not assessed"
 
-    def test_create_ngds_vars(self, table):
+    def test_create_ngds_vars(self, niagads_table):
         """Tests creating the NIAGADS availability variables."""
-        attr = GeneticAttributeCollection.create(table)
-        assert attr._create_ngdsgwas_mqt()
-        assert attr._create_ngdsexom_mqt()
-        assert not attr._create_ngdswgs_mqt()
-        assert not attr._create_ngdswes_mqt()
+        attr = NIAGADSAttributeCollection.create(niagads_table)
+        assert attr._create_niagads_gwas()
+        assert attr._create_niagads_exome()
+        assert not attr._create_niagads_wgs()
+        assert not attr._create_niagads_wes()
 
         # test null case
-        table["file.info.derived"] = {
-            "ngdsexom": None,
-            "ngdsgwas": None,
-            "ngdswes": None,
-            "ngdswgs": None,
+        niagads_table["file.info.raw"] = {
+            "niagads_gwas": None,
+            "niagads_exomechip": None,
+            "niagads_wgs": None,
+            "niagads_wes": None,
         }
-        attr = GeneticAttributeCollection.create(table)
-        assert not attr._create_ngdsgwas_mqt()
-        assert not attr._create_ngdsexom_mqt()
-        assert not attr._create_ngdswgs_mqt()
-        assert not attr._create_ngdswes_mqt()
+        attr = NIAGADSAttributeCollection.create(niagads_table)
+        assert not attr._create_niagads_gwas()
+        assert not attr._create_niagads_exome()
+        assert not attr._create_niagads_wgs()
+        assert not attr._create_niagads_wes()
