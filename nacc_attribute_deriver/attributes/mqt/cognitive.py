@@ -4,7 +4,7 @@ Assumes NACC-derived variables are already set
 """
 
 from types import MappingProxyType
-from typing import Dict, List, Optional
+from typing import List, Mapping, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
@@ -159,7 +159,9 @@ class CognitiveAttributeCollection(AttributeCollection):
 
         return attribute_list
 
-    def map_attributes(self, mapping: Dict[str, str], expected_value: int) -> List[str]:
+    def map_attributes(
+        self, mapping: Mapping[str, str], expected_value: int
+    ) -> List[str]:
         """Returns the list of string values for the attributes in the mapping
         for which the value matches the expected value.
 

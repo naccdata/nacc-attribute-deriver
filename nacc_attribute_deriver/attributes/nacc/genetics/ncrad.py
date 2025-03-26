@@ -5,7 +5,7 @@ Right now these should all come from the imported APOE data under
 """
 
 from types import MappingProxyType
-from typing import Dict, Tuple
+from typing import Mapping, Tuple
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
@@ -16,7 +16,7 @@ class NCRADAttributeCollection(AttributeCollection):
     """Class to collect NCRAD attributes."""
 
     # NCRAD (a1, a2) to NACC encoding
-    APOE_ENCODINGS: Dict[Tuple[str, str], int] = MappingProxyType(
+    APOE_ENCODINGS: Mapping[Tuple[str, str], int] = MappingProxyType(
         {
             ("E3", "E3"): 1,
             ("E3", "E4"): 2,
