@@ -120,129 +120,127 @@ class TestHelpers:
 class TestCreateNACCBRAA:
     def test_create_naccbraa_null(self, np_form_table, form_prefix):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccbraa() == 9
+        assert np_form_nulls._create_np_braa() == 9
         set_attribute(np_form_table, form_prefix, "formver", 8)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccbraa() == 9
+        assert np_form_nulls._create_np_braa() == 9
         set_attribute(np_form_table, form_prefix, "formver", 10)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccbraa() == 9
+        assert np_form_nulls._create_np_braa() == 9
 
     def test_create_naccbraa(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccbraa() == 0
+        assert np_form_attribute._create_np_braa() == 0
         set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccbraa() == 7
+        assert np_form_attribute._create_np_braa() == 7
 
 
 class TestCreateNACCNEUR:
     def test_create_naccneur_null(self, np_form_table, form_prefix):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccneur() == 9
+        assert np_form_nulls._create_np_neur() == 9
         set_attribute(np_form_table, form_prefix, "formver", 8)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert (
-            np_form_nulls._create_naccneur() == 9
-        )  # WARNING: Different behavior here!
+        assert np_form_nulls._create_np_neur() == 9  # WARNING: Different behavior here!
         set_attribute(np_form_table, form_prefix, "formver", 10)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccneur() == 9
+        assert np_form_nulls._create_np_neur() == 9
 
     def test_create_naccneur(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccneur() == 3
+        assert np_form_attribute._create_np_neur() == 3
         set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccneur() == 1
+        assert np_form_attribute._create_np_neur() == 1
 
 
 class TestCreateNACCMICR:
     def test_create_naccmicr_null(self, np_form_table, form_prefix):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccmicr() == 9
+        assert np_form_nulls._create_np_micr() == 9
         set_attribute(np_form_table, form_prefix, "formver", 8)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccmicr() == 9  # WARNING: Different behavior here
+        assert np_form_nulls._create_np_micr() == 9  # WARNING: Different behavior here
         set_attribute(np_form_table, form_prefix, "formver", 10)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccmicr() == 9
+        assert np_form_nulls._create_np_micr() == 9
 
     def test_create_naccmicr(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccmicr() == 1
+        assert np_form_attribute._create_np_micr() == 1
         set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccmicr() == 1
+        assert np_form_attribute._create_np_micr() == 1
 
     def test_create_naccmicr_v9(self, np_form_table, form_prefix):
         """Test V9 NACCMICR."""
         set_attribute(np_form_table, form_prefix, "formver", 9)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccmicr() == 9
+        assert np_form_nulls._create_np_micr() == 9
         set_attribute(np_form_table, form_prefix, "npmicro", 1)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccmicr() == 1
+        assert np_form_nulls._create_np_micr() == 1
         set_attribute(np_form_table, form_prefix, "npmicro", 2)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccmicr() == 0
+        assert np_form_nulls._create_np_micr() == 0
         set_attribute(np_form_table, form_prefix, "npmicro", 3)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccmicr() == 8
+        assert np_form_nulls._create_np_micr() == 8
 
 
 class TestCreateNACCHEM:
     def test_create_nacchem_null(self, np_form_table, form_prefix):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_nacchem() == 9
+        assert np_form_nulls._create_np_hem() == 9
         set_attribute(np_form_table, form_prefix, "formver", 8)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_nacchem() == 9  # WARNING: Different behavior here
+        assert np_form_nulls._create_np_hem() == 9  # WARNING: Different behavior here
         set_attribute(np_form_table, form_prefix, "formver", 10)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_nacchem() == 9  # WARNING: Different behavior here
+        assert np_form_nulls._create_np_hem() == 9  # WARNING: Different behavior here
 
     def test_create_nacchem(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_nacchem() == 1
+        assert np_form_attribute._create_np_hem() == 1
         set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_nacchem() == 1
+        assert np_form_attribute._create_np_hem() == 1
 
 
 class TestCreateNACCARTE:
     def test_create_naccarte_null(self, np_form_table, form_prefix):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccarte() == 9
+        assert np_form_nulls._create_np_arte() == 9
         set_attribute(np_form_table, form_prefix, "formver", 8)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccarte() == 9  # WARNING: Different behavior here
+        assert np_form_nulls._create_np_arte() == 9  # WARNING: Different behavior here
         set_attribute(np_form_table, form_prefix, "formver", 10)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccarte() == 9
+        assert np_form_nulls._create_np_arte() == 9
 
     def test_create_naccarte(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccarte() == 0
+        assert np_form_attribute._create_np_arte() == 0
         set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_naccarte() == 1
+        assert np_form_attribute._create_np_arte() == 1
 
 
-class TestCreateNACCLEWY:
-    def test_create_nacclewy_null(self, np_form_table, form_prefix):
+class TestCreatenp_lewy:
+    def test_create_np_lewy_null(self, np_form_table, form_prefix):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_nacclewy() == 9
+        assert np_form_nulls._create_np_lewy() == 9
         set_attribute(np_form_table, form_prefix, "formver", 8)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_nacclewy() == 9
+        assert np_form_nulls._create_np_lewy() == 9
         set_attribute(np_form_table, form_prefix, "formver", 10)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_nacclewy() == 9
+        assert np_form_nulls._create_np_lewy() == 9
 
-    def test_create_nacclewy(self, np_form_attribute_table, form_prefix):
+    def test_create_np_lewy(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_nacclewy() == 0
+        assert np_form_attribute._create_np_lewy() == 0
         set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
-        assert np_form_attribute._create_nacclewy() == 2
+        assert np_form_attribute._create_np_lewy() == 2
