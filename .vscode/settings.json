@@ -25,5 +25,6 @@
         "visitdate",
         "visitdates",
         "yzhang"
-    ]
+    ],
+    "ruff.configuration": "/workspaces/nacc-attribute-deriver/ruff.toml"
 }
