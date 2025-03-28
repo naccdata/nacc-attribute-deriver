@@ -3,8 +3,6 @@
 Mainly sanity checks to make sure modules run at all.
 """
 
-from importlib.resources import files
-
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -31,7 +29,6 @@ def test_uds_form():
     }
 
     form = SymbolTable(data)
-
 
     deriver = AttributeDeriver()
     deriver.curate(form, "uds")
@@ -64,7 +61,6 @@ def test_np_form():
     np_table["file.info.forms.json.npdodyr"] = "2024"
     np_table["file.info.forms.json.npdodmo"] = "12"
     np_table["file.info.forms.json.npdoddy"] = "19"
-
 
     deriver = AttributeDeriver()
     deriver.curate(np_table, "np")
@@ -108,8 +104,6 @@ def test_np_form():
         "birthyr": 1960,
         "normcog": 1,
     }
-
-
 
     deriver = AttributeDeriver()
     deriver.curate(uds_table, "uds")
