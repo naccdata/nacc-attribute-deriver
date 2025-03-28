@@ -1,9 +1,0 @@
-function,location,operation,type,description
-niagads_gwas,subject.info.derived.niagads_gwas,update,,
-niagads_exome,subject.info.derived.niagads_exome,update,,
-niagads_wgs,subject.info.derived.niagads_wgs,update,,
-niagads_wes,subject.info.derived.niagads_wes,update,,
-niagads_gwas,subject.info.genetics.ngdsgwas,update,,
-niagads_exome,subject.info.genetics.ngdsexom,update,,
-niagads_wgs,subject.info.genetics.ngdswes,update,,
-niagads_wgs,subject.info.genetics.ngdswgs,update,,

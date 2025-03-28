@@ -48,6 +48,7 @@ class CurationRule(BaseModel):
 class RuleFileModel(BaseModel):
     """Model for loading serialized rule definitions."""
 
+    scope: str
     function: str
     location: str
     operation: str

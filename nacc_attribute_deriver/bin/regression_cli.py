@@ -8,7 +8,6 @@ import contextlib
 import json
 import logging
 from argparse import ArgumentParser, Namespace
-from importlib.resources import files
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -48,7 +47,7 @@ def curate_row(  # noqa: C901
                 baseline[k] = float(v) if v is not None else v
 
     table = SymbolTable(row)
-    deriver.curate(table)
+    deriver.curate(table, "uds")
     errors = []
 
     # assert derived variables are as expected
@@ -86,10 +85,7 @@ def curate_row(  # noqa: C901
 
 def run(args: Namespace):
     """Generate the attribute schema."""
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/form/uds_rules.csv")
-    deriver = AttributeDeriver(rules_file=rules_file)
+    deriver = AttributeDeriver()
     with args.baseline_json.open("r") as fh:
         baselines = json.load(fh)
 

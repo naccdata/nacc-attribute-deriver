@@ -1,7 +1,0 @@
-function,location,operation,type,description
-scan_pet_dates,subject.info.derived.scan-pet-dates,set,,
-scan_pet_scan_types,subject.info.imaging.pet.scan.types,set,,
-scan_pet_session_count,subject.info.imaging.pet.scan.count,max,,
-scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,,
-scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.amyloid.tracers,set,,
-scan_pet_tau_tracers,subject.info.imaging.pet.scan.tau.tracers,set,,

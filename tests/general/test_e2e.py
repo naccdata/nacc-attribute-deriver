@@ -3,8 +3,6 @@
 Mainly sanity checks to make sure modules run at all.
 """
 
-from importlib.resources import files
-
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -31,12 +29,9 @@ def test_uds_form():
     }
 
     form = SymbolTable(data)
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/form/uds_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(form)
+    deriver = AttributeDeriver()
+    deriver.curate(form, "uds")
     assert form["file.info.derived"] == {
         "naccage": 65,
         "naccalzp": 8,
@@ -67,12 +62,8 @@ def test_np_form():
     np_table["file.info.forms.json.npdodmo"] = "12"
     np_table["file.info.forms.json.npdoddy"] = "19"
 
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/form/np_rules.csv")
-
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(np_table)
+    deriver = AttributeDeriver()
+    deriver.curate(np_table, "np")
     assert np_table.to_dict() == {
         "file": {
             "info": {
@@ -114,12 +105,8 @@ def test_np_form():
         "normcog": 1,
     }
 
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/form/uds_rules.csv")
-
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(uds_table)
+    deriver = AttributeDeriver()
+    deriver.curate(uds_table, "uds")
     assert (
         uds_table["file.info.derived.naccarte"]
         == np_table["subject.info.derived.np_arte"]
@@ -150,12 +137,9 @@ def test_ncrad_apoe():
     """Test against NCRAD APOE, which just derives APOE."""
     form = SymbolTable()
     form["file.info.raw"] = {"a1": "E4", "a2": "E2"}
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/genetics/ncrad_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(form)
+    deriver = AttributeDeriver()
+    deriver.curate(form, "apoe")
     assert form["subject.info.genetics"] == {"apoe": "e4,e2"}
     assert form["subject.info.derived"] == {"naccapoe": 5}
 
@@ -169,12 +153,9 @@ def test_niagads_investigator():
         "niagads_wgs": "0",
         "niagads_wes": None,
     }
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/genetics/niagads_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(form)
+    deriver = AttributeDeriver()
+    deriver.curate(form, "niagads_availability")
 
     assert "file.info.derived" not in form
     assert form["subject.info.derived"] == {
@@ -195,12 +176,9 @@ def test_scan_mri_qc():
     """Test against minimal SCAN MRI QC data."""
     form = SymbolTable()
     form["file.info.raw"] = {"series_type": "T1w", "study_date": "2025-01-01"}
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/scan/scan_mri_qc_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(form)
+    deriver = AttributeDeriver()
+    deriver.curate(form, "scan_mri_qc")
     assert form.to_dict() == {
         "file": {"info": {"raw": {"series_type": "T1w", "study_date": "2025-01-01"}}},
         "subject": {
@@ -218,12 +196,9 @@ def test_scan_pet_qc():
     """Test against minimal SCAN PET QC data."""
     form = SymbolTable()
     form["file.info.raw"] = {"radiotracer": "2.0", "scan_date": "2025-01-01"}
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/scan/scan_pet_qc_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(form)
+    deriver = AttributeDeriver()
+    deriver.curate(form, "scan_pet_qc")
     assert form["subject.info.derived"] == {"scan-pet-dates": ["2025-01-01"]}
     assert form["subject.info.imaging"] == {
         "pet": {
@@ -231,7 +206,7 @@ def test_scan_pet_qc():
                 "types": ["amyloid"],
                 "count": 1,
                 "year-count": 1,
-                "amyloid": {"tracers": ["pib"]},
+                "tracers": ["pib"],
             }
         }
     }
@@ -241,12 +216,9 @@ def test_scan_mri_sbm():
     """Test against minimal SCAN MRI SBM data."""
     form = SymbolTable()
     form["file.info.raw"] = {"cerebrumtcv": "2.5", "wmh": "3.5", "scandt": "2025-01-01"}
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/scan/scan_mri_sbm_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(form)
+    deriver = AttributeDeriver()
+    deriver.curate(form, "scan_mri_sbm")
     assert form.to_dict() == {
         "file": {
             "info": {
@@ -274,12 +246,9 @@ def test_scan_amyloid_gaain():
         "amyloid_status": "1",
         "scandate": "2025-01-01",
     }
-    rules_file = files(  # type: ignore
-        "nacc_attribute_deriver"
-    ).joinpath("config/scan/scan_amyloid_pet_gaain_rules.csv")
 
-    deriver = AttributeDeriver(rules_file=rules_file)
-    deriver.curate(form)
+    deriver = AttributeDeriver()
+    deriver.curate(form, "scan_amyloid_pet_gaain")
     assert form.to_dict() == {
         "file": {
             "info": {
