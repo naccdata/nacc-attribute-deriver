@@ -6,32 +6,44 @@ subject. File must correspond to the curation schema.
 """
 
 import csv
-from collections import defaultdict
-from importlib.resources.abc import Traversable
-from pathlib import Path
-from typing import Dict, List
+from importlib import resources
+from typing import Dict, List, Literal
 
 from pydantic import ValidationError
 
 from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
 
+from . import config
 from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverError
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
 
+ScopeLiterals = Literal[
+    "apoe",
+    "mds",
+    "milestone",
+    "niagads_availability",
+    "np",
+    "scan_amyloid_pet_gaain",
+    "scan_mri_qc",
+    "scan_mri_sbm",
+    "scan_pet_qc",
+    "uds",
+]
+
 
 class AttributeDeriver:
-    def __init__(self, rules_file: Traversable | Path):
+    def __init__(self):
         """Initializer.
 
         Args:
             rules_file: Path to raw CSV containing the list of
                 rules to execute.
         """
-        self.__rules = self.__load_rules(rules_file)
+        self.__rule_map = self.__load_rules()
 
-    def __load_rules(self, rules_file: Traversable | Path) -> List[CurationRule]:
+    def __load_rules(self) -> Dict[str, List[CurationRule]]:
         """Load rules from the given path. All forms called through curate will
         have these rules applied to them.
 
@@ -39,10 +51,10 @@ class AttributeDeriver:
             rules_file: Path to load rules from
         """
 
-        # aggregate all assignments to their attribute function
-        attributes: Dict[str, List[AttributeAssignment]] = defaultdict(list)
-        with rules_file.open("r") as fh:  # type: ignore
-            reader = csv.DictReader(fh)
+        attributes: Dict[str, Dict[str, List[AttributeAssignment]]] = {}
+        rules_file = resources.files(config).joinpath("curation_rules.csv")
+        with rules_file.open("r") as file_stream:
+            reader = csv.DictReader(file_stream)
             if not reader.fieldnames:
                 raise AttributeDeriverError("No CSV headers found in derive rules file")
 
@@ -54,20 +66,27 @@ class AttributeDeriver:
                         f"error loading curation rule row: {error}"
                     ) from error
 
-                attributes[rule_schema.function].append(rule_schema.assignment)
+                attribute_map = attributes.get(rule_schema.scope, {})
+                attribute_list = attribute_map.get(rule_schema.function, [])
+                attribute_list.append(rule_schema.assignment)
+                attribute_map[rule_schema.function] = attribute_list
+                attributes[rule_schema.scope] = attribute_map
 
         # create rule for each attribute
-        rules: List[CurationRule] = []
-        for attribute_function, assignments in attributes.items():
-            rules.append(
-                CurationRule(
-                    function=f"create_{attribute_function}", assignments=assignments
+        rule_map: Dict[str, List[CurationRule]] = {}
+        for scope, attribute_map in attributes.items():
+            for attribute_function, assignments in attribute_map.items():
+                rules = rule_map.get(scope, [])
+                rules.append(
+                    CurationRule(
+                        function=f"create_{attribute_function}", assignments=assignments
+                    )
                 )
-            )
+                rule_map[scope] = rules
 
-        return rules
+        return rule_map
 
-    def curate(self, table: SymbolTable) -> None:
+    def curate(self, table: SymbolTable, scope: ScopeLiterals) -> None:
         """Curate the symbol table with the rules of this deriver.
 
         Assumes has all the FW metadata required to curate with the schema rules.
@@ -81,7 +100,11 @@ class AttributeDeriver:
         instance_collections = AttributeCollectionRegistry.get_attribute_methods()
 
         # derive the variables
-        for rule in self.__rules:
+        rules = self.__rule_map.get(scope)
+        if not rules:
+            raise AttributeDeriverError(f"No rules for scope {scope}")
+
+        for rule in rules:
             method = instance_collections.get(rule.function, None)
             if not method:
                 raise AttributeDeriverError(
