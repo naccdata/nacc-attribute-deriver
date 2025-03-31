@@ -2,31 +2,48 @@
 
 This process is currently actively in development and highly subject to change.
 
-## TODOs
+## Curation Concepts
 
-* Ingest the SCAN data into all projects so we can test/curate it
-    * I have a [crude script here](https://github.com/naccdata/flywheel-monitoring/blob/feature/add-scan-notebook/notebooks/ingest-scan.ipynb) that kicks off the ingestion pipeline
-* Attribute Curation scheduling needs to be updated to support an unordered heap instead of MinHeap for curation types that have no ordering (e.g. APOE data)
-* Test and review data - I did testing in the Sample Project but would be good to get other eyes on it
-* Release this module (probably version 0.1.0 or similar) and make this repo **public** - this is necessary for `flywheel-gear-extensions` to publically find it
-* Also finalize and release the Attribute Curation gear, and push to Flywheel
-* Write a script to kick off curation for all curation types (UDS, NP, APOE, and SCAN) over all projects
-    * Rough draft has been [pushed here](https://github.com/naccdata/flywheel-monitoring/blob/feature/add-scan-notebook/notebooks/curate.ipynb)
-    * The derive rules CSVs under `config` need to be pushed to the corresponding projects as well, the above script assumes they are there
+Subjects and files have *attributes* which are assigned values.
+In Flywheel, an attribute is stored as custom information.
+And, we use the convention that a subject attribute has a prefix `subject.info` while 
+a file attribute has a prefix `file.info`.
 
-Currently the code should be up-to-date with MQT V2. The main thing left to do is to test, which requires 1) ingesting the SCAN data and 2) running the Attribute Curation gear over each project and each file, and then checking the results. We currently do not have an MQT baseline so they will need to be manually checked. The test code in this repo should be fairly in-depth per attribute, but not so much end to end.
+A *raw* file attribute corresponds to a field in or associated with a file.
+So the value of the attribute is directly determined by the file itself, and the value of a raw attributes should not be modified.
+We use the conventions that the prefix for a raw attribute is `file.info.forms` for form data, and `file.info.raw` for non-form data.
 
-Currently I have been running the gear locally, which also means installing this package through a local wheel. There are probably better ways to do this but I generally:
+A *derived* attribute of a file or subject is defined in terms of other attributes.
 
-1. Increment/change the package version in `nacc_attribute_deriver/BUILD`, under the `python_distribution`
-    - It needs to be different otherwise pants doesn't know to reinstall the wheel - there might be a command for it that I don't know
-2. Run `pants package ::` and copy the resulting `dist/*.whl` to `flywheel-gear-extensions/dist`
-3. Update the `requirements.txt` in `flywheel-gear-extensions` to match the version in step 1, e.g. something like `nacc_attribute_deriver@ file:///workspaces/flywheel-gear-extensions/dist/nacc_attribute_deriver-0.0.1.dev3-py3-none-any.whl`
-4. Regenerate lockfiles with `pants generate-lockfiles` - combined with the new version this will force reinstall the wheel
-4. Run `cd gear/attribute-curator` and `pants package src/docker` to build the image
-5. Make sure your environment is set up per the "Running a gear locally" dev docs to run it locally
+We can make this more precise using these concepts:
 
-Eventually, the wheel actually needs to be released, and this repo made public so that `flywheel-gear-extensions` can find and install it. The `requirements.txt` line will then instead be `nacc_attribute_deriver@ https://github.com/naccdata/nacc-attribute-deriver/releases/download/v0.0.1/nacc_form_validator-0.0.1-py3-none-any.whl`. The gear in turn can be built and pushed to Flywheel.
+- A subject *s* has a set of associated files denoted *files*(*s*).
+- A file *f* is associated with only one subject denoted *subject*(*f*)
+
+The value of a derived attribute of a subject *s* may only use the values of other attributes of the subject, or attributes of a file in *files*(*s*).
+The value of a derived attribute of a file *f* may only be determined by the values of other attributes of the file, or attributes of *subject*(*f*).
+
+The implication of this is that we only need to consider a single subject and it's associated files to curate all of the derived attributes.
+
+### Curation rules
+
+We compute the value of a derived variable using a *curation rule*, which is defined by
+
+* the name of the derived attribute,
+* an expression of the other attributes used to compute the value of the derived attribute, and
+* the operator used to assign the value of the expression to the the derived attribute
+
+We constrain curation rules so that they are only defined over the attributes of a subject, and the attributes of a single file.
+So, a curation rule has a *scope* that determines which kinds of file can be applied to.
+
+### Curation order
+
+The implication of the constraint is that if a value derived from a file is needed in the computation of an attribute of a different file, there must be a rule applied first that assigns the value to an attribute of the subject.
+
+For this to work, we must ensure files are visited in order of dependency of the attributes.
+Though, in practice, this can be handled by ordering how files are visited in curation, which is handled by the curation gear.
+
+
 
 ## Workflow
 
