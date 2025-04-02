@@ -26,7 +26,9 @@ class StudyParametersAttributeCollection(AttributeCollection):
         formver = self.__file.get_value("formver")
         versions = self.__subject_info.get_value("study-parameters.uds.versions", [])
         versions = {
-            version for version in versions if re.match(r"UDSv[1-4]", version)
+            version
+            for version in versions
+            if isinstance(version, str) and re.match(r"UDSv[1-4]", version)
         }
         if formver:
             versions.add(f"UDSv{int(float(formver))}")
