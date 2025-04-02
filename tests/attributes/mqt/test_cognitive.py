@@ -101,11 +101,11 @@ class TestCognitiveAttributeCollection:
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr().value == "0.5"  # noqa: SLF001
+        assert attr._create_global_cdr().value == 0.5  # noqa: SLF001
 
         table["file.info.forms.json.cdrglob"] = None
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr() is None  # noqa: SLF001
+        assert attr._create_global_cdr().value is None  # noqa: SLF001
 
     def test_create_normal_cognition(self, table):
         """Tests _create_normal_cognition which just comes from NACCNORM."""
