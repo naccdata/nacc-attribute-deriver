@@ -8,7 +8,7 @@ from typing import List, Mapping, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
-    AttributeValue,
+    DateTaggedValue,
     DerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
@@ -177,54 +177,52 @@ class CognitiveAttributeCollection(AttributeCollection):
         )
         return list({mapping[attribute] for attribute in attributes})
 
-    def _create_contributing_diagnosis(self) -> AttributeValue:
+    def _create_contributing_diagnosis(self) -> DateTaggedValue[List[str]]:
         """Mapped from all possible contributing diagnosis."""
         self.__derived.assert_required(["naccalzp", "nacclbdp"])
-        return AttributeValue(
+        return DateTaggedValue(
             value=self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2),
             date=self.__uds.get_date(),
         )
 
-    def _create_dementia(self) -> AttributeValue:
+    def _create_dementia(self) -> DateTaggedValue[List[str]]:
         """Mapped from all dementia types."""
         self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
-        return AttributeValue(
+        return DateTaggedValue(
             value=self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1),
             date=self.__uds.get_date(),
         )
 
-    def _create_cognitive_status(self) -> Optional[AttributeValue]:
+    def _create_cognitive_status(self) -> DateTaggedValue[Optional[str]]:
         """Mapped from NACCUDSD."""
         self.__derived.assert_required(["naccudsd"])
         cognitive_status = self.NACCUDSD_MAPPING.get(
             self.__derived.get_value("naccudsd"), None
         )
-        if not cognitive_status:
-            return None
 
-        return AttributeValue(
+        return DateTaggedValue(
             value=cognitive_status,
             date=self.__uds.get_date(),
         )
 
-    def _create_etpr(self) -> AttributeValue:
+    def _create_etpr(self) -> DateTaggedValue[str]:
         """Mapped from NACCETPR."""
         self.__derived.assert_required(["naccetpr"])
-        return AttributeValue(
+        return DateTaggedValue(
             value=self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
                 self.__derived.get_value("naccetpr"), "Missing/unknown"
             ),
             date=self.__uds.get_date(),
         )
 
-    def _create_global_cdr(self) -> Optional[AttributeValue]:
+    def _create_global_cdr(self) -> Optional[DateTaggedValue]:
         """Mapped from CDRGLOB."""
         cdrglob = self.__uds.get_value("cdrglob")
         global_cdr = str(cdrglob) if cdrglob else None
         if not global_cdr:
             return None
 
-        return AttributeValue(value=global_cdr, date=self.__uds.get_date())
+        return DateTaggedValue(value=global_cdr, date=self.__uds.get_date())
 
     def _create_normal_cognition(self) -> bool:
         """Mapped from NACCNORM."""

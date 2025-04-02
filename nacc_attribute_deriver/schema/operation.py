@@ -8,7 +8,7 @@ from abc import abstractmethod
 from datetime import date
 from typing import Any, ClassVar, Dict
 
-from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
+from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
@@ -67,7 +67,7 @@ class UpdateOperation(Operation):
     ) -> None:
         """Simply updates the location."""
 
-        if isinstance(value, AttributeValue):
+        if isinstance(value, DateTaggedValue):
             value = value.value
         if value is None:
             return
@@ -84,7 +84,7 @@ class SetOperation(Operation):
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
-        if isinstance(value, AttributeValue):
+        if isinstance(value, DateTaggedValue):
             value = value.value
         if value is None:
             return
@@ -105,7 +105,7 @@ class SortedListOperation(Operation):
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
-        if isinstance(value, AttributeValue):
+        if isinstance(value, DateTaggedValue):
             value = value.value
         if value is None:
             return
@@ -132,7 +132,7 @@ class DateOperation(Operation):
         if value is None:
             return
 
-        if not isinstance(value, AttributeValue):
+        if not isinstance(value, DateTaggedValue):
             raise OperationError(
                 f"Unable to perform {self.LABEL} operation without date"
             )
@@ -173,7 +173,7 @@ class CountOperation(Operation):
         """Counts the result."""
         if not value:  # TODO: should we count 0s/Falses?
             return None
-        if isinstance(value, AttributeValue) and not value.value:
+        if isinstance(value, DateTaggedValue) and not value.value:
             return None
 
         cur_count = table.get(attribute, 0)
@@ -195,7 +195,7 @@ class ComparisonOperation(Operation):
         if self.LABEL not in ["min", "max"]:
             raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
-        if isinstance(value, AttributeValue):
+        if isinstance(value, DateTaggedValue):
             value = value.value
         if value is None:
             return
