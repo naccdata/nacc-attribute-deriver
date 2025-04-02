@@ -3,6 +3,7 @@
 Assumes NACC-derived variables are already set
 """
 
+import re
 from typing import List
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
@@ -10,7 +11,6 @@ from nacc_attribute_deriver.attributes.base.namespace import SubjectInfoNamespac
 from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -25,14 +25,10 @@ class StudyParametersAttributeCollection(AttributeCollection):
         """Keeps track of available UDS versions."""
         formver = self.__file.get_value("formver")
         versions = self.__subject_info.get_value("study-parameters.uds.versions", [])
-        versions = set(versions) if versions else set()
-
+        versions = {
+            version for version in versions if re.match(r"UDSv[1-4]", version)
+        }
         if formver:
-            try:
-                versions.add(int(formver))
-            except (ValueError, TypeError) as error:
-                raise AttributeDeriverError(
-                    "UDS form version must be an integer"
-                ) from error
+            versions.add(f"UDSv{int(float(formver))}")
 
         return list(versions)
