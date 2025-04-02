@@ -215,14 +215,11 @@ class CognitiveAttributeCollection(AttributeCollection):
             date=self.__uds.get_date(),
         )
 
-    def _create_global_cdr(self) -> Optional[DateTaggedValue]:
+    def _create_global_cdr(self) -> Optional[DateTaggedValue[float]]:
         """Mapped from CDRGLOB."""
         cdrglob = self.__uds.get_value("cdrglob")
-        global_cdr = str(cdrglob) if cdrglob else None
-        if not global_cdr:
-            return None
 
-        return DateTaggedValue(value=global_cdr, date=self.__uds.get_date())
+        return DateTaggedValue(value=cdrglob, date=self.__uds.get_date())
 
     def _create_normal_cognition(self) -> bool:
         """Mapped from NACCNORM."""
