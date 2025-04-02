@@ -13,7 +13,8 @@ from nacc_attribute_deriver.utils.date import datetime_from_form_date
 log = logging.getLogger(__name__)
 
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class DateTaggedValue(BaseModel, Generic[T]):
     """Model for a date-tagged attribute value."""

@@ -63,7 +63,6 @@ class MQTSCANAttributeCollection(AttributeCollection):
         file) exists."""
         return self._is_mri_indicator("wmh", MRIPrefix.MRI_SBM)
 
-    # Note: Probably should be "tracer_types"
     def _create_scan_pet_scan_types(self) -> Optional[str]:
         """SCAN PET types available Access radiotracer (scan_petdashboard) and
         map to {amyloid, tau, fdg}"""
