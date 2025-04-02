@@ -154,7 +154,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         return bool(status)
 
-    def _create_scan_mri_session_count(self):
+    def _create_scan_mri_session_count(self) -> int:
         """Number of SCAN MRI session available.
 
         Counts the unique session dates.
@@ -162,7 +162,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
         self.__subject_derived.assert_required(["scan-mri-dates"])
         return len(self.__subject_derived.get_value("scan-mri-dates"))
 
-    def _create_scan_pet_session_count(self):
+    def _create_scan_pet_session_count(self) -> int:
         """Number of SCAN PET sessions available.
 
         Counts the unique session dates.
