@@ -105,7 +105,6 @@ class MQTSCANAttributeCollection(AttributeCollection):
         """Get the centiloid value."""
         return self.get_pet_float("centiloids", PETPrefix.AMYLOID_PET_GAAIN)
 
-    # Note: Be careful about the float return type here with the min computation.
     def _create_scan_pet_centaloid(self) -> Optional[float]:
         """SCAN Amyloid PET scans centiloid min Access CENTILOIDS in UC
         Berkeley GAAIN analysis."""
