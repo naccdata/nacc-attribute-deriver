@@ -422,16 +422,9 @@ class UDSFormA1Attribute(AttributeCollection):
         if (race == 1 or race == 50) and whitex == 1:
             naccnihr = 1
         elif (
-            blackx == 1
-            and race == 50
-            and racesec == 5
-            or blackx == 1
-            and race == 50
-            and racesec == 1
-            and raceter in {2, 3, 4, 5}
-            or race == 50
-            and racesec == 2
-            and raceter == 3
+            (blackx == 1 and race == 50 and racesec == 5)
+            or (blackx == 1 and race == 50 and racesec == 1 and raceter in {2, 3, 4, 5})
+            or (race == 50 and racesec == 2 and raceter == 3)
         ):
             naccnihr = 6
         elif blackx == 1:

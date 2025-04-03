@@ -3,7 +3,10 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.base.scan_namespace import SCANNamespace
-from nacc_attribute_deriver.attributes.mqt.scan import MQTSCANAttributeCollection
+from nacc_attribute_deriver.attributes.mqt.scan import (
+    MQTSCANAttributeCollection,
+    PETAnalysisTypes,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -215,6 +218,7 @@ def scan_pet_amyloid_gaain() -> SymbolTable:
                 "raw": {
                     "tracer": "1.0",
                     "centiloids": "1.5",
+                    "gaain_summary_suvr": "2.703",
                     "amyloid_status": "1",
                     "scandate": "2025-01-01",
                 }
@@ -287,3 +291,122 @@ class TestSCANAmyloidPETGAAINAttribute:
         scan_pet_amyloid_gaain["file.info.raw.amyloid_status"] = None
         attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
         assert not attr._create_scan_pet_amyloid_positivity_indicator()  # noqa: SLF001
+
+    def test_create_scan_pet_amyloid_gaain_analysis_type(self, scan_pet_amyloid_gaain):
+        """Tests _create_scan_pet_amyloid_gaain_analysis_type."""
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert (
+            attr._create_scan_pet_amyloid_gaain_analysis_type()  # noqa: SLF001
+            == PETAnalysisTypes.AMYLOID_GAAIN
+        )
+
+        # missing centiloid
+        scan_pet_amyloid_gaain["file.info.raw.centiloids"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_amyloid_gaain_analysis_type() is None  # noqa: SLF001
+
+        # missing gaain_summary_suvr
+        scan_pet_amyloid_gaain["file.info.raw.centiloids"] = "1.234"
+        scan_pet_amyloid_gaain["file.info.raw.gaain_summary_suvr"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_amyloid_gaain_analysis_type() is None  # noqa: SLF001
+
+        # empty
+        scan_pet_amyloid_gaain["file.info.raw.centiloids"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        assert attr._create_scan_pet_amyloid_gaain_analysis_type() is None  # noqa: SLF001
+
+
+@pytest.fixture(scope="function")
+def scan_pet_amyloid_npdka() -> SymbolTable:
+    """Create dummy data for a SCAN PET Amyloid NPDKA (analysis)-focused
+    curation."""
+    data = {
+        "file": {
+            "info": {"raw": {"npdka_summary_suvr": "2.411", "scandate": "2021-04-06"}}
+        }
+    }
+
+    return SymbolTable(data)
+
+
+class TestSCANAmyloidPETNPDKAAttribute:
+    """From v_ucberkeley_amyloid_mrifree_npdka.csv."""
+
+    def test_create_scan_pet_amyloid_npdka_analysis_type(self, scan_pet_amyloid_npdka):
+        """Tests _create_scan_pet_amyloid_npdka_analysis_type."""
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_npdka)
+        assert (
+            attr._create_scan_pet_amyloid_npdka_analysis_type()  # noqa: SLF001
+            == PETAnalysisTypes.AMYLOID_NPDKA
+        )
+
+        # missing
+        scan_pet_amyloid_npdka["file.info.raw.npdka_summary_suvr"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_npdka)
+        assert attr._create_scan_pet_amyloid_npdka_analysis_type() is None  # noqa: SLF001
+
+
+@pytest.fixture(scope="function")
+def scan_pet_fdg_npdka() -> SymbolTable:
+    """Create dummy data for a SCAN PET FDG NPDKA (analysis)-focused
+    curation."""
+    data = {
+        "file": {
+            "info": {"raw": {"fdg_metaroi_suvr": "1.139", "scandate": "2024-03-08"}}
+        }
+    }
+
+    return SymbolTable(data)
+
+
+class TestSCANFDGPETNPDKAAttribute:
+    """From v_ucberkeley_fdg_metaroi_npdka.csv."""
+
+    def test_create_scan_pet_fdg_npdka_analysis_type(self, scan_pet_fdg_npdka):
+        """Tests _create_scan_pet_fdg_npdka_analysis_type."""
+        attr = MQTSCANAttributeCollection.create(scan_pet_fdg_npdka)
+        assert (
+            attr._create_scan_pet_fdg_npdka_analysis_type()  # noqa: SLF001
+            == PETAnalysisTypes.FDG_NPDKA
+        )
+
+        # missing
+        scan_pet_fdg_npdka["file.info.raw.fdg_metaroi_suvr"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_fdg_npdka)
+        assert attr._create_scan_pet_fdg_npdka_analysis_type() is None  # noqa: SLF001
+
+
+@pytest.fixture(scope="function")
+def scan_pet_tau_npdka() -> SymbolTable:
+    """Create dummy data for a SCAN PET Tau NPDKA (analysis)-focused
+    curation."""
+    data = {
+        "file": {
+            "info": {
+                "raw": {
+                    "meta_temporal_suvr": "1.276",
+                    "scandate": "2023-05-17",
+                }
+            }
+        }
+    }
+
+    return SymbolTable(data)
+
+
+class TestSCANTauPETNPDKAAttribute:
+    """From v_ucberkeley_tau_mrifree_npdka.csv."""
+
+    def test_create_scan_pet_tau_npdka_analysis_type(self, scan_pet_tau_npdka):
+        """Tests _create_scan_pet_tau_npdka_analysis_type."""
+        attr = MQTSCANAttributeCollection.create(scan_pet_tau_npdka)
+        assert (
+            attr._create_scan_pet_tau_npdka_analysis_type()  # noqa: SLF001
+            == PETAnalysisTypes.TAU_NPDKA
+        )
+
+        # missing
+        scan_pet_tau_npdka["file.info.raw.meta_temporal_suvr"] = None
+        attr = MQTSCANAttributeCollection.create(scan_pet_tau_npdka)
+        assert attr._create_scan_pet_tau_npdka_analysis_type() is None  # noqa: SLF001
