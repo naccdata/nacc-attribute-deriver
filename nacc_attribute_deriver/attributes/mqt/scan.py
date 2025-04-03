@@ -2,7 +2,7 @@
 
 Assumes NACC-derived variables are already set
 """
-from enum import Enum
+
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
@@ -20,11 +20,10 @@ from nacc_attribute_deriver.utils.date import get_unique_years
 
 
 class PETAnalysisTypes:
-
-    AMYLOID_GAAIN = 'amyloid_gaain_centiloid_suvr'
-    AMYLOID_NPDKA = 'amyloid_npdka_suvr'
-    FDG_NPDKA = 'fdg_npdka_suvr'
-    TAU_NPDKA = 'tau_npdka_suvr'
+    AMYLOID_GAAIN = "amyloid_gaain_centiloid_suvr"
+    AMYLOID_NPDKA = "amyloid_npdka_suvr"
+    FDG_NPDKA = "fdg_npdka_suvr"
+    TAU_NPDKA = "tau_npdka_suvr"
 
 
 class MQTSCANAttributeCollection(AttributeCollection):
@@ -104,7 +103,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
     def get_centiloid(self) -> Optional[float]:
         """Get the centiloid value."""
-        return self.get_pet_float('centiloids', PETPrefix.AMYLOID_PET_GAAIN)
+        return self.get_pet_float("centiloids", PETPrefix.AMYLOID_PET_GAAIN)
 
     # Note: Be careful about the float return type here with the min computation.
     def _create_scan_pet_centaloid(self) -> Optional[float]:
@@ -199,20 +198,20 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_pet_amyloid_gaain_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid GAAIN Centiloid/SUVR analysis type."""
         centiloid = self.get_centiloid()
-        suvr = self.get_pet_float('gaain_summary_suvr', PETPrefix.AMYLOID_PET_GAAIN)
+        suvr = self.get_pet_float("gaain_summary_suvr", PETPrefix.AMYLOID_PET_GAAIN)
         return PETAnalysisTypes.AMYLOID_GAAIN if centiloid and suvr else None
 
     def _create_scan_pet_amyloid_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid NPDKA SUVR analysis type."""
-        suvr = self.get_pet_float('npdka_summary_suvr', PETPrefix.AMYLOID_PET_NPDKA)
+        suvr = self.get_pet_float("npdka_summary_suvr", PETPrefix.AMYLOID_PET_NPDKA)
         return PETAnalysisTypes.AMYLOID_NPDKA if suvr else None
 
     def _create_scan_pet_fdg_npdka_analysis_type(self) -> Optional[str]:
         """Returns the FDG NPDKA SUVR analysis type."""
-        suvr = self.get_pet_float('fdg_metaroi_suvr', PETPrefix.FDG_PET_NPDKA)
+        suvr = self.get_pet_float("fdg_metaroi_suvr", PETPrefix.FDG_PET_NPDKA)
         return PETAnalysisTypes.FDG_NPDKA if suvr else None
 
     def _create_scan_pet_tau_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Tau NPDKA SUVR analysis type."""
-        suvr = self.get_pet_float('meta_temporal_suvr', PETPrefix.TAU_PET_NPDKA)
+        suvr = self.get_pet_float("meta_temporal_suvr", PETPrefix.TAU_PET_NPDKA)
         return PETAnalysisTypes.TAU_NPDKA if suvr else None

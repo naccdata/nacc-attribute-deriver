@@ -186,9 +186,9 @@ def test_scan_mri_qc():
                 "derived": {"scan-mri-dates": ["2025-01-01"]},
                 "imaging": {
                     "mri": {"scan": {"types": ["T1w"], "count": 1, "year-count": 1}}
-                }
+                },
             }
-        }
+        },
     }
 
 
@@ -233,7 +233,7 @@ def test_scan_mri_sbm():
                     }
                 }
             }
-        }
+        },
     }
 
 
@@ -274,12 +274,10 @@ def test_scan_amyloid_gaain():
                                 },
                                 "positive-scans": True,
                             },
-                            "analysis-types": [
-                                "amyloid_gaain_centiloid_suvr"
-                            ]
+                            "analysis-types": ["amyloid_gaain_centiloid_suvr"],
                         }
                     }
                 }
             }
-        }
+        },
     }
