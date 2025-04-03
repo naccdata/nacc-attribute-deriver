@@ -23,49 +23,6 @@ class CognitiveAttributeCollection(AttributeCollection):
         self.__uds = UDSNamespace(table)
         self.__derived = DerivedNamespace(table, date_attribute="visitdate")
 
-    # several labels not consistent with DIAGNOSIS_MAPPINGS
-    PRIMARY_DIAGNOSIS_MAPPINGS = MappingProxyType(
-        {
-            1: "Alzheimer\u0027s disease (AD)",
-            2: "Lewy body disease (LBD)",
-            3: "Multiple system atrophy (MSA)",
-            4: "Progressive supranuclear palsy (PSP)",
-            5: "Corticobasal degeneration (CBD)",
-            6: "FTLD with motor neuron disease (e.g., ALS)",
-            7: "FTLD, other",
-            8: "Vascular brain injury or vascular dementia including stroke",
-            9: "Essential tremor",
-            10: "Down syndrome",
-            11: "Huntington\u0027s disease",
-            12: "Prion disease (CJD, other)",
-            13: "Traumatic brain injury (TBI)",
-            14: "Normal-pressure hydrocephalus (NPH)",
-            15: "Epilepsy",  # not consistent
-            16: "CNS neoplasm",
-            17: "Human immunodeficiency virus (HIV)",  # not consistent
-            18: "Other neurological, genetic, or infection condition",
-            19: "Depression",
-            20: "Bipolar disorder",
-            21: "Schizophrenia or other psychosis",
-            22: "Anxiety disorder",  # not consistent
-            23: "Delirium",
-            24: "Post-traumatic stress disorder (PTSD)",  # not consistent
-            25: "Other psychiatric disease",
-            26: "Cognitive impairment due to alcohol abuse",  # not consistent
-            27: "Cognitive impairment due to other substance abuse",  # not consistent
-            28:  # not consistent
-            "Cognitive impairment due to systemic disease or medical illness",
-            29: "Cognitive impairment due to medications",  # not consistent
-            30:  # not consistent
-            (
-                "Cognitive impairment for other "
-                "specified reasons (i.e., written-in values)"
-            ),
-            88: "Not applicable",  # no corresponding value in DIAGNOSIS_MAPPINGS
-            99: "Missing/unknown",  # no corresponding value in DIAGNOSIS_MAPPINGS
-        }
-    )
-
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS = MappingProxyType(
         {
@@ -186,20 +143,17 @@ class CognitiveAttributeCollection(AttributeCollection):
     def _create_cognitive_status(self) -> DateTaggedValue[Optional[int]]:
         """Mapped from NACCUDSD."""
         self.__derived.assert_required(["naccudsd"])
-        cognitive_status = self.__derived.get_value("naccudsd")
 
         return DateTaggedValue(
-            value=cognitive_status,
+            value=self.__derived.get_value("naccudsd"),
             date=self.__uds.get_date(),
         )
 
-    def _create_etpr(self) -> DateTaggedValue[str]:
+    def _create_etpr(self) -> DateTaggedValue[int]:
         """Mapped from NACCETPR."""
         self.__derived.assert_required(["naccetpr"])
         return DateTaggedValue(
-            value=self.PRIMARY_DIAGNOSIS_MAPPINGS.get(
-                self.__derived.get_value("naccetpr"), "Missing/unknown"
-            ),
+            value=self.__derived.get_value("naccetpr"),
             date=self.__uds.get_date(),
         )
 
