@@ -107,14 +107,14 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         self.__derived.assert_required(["naccdage"])
         return self.__derived.get_value("naccdage")
 
-    VITAL_STATUS_MAPPINGS = MappingProxyType({0: "Not deceased/unknown", 1: "Deceased"})
+    VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> DateTaggedValue[str]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
         self.__derived.assert_required(["naccdied"])
         return DateTaggedValue(
             value=self.VITAL_STATUS_MAPPINGS.get(
-                self.__derived.get_value("naccdied"), "Unknown"
+                self.__derived.get_value("naccdied"), "unknown"
             ),
             date=self.__uds.get_date(),
         )
