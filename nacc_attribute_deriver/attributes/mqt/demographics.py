@@ -65,7 +65,7 @@ class DemographicsAttributeCollection(AttributeCollection):
         except TypeError as e:
             raise TypeError("primlang must be an integer") from e
 
-    def _create_uds_education_level(self) -> Optional[DateTaggedValue[int]]:
+    def _create_uds_education_level(self) -> DateTaggedValue[Optional[int]]:
         """UDS education level."""
         result = self.__uds.get_dated_value("educ", None)
         # ensure int
@@ -73,7 +73,7 @@ class DemographicsAttributeCollection(AttributeCollection):
             if result:
                 result.value = int(result.value)
         except TypeError:
-            return None
+            result.value = None
 
         return result
 
