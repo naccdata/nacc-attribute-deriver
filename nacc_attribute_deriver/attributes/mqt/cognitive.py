@@ -23,16 +23,6 @@ class CognitiveAttributeCollection(AttributeCollection):
         self.__uds = UDSNamespace(table)
         self.__derived = DerivedNamespace(table, date_attribute="visitdate")
 
-    NACCUDSD_MAPPING = MappingProxyType(
-        {
-            1: "Normal cognition",
-            2: "Impaired-not-MCI",
-            3: "MCI",
-            4: "Dementia",
-            5: "All of the above",
-        }
-    )
-
     # several labels not consistent with DIAGNOSIS_MAPPINGS
     PRIMARY_DIAGNOSIS_MAPPINGS = MappingProxyType(
         {
@@ -193,12 +183,10 @@ class CognitiveAttributeCollection(AttributeCollection):
             date=self.__uds.get_date(),
         )
 
-    def _create_cognitive_status(self) -> DateTaggedValue[Optional[str]]:
+    def _create_cognitive_status(self) -> DateTaggedValue[Optional[int]]:
         """Mapped from NACCUDSD."""
         self.__derived.assert_required(["naccudsd"])
-        cognitive_status = self.NACCUDSD_MAPPING.get(
-            self.__derived.get_value("naccudsd"), None
-        )
+        cognitive_status = self.__derived.get_value("naccudsd")
 
         return DateTaggedValue(
             value=cognitive_status,
