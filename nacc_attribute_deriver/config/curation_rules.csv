@@ -94,6 +94,7 @@ uds,uds_primary_language,subject.info.demographics.uds.primary-language.latest,l
 uds,uds_education_level,subject.info.demographics.uds.education-level.latest,latest,,
 uds,age_at_death,subject.info.demographics.uds.age-at-death,update,,
 uds,vital_status,subject.info.demographics.uds.vital-status.latest,latest,,
+uds,np_available,subject.info.demographics.uds.np-available,max,,
 uds,total_uds_visits,subject.info.longitudinal-data.uds.count,max,,
 uds,years_of_uds,subject.info.longitudinal-data.uds.year-count,max,,
 uds,uds_versions_available,subject.info.study-parameters.uds.versions,set,,

@@ -256,7 +256,7 @@ def test_scan_amyloid_gaain():
     form["subject.info.imaging.pet.scan.analysis-types"] = [
         "amyloid_npdka_suvr",
         "fdg_npdka_suvr",
-        "tau_npdka_suvr"
+        "tau_npdka_suvr",
     ]
 
     deriver = AttributeDeriver()
@@ -289,7 +289,7 @@ def test_scan_amyloid_gaain():
                                 "amyloid_gaain_centiloid_suvr",
                                 "amyloid_npdka_suvr",
                                 "fdg_npdka_suvr",
-                                "tau_npdka_suvr"
+                                "tau_npdka_suvr",
                             ],
                         }
                     }

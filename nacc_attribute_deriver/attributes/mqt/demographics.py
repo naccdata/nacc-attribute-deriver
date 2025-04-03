@@ -10,6 +10,7 @@ from nacc_attribute_deriver.attributes.attribute_collection import AttributeColl
 from nacc_attribute_deriver.attributes.base.namespace import (
     DateTaggedValue,
     DerivedNamespace,
+    SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
     UDSNamespace,
@@ -55,21 +56,33 @@ class DemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_primary_language(self) -> DateTaggedValue[str]:
         """UDS primary language."""
-        primlang = self.__uds.get_value("primlang", 9)
-        return DateTaggedValue(
-            value=self.PRIMARY_LANGUAGE_MAPPING.get(primlang, "Unknown"),
-            date=self.__uds.get_date(),
-        )
+        try:
+            primlang = int(self.__uds.get_value("primlang", 9))
+            return DateTaggedValue(
+                value=self.PRIMARY_LANGUAGE_MAPPING.get(primlang, "Unknown"),
+                date=self.__uds.get_date(),
+            )
+        except TypeError as e:
+            raise TypeError("primlang must be an integer") from e
 
-    def _create_uds_education_level(self) -> DateTaggedValue[Optional[int]]:
+    def _create_uds_education_level(self) -> Optional[DateTaggedValue[int]]:
         """UDS education level."""
-        return self.__uds.get_dated_value("educ", None)
+        result = self.__uds.get_dated_value("educ", None)
+        # ensure int
+        try:
+            if result:
+                result.value = int(result.value)
+        except TypeError:
+            return None
+
+        return result
 
 
 class DerivedDemographicsAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
         self.__derived = DerivedNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table)
 
     def _create_uds_age(self) -> DateTaggedValue[int]:
         """UDS age at form date, mapped from NACCAGE."""
@@ -118,3 +131,9 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
             ),
             date=self.__uds.get_date(),
         )
+
+    def _create_np_available(self) -> bool:
+        """NP available, which is just checking for the existence of
+        np_death_age."""
+        self.__subject_derived.assert_required(["np_death_age"])
+        return self.__subject_derived.get_value("np_death_age") is not None
