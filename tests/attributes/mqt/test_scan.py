@@ -5,6 +5,7 @@ import pytest
 from nacc_attribute_deriver.attributes.base.scan_namespace import SCANNamespace
 from nacc_attribute_deriver.attributes.mqt.scan import (
     MQTSCANAttributeCollection,
+    MRIAnalysisTypes,
     PETAnalysisTypes,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -206,6 +207,25 @@ class TestSCANMRISBMAttribute:
         scan_mri_sbm["file.info.raw.wmh"] = None
         attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
         assert not attr._create_scan_flair_wmh_indicator()  # noqa: SLF001
+
+    def test_create_mri_scan_analysis_types(self, scan_mri_sbm):
+        """Tests _create_mri_scan_analysis_types."""
+        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        assert (
+            attr._create_mri_scan_analysis_types()  # noqa: SLF001
+            == [MRIAnalysisTypes.T1_VOLUME, MRIAnalysisTypes.FLAIR_WMH]
+        )
+
+        # t1 volume is missing
+        scan_mri_sbm["file.info.raw.cerebrumtcv"] = None
+        assert (
+            attr._create_mri_scan_analysis_types()  # noqa: SLF001
+            == [MRIAnalysisTypes.FLAIR_WMH]
+        )
+
+        # both are missing
+        scan_mri_sbm["file.info.raw.wmh"] = None
+        assert attr._create_mri_scan_analysis_types() is None  # noqa: SLF001
 
 
 @pytest.fixture(scope="function")

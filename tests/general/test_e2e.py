@@ -229,7 +229,11 @@ def test_scan_mri_sbm():
             "info": {
                 "imaging": {
                     "mri": {
-                        "scan": {"t1": {"brain-volume": True}, "flair": {"wmh": True}}
+                        "scan": {
+                            "t1": {"brain-volume": True},
+                            "flair": {"wmh": True},
+                            "analysis-types": ["t1_volume", "flair_wmh"],
+                        }
                     }
                 }
             }

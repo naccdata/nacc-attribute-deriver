@@ -3,7 +3,7 @@
 Assumes NACC-derived variables are already set
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
@@ -17,6 +17,11 @@ from nacc_attribute_deriver.attributes.base.scan_namespace import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
+
+
+class MRIAnalysisTypes:
+    T1_VOLUME = "t1_volume"
+    FLAIR_WMH = "flair_wmh"
 
 
 class PETAnalysisTypes:
@@ -69,6 +74,17 @@ class MQTSCANAttributeCollection(AttributeCollection):
         """SCAN FLAIR WMH analysis available available Check if wmh (ucdmrisbm
         file) exists."""
         return self._is_mri_indicator("wmh", MRIPrefix.MRI_SBM)
+
+    def _create_mri_scan_analysis_types(self) -> Optional[List[str]]:
+        """SCAN MRI analysis types available, which is based on the above two
+        indicators."""
+        result = []
+        if self._create_scan_volume_analysis_indicator():
+            result.append(MRIAnalysisTypes.T1_VOLUME)
+        if self._create_scan_flair_wmh_indicator():
+            result.append(MRIAnalysisTypes.FLAIR_WMH)
+
+        return result if result else None
 
     def _create_scan_pet_scan_types(self) -> Optional[str]:
         """SCAN PET types available Access radiotracer (scan_petdashboard) and
