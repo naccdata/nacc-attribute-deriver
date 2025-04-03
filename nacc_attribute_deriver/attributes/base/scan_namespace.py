@@ -60,7 +60,7 @@ class SCANNamespace(RawNamespace):
             4: "florbetaben",
             5: "nav4694",
             6: "flortaucipir",
-            7: "MK6240",
+            7: "mk6240",
             8: "pi2620",
             9: "gtp1",
             99: "unknown",
