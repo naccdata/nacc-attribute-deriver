@@ -186,9 +186,9 @@ def test_scan_mri_qc():
                 "derived": {"scan-mri-dates": ["2025-01-01"]},
                 "imaging": {
                     "mri": {"scan": {"types": ["T1w"], "count": 1, "year-count": 1}}
-                },
+                }
             }
-        },
+        }
     }
 
 
@@ -233,7 +233,7 @@ def test_scan_mri_sbm():
                     }
                 }
             }
-        },
+        }
     }
 
 
@@ -243,6 +243,7 @@ def test_scan_amyloid_gaain():
     form["file.info.raw"] = {
         "tracer": "3.0",
         "centiloids": "1.5",
+        "gaain_summary_suvr": "2.703",
         "amyloid_status": "1",
         "scandate": "2025-01-01",
     }
@@ -255,6 +256,7 @@ def test_scan_amyloid_gaain():
                 "raw": {
                     "tracer": "3.0",
                     "centiloids": "1.5",
+                    "gaain_summary_suvr": "2.703",
                     "amyloid_status": "1",
                     "scandate": "2025-01-01",
                 }
@@ -271,10 +273,13 @@ def test_scan_amyloid_gaain():
                                     "centiloid": {"min": 1.5}
                                 },
                                 "positive-scans": True,
-                            }
+                            },
+                            "analysis-types": [
+                                "amyloid_gaain_centiloid_suvr"
+                            ]
                         }
                     }
                 }
             }
-        },
+        }
     }
