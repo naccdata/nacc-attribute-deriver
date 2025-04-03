@@ -83,7 +83,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
             1: "White",
             2: "Black or African American",
             3: "American Indian or Alaska Native",
-            4: "Native Hawaiian or Pacific Islander",
+            4: "Native Hawaiian or Other Pacific Islander",
             5: "Asian",
             6: "Multiracial",
             7: "Middle Eastern or Northern African",
