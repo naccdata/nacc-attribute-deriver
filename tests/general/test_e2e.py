@@ -232,7 +232,7 @@ def test_scan_mri_sbm():
                         "scan": {
                             "t1": {"brain-volume": True},
                             "flair": {"wmh": True},
-                            "analysis-types": ["t1_volume", "flair_wmh"],
+                            "analysis-types": ["flair_wmh", "t1_volume"],
                         }
                     }
                 }
@@ -251,6 +251,13 @@ def test_scan_amyloid_gaain():
         "amyloid_status": "1",
         "scandate": "2025-01-01",
     }
+
+    # also test aggregation works as expected on analysis-types
+    form["subject.info.imaging.pet.scan.analysis-types"] = [
+        "amyloid_npdka_suvr",
+        "fdg_npdka_suvr",
+        "tau_npdka_suvr"
+    ]
 
     deriver = AttributeDeriver()
     deriver.curate(form, "scan_amyloid_pet_gaain")
@@ -278,7 +285,12 @@ def test_scan_amyloid_gaain():
                                 },
                                 "positive-scans": True,
                             },
-                            "analysis-types": ["amyloid_gaain_centiloid_suvr"],
+                            "analysis-types": [
+                                "amyloid_gaain_centiloid_suvr",
+                                "amyloid_npdka_suvr",
+                                "fdg_npdka_suvr",
+                                "tau_npdka_suvr"
+                            ],
                         }
                     }
                 }

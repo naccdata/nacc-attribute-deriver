@@ -97,7 +97,8 @@ class SetOperation(Operation):
         elif value is not None:
             cur_set.add(value)
 
-        table[attribute] = list(cur_set)
+        # sorts just for consistency
+        table[attribute] = sorted(list(cur_set))
 
 
 class SortedListOperation(Operation):
