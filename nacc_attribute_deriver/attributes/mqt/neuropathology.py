@@ -3,6 +3,8 @@
 Assumes NACC-derived variables are already set
 """
 
+from typing import Optional
+
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     DerivedNamespace,
@@ -35,17 +37,17 @@ class NeuropathologyAttributeCollection(AttributeCollection):
         self.__derived.assert_required(["naccmicr"])
         return self.__derived.get_value("naccmicr")
 
-    def _create_np_hemorrhages_and_microbleeds(self) -> int:
+    def _create_np_hemorrhages_and_microbleeds(self) -> Optional[int]:
         """Mapped from NACCHEM."""
         self.__derived.assert_required(["nacchem"])
         return self.__derived.get_value("nacchem")
 
-    def _create_np_arteriolosclerosis(self) -> int:
+    def _create_np_arteriolosclerosis(self) -> Optional[int]:
         """Mapped from NACCARTE."""
         self.__derived.assert_required(["naccarte"])
         return self.__derived.get_value("naccarte")
 
-    def _create_np_lewy_pathology(self) -> int:
+    def _create_np_lewy_pathology(self) -> Optional[int]:
         """Mapped from NACCLEWY."""
         self.__derived.assert_required(["nacclewy"])
         return self.__derived.get_value("nacclewy")
