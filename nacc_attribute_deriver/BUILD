@@ -7,7 +7,7 @@ python_distribution(
     sdist=True,
     provides=python_artifact(
         name="nacc-attribute-deriver",
-        version="1.0.0",
+        version="1.1.0",
         description="Derives variables",
         author="NACC",
         author_email="nacchelp@uw.edu",

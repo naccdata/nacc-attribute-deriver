@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 0.0.1
+## 1.1.0
 
-* Preliminary version, handles up to MQT V2
+* Refines MQT V2 variables, namely making sure code aligns with the FW data model
+
+## 1.0.0
+
+* Initial version, handles up to MQT V2
