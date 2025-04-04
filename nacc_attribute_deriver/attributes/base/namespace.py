@@ -2,7 +2,7 @@
 
 import datetime
 import logging
-from typing import Any, List, Optional
+from typing import Any, Generic, List, Optional, TypeVar
 
 from pydantic import BaseModel, ConfigDict, field_serializer
 
@@ -13,13 +13,16 @@ from nacc_attribute_deriver.utils.date import datetime_from_form_date
 log = logging.getLogger(__name__)
 
 
-class AttributeValue(BaseModel):
+T = TypeVar("T")
+
+
+class DateTaggedValue(BaseModel, Generic[T]):
     """Model for a date-tagged attribute value."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     date: Optional[datetime.date]
-    value: Any
+    value: T
 
     @field_serializer("date")
     def serialize_date_as_str(self, date: Optional[datetime.date]):
@@ -85,14 +88,14 @@ class BaseNamespace:
 
     def get_dated_value(
         self, attribute: str, default: Optional[Any] = None
-    ) -> AttributeValue:
+    ) -> DateTaggedValue[Any]:
         """Grab value from the table using the key and prefix, if provided.
 
         Args:
             key: Key to grab value for
             default: Default value to return if key is not found
         """
-        return AttributeValue(
+        return DateTaggedValue(
             value=self.get_value(attribute=attribute, default=default),
             date=self.get_date(),
         )

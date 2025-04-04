@@ -3,7 +3,7 @@
 Assumes NACC-derived variables are already set
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
@@ -17,6 +17,18 @@ from nacc_attribute_deriver.attributes.base.scan_namespace import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
+
+
+class MRIAnalysisTypes:
+    T1_VOLUME = "t1_volume"
+    FLAIR_WMH = "flair_wmh"
+
+
+class PETAnalysisTypes:
+    AMYLOID_GAAIN = "amyloid_gaain_centiloid_suvr"
+    AMYLOID_NPDKA = "amyloid_npdka_suvr"
+    FDG_NPDKA = "fdg_npdka_suvr"
+    TAU_NPDKA = "tau_npdka_suvr"
 
 
 class MQTSCANAttributeCollection(AttributeCollection):
@@ -63,7 +75,17 @@ class MQTSCANAttributeCollection(AttributeCollection):
         file) exists."""
         return self._is_mri_indicator("wmh", MRIPrefix.MRI_SBM)
 
-    # Note: Probably should be "tracer_types"
+    def _create_mri_scan_analysis_types(self) -> Optional[List[str]]:
+        """SCAN MRI analysis types available, which is based on the above two
+        indicators."""
+        result = []
+        if self._create_scan_volume_analysis_indicator():
+            result.append(MRIAnalysisTypes.T1_VOLUME)
+        if self._create_scan_flair_wmh_indicator():
+            result.append(MRIAnalysisTypes.FLAIR_WMH)
+
+        return result if result else None
+
     def _create_scan_pet_scan_types(self) -> Optional[str]:
         """SCAN PET types available Access radiotracer (scan_petdashboard) and
         map to {amyloid, tau, fdg}"""
@@ -85,18 +107,20 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         return None
 
+    def get_pet_float(self, key: str, subprefix: PETPrefix):
+        """Get PET float value."""
+        try:
+            self.__scan.assert_required(REQUIRED_FIELDS[subprefix])
+            return float(self.__scan.get_value(key))
+        except (ValueError, TypeError):
+            pass
+
+        return None
+
     def get_centiloid(self) -> Optional[float]:
         """Get the centiloid value."""
-        centiloid = None
-        try:
-            self.__scan.assert_required(REQUIRED_FIELDS[PETPrefix.AMYLOID_PET_GAAIN])
-            centiloid = float(self.__scan.get_value("centiloids"))
-        except (ValueError, TypeError):
-            return None
+        return self.get_pet_float("centiloids", PETPrefix.AMYLOID_PET_GAAIN)
 
-        return centiloid
-
-    # Note: Be careful about the float return type here with the min computation.
     def _create_scan_pet_centaloid(self) -> Optional[float]:
         """SCAN Amyloid PET scans centiloid min Access CENTILOIDS in UC
         Berkeley GAAIN analysis."""
@@ -154,7 +178,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         return bool(status)
 
-    def _create_scan_mri_session_count(self):
+    def _create_scan_mri_session_count(self) -> int:
         """Number of SCAN MRI session available.
 
         Counts the unique session dates.
@@ -162,7 +186,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
         self.__subject_derived.assert_required(["scan-mri-dates"])
         return len(self.__subject_derived.get_value("scan-mri-dates"))
 
-    def _create_scan_pet_session_count(self):
+    def _create_scan_pet_session_count(self) -> int:
         """Number of SCAN PET sessions available.
 
         Counts the unique session dates.
@@ -185,3 +209,24 @@ class MQTSCANAttributeCollection(AttributeCollection):
         """Years of SCAN PET scans available."""
         self.__subject_derived.assert_required(["scan-pet-dates"])
         return len(get_unique_years(self.__subject_derived.get_value("scan-pet-dates")))
+
+    def _create_scan_pet_amyloid_gaain_analysis_type(self) -> Optional[str]:
+        """Returns the Amyloid GAAIN Centiloid/SUVR analysis type."""
+        centiloid = self.get_centiloid()
+        suvr = self.get_pet_float("gaain_summary_suvr", PETPrefix.AMYLOID_PET_GAAIN)
+        return PETAnalysisTypes.AMYLOID_GAAIN if centiloid and suvr else None
+
+    def _create_scan_pet_amyloid_npdka_analysis_type(self) -> Optional[str]:
+        """Returns the Amyloid NPDKA SUVR analysis type."""
+        suvr = self.get_pet_float("npdka_summary_suvr", PETPrefix.AMYLOID_PET_NPDKA)
+        return PETAnalysisTypes.AMYLOID_NPDKA if suvr else None
+
+    def _create_scan_pet_fdg_npdka_analysis_type(self) -> Optional[str]:
+        """Returns the FDG NPDKA SUVR analysis type."""
+        suvr = self.get_pet_float("fdg_metaroi_suvr", PETPrefix.FDG_PET_NPDKA)
+        return PETAnalysisTypes.FDG_NPDKA if suvr else None
+
+    def _create_scan_pet_tau_npdka_analysis_type(self) -> Optional[str]:
+        """Returns the Tau NPDKA SUVR analysis type."""
+        suvr = self.get_pet_float("meta_temporal_suvr", PETPrefix.TAU_PET_NPDKA)
+        return PETAnalysisTypes.TAU_NPDKA if suvr else None

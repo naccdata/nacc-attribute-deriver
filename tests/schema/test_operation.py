@@ -2,7 +2,7 @@
 
 import pytest
 
-from nacc_attribute_deriver.attributes.base.namespace import AttributeValue
+from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.schema.operation import (
     CountOperation,
     InitialOperation,
@@ -120,7 +120,7 @@ class TestOperation:
         assert op.LABEL == "initial"
         op.evaluate(
             table=table,
-            value=AttributeValue(value=5, date="2025-01-01"),
+            value=DateTaggedValue(value=5, date="2025-01-01"),
             attribute=location,
         )
 
@@ -143,7 +143,7 @@ class TestOperation:
         assert op.LABEL == "latest"
         op.evaluate(
             table=table,
-            value=AttributeValue(value=5, date="2025-01-01"),
+            value=DateTaggedValue(value=5, date="2025-01-01"),
             attribute=location,
         )
 

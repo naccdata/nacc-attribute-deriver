@@ -15,15 +15,12 @@ def table() -> SymbolTable:
     data = {
         "file": {
             "info": {
-                "raw": {
-                    "a1": "E4",  # NCRAD data
-                    "a2": "E2",
-                },
                 "derived": {
                     "ngdsexom": 1,  # NIAGADS derived data
                     "ngdsgwas": 1,
                     "ngdswes": 0,
                     "ngdswgs": 0,
+                    "naccapoe": 5,  # NCRAD derived data
                 },
             }
         }
@@ -49,12 +46,7 @@ class TestGeneticAttributeCollection:
     def test_create_apoe(self, table):
         """Tests creating apoe."""
         attr = GeneticAttributeCollection.create(table)
-        assert attr._create_apoe() == "e4,e2"  # noqa: SLF001
-
-        # test null case
-        table["file.info.raw"].update({"a1": None, "a2": None})
-        attr = GeneticAttributeCollection.create(table)
-        assert attr._create_apoe() == "Missing/unknown/not assessed"  # noqa: SLF001
+        assert attr._create_apoe() == 5  # noqa: SLF001
 
     def test_create_ngds_vars(self, niagads_table):
         """Tests creating the NIAGADS availability variables."""

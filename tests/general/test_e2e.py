@@ -140,7 +140,7 @@ def test_ncrad_apoe():
 
     deriver = AttributeDeriver()
     deriver.curate(form, "apoe")
-    assert form["subject.info.genetics"] == {"apoe": "e4,e2"}
+    assert form["subject.info.genetics"] == {"apoe": 5}
     assert form["subject.info.derived"] == {"naccapoe": 5}
 
 
@@ -229,7 +229,11 @@ def test_scan_mri_sbm():
             "info": {
                 "imaging": {
                     "mri": {
-                        "scan": {"t1": {"brain-volume": True}, "flair": {"wmh": True}}
+                        "scan": {
+                            "t1": {"brain-volume": True},
+                            "flair": {"wmh": True},
+                            "analysis-types": ["flair_wmh", "t1_volume"],
+                        }
                     }
                 }
             }
@@ -243,9 +247,17 @@ def test_scan_amyloid_gaain():
     form["file.info.raw"] = {
         "tracer": "3.0",
         "centiloids": "1.5",
+        "gaain_summary_suvr": "2.703",
         "amyloid_status": "1",
         "scandate": "2025-01-01",
     }
+
+    # also test aggregation works as expected on analysis-types
+    form["subject.info.imaging.pet.scan.analysis-types"] = [
+        "amyloid_npdka_suvr",
+        "fdg_npdka_suvr",
+        "tau_npdka_suvr",
+    ]
 
     deriver = AttributeDeriver()
     deriver.curate(form, "scan_amyloid_pet_gaain")
@@ -255,6 +267,7 @@ def test_scan_amyloid_gaain():
                 "raw": {
                     "tracer": "3.0",
                     "centiloids": "1.5",
+                    "gaain_summary_suvr": "2.703",
                     "amyloid_status": "1",
                     "scandate": "2025-01-01",
                 }
@@ -271,7 +284,13 @@ def test_scan_amyloid_gaain():
                                     "centiloid": {"min": 1.5}
                                 },
                                 "positive-scans": True,
-                            }
+                            },
+                            "analysis-types": [
+                                "amyloid_gaain_centiloid_suvr",
+                                "amyloid_npdka_suvr",
+                                "fdg_npdka_suvr",
+                                "tau_npdka_suvr",
+                            ],
                         }
                     }
                 }
