@@ -65,6 +65,7 @@ uds,naccdage,file.info.derived.naccdage,update,,
 uds,naccdied,file.info.derived.naccdied,update,,
 uds,naccautp,file.info.derived.naccautp,update,,
 uds,naccint,file.info.derived.naccint,update,,
+uds,naccint,subject.info.neuropathology.visit-to-death-interval,update,,
 uds,naccbraa,file.info.derived.naccbraa,update,,
 uds,naccneur,file.info.derived.naccneur,update,,
 uds,naccmicr,file.info.derived.naccmicr,update,,
@@ -105,7 +106,7 @@ uds,np_available,subject.info.demographics.uds.np-available,max,,
 uds,total_uds_visits,subject.info.longitudinal-data.uds.count,max,,
 uds,years_of_uds,subject.info.longitudinal-data.uds.year-count,max,,
 uds,uds_versions_available,subject.info.study-parameters.uds.versions,set,,
-uds,np_visit_to_death_interval,subject.info.neuropathology.visit-to-death-interval,update,,
+
 
 
 
