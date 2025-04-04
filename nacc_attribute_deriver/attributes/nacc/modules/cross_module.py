@@ -13,6 +13,7 @@ from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
+    calculate_interval,
     datetime_from_form_date,
 )
 
@@ -120,3 +121,37 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # deceased with NP data available
         return 1
+
+    def _create_naccint(self) -> int:
+        """Creates NACCINT, which is time interval (days) between last visit
+        (UDS) and death (NP/Milestone).
+
+        Uses NACCDIED and death date calculate.
+        """
+        naccdied = self._create_naccdied()
+        deathdate = self._determine_death_date()
+
+        # not dead
+        if naccdied != 1:
+            return 8888
+
+        # died but no/unknown death age
+        if naccdied == 1 and not deathdate:
+            return 9999
+
+        # compare to last UDS visit
+        self.__subject_derived.assert_required(["uds-visitdates"])
+        visitdates = self.__subject_derived.get_value("uds-visitdates")
+
+        # a non-valid visitdate shouldn't be possible but handle just in case
+        if not visitdates:
+            return 9999
+
+        last_visit = datetime_from_form_date(sorted(list(visitdates))[-1])
+        if not last_visit:
+            return 9999
+
+        result = calculate_interval(last_visit.date(), deathdate)
+
+        # handle negative
+        return 9999 if result is None or result < 0 else result

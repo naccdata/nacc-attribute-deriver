@@ -24,7 +24,7 @@ def datetime_from_form_date(date_string: Optional[str]) -> Optional[datetime]:
     return datetime.strptime(date_string, "%m/%d/%Y")
 
 
-def calculate_age(date1: date, date2: date) -> Optional[int]:
+def calculate_age(date1: date | None, date2: date | None) -> Optional[int]:
     """Calculate age in years between two dates.
 
     Args:
@@ -42,6 +42,21 @@ def calculate_age(date1: date, date2: date) -> Optional[int]:
     return (date2.year - date1.year) - (
         (date2.month, date2.day) < (date1.month, date1.day)
     )
+
+
+def calculate_interval(date1: date | None, date2: date | None) -> Optional[int]:
+    """Calculates the interval in days between two dates.
+
+    Args:
+        date1: The earlier date
+        date2: The later date
+    Returns:
+        The interval in days between the two dates
+    """
+    if not date1 or not date2:
+        return None
+
+    return (date2 - date1).days
 
 
 def get_unique_years(dates: List[str]) -> Set[int]:
