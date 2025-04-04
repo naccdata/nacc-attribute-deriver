@@ -100,7 +100,3 @@ uds,np_available,subject.info.demographics.uds.np-available,max,,
 uds,total_uds_visits,subject.info.longitudinal-data.uds.count,max,,
 uds,years_of_uds,subject.info.longitudinal-data.uds.year-count,max,,
 uds,uds_versions_available,subject.info.study-parameters.uds.versions,set,,
-
-
-
-
