@@ -135,5 +135,4 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
     def _create_np_available(self) -> bool:
         """NP available, which is just checking for the existence of
         np_death_age."""
-        self.__subject_derived.assert_required(["np_death_age"])
         return self.__subject_derived.get_value("np_death_age") is not None
