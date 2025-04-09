@@ -3,7 +3,7 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import (
-    UDSFormA1Attribute,  # type: ignore
+    UDSFormA1Attribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from tests.conftest import set_attribute
@@ -11,7 +11,7 @@ from tests.conftest import set_attribute
 
 @pytest.fixture(scope="function")
 def table() -> SymbolTable:
-    """Create dummy data and return it in an attribute object."""
+    """Create dummy data and return it in a SymbolTable."""
     data = {
         "file": {
             "info": {
@@ -24,7 +24,14 @@ def table() -> SymbolTable:
                     }
                 }
             }
-        }
+        },
+        "subject": {
+            "info": {
+                "derived": {
+                    "naccnihr": 2,
+                }
+            }
+        },
     }
 
     return SymbolTable(data)
@@ -57,3 +64,14 @@ class TestUDSFormA1Attribute:
         attr = UDSFormA1Attribute(table)
 
         assert attr._create_naccage() == 54  # noqa: SLF001
+
+    def test_followup_packet(self, table, form_prefix):
+        """Tests the followup cases."""
+        # check not a followup packet so returns 99
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_naccnihr() == 99  # noqa: SLF001
+
+        # now set as followup packet so it should return 2
+        set_attribute(table, form_prefix, "packet", "F")
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_naccnihr() == 2  # noqa: SLF001
