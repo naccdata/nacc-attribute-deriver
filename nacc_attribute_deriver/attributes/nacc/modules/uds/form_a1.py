@@ -281,7 +281,7 @@ class UDSFormA1Attribute(AttributeCollection):
 
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)"""
-        return self.generate_naccnihr(
+        result = self.generate_naccnihr(
             race=self.__uds.get_value("race"),
             racex=self.__uds.get_value("racex"),
             racesec=self.__uds.get_value("racesec"),
@@ -289,6 +289,12 @@ class UDSFormA1Attribute(AttributeCollection):
             raceter=self.__uds.get_value("raceter"),
             raceterx=self.__uds.get_value("raceterx"),
         )
+
+        # if result is 99/Unkown, check for a default in subject.info.derived
+        if result == 99:
+            return self.__uds.check_default("naccnihr", result)
+
+        return result
 
     @classmethod
     def is_multiracial(cls, racex: Optional[str], racesecx: Optional[str]) -> bool:

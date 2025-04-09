@@ -81,7 +81,7 @@ class UDSFormD1Attribute(AttributeCollection):
             return contr_status
 
         # default
-        return 7
+        return self.__uds.check_default("naccalzp", 7)
 
     def _create_nacclbde(self) -> Optional[int]:
         """From d1structrdd.sas.
@@ -105,7 +105,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if lbdis in [0, 1]:
             return lbdis
 
-        return None
+        return self.__uds.check_default("nacclbde", None)
 
     def _create_nacclbdp(self) -> Optional[int]:
         """From d1structrdd.sas. Also relies on another derived variable
@@ -129,7 +129,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if self._create_nacclbde() == 0:
             return 7
 
-        return None
+        return self.__uds.check_default("nacclbdp", None)
 
     def _create_naccudsd(self) -> Optional[int]:
         """From Create NACCUDSD.R which in turn is from derive.sas.
@@ -145,7 +145,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if self.__uds.get_value("impnomci") == 1:
             return 2
 
-        return None
+        return self.__uds.check_default("naccudsd", None)
 
     def _create_naccetpr(self) -> int:
         """From Create NACCETPR, PRIMDX, SYNMULT.R which in turn comes from
@@ -203,7 +203,7 @@ class UDSFormD1Attribute(AttributeCollection):
                 return i + 1
 
         # default for normcog == 0
-        return 99
+        return self.__uds.check_default("naccetpr", 99)
 
     def _create_naccppa(self) -> int:
         """From d1structdd.sas.
@@ -231,7 +231,7 @@ class UDSFormD1Attribute(AttributeCollection):
             ):
                 return 7
 
-        return 8
+        return self.__uds.check_default("naccppa", 8)
 
     def _create_naccbvft(self) -> int:
         """From d1structdd.sas.
@@ -250,7 +250,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if ftdsyn in [0, 1]:
             return ftdsyn
 
-        return 8
+        return self.__uds.check_default("naccbvft", 8)
 
     def _create_nacclbds(self) -> int:
         """From d1structdd.sas.
@@ -269,7 +269,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if lbdsyn in [0, 1]:
             return lbdsyn
 
-        return 8
+        return self.__uds.check_default("nacclbds", 8)
 
     def _create_naccnorm(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)

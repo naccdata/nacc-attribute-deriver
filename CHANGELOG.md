@@ -4,7 +4,13 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 1.2.2
 
-* Allows `uds_primary_language` rule to return `None` (handles case where subsequent visits do not re-specify the value)
+* Adds ability for UDS NACC derived variables to account for follow-up forms
+    * If a raw value is not specified, checks the subject-level derived value as well before setting to the missing/null case
+    * Adds rules to the config for UDS NACC derived variables to write to `subject.info.derived`
+    * Updates the following 9 variables to support this:
+        * Form A1: `naccnihr`
+        * Form D1: `naccalzp`, `nacclbde`, `nacclbdp`, `naccudsd`, `naccetpr`, `naccppa`, `naccbvft`, `nacclbds`
+* Updates `uds_primary_language` rule to return `None` (handles case where subsequent visits do not re-specify the value)
 * Fixes `total_uds_visits` rule
 
 ## 1.2.1

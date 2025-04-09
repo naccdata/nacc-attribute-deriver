@@ -12,7 +12,7 @@ from tests.conftest import set_attribute
 
 @pytest.fixture(scope="function")
 def table() -> SymbolTable:
-    """Create dummy data and return it in an attribute object.
+    """Create dummy data and return it in a SymbolTable.
 
     In this case most will want to manually set fields so only leave
     bare minimum in.
