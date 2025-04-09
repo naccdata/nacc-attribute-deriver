@@ -290,7 +290,7 @@ class UDSFormA1Attribute(AttributeCollection):
             raceterx=self.__uds.get_value("raceterx"),
         )
 
-        # if result is 99/Unkown, check for a default in subject.info.derived
+        # if result is 99/Unknown, check for a default in subject.info.derived
         if result == 99:
             return self.__uds.check_default("naccnihr", result)
 

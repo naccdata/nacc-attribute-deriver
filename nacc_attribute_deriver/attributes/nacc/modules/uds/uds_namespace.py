@@ -18,13 +18,13 @@ class UDSNamespace(FormNamespace):
 
         self.__subject_derived = SubjectDerivedNamespace(table)
 
-        module = super().get_value("module")
+        module = self.get_value("module")
         if not module or module.upper() != "UDS":
             raise MissingRequiredError("Current file is not an UDS form")
 
     def is_followup(self) -> bool:
         """Returns whether or not this is a follow-up form."""
-        return super().get_value("packet") == "F"
+        return self.get_value("packet") == "F"
 
     def check_default(self, attribute: str, default: Optional[Any] = None) -> Any:
         """Check for the default by:
@@ -47,7 +47,7 @@ class UDSNamespace(FormNamespace):
         if not self.is_followup():
             return default
 
-        result = super().get_value(attribute)
+        result = self.get_value(attribute)
         if result in [None, 777, "777"]:
             result = self.__subject_derived.get_value(attribute, None)
 
