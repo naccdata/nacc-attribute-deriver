@@ -23,20 +23,9 @@ class LongitudinalAttributeCollection(AttributeCollection):
         self.__subject_info = SubjectInfoNamespace(table)
 
     def _create_total_uds_visits(self) -> int:
-        """Total number of UDS visits.
-
-        This is an accumulative variable, assumes its called for each
-        form
-        """
-        count = self.__subject_info.get_value(
-            "longitudinal-data.uds.count.latest.value", 0
-        )
-        module = self.__uds.get_value("module")
-
-        if module and module.lower() == "uds":
-            count += 1
-
-        return count
+        """Total number of UDS visits."""
+        self.__subject_derived.assert_required(["uds-visitdates"])
+        return len(self.__subject_derived.get_value("uds-visitdates"))
 
     def _create_years_of_uds(self) -> int:
         """Creates subject.info.longitudinal-data.uds.year-count."""

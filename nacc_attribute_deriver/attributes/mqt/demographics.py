@@ -54,12 +54,15 @@ class DemographicsAttributeCollection(AttributeCollection):
         }
     )
 
-    def _create_uds_primary_language(self) -> DateTaggedValue[str]:
+    def _create_uds_primary_language(self) -> Optional[DateTaggedValue[str]]:
         """UDS primary language."""
         try:
-            primlang = int(self.__uds.get_value("primlang", 9))
+            primlang = self.__uds.get_value("primlang")
+            if not primlang:
+                return None
+
             return DateTaggedValue(
-                value=self.PRIMARY_LANGUAGE_MAPPING.get(primlang, "Unknown"),
+                value=self.PRIMARY_LANGUAGE_MAPPING.get(int(primlang), "Unknown"),
                 date=self.__uds.get_date(),
             )
         except TypeError as e:
