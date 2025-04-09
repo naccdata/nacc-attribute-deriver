@@ -12,6 +12,7 @@ Documentation of release versions of `nacc-attribute-deriver`
         * Form D1: `naccalzp`, `nacclbde`, `nacclbdp`, `naccudsd`, `naccetpr`, `naccppa`, `naccbvft`, `nacclbds`
 * Updates `uds_primary_language` rule to return `None` (handles case where subsequent visits do not re-specify the value)
 * Fixes `total_uds_visits` rule
+* Fixes missing import for `mds` and `milestone` NACC rules
 
 ## 1.2.1
 
