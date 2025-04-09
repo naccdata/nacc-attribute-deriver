@@ -16,11 +16,11 @@ class UDSNamespace(FormNamespace):
         """Check that this is a UDS form."""
         super().__init__(table)
 
-        self.__subject_derived = SubjectDerivedNamespace(table)
-
         module = self.get_value("module")
         if not module or module.upper() != "UDS":
             raise MissingRequiredError("Current file is not an UDS form")
+
+        self.__subject_derived = SubjectDerivedNamespace(table)
 
     def is_followup(self) -> bool:
         """Returns whether or not this is a follow-up form."""
