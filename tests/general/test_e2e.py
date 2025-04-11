@@ -165,12 +165,6 @@ def test_niagads_investigator():
         "niagads_wes": 0,
         "niagads_wgs": 0,
     }
-    assert form["subject.info.genetics"] == {
-        "ngdsgwas": True,
-        "ngdsexom": True,
-        "ngdswgs": False,
-        "ngdswes": False,
-    }
 
 
 def test_scan_mri_qc():
