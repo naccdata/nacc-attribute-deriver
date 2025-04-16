@@ -21,7 +21,7 @@ from .symbol_table import SymbolTable
 
 ScopeLiterals = Literal[
     "apoe",
-    "ncrad_biosamples",
+    "ncrad_samples",
     "mds",
     "milestone",
     "niagads_availability",

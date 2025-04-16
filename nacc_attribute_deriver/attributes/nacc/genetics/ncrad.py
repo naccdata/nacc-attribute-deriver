@@ -50,14 +50,14 @@ class NCRADAPOEAttributeCollection(AttributeCollection):
         return self.APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
 
 
-class NCRADBioSamplesAttributeCollection(AttributeCollection):
+class NCRADSamplesAttributeCollection(AttributeCollection):
     """Class to collect NCRAD Sample attributes."""
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD biosample-specific
         data."""
-        self.__biosamples = RawNamespace(table)
-        self.__biosamples.assert_required(
+        self.__samples = RawNamespace(table)
+        self.__samples.assert_required(
             required=["date_sample_received", "sample_received"]
         )
 
