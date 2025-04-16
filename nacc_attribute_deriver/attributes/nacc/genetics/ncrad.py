@@ -12,8 +12,8 @@ from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class NCRADAttributeCollection(AttributeCollection):
-    """Class to collect NCRAD attributes."""
+class NCRADAPOEAttributeCollection(AttributeCollection):
+    """Class to collect NCRAD APOE attributes."""
 
     # NCRAD (a1, a2) to NACC encoding
     APOE_ENCODINGS: Mapping[Tuple[str, str], int] = MappingProxyType(
@@ -31,7 +31,7 @@ class NCRADAttributeCollection(AttributeCollection):
     )
 
     def __init__(self, table: SymbolTable) -> None:
-        """Override initializer to set prefix to NCRAD-specific data."""
+        """Override initializer to set prefix to APOE-specific data."""
         self.__apoe = RawNamespace(table)
         self.__apoe.assert_required(required=["a1", "a2"])
 
@@ -48,3 +48,23 @@ class NCRADAttributeCollection(AttributeCollection):
             return 9
 
         return self.APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
+
+
+class NCRADBioSampleAttributeCollection(AttributeCollection):
+    """Class to collect NCRAD Sample attributes."""
+
+    def __init__(self, table: SymbolTable) -> None:
+        """Override initializer to set prefix to NCRAD biosample-specific
+        data."""
+        self.__biosamples = RawNamespace(table)
+        self.__biosamples.assert_required(
+            required=["date_sample_received", "sample_received"]
+        )
+
+    def _create_naccncrd(self) -> int:
+        """Creates NACCNCRD.
+
+        Set to 1 if there is any data, which there is assumed to be if
+        this class is successfully initialized at all
+        """
+        return 1

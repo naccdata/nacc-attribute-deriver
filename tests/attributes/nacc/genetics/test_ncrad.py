@@ -3,40 +3,68 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.genetics.ncrad import (
-    NCRADAttributeCollection,
+    NCRADAPOEAttributeCollection,
+    NCRADBioSampleAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
-    """Create dummy data and return it in an attribute object."""
+def apoe_table() -> SymbolTable:
+    """Create dummy data and return it in a SymbolTable."""
     data = {"file": {"info": {"raw": {"a1": "e3", "a2": "e3"}}}}
 
     return SymbolTable(data)
 
 
-class TestNCRADAttributeCollection:
-    def test_create_naccapoe(self, table, raw_prefix):
+class TestNCRADAPOEAttributeCollection:
+    def test_create_naccapoe(self, apoe_table, raw_prefix):
         """Tests creating NACCAPOE."""
-        attr = NCRADAttributeCollection.create(table)
+        attr = NCRADAPOEAttributeCollection.create(apoe_table)
         assert attr._create_ncrad_apoe() == 1  # noqa: SLF001
 
-        for key, value in NCRADAttributeCollection.APOE_ENCODINGS.items():
-            set_attribute(table, raw_prefix, "a1", key[0])
-            set_attribute(table, raw_prefix, "a2", key[1])
-            attr = NCRADAttributeCollection.create(table)
+        for key, value in NCRADAPOEAttributeCollection.APOE_ENCODINGS.items():
+            set_attribute(apoe_table, raw_prefix, "a1", key[0])
+            set_attribute(apoe_table, raw_prefix, "a2", key[1])
+            attr = NCRADAPOEAttributeCollection.create(apoe_table)
 
             assert attr._create_ncrad_apoe() == value  # noqa: SLF001
 
-    def test_undefined_pairs(self, table, raw_prefix):
-        set_attribute(table, raw_prefix, "a1", "e1")
-        set_attribute(table, raw_prefix, "a2", "e7")
-        attr = NCRADAttributeCollection.create(table)
+    def test_undefined_pairs(self, apoe_table, raw_prefix):
+        set_attribute(apoe_table, raw_prefix, "a1", "e1")
+        set_attribute(apoe_table, raw_prefix, "a2", "e7")
+        attr = NCRADAPOEAttributeCollection.create(apoe_table)
         assert attr._create_ncrad_apoe() == 9  # noqa: SLF001
 
     def test_empty_table(self):
-        attr = NCRADAttributeCollection.create(SymbolTable())
+        attr = NCRADAPOEAttributeCollection.create(SymbolTable())
         assert attr is None
-        # assert attr._create_naccapoe() == 9
+
+
+@pytest.fixture(scope="function")
+def biosample_table() -> SymbolTable:
+    """Create dummy data and return it in a SymbolTable."""
+    data = {
+        "file": {
+            "info": {
+                "raw": {
+                    "date_sample_received": "2025-11-05",
+                    "sample_received": "Blood",
+                }
+            }
+        }
+    }
+
+    return SymbolTable(data)
+
+
+class TestNCRADBioSampleAttributeCollection:
+    def test_create_naccncrd(self, biosample_table, raw_prefix):
+        """Tests creating NACCNCRD."""
+        attr = NCRADBioSampleAttributeCollection.create(biosample_table)
+        assert attr._create_naccncrd() == 1  # noqa: SLF001
+
+    def test_empty_table(self):
+        attr = NCRADBioSampleAttributeCollection.create(SymbolTable())
+        assert attr is None

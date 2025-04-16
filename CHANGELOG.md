@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.2.3
+
+* Adds `naccncrd`
+
 ## 1.2.2
 
 * Adds ability for UDS NACC derived variables to account for follow-up forms
