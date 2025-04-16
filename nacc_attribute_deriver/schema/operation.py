@@ -153,14 +153,14 @@ class InitialOperation(DateOperation):
     LABEL = "initial"
 
     def compare(self, left_value: date, right_value: date):
-        return left_value < right_value
+        return left_value <= right_value
 
 
 class LatestOperation(DateOperation):
     LABEL = "latest"
 
     def compare(self, left_value: date, right_value: date):
-        return left_value > right_value
+        return left_value >= right_value
 
 
 class CountOperation(Operation):
