@@ -86,8 +86,6 @@ class SetOperation(Operation):
         since the final output is a JSON."""
         if isinstance(value, DateTaggedValue):
             value = value.value
-        if value is None:
-            return
 
         cur_set = table.get(attribute)
         cur_set = set(cur_set) if cur_set else set()
@@ -108,8 +106,6 @@ class SortedListOperation(Operation):
         """Adds the value to a sorted list."""
         if isinstance(value, DateTaggedValue):
             value = value.value
-        if value is None:
-            return
 
         cur_list = table.get(attribute, [])
         if isinstance(value, (list, set)):
