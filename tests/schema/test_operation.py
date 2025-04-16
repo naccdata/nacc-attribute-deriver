@@ -4,7 +4,6 @@ import pytest
 
 from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.schema.operation import (
-    CountOperation,
     InitialOperation,
     LatestOperation,
     MaxOperation,
@@ -51,7 +50,6 @@ class TestOperation:
                         "sortedlist",
                         "initial",
                         "latest",
-                        "count",
                         "min",
                         "max",
                     }
@@ -65,7 +63,6 @@ class TestOperation:
             SortedListOperation,
             InitialOperation,
             LatestOperation,
-            CountOperation,
             MinOperation,
             MaxOperation,
         ]
@@ -158,15 +155,6 @@ class TestOperation:
             OperationError, match=r"Unable to perform latest operation without date"
         ):
             op.evaluate(table=table, value=5, attribute=location)
-
-    def test_count(self, table, location):
-        """Tests the count operation."""
-        op = CountOperation()
-        assert op.LABEL == "count"
-        table[location] = 5
-        op.evaluate(table=table, value=True, attribute=location)
-
-        assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 6}}
 
     def test_min(self, table, location):
         """Tests the min operation; WILL be set since 5 < 10."""

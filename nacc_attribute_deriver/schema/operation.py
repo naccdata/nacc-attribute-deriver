@@ -163,20 +163,6 @@ class LatestOperation(DateOperation):
         return left_value >= right_value
 
 
-class CountOperation(Operation):
-    LABEL = "count"
-
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
-        """Counts the result."""
-        if not value:  # TODO: should we count 0s/Falses?
-            return None
-        if isinstance(value, DateTaggedValue) and not value.value:
-            return None
-
-        cur_count = table.get(attribute, 0)
-        table[attribute] = cur_count + 1
-
-
 class ComparisonOperation(Operation):
     LABEL: str | None = None
 
