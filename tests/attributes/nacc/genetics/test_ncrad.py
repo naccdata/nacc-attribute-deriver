@@ -4,7 +4,7 @@ import pytest
 
 from nacc_attribute_deriver.attributes.nacc.genetics.ncrad import (
     NCRADAPOEAttributeCollection,
-    NCRADBioSampleAttributeCollection,
+    NCRADBioSamplesAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from tests.conftest import set_attribute
@@ -59,12 +59,12 @@ def biosample_table() -> SymbolTable:
     return SymbolTable(data)
 
 
-class TestNCRADBioSampleAttributeCollection:
+class TestNCRADBioSamplesAttributeCollection:
     def test_create_naccncrd(self, biosample_table, raw_prefix):
         """Tests creating NACCNCRD."""
-        attr = NCRADBioSampleAttributeCollection.create(biosample_table)
+        attr = NCRADBioSamplesAttributeCollection.create(biosample_table)
         assert attr._create_naccncrd() == 1  # noqa: SLF001
 
     def test_empty_table(self):
-        attr = NCRADBioSampleAttributeCollection.create(SymbolTable())
+        attr = NCRADBioSamplesAttributeCollection.create(SymbolTable())
         assert attr is None

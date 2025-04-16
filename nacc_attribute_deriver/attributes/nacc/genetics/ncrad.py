@@ -50,7 +50,7 @@ class NCRADAPOEAttributeCollection(AttributeCollection):
         return self.APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
 
 
-class NCRADBioSampleAttributeCollection(AttributeCollection):
+class NCRADBioSamplesAttributeCollection(AttributeCollection):
     """Class to collect NCRAD Sample attributes."""
 
     def __init__(self, table: SymbolTable) -> None:
