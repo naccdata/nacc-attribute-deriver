@@ -1,8 +1,5 @@
-"""SCAN attribute, derive directly from AttributeCollection.
-
-Raw values are split across 7 files - deriving a variable should be isolated
-to a single file as much as possible, otherwise we need to somehow map cross-file
-attributes.
+"""SCAN attributes, derive directly from AttributeCollection.
+Comes from 7 unique files.
 """
 
 from types import MappingProxyType
