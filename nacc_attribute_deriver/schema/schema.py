@@ -4,6 +4,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
+from nacc_attribute_deriver.utils.scope import ScopeLiterals
+
 from .operation import Operation
 
 
@@ -48,7 +50,7 @@ class CurationRule(BaseModel):
 class RuleFileModel(BaseModel):
     """Model for loading serialized rule definitions."""
 
-    scope: str
+    scope: ScopeLiterals
     function: str
     location: str
     operation: str

@@ -2,6 +2,11 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.2.3
+
+* Refactors how scopes are handled, particularly for SCAN
+* Removes regression testing related code - separating out
+
 ## 1.2.2
 
 * Adds ability for UDS NACC derived variables to account for follow-up forms
