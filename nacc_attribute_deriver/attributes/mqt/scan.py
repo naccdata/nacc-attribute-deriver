@@ -10,13 +10,15 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.scan_namespace import (
-    REQUIRED_FIELDS,
-    MRIPrefix,
-    PETPrefix,
+    SCAN_REQUIRED_FIELDS,
     SCANNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
+from nacc_attribute_deriver.utils.scope import (
+    SCANMRIScope,
+    SCANPETScope,
+)
 
 
 class MRIAnalysisTypes:
@@ -41,10 +43,10 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """SCAN MRI scan types available Access series_type (scan_mridashboard
         file)"""
-        self.__scan.assert_required(REQUIRED_FIELDS[MRIPrefix.SCAN_MRI_QC])
+        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[SCANMRIScope.MRI_QC])
         return self.__scan.get_value("series_type")
 
-    def _is_mri_indicator(self, target: str, subprefix: MRIPrefix) -> bool:
+    def _is_mri_indicator(self, target: str, scope: SCANMRIScope) -> bool:
         """Returns whether or not the given target is an MRI.
 
         indicator - checks by seeing if the target can be
@@ -52,12 +54,12 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         Args:
             target: The target field
-            subprefix: Subprefix file to look in
+            scope: Scope to look in
         Returns:
             Whether or not this is an indicator
         """
         try:
-            self.__scan.assert_required(REQUIRED_FIELDS[subprefix])
+            self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
             float(self.__scan.get_value(target))
         except (ValueError, TypeError):
             return False
@@ -68,12 +70,12 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_volume_analysis_indicator(self) -> bool:
         """SCAN T1 brain volume analysis results available Check if cerebrumtcv
         (ucdmrisbm file) exists."""
-        return self._is_mri_indicator("cerebrumtcv", MRIPrefix.MRI_SBM)
+        return self._is_mri_indicator("cerebrumtcv", SCANMRIScope.MRI_SBM)
 
     def _create_scan_flair_wmh_indicator(self) -> bool:
         """SCAN FLAIR WMH analysis available available Check if wmh (ucdmrisbm
         file) exists."""
-        return self._is_mri_indicator("wmh", MRIPrefix.MRI_SBM)
+        return self._is_mri_indicator("wmh", SCANMRIScope.MRI_SBM)
 
     def _create_mri_scan_analysis_types(self) -> Optional[List[str]]:
         """SCAN MRI analysis types available, which is based on the above two
@@ -89,28 +91,28 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_pet_scan_types(self) -> Optional[str]:
         """SCAN PET types available Access radiotracer (scan_petdashboard) and
         map to {amyloid, tau, fdg}"""
-        return self.__scan.get_scan_type("radiotracer", PETPrefix.SCAN_PET_QC)
+        return self.__scan.get_scan_type("radiotracer", SCANPETScope.PET_QC)
 
     def _create_scan_pet_amyloid_tracers(self) -> Optional[str]:
         """SCAN Amyloid tracers available Access radiotracer
         (scan_petdashboard) and map to names of tracers."""
-        if self.__scan.get_scan_type("radiotracer", PETPrefix.SCAN_PET_QC) == "amyloid":
-            return self.__scan.get_tracer("radiotracer", PETPrefix.SCAN_PET_QC)
+        if self.__scan.get_scan_type("radiotracer", SCANPETScope.PET_QC) == "amyloid":
+            return self.__scan.get_tracer("radiotracer", SCANPETScope.PET_QC)
 
         return None
 
     def _create_scan_pet_tau_tracers(self) -> Optional[str]:
         """SCAN tau tracers available Access radiotracer (scan_petdashboard)
         and map to names of tracers."""
-        if self.__scan.get_scan_type("radiotracer", PETPrefix.SCAN_PET_QC) == "tau":
-            return self.__scan.get_tracer("radiotracer", PETPrefix.SCAN_PET_QC)
+        if self.__scan.get_scan_type("radiotracer", SCANPETScope.PET_QC) == "tau":
+            return self.__scan.get_tracer("radiotracer", SCANPETScope.PET_QC)
 
         return None
 
-    def get_pet_float(self, key: str, subprefix: PETPrefix):
+    def get_pet_float(self, key: str, scope: SCANPETScope):
         """Get PET float value."""
         try:
-            self.__scan.assert_required(REQUIRED_FIELDS[subprefix])
+            self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
             return float(self.__scan.get_value(key))
         except (ValueError, TypeError):
             pass
@@ -119,7 +121,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
     def get_centiloid(self) -> Optional[float]:
         """Get the centiloid value."""
-        return self.get_pet_float("centiloids", PETPrefix.AMYLOID_PET_GAAIN)
+        return self.get_pet_float("centiloids", SCANPETScope.AMYLOID_PET_GAAIN)
 
     def _create_scan_pet_centaloid(self) -> Optional[float]:
         """SCAN Amyloid PET scans centiloid min Access CENTILOIDS in UC
@@ -129,7 +131,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_pet_centaloid_pib(self) -> Optional[float]:
         """SCAN Amyloid PET scans with PIB centiloid min Access CENTILOIDS in
         UC Berkeley GAAIN analysis."""
-        if self.__scan.get_tracer("tracer", PETPrefix.AMYLOID_PET_GAAIN) == "pib":
+        if self.__scan.get_tracer("tracer", SCANPETScope.AMYLOID_PET_GAAIN) == "pib":
             return self.get_centiloid()
 
         return None
@@ -138,7 +140,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
         """SCAN Amyloid PET scans with Florbetapir centiloid min Access
         CENTILOIDS in UC Berkeley GAAIN analysis."""
         if (
-            self.__scan.get_tracer("tracer", PETPrefix.AMYLOID_PET_GAAIN)
+            self.__scan.get_tracer("tracer", SCANPETScope.AMYLOID_PET_GAAIN)
             == "florbetapir"
         ):
             return self.get_centiloid()
@@ -149,7 +151,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
         """SCAN Amyloid PET scans with Florbetaben centiloid min Access
         CENTILOIDS in UC Berkeley GAAIN analysis."""
         if (
-            self.__scan.get_tracer("tracer", PETPrefix.AMYLOID_PET_GAAIN)
+            self.__scan.get_tracer("tracer", SCANPETScope.AMYLOID_PET_GAAIN)
             == "florbetaben"
         ):
             return self.get_centiloid()
@@ -159,7 +161,10 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_pet_centaloid_nav4694(self) -> Optional[float]:
         """SCAN Amyloid PET scans with NAV4694 centiloid min Access CENTILOIDS
         in UC Berkeley GAAIN analysis."""
-        if self.__scan.get_tracer("tracer", PETPrefix.AMYLOID_PET_GAAIN) == "nav4694":
+        if (
+            self.__scan.get_tracer("tracer", SCANPETScope.AMYLOID_PET_GAAIN)
+            == "nav4694"
+        ):
             return self.get_centiloid()
 
         return None
@@ -171,7 +176,9 @@ class MQTSCANAttributeCollection(AttributeCollection):
         Is given as an int so check int boolean.
         """
         try:
-            self.__scan.assert_required(REQUIRED_FIELDS[PETPrefix.AMYLOID_PET_GAAIN])
+            self.__scan.assert_required(
+                SCAN_REQUIRED_FIELDS[SCANPETScope.AMYLOID_PET_GAAIN]
+            )
             status = float(self.__scan.get_value("amyloid_status"))
         except (TypeError, ValueError):
             return False
@@ -213,20 +220,20 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_pet_amyloid_gaain_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid GAAIN Centiloid/SUVR analysis type."""
         centiloid = self.get_centiloid()
-        suvr = self.get_pet_float("gaain_summary_suvr", PETPrefix.AMYLOID_PET_GAAIN)
+        suvr = self.get_pet_float("gaain_summary_suvr", SCANPETScope.AMYLOID_PET_GAAIN)
         return PETAnalysisTypes.AMYLOID_GAAIN if centiloid and suvr else None
 
     def _create_scan_pet_amyloid_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid NPDKA SUVR analysis type."""
-        suvr = self.get_pet_float("npdka_summary_suvr", PETPrefix.AMYLOID_PET_NPDKA)
+        suvr = self.get_pet_float("npdka_summary_suvr", SCANPETScope.AMYLOID_PET_NPDKA)
         return PETAnalysisTypes.AMYLOID_NPDKA if suvr else None
 
     def _create_scan_pet_fdg_npdka_analysis_type(self) -> Optional[str]:
         """Returns the FDG NPDKA SUVR analysis type."""
-        suvr = self.get_pet_float("fdg_metaroi_suvr", PETPrefix.FDG_PET_NPDKA)
+        suvr = self.get_pet_float("fdg_metaroi_suvr", SCANPETScope.FDG_PET_NPDKA)
         return PETAnalysisTypes.FDG_NPDKA if suvr else None
 
     def _create_scan_pet_tau_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Tau NPDKA SUVR analysis type."""
-        suvr = self.get_pet_float("meta_temporal_suvr", PETPrefix.TAU_PET_NPDKA)
+        suvr = self.get_pet_float("meta_temporal_suvr", SCANPETScope.TAU_PET_NPDKA)
         return PETAnalysisTypes.TAU_NPDKA if suvr else None
