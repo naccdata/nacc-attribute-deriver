@@ -7,7 +7,7 @@ subject. File must correspond to the curation schema.
 
 import csv
 from importlib import resources
-from typing import Dict, List, Literal
+from typing import Dict, List
 
 from pydantic import ValidationError
 
@@ -18,22 +18,7 @@ from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverError
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
-
-ScopeLiterals = Literal[
-    "apoe",
-    "mds",
-    "milestone",
-    "niagads_availability",
-    "np",
-    "scan_amyloid_pet_gaain",
-    "scan_amyloid_pet_npdka",
-    "scan_fdg_pet_npdka",
-    "scan_tau_pet_npdka",
-    "scan_mri_qc",
-    "scan_mri_sbm",
-    "scan_pet_qc",
-    "uds",
-]
+from .utils.scope import ScopeLiterals
 
 
 class AttributeDeriver:
@@ -97,6 +82,7 @@ class AttributeDeriver:
 
         Args:
             table: symbol table with subject and file data to curate
+            scope: The curation scope
         """
 
         # collect all attributes beforehand so they're easily hashable
