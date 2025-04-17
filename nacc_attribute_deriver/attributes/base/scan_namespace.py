@@ -54,7 +54,7 @@ class SCANNamespace(RawNamespace):
     )
 
     # get functions for common values
-    def get_tracer(self, field: str, scope: str) -> Optional[str]:
+    def get_tracer(self, field: str, scope: SCANPETScope) -> Optional[str]:
         """Get the tracer string."""
         tracer = None
         try:
@@ -66,7 +66,7 @@ class SCANNamespace(RawNamespace):
 
         return self.TRACER_MAPPING.get(tracer, None)
 
-    def get_scan_type(self, field: str, scope: str) -> Optional[str]:
+    def get_scan_type(self, field: str, scope: SCANPETScope) -> Optional[str]:
         """Get the scan type from the tracer."""
         tracer = None
         try:
