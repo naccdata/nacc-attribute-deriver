@@ -86,8 +86,6 @@ class SetOperation(Operation):
         since the final output is a JSON."""
         if isinstance(value, DateTaggedValue):
             value = value.value
-        if value is None:
-            return
 
         cur_set = table.get(attribute)
         cur_set = set(cur_set) if cur_set else set()
@@ -108,8 +106,6 @@ class SortedListOperation(Operation):
         """Adds the value to a sorted list."""
         if isinstance(value, DateTaggedValue):
             value = value.value
-        if value is None:
-            return
 
         cur_list = table.get(attribute, [])
         if isinstance(value, (list, set)):
@@ -157,28 +153,14 @@ class InitialOperation(DateOperation):
     LABEL = "initial"
 
     def compare(self, left_value: date, right_value: date):
-        return left_value < right_value
+        return left_value <= right_value
 
 
 class LatestOperation(DateOperation):
     LABEL = "latest"
 
     def compare(self, left_value: date, right_value: date):
-        return left_value > right_value
-
-
-class CountOperation(Operation):
-    LABEL = "count"
-
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
-        """Counts the result."""
-        if not value:  # TODO: should we count 0s/Falses?
-            return None
-        if isinstance(value, DateTaggedValue) and not value.value:
-            return None
-
-        cur_count = table.get(attribute, 0)
-        table[attribute] = cur_count + 1
+        return left_value >= right_value
 
 
 class ComparisonOperation(Operation):
