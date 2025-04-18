@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
+from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -23,6 +23,7 @@ def table() -> SymbolTable:
                         "birthmo": "3",
                         "birthyr": "1990",
                         "module": "UDS",
+                        "formver": "3.2",
                     }
                 }
             }
@@ -54,6 +55,16 @@ class TestUDSNamespace:
         # set to followup packet
         set_attribute(table, form_prefix, "packet", "F")
         assert namespace.is_followup()
+
+    def test_normalize_formver(self, table, form_prefix):
+        """Tests normalize_formver."""
+        # starts as non-followup
+        namespace = UDSNamespace(table)
+        assert namespace.normalized_formver() == 3
+
+        # set to followup packet
+        set_attribute(table, form_prefix, "formver", "3")
+        assert namespace.normalized_formver() == 3
 
     def test_check_default(self, table, form_prefix):
         """Tests check_default.

@@ -12,7 +12,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     DerivedNamespace,
     SubjectDerivedNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
+from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

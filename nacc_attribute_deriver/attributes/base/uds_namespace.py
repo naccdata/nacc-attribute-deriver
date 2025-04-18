@@ -27,12 +27,17 @@ class UDSNamespace(FormNamespace):
         return self.get_value("packet") == "F"
 
     def normalized_formver(self) -> int:
-        """Returns the normalized form version. Handles cases where the
-        form version is listed as 3.2 for example."""
+        """Returns the normalized form version.
+
+        Handles cases where the form version is listed as 3.2 for
+        example.
+        """
         try:
             formver = int(float(self.get_value("formver")))
         except (ValueError, TypeError) as e:
-            raise MissingRequiredError("Current file does not have a numerical formver")
+            raise MissingRequiredError(
+                "Current file does not have a numerical formver"
+            ) from e
 
         return formver
 

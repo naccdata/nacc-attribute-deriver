@@ -11,7 +11,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     DateTaggedValue,
     DerivedNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
+from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
 
