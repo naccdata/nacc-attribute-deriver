@@ -226,7 +226,7 @@ class UDSFormD1Attribute(AttributeCollection):
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-        if self.__uds.get_value("impnomci") == 1 or self._create_mci() == 1:
+        elif self.__uds.get_value("impnomci") == 1 or self._create_mci() == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:
@@ -237,7 +237,7 @@ class UDSFormD1Attribute(AttributeCollection):
             if (formver != 3 and nodx == 1) or (formver == 3):
                 return 7
 
-        return self.__uds.check_default("naccppa", 8)
+        return 8
 
     def _create_naccbvft(self) -> int:
         """From d1structdd.sas.
