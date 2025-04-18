@@ -1,53 +1,22 @@
-"""SCAN attribute, derive directly from AttributeCollection.
-
-Raw values are split across 7 files - deriving a variable should be isolated
-to a single file as much as possible, otherwise we need to somehow map cross-file
-attributes.
+"""SCAN attributes, derive directly from AttributeCollection.
+Comes from 7 unique files.
 """
 
-from enum import Enum
 from types import MappingProxyType
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
-
-
-class MRIPrefix(str, Enum):
-    """File name prefixes for SCAN MR-specific files."""
-
-    SCAN_MRI_QC = "scan_mri_qc."
-    MRI_SBM = "mri_sbm."
-
-
-class PETPrefix(str, Enum):
-    """File name prefixes for SCAN PET-specific files."""
-
-    SCAN_PET_QC = "scan_pet_qc."
-    AMYLOID_PET_GAAIN = "amyloid_pet_gaain."
-    AMYLOID_PET_NPDKA = "amyloid_pet_npdka."
-    FDG_PET_NPDKA = "fdg_pet_npdka."
-    TAU_PET_NPDKA = "tau_pet_npdka."
-
-    @classmethod
-    def analysis_files(cls):
-        """Returns the names of all analysis PET files."""
-        return [
-            cls.AMYLOID_PET_GAAIN,
-            cls.AMYLOID_PET_NPDKA,
-            cls.FDG_PET_NPDKA,
-            cls.TAU_PET_NPDKA,
-        ]
-
+from nacc_attribute_deriver.utils.scope import SCANMRIScope, SCANPETScope
 
 # TODO: make this more elegant
-REQUIRED_FIELDS: Dict[Union[MRIPrefix, PETPrefix], List[str]] = {
-    MRIPrefix.SCAN_MRI_QC: ["study_date", "series_type"],
-    MRIPrefix.MRI_SBM: ["scandt", "cerebrumtcv", "wmh"],
-    PETPrefix.SCAN_PET_QC: ["scan_date"],
-    PETPrefix.AMYLOID_PET_GAAIN: ["scandate", "tracer", "amyloid_status"],
-    PETPrefix.AMYLOID_PET_NPDKA: ["scandate"],
-    PETPrefix.FDG_PET_NPDKA: ["scandate"],
-    PETPrefix.TAU_PET_NPDKA: ["scandate"],
+SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
+    SCANMRIScope.MRI_QC: ["study_date", "series_type"],
+    SCANMRIScope.MRI_SBM: ["scandt", "cerebrumtcv", "wmh"],
+    SCANPETScope.PET_QC: ["scan_date"],
+    SCANPETScope.AMYLOID_PET_GAAIN: ["scandate", "tracer", "amyloid_status"],
+    SCANPETScope.AMYLOID_PET_NPDKA: ["scandate"],
+    SCANPETScope.FDG_PET_NPDKA: ["scandate"],
+    SCANPETScope.TAU_PET_NPDKA: ["scandate"],
 }
 
 
@@ -82,11 +51,11 @@ class SCANNamespace(RawNamespace):
     )
 
     # get functions for common values
-    def get_tracer(self, field: str, subprefix: PETPrefix) -> Optional[str]:
+    def get_tracer(self, field: str, scope: SCANPETScope) -> Optional[str]:
         """Get the tracer string."""
         tracer = None
         try:
-            self.assert_required(REQUIRED_FIELDS[subprefix])
+            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
             tracer = float(self.get_value(field))
             tracer = int(tracer)  # can't call int directly on string-float
         except (ValueError, TypeError):
@@ -94,11 +63,11 @@ class SCANNamespace(RawNamespace):
 
         return self.TRACER_MAPPING.get(tracer, None)
 
-    def get_scan_type(self, field: str, subprefix: PETPrefix) -> Optional[str]:
+    def get_scan_type(self, field: str, scope: SCANPETScope) -> Optional[str]:
         """Get the scan type from the tracer."""
         tracer = None
         try:
-            self.assert_required(REQUIRED_FIELDS[subprefix])
+            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
             tracer = float(self.get_value(field))
             tracer = int(tracer)
         except (ValueError, TypeError):

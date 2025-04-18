@@ -2,6 +2,15 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.2.3
+
+* Refactors how scopes are handled, particularly for SCAN
+* Fixes `naccint` to calculate interval in months instead of days
+* Fixes `set` and `list` operations to set attribute to empty list instead of not setting it
+* Fixes `latest` and `initial` operations to update if the dates are the same
+* Removes regression testing related code - separating out
+* Removes the `count` operation
+
 ## 1.2.2
 
 * Adds ability for UDS NACC derived variables to account for follow-up forms
