@@ -80,8 +80,11 @@ class UDSFormD1Attribute(AttributeCollection):
         if contr_status:
             return contr_status
 
-        # default
-        return self.__uds.check_default("naccalzp", 7)
+        # default - need to change 8 to 7 since now normcog != 1
+        default = self.__uds.check_default("naccalzp", 7)
+        if default == 8:
+            return 7
+        return default
 
     def _create_nacclbde(self) -> Optional[int]:
         """From d1structrdd.sas.
@@ -92,7 +95,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if self.__uds.get_value("normcog") == 1:
             return 8
 
-        if self.__uds.get_value("formver") != 3:
+        if self.__uds.normalized_formver() != 3:
             dlb = self.__uds.get_value("dlb")
             park = self.__uds.get_value("park")
 
@@ -117,7 +120,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if self.__uds.get_value("normcog") == 1:
             return 8
 
-        if self.__uds.get_value("formver") != 3:
+        if self.__uds.normalized_formver() != 3:
             contr_status = self.get_contr_status(["dlbif", "parkif"])
             if contr_status:
                 return contr_status
@@ -164,7 +167,7 @@ class UDSFormD1Attribute(AttributeCollection):
         all_status = [
             self.get_contr_status(["probadif", "possadif", "alzdisif"]),
             self.get_contr_status(["dlbif", "parkif"])
-            if self.__uds.get_value("formver") != 3
+            if self.__uds.normalized_formver() != 3
             else self.get_contr_status(["lbdif"]),
             # could just grab directly for those with only 1 but this is more readable
             self.get_contr_status(["msaif"]),
@@ -202,8 +205,11 @@ class UDSFormD1Attribute(AttributeCollection):
             if status and self.is_int_value(status, ContributionStatus.PRIMARY):
                 return i + 1
 
-        # default for normcog == 0
-        return self.__uds.check_default("naccetpr", 99)
+        # default for normcog == 0; need to change 8 to 7 since now normcog != 1
+        default = self.__uds.check_default("naccetpr", 99)
+        if default == 88:
+            return 99
+        return default
 
     def _create_naccppa(self) -> int:
         """From d1structdd.sas.
@@ -219,16 +225,15 @@ class UDSFormD1Attribute(AttributeCollection):
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-        nodx = self.__uds.get_value("nodx")
-
         if self.__uds.get_value("impnomci") == 1 or self._create_mci() == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:
                 return 0
-            if (self.__uds.get_value("formver") != 3 and nodx == 1) or (
-                self.__uds.get_value("formver") == 3
-            ):
+
+            formver = self.__uds.normalized_formver()
+            nodx = self.__uds.get_value("nodx")
+            if (formver != 3 and nodx == 1) or (formver == 3):
                 return 7
 
         return self.__uds.check_default("naccppa", 8)
