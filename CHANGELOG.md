@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 1.2.3
 
 * Refactors how scopes are handled, particularly for SCAN
+* Moves `uds_namespace` to `attributes/base`
 * Updates to normalize the form version, e.g. `formver: 3.2` is UDS 3
 * Fixes `naccint` to calculate interval in months instead of days
 * Fixes issue with UDS Form D1 cognitive variables where the default changes (e.g. `normcog != 1` vs `normcog == 1`). Affected variables:
@@ -13,7 +14,6 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Fixes else/if condition on `naccppa` and removes checking of subject default (not applicable here)
 * Fixes `set` and `list` operations to set attribute to empty list instead of not setting it
 * Fixes `latest` and `initial` operations to update if the dates are the same
-* Moves `uds_namespace` to `attributes/base`
 * Removes regression testing related code - separating out
 * Removes the `count` operation
 
