@@ -13,6 +13,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Fixes else/if condition on `naccppa` and removes checking of subject default (not applicable here)
 * Fixes `set` and `list` operations to set attribute to empty list instead of not setting it
 * Fixes `latest` and `initial` operations to update if the dates are the same
+* Moves `uds_namespace` to `attributes/base`
 * Removes regression testing related code - separating out
 * Removes the `count` operation
 
