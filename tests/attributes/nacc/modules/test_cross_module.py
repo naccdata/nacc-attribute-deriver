@@ -145,22 +145,22 @@ class TestCrossModuleAttribute:
         """Tests _create_naccint."""
         # NP death date available
         attr = CrossModuleAttributeCollection.create(table)
-        assert attr._create_naccint() == 1556  # noqa: SLF001
+        assert attr._create_naccint() == 51  # noqa: SLF001
 
         # Milestone death date available
         table["subject.info.derived.np_death_date"] = None
-        assert attr._create_naccint() == 9102  # noqa: SLF001
+        assert attr._create_naccint() == 299  # noqa: SLF001
 
         # MDS death date available
         # NOTE: NACCINT isn't officially calculated for MDS
         table["subject.info.derived.milestone_death_date"] = None
-        assert attr._create_naccint() == 1765  # noqa: SLF001
+        assert attr._create_naccint() == 58  # noqa: SLF001
 
         # no death age but dead based on other variables
         table["subject.info.derived.mds_death_date"] = None
-        assert attr._create_naccint() == 9999  # noqa: SLF001
+        assert attr._create_naccint() == 999  # noqa: SLF001
 
         # not dead
         table["subject.info.derived.np_death_age"] = None
         table["subject.info.derived.milestone_deceased"] = None
-        assert attr._create_naccint() == 8888  # noqa: SLF001
+        assert attr._create_naccint() == 888  # noqa: SLF001
