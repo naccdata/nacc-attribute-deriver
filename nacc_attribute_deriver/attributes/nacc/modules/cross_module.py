@@ -123,7 +123,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         return 1
 
     def _create_naccint(self) -> int:
-        """Creates NACCINT, which is time interval (days) between last visit
+        """Creates NACCINT, which is time interval (months) between last visit
         (UDS) and death (NP/Milestone).
 
         Uses NACCDIED and death date calculate.
@@ -133,11 +133,11 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # not dead
         if naccdied != 1:
-            return 8888
+            return 888
 
         # died but no/unknown death age
         if naccdied == 1 and not deathdate:
-            return 9999
+            return 999
 
         # compare to last UDS visit
         self.__subject_derived.assert_required(["uds-visitdates"])
@@ -145,13 +145,13 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # a non-valid visitdate shouldn't be possible but handle just in case
         if not visitdates:
-            return 9999
+            return 999
 
         last_visit = datetime_from_form_date(sorted(list(visitdates))[-1])
         if not last_visit:
-            return 9999
+            return 999
 
         result = calculate_interval(last_visit.date(), deathdate)
 
         # handle negative
-        return 9999 if result is None or result < 0 else result
+        return 999 if result is None or result < 0 else result
