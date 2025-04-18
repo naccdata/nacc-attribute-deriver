@@ -23,7 +23,7 @@ class StudyParametersAttributeCollection(AttributeCollection):
 
     def _create_uds_versions_available(self) -> List[str]:
         """Keeps track of available UDS versions."""
-        formver = self.__file.get_value("formver")
+        formver = self.__file.normalized_formver()
         versions = self.__subject_info.get_value("study-parameters.uds.versions", [])
         versions = {
             version
@@ -31,6 +31,6 @@ class StudyParametersAttributeCollection(AttributeCollection):
             if isinstance(version, str) and re.match(r"UDSv[1-4]", version)
         }
         if formver:
-            versions.add(f"UDSv{int(float(formver))}")
+            versions.add(f"UDSv{formver}")
 
         return list(versions)
