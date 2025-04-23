@@ -22,9 +22,9 @@ class UDSNamespace(FormNamespace):
 
         self.__subject_derived = SubjectDerivedNamespace(table)
 
-    def is_followup(self) -> bool:
-        """Returns whether or not this is a follow-up form."""
-        return self.get_value("packet") == "F"
+    def is_initial(self) -> bool:
+        """Returns whether or not this is an initial packet."""
+        return self.get_value("packet") in ["I", "I4"]
 
     def normalized_formver(self) -> int:
         """Returns the normalized form version.
@@ -41,32 +41,27 @@ class UDSNamespace(FormNamespace):
 
         return formver
 
-    def check_default(self, attribute: str, default: Optional[Any] = None) -> Any:
-        """Check for the default by:
-
-            1. If a follow-up packet and result is None/777, check
-                subject.info.derived.<attribute>
-            2. If still None, then return the specified default
-
-        NOTE: The 777 will often NOT be attached to the derived attribute,
-            but one of the sources it looks at. It's here to cover the case,
-            but in general it is expected a 777 value should fall to the
-            default case that calls this method for that specific rule.
+    def get_cross_sectional_value(self, attribute: str, default: Optional[Any] = None) -> Any:
+        """Returns a cross-sectional value.
 
         Args:
-            attribute: the target attribute name
-            default: the default value
+          key: the attribute name
+          default: the default value
         Returns:
-            the value for the attribute in the table
+          the value for the attribute in the table
         """
-        if not self.is_followup():
-            return default
+        return self.__subject_derived.get_value(f'cross-sectional.{attribute}', default)
 
-        result = self.get_value(attribute)
-        if result in [None, 777, "777"]:
-            result = self.__subject_derived.get_value(attribute, None)
+    def get_longitudinal_value(self, attribute: str, default: Optional[Any] = None) -> Any:
+        """Returns a longitudinal value.
 
-        return default if result is None else result
+        Args:
+          key: the attribute name
+          default: the default value
+        Returns:
+          the value for the attribute in the table
+        """
+        return self.__subject_derived.get_value(f'longitudinal.{attribute}', default)
 
     def generate_uds_dob(self) -> Optional[date]:
         """Creates UDS DOB, which is used to calculate ages."""

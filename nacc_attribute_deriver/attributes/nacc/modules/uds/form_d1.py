@@ -3,9 +3,9 @@
 from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import (
-    SubjectDerivedNamespace,
-)
+# from nacc_attribute_deriver.attributes.base.namespace import (
+#     SubjectDerivedNamespace,
+# )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
@@ -26,7 +26,7 @@ class ContributionStatus:
 class UDSFormD1Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        self.__subject = SubjectDerivedNamespace(table)
+        # self.__subject = SubjectDerivedNamespace(table)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
@@ -81,13 +81,9 @@ class UDSFormD1Attribute(AttributeCollection):
         if contr_status:
             return contr_status
 
-        # default - need to change 8 to 7 since now normcog != 1
-        default = self.__uds.check_default("naccalzp", 7)
-        if default == 8:
-            return 7
-        return default
+        return 7
 
-    def _create_nacclbde(self) -> Optional[int]:
+    def _create_nacclbde(self) -> int:
         """From d1structrdd.sas.
 
         Presumptive etilogic diagnosis of the cognitive disorder
@@ -109,9 +105,9 @@ class UDSFormD1Attribute(AttributeCollection):
         if lbdis in [0, 1]:
             return lbdis
 
-        return self.__uds.check_default("nacclbde", None)
+        return 0
 
-    def _create_nacclbdp(self) -> Optional[int]:
+    def _create_nacclbdp(self) -> int:
         """From d1structrdd.sas. Also relies on another derived variable
         nacclbde.
 
@@ -121,21 +117,26 @@ class UDSFormD1Attribute(AttributeCollection):
         if self.__uds.get_value("normcog") == 1:
             return 8
 
+        contr_status = None
         if self.__uds.normalized_formver() != 3:
             contr_status = self.get_contr_status(["dlbif", "parkif"])
-            if contr_status:
-                return contr_status
+        else:
+            contr_status = self.get_contr_status(["lbdif"])
 
-        contr_status = self.get_contr_status(["lbdif"])
         if contr_status:
             return contr_status
 
         if self._create_nacclbde() == 0:
             return 7
 
-        return self.__uds.check_default("nacclbdp", None)
+        # return self.__uds.check_default("nacclbdp", None)
+        # TODO: raising error instead of returning None
+        # I think in theory it seems it shouldn't ever get here
+        # and nacclbdp should always be set to something
+        # (maybe use 7 as a default otherwise)
+        raise ValueError("Unable to determine nacclbdp")
 
-    def _create_naccudsd(self) -> Optional[int]:
+    def _create_naccudsd(self) -> int:
         """From Create NACCUDSD.R which in turn is from derive.sas.
 
         Cognitive status at UDS visit
@@ -149,7 +150,9 @@ class UDSFormD1Attribute(AttributeCollection):
         if self.__uds.get_value("impnomci") == 1:
             return 2
 
-        return self.__uds.check_default("naccudsd", None)
+        # TODO: risk throwing an error here, same situation as nacclbdp.
+        # not really sure what a proper default would be in this case
+        raise ValueError("Unable to determine naccudsd")
 
     def _create_naccetpr(self) -> int:
         """From Create NACCETPR, PRIMDX, SYNMULT.R which in turn comes from
@@ -203,14 +206,15 @@ class UDSFormD1Attribute(AttributeCollection):
 
         assert len(all_status) == 30
         for i, status in enumerate(all_status):
-            if status and self.is_int_value(status, ContributionStatus.PRIMARY):
+            if status and self.is_target_int(status, ContributionStatus.PRIMARY):
                 return i + 1
 
-        # default for normcog == 0; need to change 8 to 7 since now normcog != 1
-        default = self.__uds.check_default("naccetpr", 99)
-        if default == 88:
-            return 99
-        return default
+        # # default for normcog == 0; need to change 8 to 7 since now normcog != 1
+        # default = self.__uds.check_default("naccetpr", 99)
+        # if default == 88:
+        #     return 99
+        # return default
+        return 99
 
     def _create_naccppa(self) -> int:
         """From d1structdd.sas.
@@ -237,6 +241,7 @@ class UDSFormD1Attribute(AttributeCollection):
             if (formver != 3 and nodx == 1) or (formver == 3):
                 return 7
 
+        #return self.__uds.check_default("naccppa", 8)
         return 8
 
     def _create_naccbvft(self) -> int:
@@ -256,7 +261,8 @@ class UDSFormD1Attribute(AttributeCollection):
         if ftdsyn in [0, 1]:
             return ftdsyn
 
-        return self.__uds.check_default("naccbvft", 8)
+        #return self.__uds.check_default("naccbvft", 8)
+        return 8
 
     def _create_nacclbds(self) -> int:
         """From d1structdd.sas.
@@ -275,15 +281,22 @@ class UDSFormD1Attribute(AttributeCollection):
         if lbdsyn in [0, 1]:
             return lbdsyn
 
-        return self.__uds.check_default("nacclbds", 8)
+        #return self.__uds.check_default("nacclbds", 8)
+        return 8
 
     def _create_naccnorm(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
 
         Normal cognition at all visits to date
         """
-        naccnorm = self.__subject.get_value("naccnorm")
-        if naccnorm == 0:
-            return naccnorm
+        naccnorm = self.__uds.get_cross_sectional_value("naccnorm")
 
-        return self.__uds.get_value("normcog")
+        try:
+            if int(naccnorm) == 0:
+                return naccnorm
+
+            return int(self.__uds.get_value("normcog"))
+        except (ValueError, TypeError):
+            pass
+
+        return 1

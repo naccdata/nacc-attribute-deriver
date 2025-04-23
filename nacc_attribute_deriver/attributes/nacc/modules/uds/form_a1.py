@@ -269,14 +269,14 @@ class UDSFormA1Attribute(AttributeCollection):
         }
     )
 
-    def _create_naccage(self) -> Optional[int]:
+    def _create_naccage(self) -> int:
         """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
         compares to form date."""
         dob = self.__uds.generate_uds_dob()
         visitdate = self.__uds.get_value("visitdate", None)
         visitdate = datetime_from_form_date(visitdate)
         if not dob or not visitdate:
-            return None
+            raise ValueError("Missing one of DOB or visitdate")
 
         return calculate_age(dob, visitdate.date())
 
@@ -291,9 +291,10 @@ class UDSFormA1Attribute(AttributeCollection):
             raceterx=self.__uds.get_value("raceterx"),
         )
 
-        # if result is 99/Unknown, check for a default in subject.info.derived
-        if result == 99:
-            return self.__uds.check_default("naccnihr", result)
+        # if result is 99/Unknown and not an initial packet,
+        # check for a default in subject.info.derived
+        if result == 99 and not self.__uds.is_initial():
+            return self.__uds.get_cross_sectional_value("naccnihr", result)
 
         return result
 
