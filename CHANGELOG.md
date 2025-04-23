@@ -5,7 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 1.3.0
 
 * Refactors the use of `subject.info.derived` - splits between longitudinal and cross-sectional variables, then updates the MQT rules to handle the longitudinal rules as sets
-    * Longitudinal keeps track of sets, so value can be different across form
+    * Longitudinal keeps track of sets, so value can be different across forms
     * Cross-sectional is globally updated - curator gear will handle back-propogation
     * Fixes various bugs related to this issue
 * Refactors how scopes are handled, particularly for SCAN
