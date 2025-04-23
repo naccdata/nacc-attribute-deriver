@@ -161,20 +161,27 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """Returns whether or not this is an affiliated participant.
         Looks for sourcenw != 1 in UDS or source != (1, 2, 3) in MDS.
         """
+        if self.__uds.normalized_formver() in [1, 2]:
+            source = self.__uds.get('source'):
+            if source is not None:
+                try:
+                    return int(source) == 4
+                except (TypeError, ValueError):
+                    pass
+
         sourcenw = self.__uds.get('sourcenw')
         if sourcenw is not None:
             try:
-                return int(sourcenw) != 1
+                return int(sourcenw) == 2
             except (TypeError, ValueError):
                 pass
 
-        source = self.__subject_derived.get_value("mds_source")
-        if source is not None:
+        mds_source = self.__subject_derived.get_value("mds_source")
+        if mds_source is not None:
             try:
                 return int(source) not in [1, 2, 3]
             except (TypeError, ValueError):
                 pass
 
         raise MissingRequiredError(
-            "Missing both sourcenw (UDS) and source (MDS); " +
-            "cannot determine participant affiliated status")
+            "Cannot determine participant affiliated status")
