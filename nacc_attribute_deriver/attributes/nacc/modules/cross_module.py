@@ -10,6 +10,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
@@ -155,3 +156,25 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # handle negative
         return 999 if result is None or result < 0 else result
+
+    def _create_affiliate(self) -> bool:
+        """Returns whether or not this is an affiliated participant.
+        Looks for sourcenw != 1 in UDS or source != (1, 2, 3) in MDS.
+        """
+        sourcenw = self.__uds.get('sourcenw')
+        if sourcenw is not None:
+            try:
+                return int(sourcenw) != 1
+            except (TypeError, ValueError):
+                pass
+
+        source = self.__subject_derived.get_value("mds_source")
+        if source is not None:
+            try:
+                return int(source) not in [1, 2, 3]
+            except (TypeError, ValueError):
+                pass
+
+        raise MissingRequiredError(
+            "Missing both sourcenw (UDS) and source (MDS); " +
+            "cannot determine participant affiliated status")
