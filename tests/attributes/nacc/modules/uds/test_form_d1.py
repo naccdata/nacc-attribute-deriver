@@ -24,7 +24,7 @@ def table() -> SymbolTable:
                     "json": {
                         "visitdate": "2025-01-01",
                         "normcog": 1,
-                        "formver": 4,
+                        "formver": 2,
                         "module": "uds",
                     }
                 }
@@ -78,18 +78,9 @@ class TestUDSFormD1Attribute:
         assert attr._create_nacclbde() == 8  # noqa: SLF001
 
         set_attribute(table, form_prefix, "normcog", 0)
-        # attr = UDSFormD1Attribute(table)
-        # assert attr._create_nacclbde() is None  # noqa: SLF001
 
-        for value in [0, 1]:
-            set_attribute(table, form_prefix, "lbdis", value)
-            attr = UDSFormD1Attribute(table)
-            assert attr._create_nacclbde() == value  # noqa: SLF001
-        set_attribute(table, form_prefix, "lbdis", 3)
-
+        # formver != 3
         set_attribute(table, form_prefix, "park", 0)
-        #attr = UDSFormD1Attribute(table)
-        #assert attr._create_nacclbde() is None  # noqa: SLF001
         set_attribute(table, form_prefix, "dlb", 0)
         attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() == 0  # noqa: SLF001
@@ -98,9 +89,16 @@ class TestUDSFormD1Attribute:
         attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbde() == 1  # noqa: SLF001
 
-        #set_attribute(table, form_prefix, "formver", 3)
-        #attr = UDSFormD1Attribute(table)
-        #assert attr._create_nacclbde() is None  # noqa: SLF001
+        # formver == 3
+        set_attribute(table, form_prefix, "formver", 3)
+        for value in [0, 1, 3]:
+            set_attribute(table, form_prefix, "lbdis", value)
+            attr = UDSFormD1Attribute(table)
+
+            if value == 3:
+                assert attr._create_nacclbde() == 0  # noqa: SLF001
+            else:
+                assert attr._create_nacclbde() == value  # noqa: SLF001
 
     def test_create_nacclbdp(self, table, form_prefix):
         """Tests creating NACCLBDP."""
@@ -108,8 +106,6 @@ class TestUDSFormD1Attribute:
         assert attr._create_nacclbdp() == 8  # noqa: SLF001
 
         set_attribute(table, form_prefix, "normcog", 0)
-        #attr = UDSFormD1Attribute(table)
-        #assert attr._create_nacclbdp() is None  # noqa: SLF001
 
         # relies on nacclbde == 0
         set_attribute(table, form_prefix, "lbdis", 0)

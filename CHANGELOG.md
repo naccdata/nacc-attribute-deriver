@@ -10,13 +10,13 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Fixes various bugs related to this issue
     * Other attributes that use subject.info should be relooked at as well but for the most part are left alone for now
 * Refactors how scopes are handled, particularly for SCAN
-* Moves `uds_namespace` to `attributes/base`
+* Moves `uds_namespace` to `attributes/base`, and adds functions to grab cross-sectional and longitudinal values
 * Updates to normalize the form version, e.g. `formver: 3.2` is UDS 3
 * Updates to not allow NACC* derived variables to be null
 * Fixes `naccint` to calculate interval in months instead of days
 * Fixes `set` and `list` operations to set attribute to empty list instead of not setting it
 * Fixes `latest` and `initial` operations to update if the dates are the same
-* Removes redundant genetics code
+* Removes redundant code
 * Removes regression testing related code - separating out
 * Removes the `count` operation
 

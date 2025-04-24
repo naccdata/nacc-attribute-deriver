@@ -21,7 +21,7 @@ def table() -> SymbolTable:
                         "birthmo": 3,
                         "birthyr": 1990,
                         "module": "UDS",
-                        "packet": "I"
+                        "packet": "I",
                     }
                 }
             }

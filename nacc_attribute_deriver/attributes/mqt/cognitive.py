@@ -165,8 +165,3 @@ class CognitiveAttributeCollection(AttributeCollection):
         cdrglob = self.__uds.get_value("cdrglob")
 
         return DateTaggedValue(value=cdrglob, date=self.__uds.get_date())
-
-    # def _create_normal_cognition(self) -> bool:
-    #     """Mapped from NACCNORM."""
-    #     self.__derived.assert_required(["naccnorm"])
-    #     return bool(self.__derived.get_value("naccnorm"))

@@ -276,9 +276,13 @@ class UDSFormA1Attribute(AttributeCollection):
         visitdate = self.__uds.get_value("visitdate", None)
         visitdate = datetime_from_form_date(visitdate)
         if not dob or not visitdate:
-            raise ValueError("Missing one of DOB or visitdate")
+            raise ValueError("Missing one of DOB or visitdate to calculate naccage")
 
-        return calculate_age(dob, visitdate.date())
+        age = calculate_age(dob, visitdate.date())
+        if age is None:
+            raise ValueError("Unable to calculate naccage")
+
+        return age
 
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)"""

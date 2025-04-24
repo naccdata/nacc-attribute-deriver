@@ -3,9 +3,6 @@
 from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-# from nacc_attribute_deriver.attributes.base.namespace import (
-#     SubjectDerivedNamespace,
-# )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
@@ -26,7 +23,6 @@ class ContributionStatus:
 class UDSFormD1Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        # self.__subject = SubjectDerivedNamespace(table)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
@@ -209,11 +205,6 @@ class UDSFormD1Attribute(AttributeCollection):
             if status and self.is_target_int(status, ContributionStatus.PRIMARY):
                 return i + 1
 
-        # # default for normcog == 0; need to change 8 to 7 since now normcog != 1
-        # default = self.__uds.check_default("naccetpr", 99)
-        # if default == 88:
-        #     return 99
-        # return default
         return 99
 
     def _create_naccppa(self) -> int:
@@ -241,7 +232,6 @@ class UDSFormD1Attribute(AttributeCollection):
             if (formver != 3 and nodx == 1) or (formver == 3):
                 return 7
 
-        #return self.__uds.check_default("naccppa", 8)
         return 8
 
     def _create_naccbvft(self) -> int:
@@ -261,7 +251,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if ftdsyn in [0, 1]:
             return ftdsyn
 
-        #return self.__uds.check_default("naccbvft", 8)
+        # return self.__uds.check_default("naccbvft", 8)
         return 8
 
     def _create_nacclbds(self) -> int:
@@ -281,7 +271,6 @@ class UDSFormD1Attribute(AttributeCollection):
         if lbdsyn in [0, 1]:
             return lbdsyn
 
-        #return self.__uds.check_default("nacclbds", 8)
         return 8
 
     def _create_naccnorm(self) -> int:

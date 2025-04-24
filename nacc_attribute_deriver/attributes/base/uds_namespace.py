@@ -45,7 +45,9 @@ class UDSNamespace(FormNamespace):
 
         return formver
 
-    def get_cross_sectional_value(self, attribute: str, default: Optional[Any] = None) -> Any:
+    def get_cross_sectional_value(
+        self, attribute: str, default: Optional[Any] = None
+    ) -> Any:
         """Returns a cross-sectional value.
 
         Args:
@@ -54,9 +56,11 @@ class UDSNamespace(FormNamespace):
         Returns:
           the value for the attribute in the table
         """
-        return self.__subject_derived.get_value(f'cross-sectional.{attribute}', default)
+        return self.__subject_derived.get_value(f"cross-sectional.{attribute}", default)
 
-    def get_longitudinal_value(self, attribute: str, default: Optional[Any] = None) -> Any:
+    def get_longitudinal_value(
+        self, attribute: str, default: Optional[Any] = None
+    ) -> Any:
         """Returns a longitudinal value.
 
         Args:
@@ -65,7 +69,7 @@ class UDSNamespace(FormNamespace):
         Returns:
           the value for the attribute in the table
         """
-        return self.__subject_derived.get_value(f'longitudinal.{attribute}', default)
+        return self.__subject_derived.get_value(f"longitudinal.{attribute}", default)
 
     def generate_uds_dob(self) -> Optional[date]:
         """Creates UDS DOB, which is used to calculate ages."""

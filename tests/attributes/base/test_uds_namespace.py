@@ -24,7 +24,7 @@ def table() -> SymbolTable:
                         "birthyr": "1990",
                         "module": "UDS",
                         "formver": "3.2",
-                        "packet": "I"
+                        "packet": "I",
                     }
                 }
             }
@@ -66,22 +66,3 @@ class TestUDSNamespace:
         # set to followup packet
         set_attribute(table, form_prefix, "formver", "3")
         assert namespace.normalized_formver() == 3
-
-    # def test_check_default(self, table, form_prefix):
-    #     """Tests check_default.
-
-    #     Iterates over multiple forms and asserts target field always
-    #     returns 2 except in the non-followup case.
-    #     """
-    #     namespace = UDSNamespace(table)
-    #     assert namespace.check_default("target", "default") == "default"
-
-    #     # set to followup packet
-    #     set_attribute(table, form_prefix, "packet", "F")
-    #     assert namespace.check_default("target", "default") == 2
-
-    #     # set target in file to 777 - should still return 2
-    #     set_attribute(table, form_prefix, "target", "777")
-    #     assert namespace.check_default("target", "default") == 2
-    #     set_attribute(table, form_prefix, "target", 777)
-    #     assert namespace.check_default("target", "default") == 2
