@@ -24,7 +24,11 @@ class UDSNamespace(FormNamespace):
 
     def is_initial(self) -> bool:
         """Returns whether or not this is an initial packet."""
-        return self.get_value("packet") in ["I", "I4"]
+        packet = self.get_value("packet")
+        if packet is not None:
+            return str(packet).startswith("I")
+
+        return False
 
     def normalized_formver(self) -> int:
         """Returns the normalized form version.

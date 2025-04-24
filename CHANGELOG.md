@@ -4,7 +4,6 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 1.3.0
 
-* Adds `affiliated` attribute - treated as a cross-sectional value, and affiliated participants should NOT be pulled by the MQT ETL
 * Refactors the use of `subject.info.derived` - splits between longitudinal and cross-sectional variables, then updates the MQT rules to handle the longitudinal rules as sets
     * Longitudinal keeps track of sets, so value can be different across forms
     * Cross-sectional is globally updated - curator gear will handle back-propogation
