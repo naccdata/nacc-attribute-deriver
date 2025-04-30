@@ -39,7 +39,7 @@ class NCRADAttributeCollection(AttributeCollection):
         """Comes from derive.sas and derivenew.sas (same code)
 
         Should come from the actual imported APOE data
-        <subject>_apoe_availability.json
+        <subject>_apoe_genotype.json
         """
         a1 = self.__apoe.get_value("a1")
         a2 = self.__apoe.get_value("a2")
@@ -62,7 +62,7 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
         """For APOE values provided from sources other than the NCRAD APOE
         file.
 
-        <subject>_historical_apoe_availability.json
+        <subject>_historical_apoe_genotype.json
         """
         apoe = self.__apoe.get_value("apoe")
 
