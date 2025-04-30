@@ -47,7 +47,7 @@ class NCRADAttributeCollection(AttributeCollection):
         if not a1 or not a2:
             return 9
 
-        return APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
+        return self.APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
 
 
 class HistoricalNCRADAttributeCollection(AttributeCollection):
@@ -58,9 +58,9 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
         self.__apoe = RawNamespace(table)
         self.__apoe.assert_required(required=["apoe"])
 
-    def _create_historical_ncrad_apoe(self) -> int:
-        """For APOE values provided from sources other than
-        the NCRAD APOE file
+    def _create_historical_apoe(self) -> int:
+        """For APOE values provided from sources other than the NCRAD APOE
+        file.
 
         <subject>_historical_apoe_availability.json
         """

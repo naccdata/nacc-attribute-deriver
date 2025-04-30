@@ -1,6 +1,6 @@
 scope,function,location,operation,type,description
-apoe,historical_ncrad_apoe,subject.info.derived.naccapoe,update,,
-apoe,historical_ncrad_apoe,subject.info.genetics.apoe,update,,
+apoe,historical_apoe,subject.info.derived.naccapoe,update,,
+apoe,historical_apoe,subject.info.genetics.apoe,update,,
 apoe,ncrad_apoe,subject.info.derived.naccapoe,update,,
 apoe,ncrad_apoe,subject.info.genetics.apoe,update,,
 mds,mds_death_date,subject.info.derived.mds_death_date,update,,
