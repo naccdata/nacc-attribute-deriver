@@ -3,6 +3,7 @@
 import pytest
 
 from nacc_attribute_deriver.attributes.nacc.genetics.ncrad import (
+    HistoricalNCRADAttributeCollection,
     NCRADAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -12,7 +13,9 @@ from tests.conftest import set_attribute
 @pytest.fixture(scope="function")
 def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {"file": {"info": {"raw": {"a1": "e3", "a2": "e3"}}}}
+    data = {
+        "file": {"info": {"raw": {"a1": "e3", "a2": "e3", "apoe": "1", "apoenp": "1"}}}
+    }
 
     return SymbolTable(data)
 
@@ -40,3 +43,17 @@ class TestNCRADAttributeCollection:
         attr = NCRADAttributeCollection.create(SymbolTable())
         assert attr is None
         # assert attr._create_naccapoe() == 9
+
+
+class TestHistoricalNCRADAttributeCollection:
+    def test_create_historic_apoe(self, table, raw_prefix):
+        """Tests creating historical NACCAPOE."""
+        attr = HistoricalNCRADAttributeCollection.create(table)
+        assert attr._create_historic_apoe() == 1  # noqa: SLF001
+
+        # invalid cases
+        set_attribute(table, raw_prefix, "apoenp", None)
+        for invalid in [0, 7, None, ""]:
+            set_attribute(table, raw_prefix, "apoe", invalid)
+            attr = HistoricalNCRADAttributeCollection.create(table)
+            assert attr._create_historic_apoe() == 9  # noqa: SLF001
