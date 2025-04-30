@@ -47,4 +47,28 @@ class NCRADAttributeCollection(AttributeCollection):
         if not a1 or not a2:
             return 9
 
-        return self.APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
+        return APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
+
+
+class HistoricalNCRADAttributeCollection(AttributeCollection):
+    """Class to collect historical NCRAD attributes."""
+
+    def __init__(self, table: SymbolTable) -> None:
+        """Override initializer to set prefix to NCRAD-specific data."""
+        self.__apoe = RawNamespace(table)
+        self.__apoe.assert_required(required=["apoe"])
+
+    def _create_historical_ncrad_apoe(self) -> int:
+        """For APOE values provided from sources other than
+        the NCRAD APOE file
+
+        <subject>_historical_apoe_availability.json
+        """
+        apoe = self.__apoe.get_value("apoe")
+
+        try:
+            apoe = int(apoe)
+        except (TypeError, ValueError):
+            apoe = None
+
+        return apoe if apoe and apoe >= 1 and apoe <= 6 else 9
