@@ -13,7 +13,9 @@ from tests.conftest import set_attribute
 @pytest.fixture(scope="function")
 def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {"file": {"info": {"raw": {"a1": "e3", "a2": "e3", "apoe": "1"}}}}
+    data = {
+        "file": {"info": {"raw": {"a1": "e3", "a2": "e3", "apoe": "1", "apoenp": "1"}}}
+    }
 
     return SymbolTable(data)
 
@@ -50,6 +52,7 @@ class TestHistoricalNCRADAttributeCollection:
         assert attr._create_historical_apoe() == 1  # noqa: SLF001
 
         # invalid cases
+        set_attribute(table, raw_prefix, "apoenp", None)
         for invalid in [0, 7, None, ""]:
             set_attribute(table, raw_prefix, "apoe", invalid)
             attr = HistoricalNCRADAttributeCollection.create(table)

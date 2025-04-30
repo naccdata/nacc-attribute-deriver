@@ -71,4 +71,15 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
         except (TypeError, ValueError):
             apoe = None
 
+        # while sas code handles consistency, just do a sanity check
+        # to make sure entire rows lines up, else there's an issue
+        if apoe is not None:
+            for field in ["apoecenter", "apoenp", "apoeadgc", "adcapoe", "apoecomm"]:
+                source_apoe = self.__apoe.get_value(field)
+                if source_apoe:
+                    assert source_apoe == str(apoe), (
+                        f"Source {field} with value {source_apoe} does not match "
+                        + f"expected apoe value {apoe}"
+                    )
+
         return apoe if apoe and apoe >= 1 and apoe <= 6 else 9
