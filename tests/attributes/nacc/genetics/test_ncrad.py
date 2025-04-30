@@ -46,14 +46,14 @@ class TestNCRADAttributeCollection:
 
 
 class TestHistoricalNCRADAttributeCollection:
-    def test_create_historical_apoe(self, table, raw_prefix):
+    def test_create_historic_apoe(self, table, raw_prefix):
         """Tests creating historical NACCAPOE."""
         attr = HistoricalNCRADAttributeCollection.create(table)
-        assert attr._create_historical_apoe() == 1  # noqa: SLF001
+        assert attr._create_historic_apoe() == 1  # noqa: SLF001
 
         # invalid cases
         set_attribute(table, raw_prefix, "apoenp", None)
         for invalid in [0, 7, None, ""]:
             set_attribute(table, raw_prefix, "apoe", invalid)
             attr = HistoricalNCRADAttributeCollection.create(table)
-            assert attr._create_historical_apoe() == 9  # noqa: SLF001
+            assert attr._create_historic_apoe() == 9  # noqa: SLF001

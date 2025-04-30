@@ -4,7 +4,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 1.2.3
 
-* Adds `historical_apoe` rule to support historical APOE values from sources other than NCRAD
+* Adds `historic_apoe` rule to support historical APOE values from sources other than NCRAD
 * Refactors how scopes are handled, particularly for SCAN
 * Fixes `naccint` to calculate interval in months instead of days
 * Fixes `set` and `list` operations to set attribute to empty list instead of not setting it

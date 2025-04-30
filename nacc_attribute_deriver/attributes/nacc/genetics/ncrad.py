@@ -58,11 +58,11 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
         self.__apoe = RawNamespace(table)
         self.__apoe.assert_required(required=["apoe"])
 
-    def _create_historical_apoe(self) -> int:
+    def _create_historic_apoe(self) -> int:
         """For APOE values provided from sources other than the NCRAD APOE
         file.
 
-        <subject>_historical_apoe_genotype.json
+        <subject>_historic_apoe_genotype.json
         """
         apoe = self.__apoe.get_value("apoe")
 
