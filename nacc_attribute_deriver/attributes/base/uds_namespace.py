@@ -1,12 +1,9 @@
 """Class to define UDS-specific attributes."""
 
 from datetime import date, datetime
-from typing import Any, Optional
+from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import (
-    FormNamespace,
-    SubjectDerivedNamespace,
-)
+from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -19,8 +16,6 @@ class UDSNamespace(FormNamespace):
         module = self.get_value("module")
         if not module or module.upper() != "UDS":
             raise MissingRequiredError("Current file is not an UDS form")
-
-        self.__subject_derived = SubjectDerivedNamespace(table)
 
     def is_initial(self) -> bool:
         """Returns whether or not this is an initial packet."""
@@ -44,32 +39,6 @@ class UDSNamespace(FormNamespace):
             ) from e
 
         return formver
-
-    def get_cross_sectional_value(
-        self, attribute: str, default: Optional[Any] = None
-    ) -> Any:
-        """Returns a cross-sectional value.
-
-        Args:
-          key: the attribute name
-          default: the default value
-        Returns:
-          the value for the attribute in the table
-        """
-        return self.__subject_derived.get_value(f"cross-sectional.{attribute}", default)
-
-    def get_longitudinal_value(
-        self, attribute: str, default: Optional[Any] = None
-    ) -> Any:
-        """Returns a longitudinal value.
-
-        Args:
-          key: the attribute name
-          default: the default value
-        Returns:
-          the value for the attribute in the table
-        """
-        return self.__subject_derived.get_value(f"longitudinal.{attribute}", default)
 
     def generate_uds_dob(self) -> Optional[date]:
         """Creates UDS DOB, which is used to calculate ages."""

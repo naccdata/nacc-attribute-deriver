@@ -23,6 +23,3 @@ class MDSFormAttributeCollection(AttributeCollection):
 
     def _create_mds_vitalst(self) -> int:
         return self.__mds.get_value("vitalst")
-
-    # def _create_mds_source(self) -> int:
-    #     return self.__mds.get_value("source")

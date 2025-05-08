@@ -157,32 +157,3 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # handle negative
         return 999 if result is None or result < 0 else result
-
-    # def _create_affiliate(self) -> bool:
-    #     """Returns whether or not this is an affiliated participant.
-    #     Looks for sourcenw != 1 in UDS or source != (1, 2, 3) in MDS.
-    #     """
-    #     if self.__uds.normalized_formver() in [1, 2]:
-    #         source = self.__uds.get('source'):
-    #         if source is not None:
-    #             try:
-    #                 return int(source) == 4
-    #             except (TypeError, ValueError):
-    #                 pass
-
-    #     sourcenw = self.__uds.get('sourcenw')
-    #     if sourcenw is not None:
-    #         try:
-    #             return int(sourcenw) == 2
-    #         except (TypeError, ValueError):
-    #             pass
-
-    #     mds_source = self.__subject_derived.get_value("mds_source")
-    #     if mds_source is not None:
-    #         try:
-    #             return int(source) not in [1, 2, 3]
-    #         except (TypeError, ValueError):
-    #             pass
-
-    #     raise MissingRequiredError(
-    #         "Cannot determine participant affiliated status")

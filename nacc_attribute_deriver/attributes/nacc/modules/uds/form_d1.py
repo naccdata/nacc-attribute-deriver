@@ -3,6 +3,7 @@
 from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
@@ -23,6 +24,7 @@ class ContributionStatus:
 class UDSFormD1Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
@@ -278,7 +280,7 @@ class UDSFormD1Attribute(AttributeCollection):
 
         Normal cognition at all visits to date
         """
-        naccnorm = self.__uds.get_cross_sectional_value("naccnorm")
+        naccnorm = self.__subject_derived.get_cross_sectional_value("naccnorm")
 
         try:
             if naccnorm is not None and int(naccnorm) == 0:

@@ -4,6 +4,7 @@ from types import MappingProxyType
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
@@ -19,6 +20,7 @@ class UDSFormA1Attribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table)
 
     # TODO: additional worry that SAS-code was extremely case-sensitive?
     WHITEX_RESPONSES = MappingProxyType(
@@ -298,7 +300,7 @@ class UDSFormA1Attribute(AttributeCollection):
         # if result is 99/Unknown and not an initial packet,
         # check for a default in subject.info.derived
         if result == 99 and not self.__uds.is_initial():
-            return self.__uds.get_cross_sectional_value("naccnihr", result)
+            return self.__subject_derived.get_cross_sectional_value("naccnihr", result)
 
         return result
 
