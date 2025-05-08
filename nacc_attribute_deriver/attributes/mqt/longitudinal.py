@@ -8,7 +8,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
     SubjectInfoNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
+from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.utils.date import get_unique_years

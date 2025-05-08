@@ -7,9 +7,11 @@ from nacc_attribute_deriver.attributes.attribute_collection import AttributeColl
 from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
+from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+
+# from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
@@ -63,7 +65,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def _create_naccdage(self) -> int:
         """From derive.sas and derivenew.sas."""
         # check that subject is deceased at all
-        mds_deceased = self.is_int_value(
+        mds_deceased = self.is_target_int(
             self.__subject_derived.get_value("mds_vital_status"), 2
         )
         if self._create_naccdied() == 0 and not mds_deceased:
@@ -96,7 +98,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 1
 
         deceased = self.__subject_derived.get_value("milestone_deceased")
-        if self.is_int_value(deceased, 1):
+        if self.is_target_int(deceased, 1):
             return 1
 
         return 0
@@ -109,7 +111,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         death_age = self.__subject_derived.get_value("np_death_age")
         deceased = self.__subject_derived.get_value("milestone_deceased")
         np_deceased = death_age is not None
-        mile_deceased = self.is_int_value(deceased, 1)
+        mile_deceased = self.is_target_int(deceased, 1)
 
         # not reported as having died
         if not np_deceased and not mile_deceased:

@@ -4,11 +4,11 @@ from nacc_attribute_deriver.attributes.attribute_collection import AttributeColl
 
 
 class TestAttributeCollection:
-    def test_is_int_value(self):
-        """Tests is_int_value."""
-        assert AttributeCollection.is_int_value("5", 5)
-        assert AttributeCollection.is_int_value(5, 5)
-        assert not AttributeCollection.is_int_value(None, 5)
-        assert not AttributeCollection.is_int_value(3, 5)
-        assert not AttributeCollection.is_int_value("3", 5)
-        assert not AttributeCollection.is_int_value("hello", 5)
+    def test_is_target_int(self):
+        """Tests is_target_int."""
+        assert AttributeCollection.is_target_int("5", 5)
+        assert AttributeCollection.is_target_int(5, 5)
+        assert not AttributeCollection.is_target_int(None, 5)
+        assert not AttributeCollection.is_target_int(3, 5)
+        assert not AttributeCollection.is_target_int("3", 5)
+        assert not AttributeCollection.is_target_int("hello", 5)

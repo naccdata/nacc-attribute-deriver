@@ -155,6 +155,16 @@ class DerivedNamespace(BaseNamespace):
         super().__init__(table, attribute_prefix, date_attribute)
 
 
+class SubjectInfoNamespace(BaseNamespace):
+    def __init__(
+        self,
+        table: SymbolTable,
+        attribute_prefix: str = "subject.info.",
+        date_attribute: Optional[str] = None,
+    ):
+        super().__init__(table, attribute_prefix, date_attribute)
+
+
 class SubjectDerivedNamespace(BaseNamespace):
     def __init__(
         self,
@@ -164,12 +174,28 @@ class SubjectDerivedNamespace(BaseNamespace):
     ) -> None:
         super().__init__(table, attribute_prefix, date_attribute)
 
+    def get_cross_sectional_value(
+        self, attribute: str, default: Optional[Any] = None
+    ) -> Any:
+        """Returns a cross-sectional value.
 
-class SubjectInfoNamespace(BaseNamespace):
-    def __init__(
-        self,
-        table: SymbolTable,
-        attribute_prefix: str = "subject.info.",
-        date_attribute: Optional[str] = None,
-    ):
-        super().__init__(table, attribute_prefix, date_attribute)
+        Args:
+          key: the attribute name
+          default: the default value
+        Returns:
+          the value for the attribute in the table
+        """
+        return self.get_value(f"cross-sectional.{attribute}", default)
+
+    def get_longitudinal_value(
+        self, attribute: str, default: Optional[Any] = None
+    ) -> Any:
+        """Returns a longitudinal value.
+
+        Args:
+          key: the attribute name
+          default: the default value
+        Returns:
+          the value for the attribute in the table
+        """
+        return self.get_value(f"longitudinal.{attribute}", default)

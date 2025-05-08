@@ -134,7 +134,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         return None
 
     @staticmethod
-    def is_int_value(value: Union[int, str], target: int) -> bool:
+    def is_target_int(value: Union[int, str], target: int) -> bool:
         """Check whether the value is the specified target int. This might be
         overkill but wanted it to handle str/int comparisons.
 

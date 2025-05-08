@@ -21,6 +21,7 @@ def table() -> SymbolTable:
                         "birthmo": 3,
                         "birthyr": 1990,
                         "module": "UDS",
+                        "packet": "I",
                     }
                 }
             }
@@ -28,7 +29,9 @@ def table() -> SymbolTable:
         "subject": {
             "info": {
                 "derived": {
-                    "naccnihr": 2,
+                    "cross-sectional": {
+                        "naccnihr": 2,
+                    }
                 }
             }
         },

@@ -3,7 +3,6 @@
 # do attribute map
 from .cognitive import *
 from .demographics import *
-from .genetics import *
 from .longitudinal import *
 from .scan import *
 from .study_parameters import *

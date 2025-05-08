@@ -4,13 +4,15 @@ from types import MappingProxyType
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.base.uds_namespace import (
+    UDSNamespace,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     datetime_from_form_date,
 )
-
-from .uds_namespace import UDSNamespace
 
 
 class UDSFormA1Attribute(AttributeCollection):
@@ -18,6 +20,7 @@ class UDSFormA1Attribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table)
 
     # TODO: additional worry that SAS-code was extremely case-sensitive?
     WHITEX_RESPONSES = MappingProxyType(
@@ -268,16 +271,20 @@ class UDSFormA1Attribute(AttributeCollection):
         }
     )
 
-    def _create_naccage(self) -> Optional[int]:
+    def _create_naccage(self) -> int:
         """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
         compares to form date."""
         dob = self.__uds.generate_uds_dob()
         visitdate = self.__uds.get_value("visitdate", None)
         visitdate = datetime_from_form_date(visitdate)
         if not dob or not visitdate:
-            return None
+            raise ValueError("Missing one of DOB or visitdate to calculate naccage")
 
-        return calculate_age(dob, visitdate.date())
+        age = calculate_age(dob, visitdate.date())
+        if age is None:
+            raise ValueError("Unable to calculate naccage")
+
+        return age
 
     def _create_naccnihr(self) -> int:
         """Creates NACCNIHR (race)"""
@@ -290,9 +297,10 @@ class UDSFormA1Attribute(AttributeCollection):
             raceterx=self.__uds.get_value("raceterx"),
         )
 
-        # if result is 99/Unknown, check for a default in subject.info.derived
-        if result == 99:
-            return self.__uds.check_default("naccnihr", result)
+        # if result is 99/Unknown and not an initial packet,
+        # check for a default in subject.info.derived
+        if result == 99 and not self.__uds.is_initial():
+            return self.__subject_derived.get_cross_sectional_value("naccnihr", result)
 
         return result
 
