@@ -30,7 +30,7 @@ def attr() -> NIAGADSAttributeCollection:
 class TestNIAGADSAttribute:
     def test_create_niagads(self, attr):
         """Tests creating NGDS* variables."""
-        assert attr._create_niagads_gwas() == 1  # noqa: SLF001
-        assert attr._create_niagads_exome() == 1  # noqa: SLF001
-        assert attr._create_niagads_wgs() == 0  # noqa: SLF001
-        assert attr._create_niagads_wes() == 0  # noqa: SLF001
+        assert attr._create_niagads_gwas() == 1
+        assert attr._create_niagads_exome() == 1
+        assert attr._create_niagads_wgs() == 0
+        assert attr._create_niagads_wes() == 0

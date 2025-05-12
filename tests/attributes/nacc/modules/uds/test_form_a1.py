@@ -41,12 +41,12 @@ class TestUDSFormA1Attribute:
     def test_create_naccage(self, table, form_prefix):
         """Tests creating NACCAGE."""
         attr = UDSFormA1Attribute(table)
-        assert attr._create_naccage() == 34  # noqa: SLF001
+        assert attr._create_naccage() == 34
 
         # exact birthday
         set_attribute(table, form_prefix, "birthmo", 1)
         attr = UDSFormA1Attribute(table)
-        assert attr._create_naccage() == 35  # noqa: SLF001
+        assert attr._create_naccage() == 35
 
     def test_visit_on_birthday(self, table, form_prefix):
         """Case that has issue due to visitdate == birthday."""
@@ -55,7 +55,7 @@ class TestUDSFormA1Attribute:
         set_attribute(table, form_prefix, "birthyr", 1910)
         attr = UDSFormA1Attribute(table)
 
-        assert attr._create_naccage() == 97  # noqa: SLF001
+        assert attr._create_naccage() == 97
 
         """Case that has issue due to visitdate == birthday."""
         set_attribute(table, form_prefix, "visitdate", "2010-03-01")
@@ -63,15 +63,15 @@ class TestUDSFormA1Attribute:
         set_attribute(table, form_prefix, "birthyr", 1956)
         attr = UDSFormA1Attribute(table)
 
-        assert attr._create_naccage() == 54  # noqa: SLF001
+        assert attr._create_naccage() == 54
 
     def test_followup_packet(self, table, form_prefix):
         """Tests the followup cases."""
         # check not a followup packet so returns 99
         attr = UDSFormA1Attribute(table)
-        assert attr._create_naccnihr() == 99  # noqa: SLF001
+        assert attr._create_naccnihr() == 99
 
         # now set as followup packet so it should return 2
         set_attribute(table, form_prefix, "packet", "F")
         attr = UDSFormA1Attribute(table)
-        assert attr._create_naccnihr() == 2  # noqa: SLF001
+        assert attr._create_naccnihr() == 2

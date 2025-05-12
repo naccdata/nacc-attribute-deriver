@@ -23,4 +23,4 @@ class TestStudyParametersAttributeCollection:
     def test_create_uds_versions_available(self, table):
         """Tests _create_uds_versions_available."""
         attr = StudyParametersAttributeCollection.create(table)
-        assert set(attr._create_uds_versions_available()) == {"UDSv4", "UDSv2"}  # noqa: SLF001
+        assert set(attr._create_uds_versions_available()) == {"UDSv4", "UDSv2"}

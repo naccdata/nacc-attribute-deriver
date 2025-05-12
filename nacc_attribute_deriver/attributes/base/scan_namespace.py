@@ -1,4 +1,5 @@
 """SCAN attributes, derive directly from AttributeCollection.
+
 Comes from 7 unique files.
 """
 
