@@ -55,21 +55,20 @@ class DemographicsAttributeCollection(AttributeCollection):
     )
 
     def _create_uds_primary_language(self) -> Optional[DateTaggedValue[str]]:
-        """UDS primary language."""
+        """UDS primary language.
+
+        Only for initial forms.
+        """
+        if not self.__uds.is_initial():
+            return None
+
         try:
             primlang = self.__uds.get_value("primlang")
             if not primlang:
                 return None
 
-            primlang = int(primlang)
-
-            # if primlang is 9 and this is a followup packet, treat as None
-            # case. assumes the real value was set by an initial packet
-            if primlang == 9 and not self.__uds.is_initial():
-                return None
-
             return DateTaggedValue(
-                value=self.PRIMARY_LANGUAGE_MAPPING.get(primlang, "Unknown"),
+                value=self.PRIMARY_LANGUAGE_MAPPING.get(int(primlang), "Unknown"),
                 date=self.__uds.get_date(),
             )
         except TypeError as e:
