@@ -2,13 +2,23 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 1.2.3
+## 1.3.0
 
 * Adds `historic_apoe` rule to support historical APOE values from sources other than NCRAD
+* Refactors the use of `subject.info.derived` for UDS NACC* variables - splits between longitudinal and cross-sectional variables, then updates the MQT rules to handle the longitudinal rules as sets
+    * Adds functions to `SubjectDerivedNamespace` grab cross-sectional and longitudinal values
+        * Longitudinal keeps track of sets, so value can be different across forms
+        * Cross-sectional is globally updated - curator gear will handle back-propogation
+    * Fixes various bugs related to this issue
+    * Other attributes that use subject.info should be relooked at as well but for the most part are left alone for now
 * Refactors how scopes are handled, particularly for SCAN
+* Moves `uds_namespace` to `attributes/base`
+* Updates to normalize the form version, e.g. `formver: 3.2` is UDS 3
+* Updates to not allow NACC* derived variables to be null
 * Fixes `naccint` to calculate interval in months instead of days
 * Fixes `set` and `list` operations to set attribute to empty list instead of not setting it
 * Fixes `latest` and `initial` operations to update if the dates are the same
+* Removes redundant code
 * Removes regression testing related code - separating out
 * Removes the `count` operation
 

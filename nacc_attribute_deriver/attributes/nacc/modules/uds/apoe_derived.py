@@ -8,4 +8,4 @@ class APOEDerivedAttributeCollection(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table)
 
     def _create_naccapoe(self) -> int:
-        return self.__subject_derived.get_value("naccapoe")
+        return self.__subject_derived.get_cross_sectional_value("naccapoe")

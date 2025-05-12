@@ -137,7 +137,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccmicr if naccmicr is not None else 9
 
-    def _create_np_hem(self) -> Optional[int]:
+    def _create_np_hem(self) -> int:
         """Create the NACCHEM variable.
 
         Hemorrhages and microbleeds
@@ -167,7 +167,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return nacchem if nacchem is not None else 9
 
-    def _create_np_arte(self) -> Optional[int]:
+    def _create_np_arte(self) -> int:
         """Create the NACCARTE variable.
 
         Arteriolosclerosis
@@ -185,7 +185,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccarte if naccarte is not None else 9
 
-    def _create_np_lewy(self) -> Optional[int]:
+    def _create_np_lewy(self) -> int:
         """Create the NACCLEWY variable.
 
         Lewy body disease
