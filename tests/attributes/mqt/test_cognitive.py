@@ -1,7 +1,6 @@
 """Tests deriving MQT cognitive variables."""
 
 import pytest
-
 from nacc_attribute_deriver.attributes.mqt.cognitive import CognitiveAttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
 

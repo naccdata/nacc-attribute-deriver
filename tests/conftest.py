@@ -1,8 +1,7 @@
 from typing import Any
 
-from pytest import fixture
-
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from pytest import fixture
 
 
 def set_attribute(table: SymbolTable, prefix: str, attribute: str, value: Any) -> None:

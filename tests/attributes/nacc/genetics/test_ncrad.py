@@ -1,12 +1,12 @@
 """Tests NCRAD genetic attributes."""
 
 import pytest
-
 from nacc_attribute_deriver.attributes.nacc.genetics.ncrad import (
     HistoricalNCRADAttributeCollection,
     NCRADAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
 from tests.conftest import set_attribute
 
 
