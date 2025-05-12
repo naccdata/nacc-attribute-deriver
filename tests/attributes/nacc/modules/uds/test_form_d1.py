@@ -1,12 +1,12 @@
 """Tests UDS Form D1 attributes."""
 
 import pytest
-
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_d1 import (
     ContributionStatus,
     UDSFormD1Attribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
 from tests.conftest import set_attribute
 
 

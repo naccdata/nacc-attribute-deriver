@@ -3,7 +3,6 @@
 from typing import Callable
 
 import pytest
-
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import (
     UDSFormA1Attribute,  # type: ignore
 )

@@ -1,7 +1,6 @@
 """Tests the operations."""
 
 import pytest
-
 from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.schema.operation import (
     InitialOperation,
