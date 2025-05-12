@@ -11,7 +11,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     DateTaggedValue,
     DerivedNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.uds.uds_namespace import (
+from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
 
@@ -99,7 +99,10 @@ class CognitiveAttributeCollection(AttributeCollection):
             if not value:
                 continue
 
-            if not self.is_int_value(value, expected_value):
+            if isinstance(value, list):
+                if not any(self.is_target_int(x, expected_value) for x in value):
+                    continue
+            elif not self.is_target_int(value, expected_value):
                 continue
 
             attribute_list.append(attribute)
@@ -162,8 +165,3 @@ class CognitiveAttributeCollection(AttributeCollection):
         cdrglob = self.__uds.get_value("cdrglob")
 
         return DateTaggedValue(value=cdrglob, date=self.__uds.get_date())
-
-    def _create_normal_cognition(self) -> bool:
-        """Mapped from NACCNORM."""
-        self.__derived.assert_required(["naccnorm"])
-        return bool(self.__derived.get_value("naccnorm"))

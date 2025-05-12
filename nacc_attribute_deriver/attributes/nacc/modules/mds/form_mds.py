@@ -12,7 +12,7 @@ class MDSFormAttributeCollection(AttributeCollection):
         self.__mds = FormNamespace(table)
 
     def _create_mds_death_date(self) -> Optional[date]:
-        if not self.is_int_value(self.__mds.get_value("vitalst"), 2):
+        if not self.is_target_int(self.__mds.get_value("vitalst"), 2):
             return None
 
         year = self.__mds.get_value("deathyr")  # can be 9999
