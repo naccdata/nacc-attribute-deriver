@@ -4,6 +4,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 1.3.0
 
+* Adds `historic_apoe` rule to support historical APOE values from sources other than NCRAD
 * Refactors the use of `subject.info.derived` for UDS NACC* variables - splits between longitudinal and cross-sectional variables, then updates the MQT rules to handle the longitudinal rules as sets
     * Adds functions to `SubjectDerivedNamespace` grab cross-sectional and longitudinal values
         * Longitudinal keeps track of sets, so value can be different across forms
