@@ -1,11 +1,11 @@
 """Tests deriving MQT longitudinal variables."""
 
 import pytest
-
 from nacc_attribute_deriver.attributes.mqt.longitudinal import (
     LongitudinalAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
 from tests.conftest import set_attribute
 
 

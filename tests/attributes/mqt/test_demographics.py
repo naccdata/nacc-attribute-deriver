@@ -1,7 +1,6 @@
 """Tests deriving MQT demographics variables."""
 
 import pytest
-
 from nacc_attribute_deriver.attributes.mqt.demographics import (
     DemographicsAttributeCollection,
     DerivedDemographicsAttributeCollection,

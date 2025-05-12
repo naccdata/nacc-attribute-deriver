@@ -1,7 +1,6 @@
 """Tests deriving MQT study parameters variables."""
 
 import pytest
-
 from nacc_attribute_deriver.attributes.mqt.study_parameters import (
     StudyParametersAttributeCollection,
 )

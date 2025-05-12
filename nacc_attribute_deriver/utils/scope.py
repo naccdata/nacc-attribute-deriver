@@ -19,6 +19,7 @@ class FormScope(Scope):
 class GeneticsScope(Scope):
     # genetics
     APOE = "apoe"
+    HISTORIC_APOE = "historic_apoe"
     NIAGADS_AVAILABILITY = "niagads_availability"
     NCRAD_SAMPLES = "ncrad_samples"
 
@@ -44,6 +45,7 @@ ScopeLiterals = Literal[
     FormScope.NP,
     FormScope.UDS,
     GeneticsScope.APOE,
+    GeneticsScope.HISTORIC_APOE,
     GeneticsScope.NIAGADS_AVAILABILITY,
     GeneticsScope.NCRAD_SAMPLES,
     SCANPETScope.PET_QC,
