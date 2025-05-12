@@ -61,12 +61,21 @@ class DemographicsAttributeCollection(AttributeCollection):
             if not primlang:
                 return None
 
+            primlang = int(primlang)
+
+            # if primlang is 9 and this is a followup packet, treat as None
+            # case. assumes the real value was set by an initial packet
+            if primlang == 9 and not self.__uds.is_initial():
+                return None
+
             return DateTaggedValue(
-                value=self.PRIMARY_LANGUAGE_MAPPING.get(int(primlang), "Unknown"),
+                value=self.PRIMARY_LANGUAGE_MAPPING.get(primlang, "Unknown"),
                 date=self.__uds.get_date(),
             )
         except TypeError as e:
             raise TypeError("primlang must be an integer") from e
+
+        return None
 
     def _create_uds_education_level(self) -> DateTaggedValue[Optional[int]]:
         """UDS education level."""
