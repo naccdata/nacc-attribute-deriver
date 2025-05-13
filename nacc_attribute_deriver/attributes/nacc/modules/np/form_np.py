@@ -19,12 +19,8 @@ class NPFormAttributeCollection(AttributeCollection):
 
         module = self.__np.get_value("module")
         if not module or module.upper() != "NP":
-            raise InvalidFieldError(
-                field="module",
-                expected="np",
-                value=module,
-                message="Current file is not an NP form",
-            )
+            msg = f"Current file is not an NP form: found {module}"
+            raise InvalidFieldError(msg)
 
     def _map_gross(self, new) -> Optional[int]:
         npgross = self.__np.get_value("npgross")

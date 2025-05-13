@@ -16,10 +16,7 @@ class UDSNamespace(FormNamespace):
         module = self.get_value("module")
         if not module or module.upper() != "UDS":
             raise InvalidFieldError(
-                field="module",
-                expected="uds",
-                value=module,
-                message=f"Current file is not an UDS form: found {module}",
+                f"Current file is not an UDS form: found {module}",
             )
 
     def is_initial(self) -> bool:
@@ -41,12 +38,7 @@ class UDSNamespace(FormNamespace):
             formver = int(float(raw_formver))
         except (ValueError, TypeError) as e:
             msg = f"Current file does not have a numerical formver: {raw_formver}"
-            raise InvalidFieldError(
-                field="formver",
-                expected="numerical formver",
-                value="raw_formver",
-                message=msg,
-            ) from e
+            raise InvalidFieldError(msg) from e
 
         return formver
 
