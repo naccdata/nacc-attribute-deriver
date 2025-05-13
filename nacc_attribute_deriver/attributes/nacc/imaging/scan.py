@@ -27,7 +27,10 @@ class NACCSCANAttributeCollection(AttributeCollection):
         scandate = datetime_from_form_date(scandate)
 
         if not scandate:
-            raise MissingRequiredError("study_date (from SCAN_MRI_QC) required")
+            raise MissingRequiredError(
+                message="study_date (from SCAN_MRI_QC) required",
+                field="study_date",
+            )
 
         return str(scandate.date())
 
@@ -38,6 +41,9 @@ class NACCSCANAttributeCollection(AttributeCollection):
 
         scandate = datetime_from_form_date(scandate)
         if not scandate:
-            raise MissingRequiredError("scan_date (from SCAN_PET_QC) required")
+            raise MissingRequiredError(
+                message="scan_date (from SCAN_PET_QC) required",
+                field="scan_date",
+            )
 
         return str(scandate.date())

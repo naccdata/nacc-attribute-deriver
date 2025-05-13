@@ -114,7 +114,9 @@ class BaseNamespace:
         for attribute in required:
             full_field = f"{self.prefix}{attribute}"
             if full_field not in self.__table:
-                raise MissingRequiredError(field=full_field)
+                raise MissingRequiredError(
+                    message=f"Missing required field: {full_field}", field=full_field
+                )
 
         return True
 
