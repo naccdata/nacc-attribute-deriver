@@ -55,7 +55,13 @@ class DemographicsAttributeCollection(AttributeCollection):
     )
 
     def _create_uds_primary_language(self) -> Optional[DateTaggedValue[str]]:
-        """UDS primary language."""
+        """UDS primary language.
+
+        Only for initial forms.
+        """
+        if not self.__uds.is_initial():
+            return None
+
         try:
             primlang = self.__uds.get_value("primlang")
             if not primlang:
@@ -67,6 +73,8 @@ class DemographicsAttributeCollection(AttributeCollection):
             )
         except TypeError as e:
             raise TypeError("primlang must be an integer") from e
+
+        return None
 
     def _create_uds_education_level(self) -> DateTaggedValue[Optional[int]]:
         """UDS education level."""
