@@ -42,7 +42,7 @@ class TestLongitudinalAttributeCollection:
     def test_create_total_uds_visits(self, table, form_prefix):
         """Tests _create_total_uds_visits."""
         attr = LongitudinalAttributeCollection.create(table)
-        assert attr._create_total_uds_visits() == 6  # noqa: SLF001
+        assert attr._create_total_uds_visits() == 6
 
         # set module to non-UDS
         set_attribute(table, form_prefix, "module", "LBD")
@@ -58,4 +58,4 @@ class TestLongitudinalAttributeCollection:
     def test_create_years_of_uds(self, table):
         """Tests _create_years_of_uds, should only count unique years."""
         attr = LongitudinalAttributeCollection.create(table)
-        assert attr._create_years_of_uds() == 4  # noqa: SLF001
+        assert attr._create_years_of_uds() == 4
