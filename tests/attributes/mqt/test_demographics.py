@@ -21,6 +21,7 @@ def table() -> SymbolTable:
                         "educ": "3",
                         "visitdate": "2025-01-01",
                         "module": "uds",
+                        "packet": "I",
                     }
                 },
                 "derived": {  # needed for DerivedDemographicsAttributeCollection
@@ -61,6 +62,14 @@ class TestDemographicsAttributeCollection:
         for k, v in DemographicsAttributeCollection.PRIMARY_LANGUAGE_MAPPING.items():
             table["file.info.forms.json.primlang"] = k
             assert attr._create_uds_primary_language().value == v  # noqa: SLF001
+
+        # test None in both initial and followup packet case
+        table["file.info.forms.json.primlang"] = None
+        assert attr._create_uds_primary_language() is None  # noqa: SLF001
+
+        table["file.info.forms.json.primlang"] = 9
+        table["file.info.forms.json.packet"] = "F"
+        assert attr._create_uds_primary_language() is None  # noqa: SLF001
 
     def test_create_uds_education_level(self, table):
         """Tests _create_uds_education_level."""
