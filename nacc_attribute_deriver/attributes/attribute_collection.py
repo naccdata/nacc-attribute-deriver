@@ -12,7 +12,10 @@ from typing import Any, Callable, ClassVar, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict
 
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.schema.errors import (
+    InvalidFieldError,
+    MissingRequiredError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 log = logging.getLogger(__name__)
@@ -40,12 +43,7 @@ class AttributeExpression(BaseModel):
             MissingRequiredError if the attribute class cannot be instantiated
             on the table
         """
-        try:
-            return self.function(self.attribute_class(table))
-        except MissingRequiredError as error:
-            log.warning(f"Unable to apply {self.function}: missing field {error.field}")
-
-        return None
+        return self.function(self.attribute_class(table))
 
 
 class AttributeCollectionRegistry(type):
@@ -97,7 +95,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         """
         try:
             return cls(table)
-        except MissingRequiredError as error:
+        except (MissingRequiredError, InvalidFieldError) as error:
             log.warning(error)
             return None
 

@@ -16,6 +16,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Updates to normalize the form version, e.g. `formver: 3.2` is UDS 3
 * Updates to not allow NACC* derived variables to be null
 * Updates `_create_uds_primary_language` to always return None on follow-up forms
+* Updates `AttributeExpression.apply` to throw error instead of only reporting a warning, also fixes some mis-uses of `MissingRequiredError`
 * Fixes `naccint` to calculate interval in months instead of days
 * Fixes `set` and `list` operations to set attribute to empty list instead of not setting it
 * Fixes `latest` and `initial` operations to update if the dates are the same

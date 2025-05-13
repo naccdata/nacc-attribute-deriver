@@ -22,6 +22,7 @@ def test_uds_form():
                         "dlbif": 2,
                         "demented": 1,
                         "normcog": 1,
+                        "formver": "3.0",
                     }
                 }
             }
@@ -62,6 +63,7 @@ def test_np_form():
     np_table["file.info.forms.json.npdodyr"] = "2024"
     np_table["file.info.forms.json.npdodmo"] = "12"
     np_table["file.info.forms.json.npdoddy"] = "19"
+    np_table["file.info.forms.json.formver"] = 11.0
 
     deriver = AttributeDeriver()
     deriver.curate(np_table, "np")
@@ -76,6 +78,7 @@ def test_np_form():
                         "npdodyr": "2024",
                         "npdodmo": "12",
                         "npdoddy": "19",
+                        "formver": 11.0,
                     }
                 },
             }
@@ -104,6 +107,7 @@ def test_np_form():
         "birthmo": 1,
         "birthyr": 1960,
         "normcog": 1,
+        "formver": 3.0,
     }
 
     deriver = AttributeDeriver()

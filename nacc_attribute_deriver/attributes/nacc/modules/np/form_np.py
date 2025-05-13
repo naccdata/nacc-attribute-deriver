@@ -7,7 +7,7 @@ from nacc_attribute_deriver.attributes.attribute_collection import AttributeColl
 from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
 )
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 
@@ -19,7 +19,12 @@ class NPFormAttributeCollection(AttributeCollection):
 
         module = self.__np.get_value("module")
         if not module or module.upper() != "NP":
-            raise MissingRequiredError("Current file is not an NP form")
+            raise InvalidFieldError(
+                field="module",
+                expected="np",
+                value=module,
+                message="Current file is not an NP form",
+            )
 
     def _map_gross(self, new) -> Optional[int]:
         npgross = self.__np.get_value("npgross")

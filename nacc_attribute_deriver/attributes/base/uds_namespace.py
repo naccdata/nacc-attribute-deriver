@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -15,7 +15,12 @@ class UDSNamespace(FormNamespace):
 
         module = self.get_value("module")
         if not module or module.upper() != "UDS":
-            raise MissingRequiredError("Current file is not an UDS form")
+            raise InvalidFieldError(
+                field="module",
+                expected="uds",
+                value=module,
+                message=f"Current file is not an UDS form: found {module}",
+            )
 
     def is_initial(self) -> bool:
         """Returns whether or not this is an initial packet."""
@@ -32,10 +37,15 @@ class UDSNamespace(FormNamespace):
         example.
         """
         try:
-            formver = int(float(self.get_value("formver")))
+            raw_formver = self.get_value("formver")
+            formver = int(float(raw_formver))
         except (ValueError, TypeError) as e:
-            raise MissingRequiredError(
-                "Current file does not have a numerical formver"
+            msg = f"Current file does not have a numerical formver: {raw_formver}"
+            raise InvalidFieldError(
+                field="formver",
+                expected="numerical formver",
+                value="raw_formver",
+                message=msg,
             ) from e
 
         return formver
