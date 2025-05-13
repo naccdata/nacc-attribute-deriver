@@ -65,11 +65,11 @@ class TestDemographicsAttributeCollection:
 
         # test None in both initial and followup packet case
         table["file.info.forms.json.primlang"] = None
-        assert attr._create_uds_primary_language() is None  # noqa: SLF001
+        assert attr._create_uds_primary_language() is None
 
         table["file.info.forms.json.primlang"] = 9
         table["file.info.forms.json.packet"] = "F"
-        assert attr._create_uds_primary_language() is None  # noqa: SLF001
+        assert attr._create_uds_primary_language() is None
 
     def test_create_uds_education_level(self, table):
         """Tests _create_uds_education_level."""
