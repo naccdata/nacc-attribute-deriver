@@ -82,7 +82,9 @@ class CognitiveAttributeCollection(AttributeCollection):
         }
     )
 
-    def __filter_attributes(self, attributes: List[str], expected_value: int):
+    def __filter_attributes(
+        self, attributes: List[str], expected_value: int
+    ) -> List[str]:
         """Returns a list of the attributes that have the expected value.
 
         Args:
