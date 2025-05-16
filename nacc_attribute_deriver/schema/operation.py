@@ -98,8 +98,7 @@ class UpdateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        # TODO: allow for stripping datetaggedvalue
-        return get_optional_type(expression_type)
+        return get_date_tagged_type(get_optional_type(expression_type))
 
     def evaluate(  # type: ignore
         self, *, table: SymbolTable, value: Any, attribute: str
@@ -123,7 +122,7 @@ class SetOperation(Operation):
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
         element_type: TypeAlias = get_list_type(  # type: ignore
-            get_optional_type(get_date_tagged_type(expression_type))
+            get_date_tagged_type(get_optional_type(expression_type))
         )
         return List[element_type]
 
@@ -151,18 +150,18 @@ class SortedListOperation(Operation):
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
         element_type: TypeAlias = get_list_type(  # type: ignore
-            get_optional_type(get_date_tagged_type(expression_type))
+            get_date_tagged_type(get_optional_type(expression_type))
         )
         return List[element_type]
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
         if isinstance(value, DateTaggedValue):
-            value = value.value
+            value = value.value  # type: ignore
 
         cur_list = table.get(attribute, [])
         if isinstance(value, (list, set)):
-            cur_list.extend(list(value))
+            cur_list.extend(list(value))  # type: ignore
         elif value is not None:
             cur_list.append(value)
 
