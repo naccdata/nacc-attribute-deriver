@@ -5,7 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 1.3.1
 
 * Fixes issue in `_create_contributing_diagnosis` and `_create_dementia` where the returned value can be an empty list - needs to be treated as `None`
-* Fixes `_create_uds_race` to only evaluate if this is an initial packet (otherwise date gets set to latest form which isn't where the value actually comes from)
+* Fixes `_create_uds_race` to only evaluate if this is an initial packet (previously date got set to latest form which wasn't accurate)
 
 ## 1.3.0
 
