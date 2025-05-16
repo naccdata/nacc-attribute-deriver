@@ -2,13 +2,15 @@ from collections import deque
 from typing import Any, Dict, Iterator, MutableMapping, Optional
 
 
-class SymbolTable(MutableMapping):
+class SymbolTable(MutableMapping[str, Any]):
     """Implements a dictionary like object for using metadata paths as keys."""
 
     def __init__(
-        self, symbol_dict: Optional[MutableMapping] = None, separator: str = "."
+        self,
+        symbol_dict: Optional[MutableMapping[str, Any]] = None,
+        separator: str = ".",
     ) -> None:
-        self.__table: Dict[Any, Any] = {}
+        self.__table: Dict[str, Any] = {}
         self.__separator = separator
 
         # interpret metadata paths
@@ -21,7 +23,7 @@ class SymbolTable(MutableMapping):
         key_list = deque(key.split(self.__separator))
         while key_list:
             sub_key = key_list.popleft()
-            obj = table.get(sub_key)
+            obj = table.get(sub_key, None)
             if not obj:
                 if not key_list:
                     table[sub_key] = value
@@ -76,7 +78,7 @@ class SymbolTable(MutableMapping):
     def __delitem__(self, key: Any) -> None:
         return
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterator[str]:
         return self.__table.__iter__()
 
     def __len__(self) -> int:
@@ -91,5 +93,5 @@ class SymbolTable(MutableMapping):
 
         return self.to_dict() == other.to_dict()
 
-    def to_dict(self) -> MutableMapping:
+    def to_dict(self) -> MutableMapping[str, Any]:
         return self.__table
