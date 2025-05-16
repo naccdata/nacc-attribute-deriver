@@ -1,16 +1,45 @@
-"""Defines the operations to be performed on derived variables. Uses a
-metaclass to keep track of operation types.
+"""Defines the operations to be performed on derived variables.
 
-This kind of feels overengineered?
+Uses a metaclass to keep track of operation types.
 """
 
 from abc import abstractmethod
 from datetime import date
-from typing import Any, ClassVar, Dict
+from typing import Any, ClassVar, Dict, List, TypeAlias, Union, get_args, get_origin
 
 from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
+
+
+class NoAssignment:
+    pass
+
+
+def get_optional_type(expression_type: type) -> type:
+    origin = get_origin(expression_type)
+    args = get_args(expression_type)
+    if origin is Union and type(None) in args:
+        return args[0]
+    return expression_type
+
+
+def get_list_type(expression_type: type) -> type:
+    origin = get_origin(expression_type)
+    if origin is list:
+        return get_args(expression_type)[0]
+    return expression_type
+
+
+def get_date_tagged_type(expression_type: type) -> type:
+    if hasattr(expression_type, "__pydantic_generic_metadata__"):
+        origin = expression_type.__pydantic_generic_metadata__["origin"]  # type: ignore
+        if origin is DateTaggedValue:
+            args = expression_type.__pydantic_generic_metadata__[  # type: ignore
+                "args"
+            ]  # type: ignore
+            return args[0]  # type: ignore
+    return expression_type
 
 
 class OperationError(Exception):
@@ -31,6 +60,11 @@ class OperationRegistry(type):
 
 class Operation(object, metaclass=OperationRegistry):
     LABEL: str | None = None
+
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        """Returns the type assigned to the attribute by this operation."""
+        return NoAssignment
 
     @classmethod
     def create(cls, label: str) -> "Operation":
@@ -62,13 +96,18 @@ class Operation(object, metaclass=OperationRegistry):
 class UpdateOperation(Operation):
     LABEL = "update"
 
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        # TODO: allow for stripping datetaggedvalue
+        return get_optional_type(expression_type)
+
     def evaluate(  # type: ignore
         self, *, table: SymbolTable, value: Any, attribute: str
     ) -> None:
         """Simply updates the location."""
 
         if isinstance(value, DateTaggedValue):
-            value = value.value
+            value = value.value  # type: ignore
         if value is None:
             return
 
@@ -81,13 +120,20 @@ class UpdateOperation(Operation):
 class SetOperation(Operation):
     LABEL = "set"
 
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        element_type: TypeAlias = get_list_type(  # type: ignore
+            get_optional_type(get_date_tagged_type(expression_type))
+        )
+        return List[element_type]
+
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
         if isinstance(value, DateTaggedValue):
-            value = value.value
+            value = value.value  # type: ignore
 
-        cur_set = table.get(attribute)
+        cur_set = table.get(attribute)  # type: ignore
         cur_set = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
@@ -101,6 +147,13 @@ class SetOperation(Operation):
 
 class SortedListOperation(Operation):
     LABEL = "sortedlist"
+
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        element_type: TypeAlias = get_list_type(  # type: ignore
+            get_optional_type(get_date_tagged_type(expression_type))
+        )
+        return List[element_type]
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
@@ -124,7 +177,19 @@ class DateOperation(Operation):
         """Returns the comparison for this object."""
         raise OperationError(f"Unknown date operation: {self.LABEL}")
 
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        temp_type = get_optional_type(expression_type)
+        if hasattr(temp_type, "__pydantic_generic_metadata__"):
+            origin = temp_type.__pydantic_generic_metadata__["origin"]  # type: ignore
+            if origin is DateTaggedValue:
+                return temp_type
+
+        return NoAssignment
+
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+    ) -> None:
         """Compares dates to determine the result."""
         if value is None:
             return
@@ -171,6 +236,19 @@ class ComparisonOperation(Operation):
         """Returns the comparison for this object."""
         raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        temp_type = get_optional_type(expression_type)
+        if hasattr(temp_type, "__pydantic_generic_metadata__"):
+            origin = temp_type.__pydantic_generic_metadata__["origin"]  # type: ignore
+            if origin is DateTaggedValue:
+                args = temp_type.__pydantic_generic_metadata__[  # type: ignore
+                    "args"
+                ]  # type: ignore
+                return args[0]  # type: ignore
+
+        return temp_type
+
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Does a comparison between the value and location value."""
         dest_value = table.get(attribute)
@@ -194,6 +272,10 @@ class ComparisonOperation(Operation):
 
 class MinOperation(ComparisonOperation):
     LABEL = "min"
+
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        return super().attribute_type(expression_type)
 
     def compare(self, left_value, right_value):
         return left_value < right_value
