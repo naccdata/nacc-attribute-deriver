@@ -54,11 +54,13 @@ class SCANNamespace(RawNamespace):
     # get functions for common values
     def get_tracer(self, field: str, scope: SCANPETScope) -> Optional[str]:
         """Get the tracer string."""
-        tracer = None
+        self.assert_required(SCAN_REQUIRED_FIELDS[scope])
+        attribute_value = self.get_value(field)
+        if attribute_value is None:
+            return None
+
         try:
-            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
-            tracer = float(self.get_value(field))
-            tracer = int(tracer)  # can't call int directly on string-float
+            tracer = int(float(attribute_value))
         except (ValueError, TypeError):
             return None
 
@@ -66,11 +68,13 @@ class SCANNamespace(RawNamespace):
 
     def get_scan_type(self, field: str, scope: SCANPETScope) -> Optional[str]:
         """Get the scan type from the tracer."""
-        tracer = None
+        self.assert_required(SCAN_REQUIRED_FIELDS[scope])
+        attribute_value = self.get_value(field)
+        if attribute_value is None:
+            return None
+
         try:
-            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
-            tracer = float(self.get_value(field))
-            tracer = int(tracer)
+            tracer = int(float(attribute_value))
         except (ValueError, TypeError):
             return None
 
