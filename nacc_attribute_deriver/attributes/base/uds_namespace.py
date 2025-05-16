@@ -27,20 +27,21 @@ class UDSNamespace(FormNamespace):
 
         return False
 
-    def normalized_formver(self) -> int:
+    def normalized_formver(self) -> Optional[int]:
         """Returns the normalized form version.
 
         Handles cases where the form version is listed as 3.2 for
         example.
         """
-        try:
-            raw_formver = self.get_value("formver")
-            formver = int(float(raw_formver))
-        except (ValueError, TypeError) as e:
-            msg = f"Current file does not have a numerical formver: {raw_formver}"
-            raise InvalidFieldError(msg) from e
+        attribute_value = self.get_value("formver")
+        if attribute_value is None:
+            return None
 
-        return formver
+        try:
+            return int(float(attribute_value))
+        except (ValueError, TypeError) as e:
+            msg = f"Current file does not have a numerical formver: {attribute_value}"
+            raise InvalidFieldError(msg) from e
 
     def generate_uds_dob(self) -> Optional[date]:
         """Creates UDS DOB, which is used to calculate ages."""
@@ -48,7 +49,11 @@ class UDSNamespace(FormNamespace):
         birthyr = self.get_value("birthyr")
         formdate = self.get_value("visitdate")
 
-        if None in [birthmo, birthyr, formdate]:
+        if birthmo is None:
+            return None
+        if birthyr is None:
+            return None
+        if formdate is None:
             return None
 
         return datetime(int(birthyr), int(birthmo), 1).date()
