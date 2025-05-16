@@ -25,6 +25,7 @@ class StudyParametersAttributeCollection(AttributeCollection):
         """Keeps track of available UDS versions."""
         formver = self.__file.normalized_formver()
         versions = self.__subject_info.get_value("study-parameters.uds.versions", [])
+        assert versions is not None
         versions = {
             version
             for version in versions

@@ -3,6 +3,8 @@
 Assumes NACC-derived variables are already set
 """
 
+from typing import Optional
+
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
@@ -11,23 +13,32 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
 
 
 class LongitudinalAttributeCollection(AttributeCollection):
     """Class to collect longitudinal attributes."""
 
-    def __init__(self, table):
+    def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
         self.__subject_derived = SubjectDerivedNamespace(table)
         self.__subject_info = SubjectInfoNamespace(table)
 
-    def _create_total_uds_visits(self) -> int:
+    def _create_total_uds_visits(self) -> Optional[int]:
         """Total number of UDS visits."""
         self.__subject_derived.assert_required(["uds-visitdates"])
-        return len(self.__subject_derived.get_value("uds-visitdates"))
+        attribute_value = self.__subject_derived.get_value("uds-visitdates")
+        if attribute_value is None:
+            return None
 
-    def _create_years_of_uds(self) -> int:
+        return len(attribute_value)
+
+    def _create_years_of_uds(self) -> Optional[int]:
         """Creates subject.info.longitudinal-data.uds.year-count."""
         self.__subject_derived.assert_required(["uds-visitdates"])
-        return len(get_unique_years(self.__subject_derived.get_value("uds-visitdates")))
+        attribute_value = self.__subject_derived.get_value("uds-visitdates")
+        if attribute_value is None:
+            return None
+
+        return len(get_unique_years(attribute_value))

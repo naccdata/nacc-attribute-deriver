@@ -46,7 +46,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
         self.__scan.assert_required(SCAN_REQUIRED_FIELDS[SCANMRIScope.MRI_QC])
         return self.__scan.get_value("series_type")
 
-    def _is_mri_indicator(self, target: str, scope: SCANMRIScope) -> bool:
+    def _is_mri_indicator(self, target: str, scope: SCANMRIScope) -> Optional[bool]:
         """Returns whether or not the given target is an MRI.
 
         indicator - checks by seeing if the target can be
@@ -58,21 +58,25 @@ class MQTSCANAttributeCollection(AttributeCollection):
         Returns:
             Whether or not this is an indicator
         """
+        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
+        attribute_value = self.__scan.get_value(target)
+        if attribute_value is None:
+            return None
+
         try:
-            self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
-            float(self.__scan.get_value(target))
+            float(attribute_value)
         except (ValueError, TypeError):
             return False
 
         # true if valid float
         return True
 
-    def _create_scan_volume_analysis_indicator(self) -> bool:
+    def _create_scan_volume_analysis_indicator(self) -> Optional[bool]:
         """SCAN T1 brain volume analysis results available Check if cerebrumtcv
         (ucdmrisbm file) exists."""
         return self._is_mri_indicator("cerebrumtcv", SCANMRIScope.MRI_SBM)
 
-    def _create_scan_flair_wmh_indicator(self) -> bool:
+    def _create_scan_flair_wmh_indicator(self) -> Optional[bool]:
         """SCAN FLAIR WMH analysis available available Check if wmh (ucdmrisbm
         file) exists."""
         return self._is_mri_indicator("wmh", SCANMRIScope.MRI_SBM)
@@ -80,7 +84,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_mri_scan_analysis_types(self) -> Optional[List[str]]:
         """SCAN MRI analysis types available, which is based on the above two
         indicators."""
-        result = []
+        result: List[str] = []
         if self._create_scan_volume_analysis_indicator():
             result.append(MRIAnalysisTypes.T1_VOLUME)
         if self._create_scan_flair_wmh_indicator():
@@ -109,12 +113,17 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         return None
 
-    def get_pet_float(self, key: str, scope: SCANPETScope):
+    def get_pet_float(self, attribute: str, scope: SCANPETScope) -> Optional[float]:
         """Get PET float value."""
+        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
+        attribute_value = self.__scan.get_value(attribute)
+        if attribute_value is None:
+            return None
+
         try:
-            self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
-            return float(self.__scan.get_value(key))
+            return float(attribute_value)
         except (ValueError, TypeError):
+            # TODO: this should raise an exception
             pass
 
         return None
@@ -169,39 +178,57 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         return None
 
-    def _create_scan_pet_amyloid_positivity_indicator(self) -> bool:
+    def _create_scan_pet_amyloid_positivity_indicator(self) -> Optional[bool]:
         """SCAN Amyloid positive scans available Access AMYLOID_STATUS in UC
         Berkeley GAAIN analysis.
 
         Is given as an int so check int boolean.
         """
+        self.__scan.assert_required(
+            SCAN_REQUIRED_FIELDS[SCANPETScope.AMYLOID_PET_GAAIN]
+        )
+        attribute_value = self.__scan.get_value("amyloid_status")
+        if attribute_value is None:
+            return None
+
         try:
-            self.__scan.assert_required(
-                SCAN_REQUIRED_FIELDS[SCANPETScope.AMYLOID_PET_GAAIN]
-            )
-            status = float(self.__scan.get_value("amyloid_status"))
+            status = float(attribute_value)
         except (TypeError, ValueError):
             return False
 
         return bool(status)
 
-    def _create_scan_mri_session_count(self) -> int:
+    def __get_count(self, attribute: str) -> Optional[int]:
+        """Returns the length of the attribute value.
+
+        Args:
+          attribute: the attribute
+        Returns:
+          the length of the attribute value. None if there is no attribute
+        """
+        attribute_value = self.__subject_derived.get_value(attribute)
+        if attribute_value is None:
+            return None
+
+        return len(attribute_value)
+
+    def _create_scan_mri_session_count(self) -> Optional[int]:
         """Number of SCAN MRI session available.
 
         Counts the unique session dates.
         """
         self.__subject_derived.assert_required(["scan-mri-dates"])
-        return len(self.__subject_derived.get_value("scan-mri-dates"))
+        return self.__get_count("scan-mri-dates")
 
-    def _create_scan_pet_session_count(self) -> int:
+    def _create_scan_pet_session_count(self) -> Optional[int]:
         """Number of SCAN PET sessions available.
 
         Counts the unique session dates.
         """
         self.__subject_derived.assert_required(["scan-pet-dates"])
-        return len(self.__subject_derived.get_value("scan-pet-dates"))
+        return self.__get_count("scan-pet-dates")
 
-    def _create_scan_mri_year_count(self) -> int:
+    def _create_scan_mri_year_count(self) -> Optional[int]:
         """Years of SCAN MRI scans available.
 
         Does this similar to years of UDS where it keeps track of a
@@ -210,12 +237,20 @@ class MQTSCANAttributeCollection(AttributeCollection):
         counts the distinct years.
         """
         self.__subject_derived.assert_required(["scan-mri-dates"])
-        return len(get_unique_years(self.__subject_derived.get_value("scan-mri-dates")))
+        attribute_value = self.__subject_derived.get_value("scan-mri-dates")
+        if attribute_value is None:
+            return None
 
-    def _create_scan_pet_year_count(self) -> int:
+        return len(get_unique_years(attribute_value))
+
+    def _create_scan_pet_year_count(self) -> Optional[int]:
         """Years of SCAN PET scans available."""
         self.__subject_derived.assert_required(["scan-pet-dates"])
-        return len(get_unique_years(self.__subject_derived.get_value("scan-pet-dates")))
+        attribute_value = self.__subject_derived.get_value("scan-pet-dates")
+        if attribute_value is None:
+            return None
+
+        return len(get_unique_years(attribute_value))
 
     def _create_scan_pet_amyloid_gaain_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid GAAIN Centiloid/SUVR analysis type."""

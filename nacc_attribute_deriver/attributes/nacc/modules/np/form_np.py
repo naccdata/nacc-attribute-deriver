@@ -22,8 +22,10 @@ class NPFormAttributeCollection(AttributeCollection):
             msg = f"Current file is not an NP form: found {module}"
             raise InvalidFieldError(msg)
 
-    def _map_gross(self, new) -> Optional[int]:
-        npgross = self.__np.get_value("npgross")
+    def _map_gross(self, new: int) -> int:
+        npgross = self.__np.get_int_value("npgross")
+        if npgross is None:
+            return 9
         if npgross == 2:
             return 0
         if npgross == 9:
@@ -31,7 +33,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return new
 
-    def _map_sub4(self, old) -> int:
+    def _map_sub4(self, old: int) -> int:
         if old in [1, 2, 3, 4]:
             return 4 - old
         if old == 5:
@@ -39,7 +41,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9
 
-    def _map_v9(self, old) -> int:
+    def _map_v9(self, old: int) -> int:
         if old == 1:
             return 1
         if old == 2:
@@ -49,9 +51,9 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9
 
-    def _map_vasc(self, new) -> int:
-        npgross = self.__np.get_value("npgross")
-        npvasc = self.__np.get_value("npvasc")
+    def _map_vasc(self, new: int) -> int:
+        npgross = self.__np.get_int_value("npgross")
+        npvasc = self.__np.get_int_value("npvasc")
         if npgross == 2 or npvasc == 2:
             return 0
         if npgross == 9 or npvasc == 9:
@@ -61,7 +63,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return new
 
-    def _map_sub1(self, old):
+    def _map_sub1(self, old: int):
         if old in [1, 2, 3, 4]:
             return old - 1
         if old == 5:
@@ -70,7 +72,9 @@ class NPFormAttributeCollection(AttributeCollection):
         return 9
 
     def _map_lewy(self) -> int:
-        nplewy = self.__np.get_value("nplewy")
+        nplewy = self.__np.get_int_value("nplewy")
+        if nplewy is None:
+            return 9
         if nplewy == 6:
             return 8
         if nplewy == 5:
@@ -83,9 +87,9 @@ class NPFormAttributeCollection(AttributeCollection):
 
         Braak stage for neurofibrillary degeneration (B score)
         """
-        formver = self.__np.get_value("formver")
-        npbraak = self.__np.get_value("npbraak")
-        naccbraa = npbraak
+        formver = self.__np.get_int_value("formver")
+        npbraak = self.__np.get_int_value("npbraak")
+        naccbraa = npbraak if npbraak else 9
 
         if formver in [10, 11]:
             pass
@@ -107,7 +111,8 @@ class NPFormAttributeCollection(AttributeCollection):
         Density of neocortical neuritic plaques (CERAD score) (C score)
         """
         formver = self.__np.get_value("formver")
-        npneur = self.__np.get_value("npneur")
+        npneur = self.__np.get_value("npneur", 9)
+        assert npneur is not None
         naccneur = npneur
 
         if formver in [10, 11]:
@@ -127,8 +132,9 @@ class NPFormAttributeCollection(AttributeCollection):
         formver = self.__np.get_value("formver")
         npold = self.__np.get_value("npold")
         npmicro = self.__np.get_value("npmicro")
+        npmicro = npmicro if npmicro else 9
 
-        naccmicr = npold
+        naccmicr = npold if npold else 9
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
@@ -145,6 +151,7 @@ class NPFormAttributeCollection(AttributeCollection):
         """
         formver = self.__np.get_value("formver")
         nphem = self.__np.get_value("nphem")
+        nphem = nphem if nphem else 9
         nacchem = None
 
         if formver in [10, 11]:
@@ -175,16 +182,15 @@ class NPFormAttributeCollection(AttributeCollection):
         """
         formver = self.__np.get_value("formver")
         nparter = self.__np.get_value("nparter")
-        naccarte = None
 
         if formver in [10, 11]:
-            naccarte = nparter
-        elif formver in [7, 8, 9]:
-            naccarte = self._map_sub1(nparter)
-        elif formver == 1:
-            naccarte = self._map_sub1(nparter) if nparter else self._map_vasc(naccarte)
+            return nparter if nparter is not None else 9
+        if formver in [7, 8, 9]:
+            return self._map_sub1(nparter) if nparter is not None else 9
+        if formver == 1 and nparter is not None:
+            return self._map_sub1(nparter)
 
-        return naccarte if naccarte is not None else 9
+        return self._map_vasc(9)
 
     def _create_np_lewy(self) -> int:
         """Create the NACCLEWY variable.
@@ -195,7 +201,7 @@ class NPFormAttributeCollection(AttributeCollection):
         nacclewy = None
 
         if formver in [10, 11]:
-            nplbod = self.__np.get_value("nplbod")
+            nplbod = self.__np.get_int_value("nplbod")
             nacclewy = nplbod
             if nplbod == 4:
                 nacclewy = 2
@@ -204,12 +210,12 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             nacclewy = self._map_lewy()
         elif formver == 1:
-            nplewy = self.__np.get_value("nplewy")
-            if nplewy:
+            nplewy = self.__np.get_int_value("nplewy")
+            if nplewy is not None:
                 nacclewy = self._map_lewy()
             else:
                 nacclewy = nplewy
-                nacclewy = self._map_gross(nacclewy)
+                nacclewy = self._map_gross(9)
 
         return nacclewy if nacclewy is not None else 9
 

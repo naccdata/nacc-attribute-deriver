@@ -15,6 +15,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -28,18 +29,18 @@ class DemographicsAttributeCollection(AttributeCollection):
         {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Don't know"}
     )
 
-    def _create_uds_sex(self) -> Optional[DateTaggedValue[Optional[str]]]:
+    def _create_uds_sex(self) -> Optional[DateTaggedValue[str]]:
         """UDS sex."""
-        sex = self.__uds.get_value("sex")
-        if sex is None:
+        attribute_value = self.__uds.get_dated_value("sex")
+        if attribute_value is None:
             return None
 
         try:
-            return DateTaggedValue(
-                value=self.SEX_MAPPING.get(int(sex), None), date=self.__uds.get_date()
-            )
-        except TypeError:
-            return None
+            attribute_value.value = self.SEX_MAPPING.get(int(attribute_value.value))
+        except ValueError as error:
+            raise InvalidFieldError("sex must be an integer") from error
+
+        return attribute_value
 
     PRIMARY_LANGUAGE_MAPPING = MappingProxyType(
         {
@@ -62,31 +63,31 @@ class DemographicsAttributeCollection(AttributeCollection):
         if not self.__uds.is_initial():
             return None
 
-        try:
-            primlang = self.__uds.get_value("primlang")
-            if not primlang:
-                return None
+        attribute_value = self.__uds.get_dated_value("primlang")
+        if not attribute_value:
+            return None
 
-            return DateTaggedValue(
-                value=self.PRIMARY_LANGUAGE_MAPPING.get(int(primlang), "Unknown"),
-                date=self.__uds.get_date(),
+        try:
+            attribute_value.value = self.PRIMARY_LANGUAGE_MAPPING.get(
+                int(attribute_value.value), "Unknown"
             )
-        except TypeError as e:
-            raise TypeError("primlang must be an integer") from e
+        except ValueError as e:
+            raise InvalidFieldError("primlang must be an integer") from e
 
-        return None
+        return attribute_value
 
-    def _create_uds_education_level(self) -> DateTaggedValue[Optional[int]]:
+    def _create_uds_education_level(self) -> Optional[DateTaggedValue[int]]:
         """UDS education level."""
-        result = self.__uds.get_dated_value("educ", None)
-        # ensure int
-        try:
-            if result:
-                result.value = int(result.value)
-        except TypeError:
-            result.value = None
+        attribute_value = self.__uds.get_dated_value("educ", None)
+        if not attribute_value:
+            return None
 
-        return result
+        try:
+            attribute_value.value = int(attribute_value.value)
+        except ValueError as error:
+            raise InvalidFieldError("educ must be an integer") from error
+
+        return attribute_value
 
 
 class DerivedDemographicsAttributeCollection(AttributeCollection):
@@ -95,11 +96,11 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         self.__derived = DerivedNamespace(table)
         self.__subject_derived = SubjectDerivedNamespace(table)
 
-    def _create_uds_age(self) -> DateTaggedValue[int]:
+    def _create_uds_age(self) -> Optional[DateTaggedValue[int]]:
         """UDS age at form date, mapped from NACCAGE."""
         self.__derived.assert_required(["naccage"])
-        return DateTaggedValue(
-            value=self.__derived.get_value("naccage"), date=self.__uds.get_date()
+        return self.__derived.create_dated_value(
+            attribute="naccage", date=self.__uds.get_date()
         )
 
     RACE_MAPPING = MappingProxyType(
@@ -116,32 +117,41 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         }
     )
 
-    def _create_uds_race(self) -> DateTaggedValue[str]:
+    def _create_uds_race(self) -> Optional[DateTaggedValue[str]]:
         """UDS race."""
         self.__derived.assert_required(["naccnihr"])
-        return DateTaggedValue(
-            value=self.RACE_MAPPING.get(
-                self.__derived.get_value("naccnihr"), "Unknown or ambiguous"
-            ),
-            date=self.__uds.get_date(),
+        attribute_value = self.__derived.create_dated_value(
+            attribute="naccnihr", date=self.__uds.get_date()
+        )
+        if attribute_value is None:
+            return None
+
+        attribute_value.value = self.RACE_MAPPING.get(
+            attribute_value.value, "Unknown or ambiguous"
         )
 
-    def _create_age_at_death(self) -> int:
+        return attribute_value
+
+    def _create_age_at_death(self) -> Optional[int]:
         """Age at death, mapped from NACCDAGE."""
         self.__derived.assert_required(["naccdage"])
         return self.__derived.get_value("naccdage")
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
-    def _create_vital_status(self) -> DateTaggedValue[str]:
+    def _create_vital_status(self) -> Optional[DateTaggedValue[str]]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
         self.__derived.assert_required(["naccdied"])
-        return DateTaggedValue(
-            value=self.VITAL_STATUS_MAPPINGS.get(
-                self.__derived.get_value("naccdied"), "unknown"
-            ),
-            date=self.__uds.get_date(),
+        attribute_value = self.__derived.create_dated_value(
+            attribute="naccdied", date=self.__uds.get_date()
         )
+        if attribute_value is None:
+            return None
+
+        attribute_value.value = self.VITAL_STATUS_MAPPINGS.get(
+            attribute_value.value, "unknown"
+        )
+        return attribute_value
 
     def _create_np_available(self) -> bool:
         """NP available, which is just checking for the existence of

@@ -129,41 +129,47 @@ class CognitiveAttributeCollection(AttributeCollection):
         )
         return list({mapping[attribute] for attribute in attributes})
 
-    def _create_contributing_diagnosis(self) -> DateTaggedValue[List[str]]:
+    def _create_contributing_diagnosis(self) -> Optional[DateTaggedValue[List[str]]]:
         """Mapped from all possible contributing diagnosis."""
         self.__derived.assert_required(["naccalzp", "nacclbdp"])
+        attribute_value = self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2)
+        if not attribute_value:
+            return None
+
         return DateTaggedValue(
-            value=self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2),
+            value=attribute_value,
             date=self.__uds.get_date(),
         )
 
-    def _create_dementia(self) -> DateTaggedValue[List[str]]:
+    def _create_dementia(self) -> Optional[DateTaggedValue[List[str]]]:
         """Mapped from all dementia types."""
         self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
+        attribute_value = self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1)
+        if not attribute_value:
+            return None
+
         return DateTaggedValue(
-            value=self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1),
+            value=attribute_value,
             date=self.__uds.get_date(),
         )
 
-    def _create_cognitive_status(self) -> DateTaggedValue[Optional[int]]:
+    def _create_cognitive_status(self) -> Optional[DateTaggedValue[int]]:
         """Mapped from NACCUDSD."""
         self.__derived.assert_required(["naccudsd"])
 
-        return DateTaggedValue(
-            value=self.__derived.get_value("naccudsd"),
-            date=self.__uds.get_date(),
+        return self.__derived.create_dated_value(
+            attribute="naccudsd", date=self.__uds.get_date()
         )
 
-    def _create_etpr(self) -> DateTaggedValue[int]:
+    def _create_etpr(self) -> Optional[DateTaggedValue[int]]:
         """Mapped from NACCETPR."""
         self.__derived.assert_required(["naccetpr"])
-        return DateTaggedValue(
-            value=self.__derived.get_value("naccetpr"),
-            date=self.__uds.get_date(),
+
+        return self.__derived.create_dated_value(
+            attribute="naccetpr", date=self.__uds.get_date()
         )
 
     def _create_global_cdr(self) -> Optional[DateTaggedValue[float]]:
         """Mapped from CDRGLOB."""
-        cdrglob = self.__uds.get_value("cdrglob")
 
-        return DateTaggedValue(value=cdrglob, date=self.__uds.get_date())
+        return self.__uds.get_dated_value("cdrglob")
