@@ -32,4 +32,4 @@ class TestNIAGADSAttribute:
         assert attr._create_niagads_gwas() == 1
         assert attr._create_niagads_exome() == 1
         assert attr._create_niagads_wgs() == 0
-        assert attr._create_niagads_wes() == 0
+        assert attr._create_niagads_wes() is None

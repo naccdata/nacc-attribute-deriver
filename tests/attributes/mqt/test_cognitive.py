@@ -90,4 +90,4 @@ class TestCognitiveAttributeCollection:
 
         table["file.info.forms.json.cdrglob"] = None
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr().value is None
+        assert attr._create_global_cdr() is None

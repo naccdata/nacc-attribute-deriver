@@ -78,7 +78,7 @@ class TestDemographicsAttributeCollection:
 
         # none case
         table["file.info.forms.json.educ"] = None
-        assert attr._create_uds_education_level().value is None
+        assert attr._create_uds_education_level() is None
 
 
 class TestDerivedDemographicsAttributeCollection:

@@ -5,6 +5,7 @@ from nacc_attribute_deriver.attributes.nacc.genetics.ncrad import (
     HistoricalNCRADAttributeCollection,
     NCRADAttributeCollection,
 )
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from tests.conftest import set_attribute
@@ -53,7 +54,12 @@ class TestHistoricalNCRADAttributeCollection:
 
         # invalid cases
         set_attribute(table, raw_prefix, "apoenp", None)
-        for invalid in [0, 7, None, ""]:
+        for invalid in [0, 7, None]:
             set_attribute(table, raw_prefix, "apoe", invalid)
             attr = HistoricalNCRADAttributeCollection.create(table)
             assert attr._create_historic_apoe() == 9
+
+        set_attribute(table, raw_prefix, "apoe", "invalid")
+        attr = HistoricalNCRADAttributeCollection.create(table)
+        with pytest.raises(InvalidFieldError):
+            attr._create_historic_apoe()
