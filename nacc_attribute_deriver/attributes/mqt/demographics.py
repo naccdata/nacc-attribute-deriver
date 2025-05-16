@@ -57,7 +57,7 @@ class DemographicsAttributeCollection(AttributeCollection):
     def _create_uds_primary_language(self) -> Optional[DateTaggedValue[str]]:
         """UDS primary language.
 
-        Only for initial forms.
+        Only set in initial packet.
         """
         if not self.__uds.is_initial():
             return None
@@ -116,8 +116,14 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         }
     )
 
-    def _create_uds_race(self) -> DateTaggedValue[str]:
-        """UDS race."""
+    def _create_uds_race(self) -> Optional[DateTaggedValue[str]]:
+        """UDS race.
+
+        Only set in initial packet.
+        """
+        if not self.__uds.is_initial():
+            return None
+
         self.__derived.assert_required(["naccnihr"])
         return DateTaggedValue(
             value=self.RACE_MAPPING.get(

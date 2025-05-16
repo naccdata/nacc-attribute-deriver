@@ -2,6 +2,11 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.3.1
+
+* Fixes issue in `_create_contributing_diagnosis` and `_create_dementia` where the returned value can be an empty list - needs to be treated as `None
+* Fixes `_create_uds_race` to only evaluate if this is an initial packet (otherwise date gets set to latest form which isn't where the value actually comes from)
+
 ## 1.3.0
 
 * Adds `historic_apoe` rule to support historical APOE values from sources other than NCRAD

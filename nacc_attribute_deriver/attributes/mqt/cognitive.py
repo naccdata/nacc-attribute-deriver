@@ -111,7 +111,7 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def map_attributes(
         self, mapping: Mapping[str, str], expected_value: int
-    ) -> List[str]:
+    ) -> Optional[List[str]]:
         """Returns the list of string values for the attributes in the mapping
         for which the value matches the expected value.
 
@@ -125,9 +125,10 @@ class CognitiveAttributeCollection(AttributeCollection):
         attributes = self.__filter_attributes(
             attributes=list(mapping.keys()), expected_value=expected_value
         )
-        return list({mapping[attribute] for attribute in attributes})
+        result = list({mapping[attribute] for attribute in attributes})
+        return result if result else None
 
-    def _create_contributing_diagnosis(self) -> DateTaggedValue[List[str]]:
+    def _create_contributing_diagnosis(self) -> DateTaggedValue[Optional[List[str]]]:
         """Mapped from all possible contributing diagnosis."""
         self.__derived.assert_required(["naccalzp", "nacclbdp"])
         return DateTaggedValue(
@@ -135,7 +136,7 @@ class CognitiveAttributeCollection(AttributeCollection):
             date=self.__uds.get_date(),
         )
 
-    def _create_dementia(self) -> DateTaggedValue[List[str]]:
+    def _create_dementia(self) -> DateTaggedValue[Optional[List[str]]]:
         """Mapped from all dementia types."""
         self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
         return DateTaggedValue(
@@ -143,7 +144,7 @@ class CognitiveAttributeCollection(AttributeCollection):
             date=self.__uds.get_date(),
         )
 
-    def _create_cognitive_status(self) -> DateTaggedValue[Optional[int]]:
+    def _create_cognitive_status(self) -> DateTaggedValue[int]:
         """Mapped from NACCUDSD."""
         self.__derived.assert_required(["naccudsd"])
 
@@ -160,7 +161,7 @@ class CognitiveAttributeCollection(AttributeCollection):
             date=self.__uds.get_date(),
         )
 
-    def _create_global_cdr(self) -> Optional[DateTaggedValue[float]]:
+    def _create_global_cdr(self) -> DateTaggedValue[float]:
         """Mapped from CDRGLOB."""
         cdrglob = self.__uds.get_value("cdrglob")
 
