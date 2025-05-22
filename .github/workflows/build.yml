@@ -7,7 +7,7 @@ on:
   push:
     tags:
       - "v*.*.*"
-  pull:
+  pull_request:
     branches: [ "34-automate-the-release" ]
 
 permissions:
