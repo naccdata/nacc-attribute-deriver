@@ -7,6 +7,8 @@ on:
   push:
     tags:
       - "v*.*.*"
+  pull:
+    branches: [ * ]
 
 permissions:
   contents: read
@@ -38,11 +40,11 @@ jobs:
     - name: Package / Run
       run: |
         pants package ::
-    - name: Upload pants log
-      uses: actions/upload-artifact@v4
+    - name: Upload build
+      uses: softprops/action-gh-release@v2
       with:
-        name: pants-log
-        path: |
+        generate_release_notes: true
+        files: |
           .pants.d/workdir/pants.log
           .pands.d/dist/*.whl
       if: always() # We want the log even on failures.
