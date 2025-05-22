@@ -6,7 +6,7 @@ name: Build Release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*"
 
 jobs:
   build:
@@ -43,5 +43,5 @@ jobs:
         generate_release_notes: true
         files: |
           .pants.d/workdir/pants.log
-          dist/*.whl
+          dist/*
       if: always() # We want the log even on failures.
