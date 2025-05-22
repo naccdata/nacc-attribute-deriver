@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    name: Pants Lint and Test
+    name: Build package and release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -40,6 +40,8 @@ jobs:
         pants package ::
     - name: Upload package
       uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         generate_release_notes: true
         files: |
