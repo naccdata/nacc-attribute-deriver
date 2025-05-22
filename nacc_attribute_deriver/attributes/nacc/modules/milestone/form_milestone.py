@@ -12,7 +12,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         self.__milestone = FormNamespace(table)
 
     def _create_milestone_death_date(self) -> Optional[date]:
-        if not self.is_target_int(self.__milestone.get_value("deceased"), 1):
+        if not self.is_target_int(self.__milestone.get_int_value("deceased"), 1):
             return None
 
         year = self.__milestone.get_value("deathyr")

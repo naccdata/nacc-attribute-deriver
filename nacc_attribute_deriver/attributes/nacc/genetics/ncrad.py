@@ -9,6 +9,7 @@ from typing import Mapping, Tuple
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -64,20 +65,15 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
 
         <subject>_historic_apoe_genotype.json
         """
-        apoe = self.__apoe.get_value("apoe")
-
-        try:
-            apoe = int(apoe)
-        except (TypeError, ValueError):
-            apoe = None
+        apoe = self.__apoe.get_int_value("apoe")
 
         # while sas code handles consistency, just do a sanity check
         # to make sure entire rows lines up, else there's an issue
         if apoe is not None:
             for field in ["apoecenter", "apoenp", "apoeadgc", "adcapoe", "apoecomm"]:
-                source_apoe = self.__apoe.get_value(field)
-                if source_apoe:
-                    assert source_apoe == str(apoe), (
+                source_apoe = self.__apoe.get_int_value(field)
+                if source_apoe is not None and source_apoe != apoe:
+                    raise InvalidFieldError(
                         f"Source {field} with value {source_apoe} does not match "
                         + f"expected apoe value {apoe}"
                     )

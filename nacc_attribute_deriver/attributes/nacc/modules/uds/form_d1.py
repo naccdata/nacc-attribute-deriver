@@ -285,9 +285,9 @@ class UDSFormD1Attribute(AttributeCollection):
         try:
             if naccnorm is not None and int(naccnorm) == 0:
                 return 0
-
-            return int(self.__uds.get_value("normcog"))
         except (ValueError, TypeError):
             pass
 
-        return 1
+        normcog = self.__uds.get_int_value("normcog")
+
+        return normcog if normcog else 1

@@ -166,7 +166,6 @@ def test_niagads_investigator():
     assert form["subject.info.derived"] == {
         "niagads_exome": 1,
         "niagads_gwas": 1,
-        "niagads_wes": 0,
         "niagads_wgs": 0,
     }
 

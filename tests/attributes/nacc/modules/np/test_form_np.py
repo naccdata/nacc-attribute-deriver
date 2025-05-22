@@ -48,7 +48,7 @@ def np_form_table() -> SymbolTable:
 class TestHelpers:
     def test_mapgross_null(self, np_form_table):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._map_gross(None) is None
+        assert np_form_nulls._map_gross(None) == 9
 
     def test_mapsub4_null(self, np_form_table):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
@@ -69,7 +69,7 @@ class TestHelpers:
 
     def test_maplewy_null(self, np_form_table):
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._map_lewy() is None
+        assert np_form_nulls._map_lewy() == 9
 
     def test_mapgross(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection.create(np_form_attribute_table)
