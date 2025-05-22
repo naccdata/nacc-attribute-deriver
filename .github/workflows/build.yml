@@ -1,0 +1,48 @@
+# Based on
+# https://github.com/pantsbuild/example-python/blob/main/.github/workflows/pants.yaml
+
+name: Build Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Pants Lint and Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: pantsbuild/actions/init-pants@v8
+      with:
+        gha-cache-key: v0
+        named-caches-hash: ${{ hashFiles('python-default.lock') }}
+        cache-lmdb-store: 'false'  # defaults to 'false'
+    - name: Lint
+      run: |
+        pants lint ::
+        pants check ::
+    - name: Test
+      run: |
+        pants test ::
+    - name: Package / Run
+      run: |
+        pants package ::
+    - name: Upload pants log
+      uses: actions/upload-artifact@v4
+      with:
+        name: pants-log
+        path: |
+          .pants.d/workdir/pants.log
+          .pands.d/dist/*.whl
+      if: always() # We want the log even on failures.
