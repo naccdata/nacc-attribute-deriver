@@ -2,7 +2,7 @@
 
 import datetime
 import logging
-from typing import Any, Generic, List, Optional, TypeVar
+from typing import Any, Generic, Iterable, Optional, TypeVar, overload
 
 from pydantic import BaseModel, ConfigDict, field_serializer
 
@@ -138,25 +138,84 @@ class BaseNamespace:
         except ValueError as error:
             raise InvalidFieldError(f"{attribute} expected to be an integer") from error
 
-    def assert_required(self, required: List[str]) -> bool:
-        """Asserts that the given fields in required are in the table for the
-        source.
+    @overload
+    def scope(self, *, name: str) -> "NamespaceScope": ...
 
-        Args:
-            required: The list of required fields
-        Returns:
-          True if all required fields are present
-        Raises:
-          MissingRequiredError if a required field is missing
+    @overload
+    def scope(self, *, fields: Iterable[str]) -> "NamespaceScope": ...
+
+    @overload
+    def scope(self, *, name: str, fields: Iterable[str]) -> "NamespaceScope": ...
+
+    def scope(
+        self,
+        *,
+        name: Optional[str] = None,
+        fields: Optional[Iterable[str]] = None,
+    ) -> "NamespaceScope":
+        if name is None or fields is None:
+            raise ScopeDefinitionError("Scope definition is incomplete")
+
+        return NamespaceScope(namespace=self, name=name, fields=fields)
+
+
+class ScopeDefinitionError(Exception):
+    pass
+
+
+class NamespaceScope:
+    def __init__(
+        self, namespace: BaseNamespace, name: str, fields: Iterable[str]
+    ) -> None:
+        self.__namespace = namespace
+        self.__scope_name = name
+        self.__fields = fields
+
+    @property
+    def namespace(self):
+        return self.__namespace
+
+    def __filter_value(self, attribute: str, value: Any) -> Any:
+        if value is not None:
+            return value
+
+        if attribute not in self.__fields:
+            return None
+
+        field = f"{self.namespace.prefix}{attribute}"
+        raise MissingRequiredError(
+            message=f"Missing required field: {field} for scope {self.__scope_name}",
+            field=field,
+        )
+
+    def get_value(self, attribute: str) -> Optional[Any]:
+        """Returns the value of the attribute key in the table if it is in
+        scope.
+
+        Otherwise, raises exception
         """
-        for attribute in required:
-            full_field = f"{self.prefix}{attribute}"
-            if full_field not in self.__table:
-                raise MissingRequiredError(
-                    message=f"Missing required field: {full_field}", field=full_field
-                )
+        return self.__filter_value(
+            attribute=attribute, value=self.__namespace.get_value(attribute)
+        )
 
-        return True
+    def create_dated_value(
+        self,
+        attribute: str,
+        date: Optional[datetime.date],
+        default: Optional[Any] = None,
+    ) -> Optional[DateTaggedValue[Any]]:
+        return self.__filter_value(
+            attribute=attribute,
+            value=self.__namespace.create_dated_value(
+                attribute=attribute, date=date, default=default
+            ),
+        )
+
+    def get_int_value(self, attribute: str) -> Optional[int]:
+        return self.__filter_value(
+            attribute=attribute,
+            value=self.__namespace.get_int_value(attribute=attribute),
+        )
 
 
 class FormNamespace(BaseNamespace):
@@ -182,6 +241,17 @@ class RawNamespace(BaseNamespace):
     ) -> None:
         super().__init__(table, attribute_prefix, date_attribute)
 
+    def scope(
+        self,
+        *,
+        name: Optional[str] = None,
+        fields: Optional[Iterable[str]] = None,
+    ) -> NamespaceScope:
+        if not fields:
+            raise ScopeDefinitionError("File raw scope definition incomplete")
+
+        return super().scope(name="file-raw", fields=fields)
+
 
 class DerivedNamespace(BaseNamespace):
     """Base class for attributes over file.info.derived."""
@@ -193,6 +263,17 @@ class DerivedNamespace(BaseNamespace):
         date_attribute: Optional[str] = None,
     ) -> None:
         super().__init__(table, attribute_prefix, date_attribute)
+
+    def scope(
+        self,
+        *,
+        name: Optional[str] = None,
+        fields: Optional[Iterable[str]] = None,
+    ) -> NamespaceScope:
+        if not fields:
+            raise ScopeDefinitionError("File-derived scope definition incomplete")
+
+        return super().scope(name="file-derived", fields=fields)
 
 
 class SubjectInfoNamespace(BaseNamespace):
@@ -239,3 +320,17 @@ class SubjectDerivedNamespace(BaseNamespace):
           the value for the attribute in the table
         """
         return self.get_value(f"longitudinal.{attribute}", default)
+
+    def scope(
+        self,
+        *,
+        name: Optional[str] = None,
+        fields: Optional[Iterable[str]] = None,
+    ) -> NamespaceScope:
+        if not fields:
+            raise ScopeDefinitionError("Subject-derived scope definition incomplete")
+
+        return super().scope(
+            name="subject-derived",
+            fields=fields,
+        )
