@@ -98,7 +98,7 @@ class CognitiveAttributeCollection(AttributeCollection):
         for attribute in attributes:
             value = self.__uds.get_value(attribute)
             if not value:
-                value = self.__derived.scope(fields=attributes).get_value(attribute)
+                value = self.__derived.get_value(attribute)
             if not value:
                 continue
 
