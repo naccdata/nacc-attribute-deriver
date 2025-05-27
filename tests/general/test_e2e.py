@@ -144,7 +144,7 @@ def test_ncrad_apoe():
     form["file.info.raw"] = {"a1": "E4", "a2": "E2"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "apoe")
+    deriver.curate(form, "apoe")  # type: ignore
     assert form["subject.info.derived.cross-sectional"] == {"naccapoe": 5}
     assert form["subject.info.genetics"] == {"apoe": 5}
 
@@ -160,13 +160,14 @@ def test_niagads_investigator():
     }
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "niagads_availability")
+    deriver.curate(form, "niagads_availability")  # type: ignore
 
     assert "file.info.derived" not in form
     assert form["subject.info.derived"] == {
         "niagads_exome": 1,
         "niagads_gwas": 1,
         "niagads_wgs": 0,
+        "niagads_wes": 0,
     }
 
 
@@ -176,7 +177,7 @@ def test_scan_mri_qc():
     form["file.info.raw"] = {"series_type": "T1w", "study_date": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_mri_qc")
+    deriver.curate(form, "scan_mri_qc")  # type: ignore
     assert form.to_dict() == {
         "file": {"info": {"raw": {"series_type": "T1w", "study_date": "2025-01-01"}}},
         "subject": {
