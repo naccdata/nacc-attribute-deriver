@@ -27,9 +27,9 @@ def attr() -> NIAGADSAttributeCollection:
 
 
 class TestNIAGADSAttribute:
-    def test_create_niagads(self, attr):
+    def test_create_niagads(self, attr: NIAGADSAttributeCollection):
         """Tests creating NGDS* variables."""
-        assert attr._create_niagads_gwas() == 1
-        assert attr._create_niagads_exome() == 1
-        assert attr._create_niagads_wgs() == 0
-        assert attr._create_niagads_wes() is None
+        assert attr._create_niagads_gwas() == 1  # type: ignore
+        assert attr._create_niagads_exome() == 1  # type: ignore
+        assert attr._create_niagads_wgs() == 0  # type: ignore
+        assert attr._create_niagads_wes() == 0  # type: ignore
