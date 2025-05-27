@@ -8,7 +8,7 @@ Heavily based off of
 import logging
 from inspect import isfunction
 from types import FunctionType
-from typing import Any, Callable, ClassVar, Dict, List, Optional, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, ConfigDict
 
@@ -49,12 +49,14 @@ class AttributeExpression(BaseModel):
 class AttributeCollectionRegistry(type):
     collection_types: ClassVar[List[type]] = []
 
-    def __init__(cls, name, bases, attrs):
+    def __init__(
+        cls, name: str, bases: Tuple[type], attrs: Dict[str, str | FunctionType]
+    ):
         """Registers the class in the registry when the class has this class as
         a metaclass."""
         if (
             name != "AttributeCollection"
-            and name not in AttributeCollectionRegistry.collection_types
+            and name not in AttributeCollectionRegistry.collection_types  # type: ignore
         ):
             AttributeCollectionRegistry.collection_types.append(cls)
 
@@ -68,11 +70,12 @@ class AttributeCollectionRegistry(type):
         Returns:
           a dictionary mapping a function name to the attribute expression
         """
-        methods = {}
+        methods: Dict[str, AttributeExpression] = {}
         for collection_type in cls.collection_types:
             for name, function in collection_type.get_all_hooks().items():  # type: ignore
                 methods[name] = AttributeExpression(
-                    function=function, attribute_class=collection_type
+                    function=function,  # type: ignore
+                    attribute_class=collection_type,
                 )
 
         return methods
@@ -102,7 +105,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
     @classmethod
     def get_all_hooks(cls) -> Dict[str, FunctionType]:
         """Grab all available _create_ functions."""
-        result = {}
+        result: Dict[str, FunctionType] = {}
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
             if isfunction(attr) and attr_name.startswith("_create_"):
@@ -111,7 +114,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         return result
 
     @classmethod
-    def get_derive_hook(cls, derive_name: str) -> Optional[Callable]:
+    def get_derive_hook(cls, derive_name: str) -> Optional[Callable[[], Any]]:
         """Aggregates all _create functions and returns the function if
         derive_name matches. Throws error otherwise.
 
