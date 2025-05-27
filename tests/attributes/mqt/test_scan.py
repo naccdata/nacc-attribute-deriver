@@ -42,35 +42,35 @@ class TestSCANMRIQCAttribute:
         series_type."""
         attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
         assert attr  # type:ignore
-        assert attr._create_scan_mri_scan_types() == "T1w"  # type: ignore # type:ignore
+        assert attr._create_scan_mri_scan_types() == "T1w"  # type: ignore
 
         # empty
         scan_mri_qc_table["file.info.raw.series_type"] = None
         attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
         assert attr  # type:ignore
-        assert attr._create_scan_mri_scan_types() is None  # type: ignore # type:ignore
+        assert attr._create_scan_mri_scan_types() is None  # type: ignore
 
     def test_create_scan_mri_session_count(self, scan_mri_qc_table: SymbolTable):
         """Tests _create_scan_mri_session_count, which should just count scan-
         mri-dates."""
         attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
-        assert attr._create_scan_mri_session_count() == 5  # type: ignore # type:ignore
+        assert attr._create_scan_mri_session_count() == 5  # type: ignore
 
         # empty
         scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
         attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
-        assert attr._create_scan_mri_session_count() == 0  # type: ignore # type:ignore
+        assert attr._create_scan_mri_session_count() == 0  # type: ignore
 
     def test_create_scan_mri_year_count(self, scan_mri_qc_table: SymbolTable):
         """Tests _create_scan_mri_year_count, which should just count the
         unique years in scan-mri-dates."""
         attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
-        assert attr._create_scan_mri_year_count() == 3  # type: ignore # type:ignore
+        assert attr._create_scan_mri_year_count() == 3  # type: ignore
 
         # empty
         scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
         attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
-        assert attr._create_scan_mri_year_count() == 0  # type: ignore # type:ignore
+        assert attr._create_scan_mri_year_count() == 0  # type: ignore
 
 
 @pytest.fixture(scope="function")
@@ -93,35 +93,35 @@ class TestSCANPETQCAttribute:
             # convert to string just to make sure type conversion is correct
             scan_pet_qc_table["file.info.raw.radiotracer"] = str(k)
             attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
-            assert attr._create_scan_pet_scan_types() == v  # type: ignore # type:ignore
+            assert attr._create_scan_pet_scan_types() == v  # type: ignore
 
             # string float case
             scan_pet_qc_table["file.info.raw.radiotracer"] = str(float(k))
             attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
-            assert attr._create_scan_pet_scan_types() == v  # type: ignore # type:ignore
+            assert attr._create_scan_pet_scan_types() == v  # type: ignore
 
         # None case
         scan_pet_qc_table["file.info.raw.radiotracer"] = ""
         attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
-        assert attr._create_scan_pet_scan_types() is None  # type: ignore # type:ignore
+        assert attr._create_scan_pet_scan_types() is None  # type: ignore
 
     def test_create_scan_pet_session_count(self, scan_pet_qc_table: SymbolTable):
         """Tests _create_scan_pet_session_count, which should just count scan-
         pet-dates."""
         assert scan_pet_qc_table.get("subject.info.derived.scan-pet-dates")  # type:ignore
         attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
-        assert attr._create_scan_pet_session_count() == 1  # type: ignore # type:ignore
+        assert attr._create_scan_pet_session_count() == 1  # type: ignore
 
         # empty
         scan_pet_qc_table["subject.info.derived.scan-pet-dates"] = []
         attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
-        assert attr._create_scan_pet_session_count() == 0  # type: ignore # type:ignore
+        assert attr._create_scan_pet_session_count() == 0  # type: ignore
 
     def test_create_scan_pet_year_count(self, scan_pet_qc_table: SymbolTable):
         """Tests _create_scan_pet_year_count, which should just count the
         unique years in scan-pet-dates."""
         attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
-        assert attr._create_scan_pet_year_count() == 1  # type: ignore # type:ignore
+        assert attr._create_scan_pet_year_count() == 1  # type: ignore
 
         # empty
         scan_pet_qc_table["subject.info.derived.scan-pet-dates"] = []
