@@ -3,13 +3,14 @@
 Mainly sanity checks to make sure modules run at all.
 """
 
+from typing import Any, Dict
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 def test_uds_form():
     """Test against a minimal UDS form, mainly sanity check."""
-    data = {
+    data: Dict[str, Any] = {
         "file": {
             "info": {
                 "forms": {
@@ -32,7 +33,7 @@ def test_uds_form():
     form = SymbolTable(data)
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "uds")
+    deriver.curate(form, "uds") # type: ignore
     assert form["file.info.derived"] == {
         "naccage": 65,
         "naccalzp": 8,
@@ -66,7 +67,7 @@ def test_np_form():
     np_table["file.info.forms.json.formver"] = 11.0
 
     deriver = AttributeDeriver()
-    deriver.curate(np_table, "np")
+    deriver.curate(np_table, "np") # type: ignore
     assert np_table.to_dict() == {
         "file": {
             "info": {
@@ -111,7 +112,7 @@ def test_np_form():
     }
 
     deriver = AttributeDeriver()
-    deriver.curate(uds_table, "uds")
+    deriver.curate(uds_table, "uds") # type: ignore
     assert (
         uds_table["file.info.derived.naccarte"]
         == np_table["subject.info.derived.np_arte"]
@@ -197,7 +198,7 @@ def test_scan_pet_qc():
     form["file.info.raw"] = {"radiotracer": "2.0", "scan_date": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_pet_qc")
+    deriver.curate(form, "scan_pet_qc") # type: ignore
     assert form["subject.info.derived"] == {"scan-pet-dates": ["2025-01-01"]}
     assert form["subject.info.imaging"] == {
         "pet": {
@@ -217,7 +218,7 @@ def test_scan_mri_sbm():
     form["file.info.raw"] = {"cerebrumtcv": "2.5", "wmh": "3.5", "scandt": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_mri_sbm")
+    deriver.curate(form, "scan_mri_sbm") # type: ignore
     assert form.to_dict() == {
         "file": {
             "info": {
@@ -259,7 +260,7 @@ def test_scan_amyloid_gaain():
     ]
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_amyloid_pet_gaain")
+    deriver.curate(form, "scan_amyloid_pet_gaain") # type: ignore
     assert form.to_dict() == {
         "file": {
             "info": {
