@@ -10,7 +10,6 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.scan_namespace import (
-    SCAN_REQUIRED_FIELDS,
     SCANNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -43,10 +42,9 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """SCAN MRI scan types available Access series_type (scan_mridashboard
         file)"""
-        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[SCANMRIScope.MRI_QC])
-        return self.__scan.get_value("series_type")
+        return self.__scan.scope(name=SCANMRIScope.MRI_QC).get_value("series_type")
 
-    def _is_mri_indicator(self, target: str, scope: SCANMRIScope) -> Optional[bool]:
+    def _is_mri_indicator(self, target: str, scope: SCANMRIScope) -> bool:
         """Returns whether or not the given target is an MRI.
 
         indicator - checks by seeing if the target can be
@@ -58,10 +56,9 @@ class MQTSCANAttributeCollection(AttributeCollection):
         Returns:
             Whether or not this is an indicator
         """
-        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
         attribute_value = self.__scan.get_value(target)
         if attribute_value is None:
-            return None
+            return False
 
         try:
             float(attribute_value)
@@ -115,8 +112,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
     def get_pet_float(self, attribute: str, scope: SCANPETScope) -> Optional[float]:
         """Get PET float value."""
-        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[scope])
-        attribute_value = self.__scan.get_value(attribute)
+        attribute_value = self.__scan.scope(name=scope).get_value(attribute)
         if attribute_value is None:
             return None
 
@@ -184,10 +180,9 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         Is given as an int so check int boolean.
         """
-        self.__scan.assert_required(
-            SCAN_REQUIRED_FIELDS[SCANPETScope.AMYLOID_PET_GAAIN]
-        )
-        attribute_value = self.__scan.get_value("amyloid_status")
+        attribute_value = self.__scan.scope(
+            name=SCANPETScope.AMYLOID_PET_GAAIN
+        ).get_value("amyloid_status")
         if attribute_value is None:
             return None
 
@@ -206,7 +201,9 @@ class MQTSCANAttributeCollection(AttributeCollection):
         Returns:
           the length of the attribute value. None if there is no attribute
         """
-        attribute_value = self.__subject_derived.get_value(attribute)
+        attribute_value = self.__subject_derived.scope(fields=[attribute]).get_value(
+            attribute
+        )
         if attribute_value is None:
             return None
 
@@ -217,7 +214,6 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         Counts the unique session dates.
         """
-        self.__subject_derived.assert_required(["scan-mri-dates"])
         return self.__get_count("scan-mri-dates")
 
     def _create_scan_pet_session_count(self) -> Optional[int]:
@@ -225,7 +221,6 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         Counts the unique session dates.
         """
-        self.__subject_derived.assert_required(["scan-pet-dates"])
         return self.__get_count("scan-pet-dates")
 
     def _create_scan_mri_year_count(self) -> Optional[int]:
@@ -236,8 +231,9 @@ class MQTSCANAttributeCollection(AttributeCollection):
         a participant has SCAN data in. This create method then just
         counts the distinct years.
         """
-        self.__subject_derived.assert_required(["scan-mri-dates"])
-        attribute_value = self.__subject_derived.get_value("scan-mri-dates")
+        attribute_value = self.__subject_derived.scope(
+            fields=["scan-mri-dates"]
+        ).get_value("scan-mri-dates")
         if attribute_value is None:
             return None
 
@@ -245,8 +241,9 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
     def _create_scan_pet_year_count(self) -> Optional[int]:
         """Years of SCAN PET scans available."""
-        self.__subject_derived.assert_required(["scan-pet-dates"])
-        attribute_value = self.__subject_derived.get_value("scan-pet-dates")
+        attribute_value = self.__subject_derived.scope(
+            fields=["scan-pet-dates"]
+        ).get_value("scan-pet-dates")
         if attribute_value is None:
             return None
 

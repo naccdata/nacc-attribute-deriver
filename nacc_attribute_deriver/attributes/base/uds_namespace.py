@@ -1,9 +1,13 @@
 """Class to define UDS-specific attributes."""
 
 from datetime import date, datetime
-from typing import Optional
+from typing import Iterable, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
+from nacc_attribute_deriver.attributes.base.namespace import (
+    FormNamespace,
+    NamespaceScope,
+    ScopeDefinitionError,
+)
 from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -27,13 +31,23 @@ class UDSNamespace(FormNamespace):
 
         return False
 
+    def scope(
+        self,
+        *,
+        name: Optional[str] = None,
+        fields: Optional[Iterable[str]] = None,
+    ) -> NamespaceScope:
+        if not fields:
+            raise ScopeDefinitionError("Unable to define UDS scope")
+        return super().scope(name="uds", fields=fields)
+
     def normalized_formver(self) -> Optional[int]:
         """Returns the normalized form version.
 
         Handles cases where the form version is listed as 3.2 for
         example.
         """
-        attribute_value = self.get_value("formver")
+        attribute_value = self.scope(fields=["formver"]).get_value("formver")
         if attribute_value is None:
             return None
 

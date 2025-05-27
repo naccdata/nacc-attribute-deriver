@@ -17,14 +17,6 @@ class NIAGADSAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NIAGADS-specific data."""
         self.__niagads = RawNamespace(table)
-        self.__niagads.assert_required(
-            required=[
-                "niagads_gwas",
-                "niagads_exomechip",
-                "niagads_wgs",
-                "niagads_wes",
-            ]
-        )
 
     def _evaluate_investigator(self, attribute: str) -> Optional[int]:
         """Evaluate investigator. If null/missing (set to None or "0") then
@@ -33,7 +25,13 @@ class NIAGADSAttributeCollection(AttributeCollection):
         Args:
             value: The value to evaluate.
         """
-        attribute_value = self.__niagads.get_value(attribute)
+        fields = [
+            "niagads_gwas",
+            "niagads_exomechip",
+            "niagads_wgs",
+            "niagads_wes",
+        ]
+        attribute_value = self.__niagads.scope(fields=fields).get_value(attribute)
         if attribute_value is None:
             return None
 

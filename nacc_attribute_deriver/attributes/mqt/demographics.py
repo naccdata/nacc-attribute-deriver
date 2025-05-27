@@ -98,8 +98,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_age(self) -> Optional[DateTaggedValue[int]]:
         """UDS age at form date, mapped from NACCAGE."""
-        self.__derived.assert_required(["naccage"])
-        return self.__derived.create_dated_value(
+        return self.__derived.scope(fields=["naccage"]).create_dated_value(
             attribute="naccage", date=self.__uds.get_date()
         )
 
@@ -119,8 +118,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_race(self) -> Optional[DateTaggedValue[str]]:
         """UDS race."""
-        self.__derived.assert_required(["naccnihr"])
-        attribute_value = self.__derived.create_dated_value(
+        attribute_value = self.__derived.scope(fields=["naccnihr"]).create_dated_value(
             attribute="naccnihr", date=self.__uds.get_date()
         )
         if attribute_value is None:
@@ -134,15 +132,13 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_age_at_death(self) -> Optional[int]:
         """Age at death, mapped from NACCDAGE."""
-        self.__derived.assert_required(["naccdage"])
-        return self.__derived.get_value("naccdage")
+        return self.__derived.scope(fields=["naccdage"]).get_value("naccdage")
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> Optional[DateTaggedValue[str]]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
-        self.__derived.assert_required(["naccdied"])
-        attribute_value = self.__derived.create_dated_value(
+        attribute_value = self.__derived.scope(fields=["naccdied"]).create_dated_value(
             attribute="naccdied", date=self.__uds.get_date()
         )
         if attribute_value is None:

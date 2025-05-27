@@ -4,9 +4,14 @@ Comes from 7 unique files.
 """
 
 from types import MappingProxyType
-from typing import Dict, List, Optional
+from typing import Dict, Iterable, List, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
+from nacc_attribute_deriver.attributes.base.namespace import (
+    NamespaceScope,
+    RawNamespace,
+    ScopeDefinitionError,
+)
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.utils.scope import SCANMRIScope, SCANPETScope
 
 # TODO: make this more elegant
@@ -51,31 +56,47 @@ class SCANNamespace(RawNamespace):
         }
     )
 
+    def scope(
+        self,
+        *,
+        name: Optional[str] = None,
+        fields: Optional[Iterable[str]] = None,
+    ) -> NamespaceScope:
+        if not name:
+            raise ScopeDefinitionError("SCAN scope definition incomplete")
+
+        fields = fields if fields else SCAN_REQUIRED_FIELDS.get(name)
+        return super().scope(name=name, fields=fields)
+
     # get functions for common values
     def get_tracer(self, field: str, scope: SCANPETScope) -> Optional[str]:
         """Get the tracer string."""
-        self.assert_required(SCAN_REQUIRED_FIELDS[scope])
         attribute_value = self.get_value(field)
-        if attribute_value is None:
+        if not attribute_value:  # no falsey value is valid
             return None
 
         try:
             tracer = int(float(attribute_value))
-        except (ValueError, TypeError):
-            return None
+        except (ValueError, TypeError) as error:
+            raise InvalidFieldError(
+                f"Attribute {self.prefix}{field} is expected to have a float value"
+            ) from error
 
         return self.TRACER_MAPPING.get(tracer, None)
 
-    def get_scan_type(self, field: str, scope: SCANPETScope) -> Optional[str]:
+    def get_scan_type(
+        self, field: str, scope: SCANPETScope | SCANMRIScope
+    ) -> Optional[str]:
         """Get the scan type from the tracer."""
-        self.assert_required(SCAN_REQUIRED_FIELDS[scope])
         attribute_value = self.get_value(field)
-        if attribute_value is None:
+        if not attribute_value:  # no falsey value is valid
             return None
 
         try:
             tracer = int(float(attribute_value))
-        except (ValueError, TypeError):
-            return None
+        except (ValueError, TypeError) as error:
+            raise InvalidFieldError(
+                f"Attribute {self.prefix}{field} is expected to have a float value"
+            ) from error
 
         return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)

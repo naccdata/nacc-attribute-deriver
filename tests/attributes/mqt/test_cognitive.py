@@ -1,5 +1,6 @@
 """Tests deriving MQT cognitive variables."""
 
+from typing import Any, Dict, List
 import pytest
 from nacc_attribute_deriver.attributes.mqt.cognitive import CognitiveAttributeCollection
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -8,7 +9,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 @pytest.fixture(scope="function")
 def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {
+    data: Dict[str, Any] = {
         "file": {
             "info": {
                 "forms": {
@@ -50,31 +51,33 @@ def table() -> SymbolTable:
 
 
 class TestCognitiveAttributeCollection:
-    def test_contributing_diagnosis(self, table):
+    def test_contributing_diagnosis(self, table: SymbolTable):
         """Tests _create_contributing_diagnosis."""
-        expected_values = []
+        expected_values: List[str] = []
         for field in ["pspif", "cortif", "ftldmoif", "cvdif"]:  # all == 2
             expected_values.append(
                 CognitiveAttributeCollection.DIAGNOSIS_MAPPINGS[field]
             )
 
-        attr = CognitiveAttributeCollection.create(table)
-        assert set(attr._create_contributing_diagnosis().value) == set(expected_values)
+        attr: CognitiveAttributeCollection = CognitiveAttributeCollection.create(table)  # type: ignore
+        value = attr._create_contributing_diagnosis().value  # type: ignore
+        assert value is not None
+        assert set(value) == set(expected_values)
 
-    def test_dementia(self, table):
+    def test_dementia(self, table: SymbolTable):
         """Tests _create_dementia."""
-        attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_dementia().value == [
-            CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]
-        ]
+        attr: CognitiveAttributeCollection = CognitiveAttributeCollection.create(table)  # type: ignore
+        value = attr._create_dementia().value  # type: ignore
+        assert value is not None
+        assert value == [CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]]
 
         # test multiple
         table["file.info.forms.json.amndem"] = 1
         table["file.info.forms.json.pca"] = 1
 
-        attr = CognitiveAttributeCollection.create(table)
-
-        assert set(attr._create_dementia().value) == set(
+        attr: CognitiveAttributeCollection = CognitiveAttributeCollection.create(table)  # type: ignore
+        assert value is not None
+        assert set(attr._create_dementia().value) == set(  # type: ignore
             [
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["amndem"],
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["pca"],
@@ -82,12 +85,12 @@ class TestCognitiveAttributeCollection:
             ]
         )
 
-    def test_global_cdr(self, table):
+    def test_global_cdr(self, table: SymbolTable):
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr().value == 0.5
+        assert attr._create_global_cdr().value == 0.5  # type: ignore
 
         table["file.info.forms.json.cdrglob"] = None
         attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr() is None
+        assert attr._create_global_cdr() is None  # type: ignore

@@ -140,8 +140,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 999
 
         # compare to last UDS visit
-        self.__subject_derived.assert_required(["uds-visitdates"])
-        visitdates = self.__subject_derived.get_value("uds-visitdates")
+        visitdates = self.__subject_derived.scope(fields=["uds-visitdates"]).get_value(
+            "uds-visitdates"
+        )
 
         # a non-valid visitdate shouldn't be possible but handle just in case
         if not visitdates:

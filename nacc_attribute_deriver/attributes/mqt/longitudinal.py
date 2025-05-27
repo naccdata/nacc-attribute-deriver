@@ -27,8 +27,9 @@ class LongitudinalAttributeCollection(AttributeCollection):
 
     def _create_total_uds_visits(self) -> Optional[int]:
         """Total number of UDS visits."""
-        self.__subject_derived.assert_required(["uds-visitdates"])
-        attribute_value = self.__subject_derived.get_value("uds-visitdates")
+        attribute_value = self.__subject_derived.scope(
+            fields=["uds-visitdates"]
+        ).get_value("uds-visitdates")
         if attribute_value is None:
             return None
 
@@ -36,8 +37,9 @@ class LongitudinalAttributeCollection(AttributeCollection):
 
     def _create_years_of_uds(self) -> Optional[int]:
         """Creates subject.info.longitudinal-data.uds.year-count."""
-        self.__subject_derived.assert_required(["uds-visitdates"])
-        attribute_value = self.__subject_derived.get_value("uds-visitdates")
+        attribute_value = self.__subject_derived.scope(
+            fields=["uds-visitdates"]
+        ).get_value("uds-visitdates")
         if attribute_value is None:
             return None
 

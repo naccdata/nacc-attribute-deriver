@@ -14,17 +14,18 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class CognitiveAttributeCollection(AttributeCollection):
     """Class to collect cognitive attributes."""
 
-    def __init__(self, table):
+    def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
         self.__derived = DerivedNamespace(table, date_attribute="visitdate")
 
     # maps each diagnosis to their string value
-    DIAGNOSIS_MAPPINGS = MappingProxyType(
+    DIAGNOSIS_MAPPINGS: MappingProxyType[str, str] = MappingProxyType(
         {
             "naccalzp": "Alzheimer\u0027s disease (AD)",
             "nacclbdp": "Lewy body disease (LBD)",
@@ -97,12 +98,12 @@ class CognitiveAttributeCollection(AttributeCollection):
         for attribute in attributes:
             value = self.__uds.get_value(attribute)
             if not value:
-                value = self.__derived.get_value(attribute)
+                value = self.__derived.scope(fields=attributes).get_value(attribute)
             if not value:
                 continue
 
             if isinstance(value, list):
-                if not any(self.is_target_int(x, expected_value) for x in value):
+                if not any(self.is_target_int(x, expected_value) for x in value):  # type: ignore
                     continue
             elif not self.is_target_int(value, expected_value):
                 continue
@@ -131,7 +132,6 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_contributing_diagnosis(self) -> Optional[DateTaggedValue[List[str]]]:
         """Mapped from all possible contributing diagnosis."""
-        self.__derived.assert_required(["naccalzp", "nacclbdp"])
         attribute_value = self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2)
         if not attribute_value:
             return None
@@ -143,7 +143,6 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_dementia(self) -> Optional[DateTaggedValue[List[str]]]:
         """Mapped from all dementia types."""
-        self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
         attribute_value = self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1)
         if not attribute_value:
             return None
@@ -155,17 +154,13 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_cognitive_status(self) -> Optional[DateTaggedValue[int]]:
         """Mapped from NACCUDSD."""
-        self.__derived.assert_required(["naccudsd"])
-
-        return self.__derived.create_dated_value(
+        return self.__derived.scope(fields=["naccudsd"]).create_dated_value(
             attribute="naccudsd", date=self.__uds.get_date()
         )
 
     def _create_etpr(self) -> Optional[DateTaggedValue[int]]:
         """Mapped from NACCETPR."""
-        self.__derived.assert_required(["naccetpr"])
-
-        return self.__derived.create_dated_value(
+        return self.__derived.scope(fields=["naccetpr"]).create_dated_value(
             attribute="naccetpr", date=self.__uds.get_date()
         )
 
