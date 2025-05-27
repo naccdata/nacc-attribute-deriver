@@ -42,7 +42,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """SCAN MRI scan types available Access series_type (scan_mridashboard
         file)"""
-        return self.__scan.scope(name=SCANMRIScope.MRI_QC).get_value("series_type")
+        return self.__scan.get_value("series_type")
 
     def _is_mri_indicator(self, target: str, scope: SCANMRIScope) -> bool:
         """Returns whether or not the given target is an MRI.
@@ -180,9 +180,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
         Is given as an int so check int boolean.
         """
-        attribute_value = self.__scan.scope(
-            name=SCANPETScope.AMYLOID_PET_GAAIN
-        ).get_value("amyloid_status")
+        attribute_value = self.__scan.get_value("amyloid_status")
         if attribute_value is None:
             return None
 

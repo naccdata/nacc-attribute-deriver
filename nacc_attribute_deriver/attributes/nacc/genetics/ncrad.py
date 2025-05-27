@@ -41,8 +41,8 @@ class NCRADAttributeCollection(AttributeCollection):
         Should come from the actual imported APOE data
         <subject>_apoe_genotype.json
         """
-        a1 = self.__apoe.scope(fields=["a1"]).get_value("a1")
-        a2 = self.__apoe.scope(fields=["a2"]).get_value("a2")
+        a1 = self.__apoe.get_value("a1")
+        a2 = self.__apoe.get_value("a2")
 
         if not a1 or not a2:
             return 9
@@ -63,7 +63,7 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
 
         <subject>_historic_apoe_genotype.json
         """
-        apoe = self.__apoe.scope(fields=["apoe"]).get_int_value("apoe")
+        apoe = self.__apoe.get_int_value("apoe")
 
         # while sas code handles consistency, just do a sanity check
         # to make sure entire rows lines up, else there's an issue
