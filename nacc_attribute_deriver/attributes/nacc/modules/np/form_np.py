@@ -78,7 +78,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return nplewy
 
-    def _create_np_amy(self) -> int:
+    def _create_naccamy(self) -> int:
         """Create the NACCAMY variable.
 
         Cerebral amyloid angiopathy
@@ -99,7 +99,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccamy if naccamy is not None else 9
     
-    def _create_np_avas(self) -> int:
+    def _create_naccavas(self) -> int:
         """Create the NACCAVAS variable.
 
         Severity of gross findings — atherosclerosis of the circle of Willis
@@ -124,7 +124,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccavas if naccavas is not None else 9
 
-    def _create_np_brnn(self) -> int:
+    def _create_naccbrnn(self) -> int:
         """Create the NACCBRNN variable.
 
         No major neuropathologic change present
@@ -147,7 +147,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccbrnn if naccbrnn is not None else 9
 
-    def _create_np_cbd(self) -> int:
+    def _create_nacccbd(self) -> int:
         """Create the NACCCBD variable.
 
         FTLD-tau subtype — corticobasal degeneration (CBD)
@@ -166,7 +166,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return nacc_cbd if nacc_cbd is not None else 9
     
-    def _create_np_diff(self) -> int:
+    def _create_naccdiff(self) -> int:
         """Create the NACCDIFF variable.
 
         Density of diffuse plaques (CERAD semi-quantitative score)
@@ -185,7 +185,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return naccdiff if naccdiff is not None else 9
 
 
-    def _create_np_down(self) -> int:
+    def _create_naccdown(self) -> int:
         """Create the NACCDOWN variable.
 
         Down syndrome
@@ -203,7 +203,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return np_down
 
     # This one has a very complicated description in the rdd-np. This one will definitely need double checking.
-    def _create_np_inf(self) -> int:
+    def _create_naccinf(self) -> int:
         """Create the NACCINF variable.
 
         infarcts or lacunes
@@ -245,7 +245,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return 9  # Fallback value
 
     # Tried to use all things described in the rdd-np. Many seemed not in the SAS code. Not sure if the MDS "vitalst" is passed through or not. 
-    def _create_np_mod(self) -> int:
+    def _create_naccmod(self) -> int:
         """Create the NACCMOD variable.
 
         Month of death.
@@ -264,7 +264,7 @@ class NPFormAttributeCollection(AttributeCollection):
             return 88  # "Not applicable" if the subject isn't deceased
 
     # additional cases where it should be blank found in the description in the PDF of rdd-np
-    def _create_np_nec(self) -> int:
+    def _create_naccnec(self) -> int:
         """Create the NACCNEC variable.
 
         Laminar necrosis
@@ -302,7 +302,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9 
 
-    def _create_np_othp(self) -> int:
+    def _create_naccothp(self) -> int:
         """Create the NACCOTHP variable.
 
         Other pathologic diagnosis.
@@ -331,7 +331,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9  
     
-    def _create_np_pick(self) -> int:
+    def _create_naccpick(self) -> int:
         """Create the NACCPICK variable.
 
         FTLD-tau subtype — Pick’s (PiD).
@@ -365,7 +365,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return 9  # Default fallback
 
 
-    def _create_np_prio(self) -> int:
+    def _create_naccprio(self) -> int:
         """Create the NACCPRIO variable.
 
         Prion disease.
@@ -400,7 +400,7 @@ class NPFormAttributeCollection(AttributeCollection):
             
         return 9 
 
-    def _create_np_prog(self) -> int:
+    def _create_naccprog(self) -> int:
         """Create the NACCPROG variable.
 
         FTLD-tau subtype — progressive supranuclear palsy (PSP).
@@ -436,7 +436,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
       
     # Tons of skip patterns, and for all different versions utilizes almost every other variable. Really wasn't sure how to go about this. 
-    def _create_np_vasc(self) -> int:
+    def _create_naccvasc(self) -> int:
         """Create the NACCVASC variable.
 
         Cerebrovascular disease indicator
@@ -485,7 +485,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccvasc if naccvasc is not None else 9
 
-    def _create_np_wri1(self) -> str:
+    def _create_naccwri1(self) -> str:
         """Create the NACCWRI1 variable.
 
         First other pathologic diagnosis write-in.
@@ -504,7 +504,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return naccwri1 if naccwri1 else None
 
 
-    def _create_np_wri2(self) -> str:
+    def _create_naccwri2(self) -> str:
         """Create the NACCWRI2 variable.
 
         Second other pathologic diagnosis write-in.
@@ -522,7 +522,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccwri2 if naccwri2 else None
     
-    def _create_np_wri3(self) -> str:
+    def _create_naccwri3(self) -> str:
         """Create the NACCWRI3 variable.
 
         Third other pathologic diagnosis write-in.
@@ -563,7 +563,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return naccyod if naccyod >= 1970 else 9999 # Explicitly states in rdd-np that this shouldn't precede 1970. Previously not mentioned in SAS code.
 
 
-    def _create_np_braa(self) -> int:
+    def _create_naccbraa(self) -> int:
         """Create the NACCBRAA variable.
 
         Braak stage for neurofibrillary degeneration (B score)
@@ -586,7 +586,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccbraa if naccbraa is not None else 9
     
-    def _create_np_neur(self) -> int:
+    def _create_naccneur(self) -> int:
         """Create the NACCNEUR variable.
 
         Density of neocortical neuritic plaques (CERAD score) (C score)
@@ -604,7 +604,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccneur if naccneur is not None else 9
 
-    def _create_np_micr(self) -> int:
+    def _create_naccmicr(self) -> int:
         """Create the NACCMICR variable.
 
         Microinfarcts
@@ -623,7 +623,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccmicr if naccmicr is not None else 9
   
-    def _create_np_hem(self) -> int:
+    def _create_nacchem(self) -> int:
         """Create the NACCHEM variable.
 
         Hemorrhages and microbleeds
@@ -653,7 +653,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return nacchem if nacchem is not None else 9
 
-    def _create_np_arte(self) -> int:
+    def _create_naccarte(self) -> int:
         """Create the NACCARTE variable.
 
         Arteriolosclerosis
@@ -671,7 +671,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccarte if naccarte is not None else 9
 
-    def _create_np_lewy(self) -> int:
+    def _create_nacclewy(self) -> int:
         """Create the NACCLEWY variable.
 
         Lewy body disease

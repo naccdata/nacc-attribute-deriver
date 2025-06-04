@@ -2,6 +2,11 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.4.0
+
+* Adds rest of NP variables
+* Consolidates redundant cross-sectional derived variables so UDS doesn't have to redefine them, namely for NP and genetics data
+
 ## 1.3.0
 
 * Adds `historic_apoe` rule to support historical APOE values from sources other than NCRAD

@@ -88,12 +88,14 @@ def test_np_form():
                 "derived": {
                     "np_death_age": 80,
                     "np_death_date": "2024-12-19",
-                    "np_arte": 9,
-                    "np_braa": 9,
-                    "np_hem": 9,
-                    "np_lewy": 9,
-                    "np_micr": 9,
-                    "np_neur": 9,
+                    "cross-sectional": {
+                        "naccarte": 9,
+                        "naccbraa": 9,
+                        "nacchem": 9,
+                        "nacclewy": 9,
+                        "naccmicr": 9,
+                        "naccneur": 9,
+                    }
                 }
             }
         },
@@ -114,27 +116,27 @@ def test_np_form():
     deriver.curate(uds_table, "uds")
     assert (
         uds_table["file.info.derived.naccarte"]
-        == np_table["subject.info.derived.np_arte"]
+        == np_table["subject.info.derived.cross-sectional.naccarte"]
     )
     assert (
         uds_table["file.info.derived.naccbraa"]
-        == np_table["subject.info.derived.np_braa"]
+        == np_table["subject.info.derived.cross-sectional.naccbraa"]
     )
     assert (
         uds_table["file.info.derived.nacchem"]
-        == np_table["subject.info.derived.np_hem"]
+        == np_table["subject.info.derived.cross-sectional.nacchem"]
     )
     assert (
         uds_table["file.info.derived.nacclewy"]
-        == np_table["subject.info.derived.np_lewy"]
+        == np_table["subject.info.derived.cross-sectional.nacclewy"]
     )
     assert (
         uds_table["file.info.derived.naccmicr"]
-        == np_table["subject.info.derived.np_micr"]
+        == np_table["subject.info.derived.cross-sectional.naccmicr"]
     )
     assert (
         uds_table["file.info.derived.naccneur"]
-        == np_table["subject.info.derived.np_neur"]
+        == np_table["subject.info.derived.cross-sectional.naccneur"]
     )
 
 
@@ -163,11 +165,11 @@ def test_niagads_investigator():
     deriver.curate(form, "niagads_availability")
 
     assert "file.info.derived" not in form
-    assert form["subject.info.derived"] == {
-        "niagads_exome": 1,
-        "niagads_gwas": 1,
-        "niagads_wes": 0,
-        "niagads_wgs": 0,
+    assert form["subject.info.derived.cross-sectional"] == {
+        "ngdsexome": 1,
+        "ngdsgwas": 1,
+        "ngdswes": 0,
+        "ngdswgs": 0,
     }
 
 

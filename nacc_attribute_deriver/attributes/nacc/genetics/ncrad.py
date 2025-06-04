@@ -35,7 +35,7 @@ class NCRADAttributeCollection(AttributeCollection):
         self.__apoe = RawNamespace(table)
         self.__apoe.assert_required(required=["a1", "a2"])
 
-    def _create_ncrad_apoe(self) -> int:
+    def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
 
         Should come from the actual imported APOE data
