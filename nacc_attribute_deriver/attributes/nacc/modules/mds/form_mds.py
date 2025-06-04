@@ -33,7 +33,7 @@ class MDSFormAttributeCollection(AttributeCollection):
             if month is not None:
                 month = int(month)
         except (ValueError, TypeError) as e:
-            raise InvalidFieldError("MDS DEATHMO not an integer")
+            raise InvalidFieldError("MDS DEATHMO not an integer") from e
 
         return month if month is not None else 99
 

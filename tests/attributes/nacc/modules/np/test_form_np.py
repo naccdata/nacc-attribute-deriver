@@ -142,7 +142,9 @@ class TestCreateNACCNEUR:
         assert np_form_nulls._create_naccneur() == 9
         set_attribute(np_form_table, form_prefix, "formver", 8)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
-        assert np_form_nulls._create_naccneur() == 9  # WARNING: Different behavior here!
+        assert (
+            np_form_nulls._create_naccneur() == 9
+        )  # WARNING: Different behavior here!
         set_attribute(np_form_table, form_prefix, "formver", 10)
         np_form_nulls = NPFormAttributeCollection.create(np_form_table)
         assert np_form_nulls._create_naccneur() == 9
