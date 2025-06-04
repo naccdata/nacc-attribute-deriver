@@ -155,3 +155,46 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # handle negative
         return 999 if result is None or result < 0 else result
+
+    # Tried to use all things described in the rdd-np. Many seemed not in the SAS code. Not sure if the MDS "vitalst" is passed through or not. 
+    def _create_naccmod(self) -> int:
+        """Create the NACCMOD variable.
+
+        Month of death. In MDS, the month can be unknown (99) so
+        need to inspect directly.
+        """
+        # check vital status
+        naccdied = self._create_naccdied()
+        if not naccdied:
+            return 88
+
+        # NP will always have a known month
+        np_date = self.__subject_derived.get_value("np_death_date")
+        death_date = datetime_from_form_date(np_date)
+        if death_date:
+            return death_date.date().month
+
+        # MDS death month may be 99
+        mds_death_mo = self.__subject_derived.get_value('mds_death_month')
+        if mds_death_mo is not None:
+            return mds_death_mo
+
+        return 99
+
+    # SAS seemingly sparse for this. Another one with potential MDS. 
+    def _create_naccyod(self) -> int:
+        """Create the NACCYOD variable.
+
+        Year of death.
+        """
+        naccdied = self._create_naccdied()
+        deathdate = self._determine_death_date()  # year always defined if death date exists, even for MDS
+
+        # Explicitly states in rdd-np that this shouldn't precede 1970. Previously not mentioned in SAS code.
+        if deathdate:
+            return deathdate.year if (deathdate.year >= 1970) else 9999
+
+        if naccdied == 1:
+            return 9999
+
+        return 8888

@@ -22,7 +22,7 @@ class NPFormAttributeCollection(AttributeCollection):
             msg = f"Current file is not an NP form: found {module}"
             raise InvalidFieldError(msg)
 
-    def _map_gross(self, new) -> Optional[int]:
+    def _map_gross(self, new: int) -> Optional[int]:
         npgross = self.__np.get_value("npgross")
         if npgross == 2:
             return 0
@@ -31,7 +31,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return new
 
-    def _map_sub4(self, old) -> int:
+    def _map_sub4(self, old: int) -> int:
         if old in [1, 2, 3, 4]:
             return 4 - old
         if old == 5:
@@ -39,7 +39,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9
 
-    def _map_v9(self, old) -> int:
+    def _map_v9(self, old: int) -> int:
         if old == 1:
             return 1
         if old == 2:
@@ -49,7 +49,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9
 
-    def _map_vasc(self, new) -> int:
+    def _map_vasc(self, new: int) -> int:
         npgross = self.__np.get_value("npgross")
         npvasc = self.__np.get_value("npvasc")
         if npgross == 2 or npvasc == 2:
@@ -61,7 +61,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return new
 
-    def _map_sub1(self, old):
+    def _map_sub1(self, old: int):
         if old in [1, 2, 3, 4]:
             return old - 1
         if old == 5:
@@ -77,6 +77,17 @@ class NPFormAttributeCollection(AttributeCollection):
             return 0
 
         return nplewy
+
+    def _map_v10(self, old: int, gateway: int) -> int:
+        if old is not None:
+            return old
+
+        if gateway in [8, 9]:
+            return gateway
+        if gateway == 0:
+            return None
+
+        return 9
 
     def _create_naccamy(self) -> int:
         """Create the NACCAMY variable.
@@ -243,25 +254,6 @@ class NPFormAttributeCollection(AttributeCollection):
                 return 9 
         
         return 9  # Fallback value
-
-    # Tried to use all things described in the rdd-np. Many seemed not in the SAS code. Not sure if the MDS "vitalst" is passed through or not. 
-    def _create_naccmod(self) -> int:
-        """Create the NACCMOD variable.
-
-        Month of death.
-        """
-        npdodmo = self.__np.get_value("npdodmo")
-        deathmo = self.__np.get_value("deathmo")
-        vitalst = self.__np.get_value("vitalst")
-
-        if npdodmo is not None:
-            return npdodmo  # Use NP
-        elif deathmo is not None:
-            return deathmo  # Use MDS form if NP data isn't available   
-        elif vitalst == 2:  # If "Dead"
-            return 99 if deathmo in [None, 99] else deathmo
-        else:
-            return 88  # "Not applicable" if the subject isn't deceased
 
     # additional cases where it should be blank found in the description in the PDF of rdd-np
     def _create_naccnec(self) -> int:
@@ -540,28 +532,6 @@ class NPFormAttributeCollection(AttributeCollection):
             return self.__np.get_value("npmpath3") 
 
         return None
-
-    # SAS seemingly sparse for this. Another one with potential MDS. 
-    def _create_naccyod(self) -> int:
-        """Create the NACCYOD variable.
-
-        Year of death.
-        """
-        npdodyr = self.__np.get_value("npdodyr")  # NP
-        deathyr = self.__np.get_value("deathyr")  # MDS
-        vitalst = self.__np.get_value("vitalst")  # Vital from MDS
-
-        if npdodyr: 
-            naccyod = npdodyr
-        elif deathyr: 
-            naccyod = deathyr
-        elif vitalst == 2:  
-            naccyod = 9999
-        else:  
-            naccyod = 8888
-
-        return naccyod if naccyod >= 1970 else 9999 # Explicitly states in rdd-np that this shouldn't precede 1970. Previously not mentioned in SAS code.
-
 
     def _create_naccbraa(self) -> int:
         """Create the NACCBRAA variable.
