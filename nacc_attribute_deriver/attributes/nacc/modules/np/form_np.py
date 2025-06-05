@@ -260,28 +260,11 @@ class NPFormAttributeCollection(AttributeCollection):
             return npinf if npinf is not None else 9
 
         elif formver in [7, 8, 9]:
-            if nplinf == 1 or nplac == 1:
-                return 1
-            elif nplinf == 2 and nplac == 2:
-                return 0
-            elif nplinf == 3 and nplac == 3:
-                return 8
-            elif nplinf == 9 and nplac == 9:
-                return 9
-            else:
-                return 9
+            return self.map_comb2(nplinf, nplac)
 
         elif formver == 1:
-            if npgross == 2 or npvasc == 2:
-                return 0
-            elif npgross == 9:
-                return 9
-            elif npvasc == 3:
-                return 8
-            elif npvasc == 9:
-                return 9
-            else:
-                return 9
+            if nplinf is not None and nplac is not None:
+                return self.map_comb2(nplinf, nplac)
 
         return 9  # Fallback value
 
@@ -395,24 +378,13 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             return nppdxc if nppdxc is not None else 9
         elif formver in [7, 8, 9]:
-            if npcj == 1 or npprion in [1, 2, 9]:
-                return 1
-            elif npcj == 2 and npprion == 2:
-                return 0
-            elif npcj == 3 and npprion == 3:
-                return 8
-            elif npcj == 9 and npprion == 9:
-                return 9
-            else:
-                return 9
+            return self.map.map_comb2(npcj, npprion)
 
         elif formver == 1:
-            if npgross == 2:
-                return 0
-            elif npgross == 9:
-                return 9
-            else:
-                naccprio = self.map.map_gross(npcj)
+            if npcj is not None and npprion is not None:
+                return self.map.map_comb2(npcj, npprion)
+
+            return self.map.map_gross(naccprio)
 
         return naccprio if naccprio is not None else 9
 

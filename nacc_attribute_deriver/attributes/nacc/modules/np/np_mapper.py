@@ -86,3 +86,14 @@ class NPMapper:
             return None
 
         return 9
+
+    def map_comb2(self, old1: int, old2: int) -> int:
+        """Combine two variables to create new one."""
+        if old1 == 1 or old2 == 1:
+            return 1
+        if old1 == 2 or old2 == 2:
+            return 0
+        if old1 == 3 or old2 == 3:
+            return 8
+
+        return 9
