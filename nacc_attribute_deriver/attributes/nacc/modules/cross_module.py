@@ -161,8 +161,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def _create_naccmod(self) -> int:
         """Create the NACCMOD variable.
 
-        Month of death. In MDS, the month can be unknown (99) so need to
-        inspect directly.
+        Month of death. In Milestone and MDS, the month can be unknown
+        (99) so need to inspect directly.
         """
         # check vital status
         naccdied = self._create_naccdied()
@@ -175,10 +175,15 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if death_date:
             return death_date.date().month
 
+        # Milestone month may be 99
+        milestone_mo = self.__subject_derived.get_value("milestone_death_month")
+        if milestone_mo not in [None, 99]:
+            return milestone_mo
+
         # MDS death month may be 99
-        mds_death_mo = self.__subject_derived.get_value("mds_death_month")
-        if mds_death_mo is not None:
-            return mds_death_mo
+        mds_mo = self.__subject_derived.get_value("mds_death_month")
+        if mds_mo not in [None, 99]:
+            return mds_mo
 
         return 99
 
@@ -188,17 +193,15 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         Year of death.
         """
-        naccdied = self._create_naccdied()
-        deathdate = (
-            self._determine_death_date()
-        )  # year always defined if death date exists, even for MDS
+        # year always defined if death date exists, even for MDS
+        deathdate = self._determine_death_date()
 
         # Explicitly states in rdd-np that this shouldn't precede 1970.
         # Previously not mentioned in SAS code.
         if deathdate:
             return deathdate.year if (deathdate.year >= 1970) else 9999
 
-        if naccdied == 1:
+        if self._create_naccdied() == 1:
             return 9999
 
         return 8888

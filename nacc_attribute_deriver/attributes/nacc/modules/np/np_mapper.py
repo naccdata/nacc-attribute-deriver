@@ -80,10 +80,8 @@ class NPMapper:
         if old is not None:
             return old
 
-        if gateway in [8, 9]:
+        if gateway in [0, 8, 9]:
             return gateway
-        if gateway == 0:
-            return None
 
         return 9
 

@@ -103,33 +103,33 @@ class NPFormAttributeCollection(AttributeCollection):
 
         # these could probably be grouped, but type all out for now
         # to match SAS
-        if (npbraak in [1, 2, 7] or
-            npneur in [4] or
-            npdiff in [4] or
-            nplinf in [2] or
-            npmicro in [2] or
-            nplac in [2] or
-            nphem in [2] or
-            npart in [2] or
-            npnec in [2] or
-            npscl in [2] or
-            npavas in [1, 2] or
-            nparter in [1, 2] or
-            npamy in [1,24] or
-            npoang in [2] or
-            npvoth in [2] or
-            nplewy in [5] or
-            nppick in [2] or
-            npcort in [2] or
-            npprog in [2] or
-            npfront in [2] or
-            nptau in [2] or
-            npftd in [3] or
-            npftdno in [2] or
-            npftdspc in [2] or
-            npcj in [2] or
-            npprion in [2] or
-            npmajor in [2]):
+        if (npbraak in [1, 2, 7] and
+            npneur in [4] and
+            npdiff in [4] and
+            nplinf in [2] and
+            npmicro in [2] and
+            nplac in [2] and
+            nphem in [2] and
+            npart in [2] and
+            npnec in [2] and
+            npscl in [2] and
+            npavas in [1, 2] and
+            nparter in [1, 2] and
+            npamy in [1,24] and
+            npoang in [2] and
+            npvoth in [2] and
+            nplewy in [5] and
+            nppick in [2] and
+            npcandt in [2] and
+            npprog in [2] and
+            npfront in [2] and
+            nptau in [2] and
+            npftd in [3] and
+            npftdno in [2] and
+            npftdspc in [2] and
+            npcj in [2] and
+            npprion in [2] and
+            npmajand in [2]):
             return 1
 
         pathnpv9 = 0
@@ -197,13 +197,17 @@ class NPFormAttributeCollection(AttributeCollection):
         """Create the NACCCBD variable.
 
         FTLD-tau subtype — corticobasal degeneration (CBD)
+
+        TODO: QAF does have this as -4 in some cases, but RDD does not say
+        it can be -4 - probably best to keep as 9 but flagging
         """
         formver = self.__np.get_value("formver")
         npcort = self.__np.get_value("npcort")
+        npftdtau = self.__np.get_value("npftdtau")
         nacc_cbd = None
 
         if formver in [10, 11]:
-            pass
+            nacc_cbd = self.map.map_v10(npcort, npftdtau)
         elif formver in [7, 8, 9]:
             nacc_cbd = self.map.map_v9(npcort)
         elif formver == 1:
@@ -260,11 +264,11 @@ class NPFormAttributeCollection(AttributeCollection):
             return npinf if npinf is not None else 9
 
         elif formver in [7, 8, 9]:
-            return self.map_comb2(nplinf, nplac)
+            return self.map.map_comb2(nplinf, nplac)
 
         elif formver == 1:
             if nplinf is not None and nplac is not None:
-                return self.map_comb2(nplinf, nplac)
+                return self.map.map_comb2(nplinf, nplac)
 
         return 9  # Fallback value
 
@@ -283,7 +287,6 @@ class NPFormAttributeCollection(AttributeCollection):
 
         if formver in [10, 11]:
             return self.map.map_v10(npnec, nppath)
-
         elif formver in [7, 8, 9]:
             return self.map.map_v9(npnec)
 
@@ -335,6 +338,9 @@ class NPFormAttributeCollection(AttributeCollection):
         """Create the NACCPICK variable.
 
         FTLD-tau subtype — Pick's (PiD).
+
+        TODO: QAF does have this as -4 in some cases, but RDD does not say
+        it can be -4 - probably best to keep as 9 but flagging
         """
         formver = self.__np.get_value("formver")
         npftdtau = self.__np.get_value("npftdtau")
@@ -342,13 +348,7 @@ class NPFormAttributeCollection(AttributeCollection):
         naccpick = None
 
         if formver in [10, 11]:
-            if npftdtau == 8:
-                return 8
-            elif npftdtau == 9 or npftdtau == 0:
-                return 9
-            else:
-                return self.map.map_v10(nppick, npftdtau)
-
+            return self.map.map_v10(nppick, npftdtau)
         elif formver in [7, 8, 9]:
             return self.map.map_v9(nppick)
 
@@ -400,13 +400,7 @@ class NPFormAttributeCollection(AttributeCollection):
         naccprog = None
 
         if formver in [10, 11]:
-            if npftdtau == 8:
-                return 8
-            elif npftdtau == 9 or npftdtau == 0:
-                return 9
-            else:
-                return self.map.map_v10(npprog, npftdtau)
-
+            return self.map.map_v10(npprog, npftdtau)
         elif formver in [7, 8, 9]:
             return self.map.map_v9(npprog)
 
