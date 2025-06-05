@@ -99,7 +99,7 @@ def test_np_form():
                         "nacclewy": 9,
                         "naccamy": 9,
                         "naccavas": 9,
-                        "naccbrnn": 9,
+                        "naccbrnn": 0,
                         "nacccbd": 9,
                         "naccdiff": 9,
                         "naccdown": 7,

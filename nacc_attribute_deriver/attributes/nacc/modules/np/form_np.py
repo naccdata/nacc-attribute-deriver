@@ -11,6 +11,8 @@ from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 
+from .np_mapper import NPMapper
+
 
 class NPFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
@@ -22,72 +24,7 @@ class NPFormAttributeCollection(AttributeCollection):
             msg = f"Current file is not an NP form: found {module}"
             raise InvalidFieldError(msg)
 
-    def _map_gross(self, new: int | None) -> Optional[int]:
-        npgross = self.__np.get_value("npgross")
-        if npgross == 2:
-            return 0
-        if npgross == 9:
-            return 9
-
-        return new
-
-    def _map_sub4(self, old: int) -> int:
-        if old in [1, 2, 3, 4]:
-            return 4 - old
-        if old == 5:
-            return 8
-
-        return 9
-
-    def _map_v9(self, old: int) -> int:
-        if old == 1:
-            return 1
-        if old == 2:
-            return 0
-        if old == 3:
-            return 8
-
-        return 9
-
-    def _map_vasc(self, new: int | None) -> Optional[int]:
-        npgross = self.__np.get_value("npgross")
-        npvasc = self.__np.get_value("npvasc")
-        if npgross == 2 or npvasc == 2:
-            return 0
-        if npgross == 9 or npvasc == 9:
-            return 9
-        if npvasc == 3:
-            return 8
-
-        return new
-
-    def _map_sub1(self, old: int):
-        if old in [1, 2, 3, 4]:
-            return old - 1
-        if old == 5:
-            return 8
-
-        return 9
-
-    def _map_lewy(self) -> int:
-        nplewy = self.__np.get_value("nplewy")
-        if nplewy == 6:
-            return 8
-        if nplewy == 5:
-            return 0
-
-        return nplewy
-
-    def _map_v10(self, old: int, gateway: int) -> int:
-        if old is not None:
-            return old
-
-        if gateway in [8, 9]:
-            return gateway
-        if gateway == 0:
-            return None
-
-        return 9
+        self.map = NPMapper(table)
 
     def _create_naccamy(self) -> int:
         """Create the NACCAMY variable.
@@ -101,9 +38,9 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccamy = self._map_sub1(npamy)
+            naccamy = self.map.map_sub1(npamy)
         elif formver == 1:
-            naccamy = self._map_sub1(npamy) if npamy else self._map_vasc(naccamy)
+            naccamy = self.map.map_sub1(npamy) if npamy else self.map.map_vasc(naccamy)
 
         return naccamy if naccamy is not None else 9
 
@@ -126,7 +63,7 @@ class NPFormAttributeCollection(AttributeCollection):
             elif npavas == 9:
                 naccavas = 9
         elif formver == 1:
-            naccavas = self._map_sub1(npavas) if npavas else self._map_vasc(naccavas)
+            naccavas = self.map.map_sub1(npavas) if npavas else self.map.map_vasc(naccavas)
 
         return naccavas if naccavas is not None else 9
 
@@ -136,22 +73,125 @@ class NPFormAttributeCollection(AttributeCollection):
         No major neuropathologic change present
         """
         formver = self.__np.get_value("formver")
-        npbrnn = self.__np.get_value("npbrnn")
-        naccbrnn = npbrnn
+        npbraak = self.__np.get_value('npbraak')
+        npneur = self.__np.get_value('nnpneur')
+        npdiff = self.__np.get_value('npdiff')
+        nplinf = self.__np.get_value('nplinf')
+        npmicro = self.__np.get_value('npmicro')
+        nplac = self.__np.get_value('nplac')
+        nphem = self.__np.get_value('nphem')
+        npart = self.__np.get_value('npart')
+        npnec = self.__np.get_value('npnec')
+        npscl = self.__np.get_value('npscl')
+        npavas = self.__np.get_value('npavas')
+        nparter = self.__np.get_value('nparter')
+        npamy = self.__np.get_value('npamy')
+        npoang = self.__np.get_value('npoang')
+        npvoth = self.__np.get_value('npvoth')
+        nplewy = self.__np.get_value('nplewy')
+        nppick = self.__np.get_value('nppick')
+        npcort = self.__np.get_value('npcort')
+        npprog = self.__np.get_value('npprog')
+        npfront = self.__np.get_value('npfront')
+        nptau = self.__np.get_value('nptau')
+        npftd = self.__np.get_value('npftd')
+        npftdno = self.__np.get_value('npftdno')
+        npftdspc = self.__np.get_value('npftdspc')
+        npcj = self.__np.get_value('npcj')
+        npprion = self.__np.get_value('npprion')
+        npmajor = self.__np.get_value('npmajor')
 
-        if formver in [10, 11]:
-            pass
-        elif formver in [7, 8, 9]:
-            if npbrnn == 7:
-                naccbrnn = 0
-        elif formver == 1:
-            if npbrnn:
-                if npbrnn == 7:
-                    naccbrnn = 0
-            else:
-                naccbrnn = self._map_gross(naccbrnn)
+        # these could probably be grouped, but type all out for now
+        # to match SAS
+        if (npbraak in [1, 2, 7] or
+            npneur in [4] or
+            npdiff in [4] or
+            nplinf in [2] or
+            npmicro in [2] or
+            nplac in [2] or
+            nphem in [2] or
+            npart in [2] or
+            npnec in [2] or
+            npscl in [2] or
+            npavas in [1, 2] or
+            nparter in [1, 2] or
+            npamy in [1,24] or
+            npoang in [2] or
+            npvoth in [2] or
+            nplewy in [5] or
+            nppick in [2] or
+            npcort in [2] or
+            npprog in [2] or
+            npfront in [2] or
+            nptau in [2] or
+            npftd in [3] or
+            npftdno in [2] or
+            npftdspc in [2] or
+            npcj in [2] or
+            npprion in [2] or
+            npmajor in [2]):
+            return 1
 
-        return naccbrnn if naccbrnn is not None else 9
+        pathnpv9 = 0
+        if (npbraak in [3, 4, 5, 6] or
+            npneur in [1, 2, 3] or
+            npdiff in [1, 2, 3] or
+            nplinf in [1] or
+            npmicro in [1] or
+            nplac in [1] or
+            nphem in [1] or
+            npart in [1] or
+            npnec in [1] or
+            npscl in [1] or
+            npavas in [3, 4] or
+            nparter in [3, 4] or
+            npamy in [3, 4] or
+            npoang in [1] or
+            npvoth in [1] or
+            nplewy in [1, 2, 3, 4] or
+            nppick in [1] or
+            npcort in [1] or
+            npprog in [1] or
+            npfront in [1] or
+            nptau in [1] or
+            npftd in [1, 2] or
+            npftdno in [1] or
+            npftdspc in [1] or
+            npcj in [1] or
+            npprion in [1] or
+            npmajor in [1]):
+            pathnpv9 = 1
+
+        if (pathnpv9 != 1 and (npbraak in [8, 9] or
+            npneur in [5, 9] or
+            npdiff in [5, 9] or
+            nplinf in [3, 9] or
+            npmicro in [3, 9] or
+            nplac in [3, 9] or
+            nphem in [3, 9] or
+            npart in [3, 9] or
+            npnec in [3, 9] or
+            npscl in [3, 9] or
+            npavas in [5, 9] or
+            nparter in [5, 9] or
+            npamy in [5, 9] or
+            npoang in [3, 9] or
+            npvoth in [3, 9] or
+            nplewy in [6, 9] or
+            nppick in [3, 9] or
+            npcort in [3, 9] or
+            npprog in [3, 9] or
+            npfront in [3, 9] or
+            nptau in [3, 9] or
+            npftd in [4, 9] or
+            npftdno in [3, 9] or
+            npftdspc in [3, 9] or
+            npcj in [3, 9] or
+            npprion in [3, 9] or
+            npmajor in [3, 9])):
+            return 8
+
+        return 0
 
     def _create_nacccbd(self) -> int:
         """Create the NACCCBD variable.
@@ -165,9 +205,9 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            nacc_cbd = self._map_v9(npcort)
+            nacc_cbd = self.map.map_v9(npcort)
         elif formver == 1:
-            nacc_cbd = self._map_v9(npcort) if npcort else self._map_vasc(nacc_cbd)
+            nacc_cbd = self.map.map_v9(npcort) if npcort else self.map.map_vasc(nacc_cbd)
 
         return nacc_cbd if nacc_cbd is not None else 9
 
@@ -183,9 +223,9 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             naccdiff = npdiff
         elif formver in [7, 8, 9]:
-            naccdiff = self._map_sub4(npdiff)
+            naccdiff = self.map.map_sub4(npdiff)
         elif formver == 1:
-            naccdiff = self._map_sub4(npdiff) if npdiff else self._map_gross(naccdiff)
+            naccdiff = self.map.map_sub4(npdiff) if npdiff else self.map.map_gross(naccdiff)
 
         return naccdiff if naccdiff is not None else 9
 
@@ -259,10 +299,10 @@ class NPFormAttributeCollection(AttributeCollection):
         npvasc = self.__np.get_value("npvasc")
 
         if formver in [10, 11]:
-            return self._map_v10(npnec, nppath)
+            return self.map.map_v10(npnec, nppath)
 
         elif formver in [7, 8, 9]:
-            return self._map_v9(npnec)
+            return self.map.map_v9(npnec)
 
         elif formver == 1:
             if npgross == 2 or npvasc == 2:
@@ -298,13 +338,13 @@ class NPFormAttributeCollection(AttributeCollection):
                 return 9
 
         elif formver in [7, 8, 9]:
-            return self._map_v9(self.__np.get_value("npmajor"))
+            return self.map.map_v9(self.__np.get_value("npmajor"))
 
         elif formver == 1:
             if self.__np.get_value("npmajor") is not None:
-                naccothp = self._map_v9(self.__np.get_value("npmajor"))
+                naccothp = self.map.map_v9(self.__np.get_value("npmajor"))
             else:
-                naccothp = self._map_gross(self.__np.get_value("naccothp"))
+                naccothp = self.map.map_gross(self.__np.get_value("naccothp"))
 
         return naccothp if naccothp is not None else 9
 
@@ -324,10 +364,10 @@ class NPFormAttributeCollection(AttributeCollection):
             elif npftdtau == 9 or npftdtau == 0:
                 return 9
             else:
-                return self._map_v10(nppick, npftdtau)
+                return self.map.map_v10(nppick, npftdtau)
 
         elif formver in [7, 8, 9]:
-            return self._map_v9(nppick)
+            return self.map.map_v9(nppick)
 
         elif formver == 1:
             npgross = self.__np.get_value("npgross")
@@ -336,7 +376,7 @@ class NPFormAttributeCollection(AttributeCollection):
             elif npgross == 9:
                 return 9
             else:
-                naccpick = self._map_gross(nppick)
+                naccpick = self.map.map_gross(nppick)
 
         return naccpick if naccpick is not None else 9
 
@@ -372,7 +412,7 @@ class NPFormAttributeCollection(AttributeCollection):
             elif npgross == 9:
                 return 9
             else:
-                naccprio = self._map_gross(npcj)
+                naccprio = self.map.map_gross(npcj)
 
         return naccprio if naccprio is not None else 9
 
@@ -393,10 +433,10 @@ class NPFormAttributeCollection(AttributeCollection):
             elif npftdtau == 9 or npftdtau == 0:
                 return 9
             else:
-                return self._map_v10(npprog, npftdtau)
+                return self.map.map_v10(npprog, npftdtau)
 
         elif formver in [7, 8, 9]:
-            return self._map_v9(npprog)
+            return self.map.map_v9(npprog)
 
         elif formver == 1:
             if npgross == 2:
@@ -404,7 +444,7 @@ class NPFormAttributeCollection(AttributeCollection):
             elif npgross == 9:
                 return 9
             else:
-                naccprog = self._map_gross(npprog)
+                naccprog = self.map.map_gross(npprog)
 
         return naccprog if naccprog is not None else 9
 
@@ -490,7 +530,7 @@ class NPFormAttributeCollection(AttributeCollection):
                 naccvasc = 0
 
         elif formver == 1:
-            naccvasc = self._map_gross(naccvasc)  # type: ignore
+            naccvasc = self.map.map_gross(naccvasc)  # type: ignore
 
         return naccvasc if naccvasc is not None else 9
 
@@ -564,7 +604,7 @@ class NPFormAttributeCollection(AttributeCollection):
                 if npbraak == 7:
                     naccbraa = 0
             else:
-                naccbraa = self._map_gross(naccbraa)
+                naccbraa = self.map.map_gross(naccbraa)
 
         return naccbraa if naccbraa is not None else 9
 
@@ -580,9 +620,9 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccneur = self._map_sub4(npneur)
+            naccneur = self.map.map_sub4(npneur)
         elif formver == 1:
-            naccneur = self._map_sub4(npneur) if npneur else self._map_gross(naccneur)
+            naccneur = self.map.map_sub4(npneur) if npneur else self.map.map_gross(naccneur)
 
         return naccneur if naccneur is not None else 9
 
@@ -599,9 +639,9 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             pass
         elif formver in [7, 8, 9]:
-            naccmicr = self._map_v9(npmicro)
+            naccmicr = self.map.map_v9(npmicro)
         elif formver == 1:
-            naccmicr = self._map_v9(npmicro) if npmicro else self._map_vasc(naccmicr)
+            naccmicr = self.map.map_v9(npmicro) if npmicro else self.map.map_vasc(naccmicr)
 
         return naccmicr if naccmicr is not None else 9
 
@@ -628,10 +668,10 @@ class NPFormAttributeCollection(AttributeCollection):
                 nacchem = 9
         elif formver in [7, 8, 9]:
             nacchem = nphem
-            nacchem = self._map_v9(nphem)
+            nacchem = self.map.map_v9(nphem)
         elif formver == 1:
             nacchem = nphem
-            nacchem = self._map_v9(nphem) if nphem else self._map_vasc(nacchem)
+            nacchem = self.map.map_v9(nphem) if nphem else self.map.map_vasc(nacchem)
 
         return nacchem if nacchem is not None else 9
 
@@ -647,9 +687,9 @@ class NPFormAttributeCollection(AttributeCollection):
         if formver in [10, 11]:
             naccarte = nparter
         elif formver in [7, 8, 9]:
-            naccarte = self._map_sub1(nparter)
+            naccarte = self.map.map_sub1(nparter)
         elif formver == 1:
-            naccarte = self._map_sub1(nparter) if nparter else self._map_vasc(naccarte)
+            naccarte = self.map.map_sub1(nparter) if nparter else self.map.map_vasc(naccarte)
 
         return naccarte if naccarte is not None else 9
 
@@ -669,14 +709,14 @@ class NPFormAttributeCollection(AttributeCollection):
             if nplbod == 5:
                 nacclewy = 4
         elif formver in [7, 8, 9]:
-            nacclewy = self._map_lewy()
+            nacclewy = self.map.map_lewy()
         elif formver == 1:
             nplewy = self.__np.get_value("nplewy")
             if nplewy:
-                nacclewy = self._map_lewy()
+                nacclewy = self.map.map_lewy()
             else:
                 nacclewy = nplewy
-                nacclewy = self._map_gross(nacclewy)
+                nacclewy = self.map.map_gross(nacclewy)
 
         return nacclewy if nacclewy is not None else 9
 
