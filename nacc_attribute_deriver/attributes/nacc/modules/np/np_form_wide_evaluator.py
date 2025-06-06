@@ -10,6 +10,7 @@ Will need to determine what behavior we want.
 """
 
 from typing import Optional
+
 from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
 )

@@ -5,7 +5,6 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
 )
-from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class NPMapper:

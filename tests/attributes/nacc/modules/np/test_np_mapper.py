@@ -2,9 +2,6 @@ import pytest
 from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.np.form_np import (
-    NPFormAttributeCollection,
-)
 from nacc_attribute_deriver.attributes.nacc.modules.np.np_mapper import (
     NPMapper,
 )

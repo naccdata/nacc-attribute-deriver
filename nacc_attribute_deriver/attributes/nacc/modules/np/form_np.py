@@ -143,7 +143,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
     # This one has a very complicated description in the rdd-np.
     # This one will definitely need double checking.
-    def _create_naccinf(self) -> int:  # noqa: C901
+    def _create_naccinf(self) -> int:
         """Create the NACCINF variable.
 
         infarcts or lacunes
@@ -152,18 +152,15 @@ class NPFormAttributeCollection(AttributeCollection):
         npinf = self.__np.get_value("npinf")
         nplinf = self.__np.get_value("nplinf")
         nplac = self.__np.get_value("nplac")
-        npgross = self.__np.get_value("npgross")
-        npvasc = self.__np.get_value("npvasc")
 
         if formver in [10, 11]:
             return npinf if npinf is not None else 9
 
-        elif formver in [7, 8, 9]:
+        if formver in [7, 8, 9]:
             return self.mapper.map_comb2(nplinf, nplac)
 
-        elif formver == 1:
-            if nplinf is not None and nplac is not None:
-                return self.mapper.map_comb2(nplinf, nplac)
+        if formver == 1 and (nplinf is not None and nplac is not None):
+            return self.mapper.map_comb2(nplinf, nplac)
 
         return 9  # Fallback value
 
@@ -267,7 +264,6 @@ class NPFormAttributeCollection(AttributeCollection):
         npcj = self.__np.get_value("npcj")
         npprion = self.__np.get_value("npprion")
         nppdxc = self.__np.get_value("nppdxc")
-        npgross = self.__np.get_value("npgross")
         naccprio = None
 
         if formver in [10, 11]:
