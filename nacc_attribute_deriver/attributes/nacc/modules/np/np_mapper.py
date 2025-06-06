@@ -1,6 +1,5 @@
-"""
-Helper methods for NP derived variables.
-"""
+"""Helper methods for NP derived variables."""
+
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import (
@@ -12,13 +11,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 class NPMapper:
     """Class to define static mapping functions."""
 
-    def __init__(self, table: SymbolTable):
-        self.__np = FormNamespace(table)
-
-        module = self.__np.get_value("module")
-        if not module or module.upper() != "NP":
-            msg = f"Current file is not an NP form: found {module}"
-            raise InvalidFieldError(msg)
+    def __init__(self, np: FormNamespace):
+        """Initializer; assumes np is correct form."""
+        self.__np = np
 
     def map_gross(self, new: int | None) -> Optional[int]:
         npgross = self.__np.get_value("npgross")

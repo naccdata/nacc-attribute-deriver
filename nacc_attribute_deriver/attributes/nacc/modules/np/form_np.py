@@ -25,9 +25,8 @@ class NPFormAttributeCollection(AttributeCollection):
             msg = f"Current file is not an NP form: found {module}"
             raise InvalidFieldError(msg)
 
-        self.mapper = NPMapper(table)
-        self.form_evaluator = NPFormWideEvaluator(
-            self.__np, self.mapper)
+        self.mapper = NPMapper(self.__np)
+        self.form_evaluator = NPFormWideEvaluator(self.__np, self.mapper)
 
     def _create_naccamy(self) -> int:
         """Create the NACCAMY variable.
@@ -43,8 +42,9 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccamy = self.mapper.map_sub1(npamy)
         elif formver == 1:
-            naccamy = self.mapper.map_sub1(npamy) if npamy \
-                else self.mapper.map_vasc(naccamy)
+            naccamy = (
+                self.mapper.map_sub1(npamy) if npamy else self.mapper.map_vasc(naccamy)
+            )
 
         return naccamy if naccamy is not None else 9
 
@@ -67,8 +67,11 @@ class NPFormAttributeCollection(AttributeCollection):
             elif npavas == 9:
                 naccavas = 9
         elif formver == 1:
-            naccavas = self.mapper.map_sub1(npavas) if npavas \
+            naccavas = (
+                self.mapper.map_sub1(npavas)
+                if npavas
                 else self.mapper.map_vasc(naccavas)
+            )
 
         return naccavas if naccavas is not None else 9
 
@@ -97,8 +100,9 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             nacc_cbd = self.mapper.map_v9(npcort)
         elif formver == 1:
-            nacc_cbd = self.mapper.map_v9(npcort) if npcort \
-                else self.mapper.map_vasc(nacc_cbd)
+            nacc_cbd = (
+                self.mapper.map_v9(npcort) if npcort else self.mapper.map_vasc(nacc_cbd)
+            )
 
         return nacc_cbd if nacc_cbd is not None else 9
 
@@ -116,8 +120,11 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccdiff = self.mapper.map_sub4(npdiff)
         elif formver == 1:
-            naccdiff = self.mapper.map_sub4(npdiff) if npdiff \
+            naccdiff = (
+                self.mapper.map_sub4(npdiff)
+                if npdiff
                 else self.mapper.map_gross(naccdiff)
+            )
 
         return naccdiff if naccdiff is not None else 9
 
@@ -272,7 +279,7 @@ class NPFormAttributeCollection(AttributeCollection):
             if npcj is not None and npprion is not None:
                 return self.mapper.map_comb2(npcj, npprion)
 
-            return self.mapper.map_gross(naccprio)
+            naccprio = self.mapper.map_gross(naccprio)
 
         return naccprio if naccprio is not None else 9
 
@@ -307,7 +314,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         Cerebrovascular disease indicator
         """
-        self.form_evaluator.determine_naccvasc()
+        return self.form_evaluator.determine_naccvasc()
 
     def _handle_naccwrix(self, writein: str, num: int) -> Optional[str]:
         """Handle the NACCWRIX variable.
@@ -338,21 +345,21 @@ class NPFormAttributeCollection(AttributeCollection):
 
         First other pathologic diagnosis write-in.
         """
-        return self._handle_naccwrix('nppdxrx', 1)
+        return self._handle_naccwrix("nppdxrx", 1)
 
     def _create_naccwri2(self) -> Optional[str]:
         """Create the NACCWRI2 variable.
 
         Second other pathologic diagnosis write-in.
         """
-        return self._handle_naccwrix('nppdxsx', 2)
+        return self._handle_naccwrix("nppdxsx", 2)
 
     def _create_naccwri3(self) -> Optional[str]:
         """Create the NACCWRI3 variable.
 
         Third other pathologic diagnosis write-in.
         """
-        return self._handle_naccwrix('nppdxtx', 3)
+        return self._handle_naccwrix("nppdxtx", 3)
 
     def _create_naccbraa(self) -> int:
         """Create the NACCBRAA variable.
@@ -391,8 +398,11 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccneur = self.mapper.map_sub4(npneur)
         elif formver == 1:
-            naccneur = self.mapper.map_sub4(npneur) if npneur \
+            naccneur = (
+                self.mapper.map_sub4(npneur)
+                if npneur
                 else self.mapper.map_gross(naccneur)
+            )
 
         return naccneur if naccneur is not None else 9
 
@@ -411,8 +421,11 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccmicr = self.mapper.map_v9(npmicro)
         elif formver == 1:
-            naccmicr = self.mapper.map_v9(npmicro) if npmicro \
+            naccmicr = (
+                self.mapper.map_v9(npmicro)
+                if npmicro
                 else self.mapper.map_vasc(naccmicr)
+            )
 
         return naccmicr if naccmicr is not None else 9
 
@@ -442,8 +455,9 @@ class NPFormAttributeCollection(AttributeCollection):
             nacchem = self.mapper.map_v9(nphem)
         elif formver == 1:
             nacchem = nphem
-            nacchem = self.mapper.map_v9(nphem) if nphem \
-                else self.mapper.map_vasc(nacchem)
+            nacchem = (
+                self.mapper.map_v9(nphem) if nphem else self.mapper.map_vasc(nacchem)
+            )
 
         return nacchem if nacchem is not None else 9
 
@@ -461,8 +475,11 @@ class NPFormAttributeCollection(AttributeCollection):
         elif formver in [7, 8, 9]:
             naccarte = self.mapper.map_sub1(nparter)
         elif formver == 1:
-            naccarte = self.mapper.map_sub1(nparter) if nparter else \
-                self.mapper.map_vasc(naccarte)
+            naccarte = (
+                self.mapper.map_sub1(nparter)
+                if nparter
+                else self.mapper.map_vasc(naccarte)
+            )
 
         return naccarte if naccarte is not None else 9
 
