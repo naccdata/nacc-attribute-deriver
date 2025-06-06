@@ -1,5 +1,6 @@
 """
-Class to handle NACCBRNN due to its complexity.
+Class to handle NACCBRNN and NACCVASC due to their complexity of
+involving almost the entire form.
 
 The SAS code currently checks every single variable individually.
 This could probably be refactored some, but for now follow SAS.
@@ -12,29 +13,38 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
 )
 
+from .np_mapper import NPMapper
 
-class NACCBRNNEvaluator:
 
-    def __init__(self, np: FormNameSpace) -> None:
+class NPFormWideEvaluator:
+
+    def __init__(self,
+                 np: FormNameSpace,
+                 mapper: NPMapper) -> None:
         """Initializer; assumes np is correct form."""
         self.np = np
+        self.map = mapper
         self.formver = np.get_value('formver')
 
     def get(self, attr: str) -> Optional[int]:
         """Get attribute."""
         return self.np.get_value(attr)
 
+    """
+    NACCBRNN
+    """
+
     def determine_naccbrnn(self) -> int:
         """Determine NACCBRNN. Depends on form version."""
         if self.formver == 11:
-            return self._v11()
-        elif self.formver == 10:
-            return self._v10()
+            return self._naccbrnn_v11()
+        if self.formver == 10:
+            return self._naccbrnn_v10()
 
-        return self._v19()
+        return self._naccbrnn_v19()
 
-    def _v11(self) -> int:
-        """Runs the v11 definition."""
+    def _naccbrnn_v11(self) -> int:
+        """Runs the NACCBRNN v11 definition."""
         if (self.get('npbraak') in [0,1,2] and
             self.get('npneur') == 0 and
             self.get('npdiff') == 0 and
@@ -167,8 +177,8 @@ class NACCBRNNEvaluator:
 
         return 0
 
-    def _v10(self) -> int:
-        """Runs the v10 definition."""
+    def _naccbrnn_v10(self) -> int:
+        """Runs the NACCBRNN v10 definition."""
         if (self.get('npbraak') in [0,1,2] and
             self.get('npneur') == 0 and
             self.get('npdiff') == 0 and
@@ -298,8 +308,8 @@ class NACCBRNNEvaluator:
 
         return 0
 
-    def _v19(self):
-        """Runs the v1 - v9 definition."""
+    def _naccbrnn_v19(self):
+        """Runs the NACCBRNN v1 - v9 definition."""
         if (self.get('npbraak') in [1,2,7] and
             self.get('npneur') == 4 and
             self.get('npdiff') == 4 and
@@ -388,3 +398,109 @@ class NACCBRNNEvaluator:
                 return 8
 
         return 0
+
+    """
+    NACCVASC
+    """
+
+    def determine_naccvasc(self) -> int:
+        """Determine NACCVASC. Depends on form version."""
+        if self.formver in [10, 11]:
+            return self._naccvasc_v1011()
+        if self.formver in [7, 8, 9]:
+            return self._naccvasc_v789()
+        if self.formver in [1]:
+            return self._naccvasc_v1()
+
+        return 9
+
+    def _naccvasc_v1011(self) -> int:
+        """Runs the NACCVASC v10 - v11 definition."""
+        if (self.get('npinf') == 1 or
+            self.get('nphemo') == 1 or
+            self.get('npold') == 1 or
+            self.get('npoldd') == 1 or
+            self.get('nparter') in [1,2,3] or
+            self.get('npwmr') in [1,2,3] or
+            self.get('nppath') == 1 or
+            self.get('npavas') in [1,2,3] or
+            self.get('npamy') in [1,2,3]):
+            return 1
+
+        if (self.get('npinf') == 0 and
+            self.get('nphemo') == 0 and
+            self.get('npold') == 0 and
+            self.get('npoldd') == 0 and
+            self.get('nparter') == 0 and
+            self.get('npwmr') == 0 and
+            self.get('nppath') == 0 and
+            self.get('npavas') == 0 and
+            self.get('npamy') == 0):
+            return 0
+
+        return 9
+
+    def _naccvasc_v789(self) -> int:
+        """Runs the NACCVASC v7 - v9 definition."""
+        if (self.get('nplinf') == 1 or
+            self.get('npmicro') == 1 or
+            self.get('nplac') == 1 or
+            self.get('nphem') == 1 or
+            self.get('npart') == 1 or
+            self.get('npnec') == 1 or
+            self.get('npscl') == 1 or
+            self.get('npavas') in (2,3,4) or
+            self.get('nparter') in (2,3,4) or
+            self.get('npamy') in (2,3,4) or
+            self.get('npoang') == 1 or
+            self.get('npvoth') == 1):
+            return 1
+
+        if (self.get('nplinf') == 2 and
+            self.get('npmicro') == 2 and
+            self.get('nplac') == 2 and
+            self.get('nphem') == 2 and
+            self.get('npart') == 2 and
+            self.get('npnec') == 2 and
+            self.get('npscl') == 2 and
+            self.get('npavas') == 1 and
+            self.get('nparter') == 1 and
+            self.get('npamy') == 1 and
+            self.get('npoang') == 2 and
+            self.get('npvoth') == 2):
+            return 0
+
+        return 9
+
+    def _naccvasc_v1(self) -> int:
+        """Runs the NACCVASC v1 definition."""
+        if (self.get('nplinf') == 1 or
+            self.get('npmicro') == 1 or
+            self.get('nplac') == 1 or
+            self.get('nphem') == 1 or
+            self.get('npart') == 1 or
+            self.get('npnec') == 1 or
+            self.get('npscl') == 1 or
+            self.get('npavas') in [2,3,4] or
+            self.get('nparter') in [2,3,4] or
+            self.get('npamy') in [2,3,4] or
+            self.get('npoang') == 1 or
+            self.get('npvoth') == 1):
+            return 1
+
+        if (self.get('nplinf') == 2 and
+            self.get('npmicro') == 2 and
+            self.get('nplac') == 2 and
+            self.get('nphem') == 2 and
+            self.get('npart') == 2 and
+            self.get('npnec') == 2 and
+            self.get('npscl') == 2 and
+            self.get('npavas') == 1 and
+            self.get('nparter') == 1 and
+            self.get('npamy') == 1 and
+            self.get('npoang') == 2 and
+            self.get('npvoth') == 2):
+            return 0
+
+        naccvasc = self.mapper.map_gross(None)
+        return naccvasc if naccvasc is not None else 9
