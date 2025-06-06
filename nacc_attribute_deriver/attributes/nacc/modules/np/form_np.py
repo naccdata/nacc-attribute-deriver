@@ -11,6 +11,7 @@ from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 
+from naccbrnn_evaluator import NACCBRNNEvaluator
 from .np_mapper import NPMapper
 
 
@@ -72,126 +73,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         No major neuropathologic change present
         """
-        formver = self.__np.get_value("formver")
-        npbraak = self.__np.get_value('npbraak')
-        npneur = self.__np.get_value('nnpneur')
-        npdiff = self.__np.get_value('npdiff')
-        nplinf = self.__np.get_value('nplinf')
-        npmicro = self.__np.get_value('npmicro')
-        nplac = self.__np.get_value('nplac')
-        nphem = self.__np.get_value('nphem')
-        npart = self.__np.get_value('npart')
-        npnec = self.__np.get_value('npnec')
-        npscl = self.__np.get_value('npscl')
-        npavas = self.__np.get_value('npavas')
-        nparter = self.__np.get_value('nparter')
-        npamy = self.__np.get_value('npamy')
-        npoang = self.__np.get_value('npoang')
-        npvoth = self.__np.get_value('npvoth')
-        nplewy = self.__np.get_value('nplewy')
-        nppick = self.__np.get_value('nppick')
-        npcort = self.__np.get_value('npcort')
-        npprog = self.__np.get_value('npprog')
-        npfront = self.__np.get_value('npfront')
-        nptau = self.__np.get_value('nptau')
-        npftd = self.__np.get_value('npftd')
-        npftdno = self.__np.get_value('npftdno')
-        npftdspc = self.__np.get_value('npftdspc')
-        npcj = self.__np.get_value('npcj')
-        npprion = self.__np.get_value('npprion')
-        npmajor = self.__np.get_value('npmajor')
-
-        # these could probably be grouped, but type all out for now
-        # to match SAS
-        if (npbraak in [1, 2, 7] and
-            npneur in [4] and
-            npdiff in [4] and
-            nplinf in [2] and
-            npmicro in [2] and
-            nplac in [2] and
-            nphem in [2] and
-            npart in [2] and
-            npnec in [2] and
-            npscl in [2] and
-            npavas in [1, 2] and
-            nparter in [1, 2] and
-            npamy in [1,24] and
-            npoang in [2] and
-            npvoth in [2] and
-            nplewy in [5] and
-            nppick in [2] and
-            npcandt in [2] and
-            npprog in [2] and
-            npfront in [2] and
-            nptau in [2] and
-            npftd in [3] and
-            npftdno in [2] and
-            npftdspc in [2] and
-            npcj in [2] and
-            npprion in [2] and
-            npmajand in [2]):
-            return 1
-
-        pathnpv9 = 0
-        if (npbraak in [3, 4, 5, 6] or
-            npneur in [1, 2, 3] or
-            npdiff in [1, 2, 3] or
-            nplinf in [1] or
-            npmicro in [1] or
-            nplac in [1] or
-            nphem in [1] or
-            npart in [1] or
-            npnec in [1] or
-            npscl in [1] or
-            npavas in [3, 4] or
-            nparter in [3, 4] or
-            npamy in [3, 4] or
-            npoang in [1] or
-            npvoth in [1] or
-            nplewy in [1, 2, 3, 4] or
-            nppick in [1] or
-            npcort in [1] or
-            npprog in [1] or
-            npfront in [1] or
-            nptau in [1] or
-            npftd in [1, 2] or
-            npftdno in [1] or
-            npftdspc in [1] or
-            npcj in [1] or
-            npprion in [1] or
-            npmajor in [1]):
-            pathnpv9 = 1
-
-        if (pathnpv9 != 1 and (npbraak in [8, 9] or
-            npneur in [5, 9] or
-            npdiff in [5, 9] or
-            nplinf in [3, 9] or
-            npmicro in [3, 9] or
-            nplac in [3, 9] or
-            nphem in [3, 9] or
-            npart in [3, 9] or
-            npnec in [3, 9] or
-            npscl in [3, 9] or
-            npavas in [5, 9] or
-            nparter in [5, 9] or
-            npamy in [5, 9] or
-            npoang in [3, 9] or
-            npvoth in [3, 9] or
-            nplewy in [6, 9] or
-            nppick in [3, 9] or
-            npcort in [3, 9] or
-            npprog in [3, 9] or
-            npfront in [3, 9] or
-            nptau in [3, 9] or
-            npftd in [4, 9] or
-            npftdno in [3, 9] or
-            npftdspc in [3, 9] or
-            npcj in [3, 9] or
-            npprion in [3, 9] or
-            npmajor in [3, 9])):
-            return 8
-
-        return 0
+        return NACCBRNNEvaluator(self.__np).determine_naccbrnn()
 
     def _create_nacccbd(self) -> int:
         """Create the NACCCBD variable.
