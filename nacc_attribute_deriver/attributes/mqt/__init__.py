@@ -4,5 +4,6 @@
 from .cognitive import *
 from .demographics import *
 from .longitudinal import *
-from .scan import *
+from .scan_pet import *
+from .scan_mri import *
 from .study_parameters import *
