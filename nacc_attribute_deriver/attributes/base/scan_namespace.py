@@ -12,7 +12,7 @@ from nacc_attribute_deriver.utils.scope import SCANMRIScope, SCANPETScope
 # TODO: make this more elegant
 SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
     SCANMRIScope.MRI_QC: ["study_date", "series_type"],
-    SCANMRIScope.MRI_SBM: ["scandt", "cerebrumtcv", "wmh"],
+    SCANMRIScope.MRI_SBM: ["scandt", "cerebrumtcv"],
     SCANPETScope.PET_QC: ["scan_date"],
     SCANPETScope.AMYLOID_PET_GAAIN: ["scandate", "tracer", "amyloid_status"],
     SCANPETScope.AMYLOID_PET_NPDKA: ["scandate"],
