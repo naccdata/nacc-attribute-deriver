@@ -1,21 +1,19 @@
 """Class to define UDS-specific attributes."""
 
 from datetime import date, datetime
-from typing import Iterable, Optional
+from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import (
-    FormNamespace,
-    NamespaceScope,
-    ScopeDefinitionError,
-)
+from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
 from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
+UDS_REQUIRED_ATTRIBUTES = frozenset(["formver"])
 
 
 class UDSNamespace(FormNamespace):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is a UDS form."""
-        super().__init__(table)
+        super().__init__(table=table, required=UDS_REQUIRED_ATTRIBUTES)
 
         module = self.get_value("module")
         if not module or module.upper() != "UDS":
@@ -31,25 +29,14 @@ class UDSNamespace(FormNamespace):
 
         return False
 
-    def scope(
-        self,
-        *,
-        name: Optional[str] = None,
-        fields: Optional[Iterable[str]] = None,
-    ) -> NamespaceScope:
-        if not fields:
-            raise ScopeDefinitionError("Unable to define UDS scope")
-        return super().scope(name="uds", fields=fields)
-
-    def normalized_formver(self) -> Optional[int]:
+    def normalized_formver(self) -> int:
         """Returns the normalized form version.
 
         Handles cases where the form version is listed as 3.2 for
         example.
         """
-        attribute_value = self.scope(fields=["formver"]).get_value("formver")
-        if attribute_value is None:
-            return None
+        attribute_value = self.get_value("formver")
+        assert attribute_value is not None
 
         try:
             return int(float(attribute_value))
