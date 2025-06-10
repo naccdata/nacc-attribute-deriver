@@ -2,7 +2,13 @@
 
 import datetime
 import logging
-from typing import Any, Generic, Iterable, Optional, TypeVar, overload
+from typing import (
+    Any,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+)
 
 from pydantic import BaseModel, ConfigDict, field_serializer
 
@@ -37,6 +43,7 @@ class BaseNamespace:
         self,
         table: SymbolTable,
         attribute_prefix: str,
+        required: frozenset[str] = frozenset(),
         date_attribute: Optional[str] = None,
     ):
         """Initializes an attribute wrapper, setting the prefix for accessing
@@ -45,20 +52,60 @@ class BaseNamespace:
         Args:
           table: the symbol table
           attribute_prefix: the prefix used to access values
+
+        Raises:
+          MissingRequiredError if
         """
         self.__table = table
         self.__prefix = (
             attribute_prefix if attribute_prefix[-1] == "." else f"{attribute_prefix}."
         )
         self.__date_attribute = date_attribute
+        self.__required = (
+            required.union([date_attribute]) if date_attribute else required
+        )
 
-    def __contains__(self, key: str) -> bool:
-        return f"{self.__prefix}{key}" in self.__table
+        self.__check_required()
+
+    def __check_required(self) -> None:
+        """Check that required attributes have a value in the table.
+
+        Raises:
+          MissingRequiredError if any attributes are missing
+        """
+        missing: List[str] = []
+        for attribute in self.__required:
+            value = self.get_value(attribute)
+            if value is not None:
+                continue
+
+            missing.append(self.__symbol(attribute))
+
+        if missing:
+            raise MissingRequiredError(missing)
 
     @property
     def prefix(self) -> str:
         """Returns the attribute prefix for this object."""
         return self.__prefix
+
+    def __symbol(self, attribute: str) -> str:
+        """Returns the symbol table path for the attribute."""
+        return f"{self.prefix}{attribute}"
+
+    def __contains__(self, attribute: str) -> bool:
+        """Indicates whether the attribute occurs in the table."""
+        return self.__symbol(attribute) in self.__table
+
+    def is_required(self, attribute: str) -> bool:
+        """Indicates whether the attribute is required in this namespace.
+
+        Args:
+          attribute: the attribute name
+        Returns:
+          True if the attribute is required. False, otherwise.
+        """
+        return attribute in self.__required
 
     def get_value(self, attribute: str, default: Optional[Any] = None) -> Optional[Any]:
         """Returns the value of the attribute key in the table.
@@ -69,7 +116,7 @@ class BaseNamespace:
         Returns:
           the value for the attribute in the table
         """
-        return self.__table.get(f"{self.prefix}{attribute}", default)  # type: ignore
+        return self.__table.get(self.__symbol(attribute), default)  # type: ignore
 
     def get_date(self) -> Optional[datetime.date]:
         """Returns the value for the date-attribute if defined.
@@ -138,84 +185,45 @@ class BaseNamespace:
         except ValueError as error:
             raise InvalidFieldError(f"{attribute} expected to be an integer") from error
 
-    @overload
-    def scope(self, *, name: str) -> "NamespaceScope": ...
+    def get_float(self, attribute: str) -> float:
+        """Gets the float value of a required attribute.
 
-    @overload
-    def scope(self, *, fields: Iterable[str]) -> "NamespaceScope": ...
-
-    @overload
-    def scope(self, *, name: str, fields: Iterable[str]) -> "NamespaceScope": ...
-
-    def scope(
-        self,
-        *,
-        name: Optional[str] = None,
-        fields: Optional[Iterable[str]] = None,
-    ) -> "NamespaceScope":
-        if name is None or fields is None:
-            raise ScopeDefinitionError("Scope definition is incomplete")
-
-        return NamespaceScope(namespace=self, name=name, fields=fields)
-
-
-class ScopeDefinitionError(Exception):
-    pass
-
-
-class NamespaceScope:
-    def __init__(
-        self, namespace: BaseNamespace, name: str, fields: Iterable[str]
-    ) -> None:
-        self.__namespace = namespace
-        self.__scope_name = name
-        self.__fields = fields
-
-    @property
-    def namespace(self):
-        return self.__namespace
-
-    def __filter_value(self, attribute: str, value: Any) -> Any:
-        if value is not None:
-            return value
-
-        if attribute not in self.__fields:
-            return None
-
-        field = f"{self.namespace.prefix}{attribute}"
-        raise MissingRequiredError(
-            message=f"Missing required field: {field} for scope {self.__scope_name}",
-            field=field,
-        )
-
-    def get_value(self, attribute: str) -> Optional[Any]:
-        """Returns the value of the attribute key in the table if it is in
-        scope.
-
-        Otherwise, raises exception
+        Args:
+          attribute: attribute name
+        Returns:
+          the float value of the attribute
+        Raises:
+          InvalidFieldError if the attribute does not have a float value
         """
-        return self.__filter_value(
-            attribute=attribute, value=self.__namespace.get_value(attribute)
-        )
+        assert self.is_required(attribute)
+        attribute_value = self.get_value(attribute)
+        assert attribute_value is not None
 
-    def create_dated_value(
-        self,
-        attribute: str,
-        date: Optional[datetime.date],
-        default: Optional[Any] = None,
-    ) -> Optional[DateTaggedValue[Any]]:
-        return self.__filter_value(
-            attribute=attribute,
-            value=self.__namespace.create_dated_value(
-                attribute=attribute, date=date, default=default
-            ),
-        )
+        try:
+            return float(attribute_value)
+        except (ValueError, TypeError) as error:
+            raise InvalidFieldError(
+                f"expected {attribute} to have float value, got {attribute_value}"
+            ) from error
 
-    def get_int_value(self, attribute: str) -> Optional[int]:
-        return self.__filter_value(
-            attribute=attribute,
-            value=self.__namespace.get_int_value(attribute=attribute),
-        )
+    def get_count(self, attribute: str) -> int:
+        """Returns the length of the value of the required attribute.
+
+        Args:
+          attribute: the attribute
+        Returns:
+          the length of the attribute value. None if there is no attribute
+        """
+        assert self.is_required(attribute)
+        attribute_value = self.get_value(attribute)
+        assert attribute_value is not None
+
+        try:
+            return len(attribute_value)
+        except TypeError as error:
+            raise InvalidFieldError(
+                f"expected {attribute} to have a length, got value {attribute_value}"
+            ) from error
 
 
 class FormNamespace(BaseNamespace):
@@ -223,11 +231,13 @@ class FormNamespace(BaseNamespace):
 
     def __init__(
         self,
+        *,
         table: SymbolTable,
         attribute_prefix: str = "file.info.forms.json.",
+        required: frozenset[str] = frozenset(),
         date_attribute: str = "visitdate",
     ) -> None:
-        super().__init__(table, attribute_prefix, date_attribute)
+        super().__init__(table, attribute_prefix, required, date_attribute)
 
 
 class RawNamespace(BaseNamespace):
@@ -237,20 +247,10 @@ class RawNamespace(BaseNamespace):
         self,
         table: SymbolTable,
         attribute_prefix: str = "file.info.raw.",
+        required: frozenset[str] = frozenset(),
         date_attribute: Optional[str] = None,
     ) -> None:
-        super().__init__(table, attribute_prefix, date_attribute)
-
-    def scope(
-        self,
-        *,
-        name: Optional[str] = None,
-        fields: Optional[Iterable[str]] = None,
-    ) -> NamespaceScope:
-        if not fields:
-            raise ScopeDefinitionError("File raw scope definition incomplete")
-
-        return super().scope(name="file-raw", fields=fields)
+        super().__init__(table, attribute_prefix, required, date_attribute)
 
 
 class DerivedNamespace(BaseNamespace):
@@ -260,20 +260,10 @@ class DerivedNamespace(BaseNamespace):
         self,
         table: SymbolTable,
         attribute_prefix: str = "file.info.derived.",
+        required: frozenset[str] = frozenset(),
         date_attribute: Optional[str] = None,
     ) -> None:
-        super().__init__(table, attribute_prefix, date_attribute)
-
-    def scope(
-        self,
-        *,
-        name: Optional[str] = None,
-        fields: Optional[Iterable[str]] = None,
-    ) -> NamespaceScope:
-        if not fields:
-            raise ScopeDefinitionError("File-derived scope definition incomplete")
-
-        return super().scope(name="file-derived", fields=fields)
+        super().__init__(table, attribute_prefix, required, date_attribute)
 
 
 class SubjectInfoNamespace(BaseNamespace):
@@ -281,9 +271,10 @@ class SubjectInfoNamespace(BaseNamespace):
         self,
         table: SymbolTable,
         attribute_prefix: str = "subject.info.",
+        required: frozenset[str] = frozenset(),
         date_attribute: Optional[str] = None,
     ):
-        super().__init__(table, attribute_prefix, date_attribute)
+        super().__init__(table, attribute_prefix, required, date_attribute)
 
 
 class SubjectDerivedNamespace(BaseNamespace):
@@ -291,9 +282,10 @@ class SubjectDerivedNamespace(BaseNamespace):
         self,
         table: SymbolTable,
         attribute_prefix: str = "subject.info.derived.",
+        required: frozenset[str] = frozenset(),
         date_attribute: Optional[str] = None,
     ) -> None:
-        super().__init__(table, attribute_prefix, date_attribute)
+        super().__init__(table, attribute_prefix, required, date_attribute)
 
     def get_cross_sectional_value(
         self, attribute: str, default: Optional[Any] = None
@@ -320,17 +312,3 @@ class SubjectDerivedNamespace(BaseNamespace):
           the value for the attribute in the table
         """
         return self.get_value(f"longitudinal.{attribute}", default)
-
-    def scope(
-        self,
-        *,
-        name: Optional[str] = None,
-        fields: Optional[Iterable[str]] = None,
-    ) -> NamespaceScope:
-        if not fields:
-            raise ScopeDefinitionError("Subject-derived scope definition incomplete")
-
-        return super().scope(
-            name="subject-derived",
-            fields=fields,
-        )
