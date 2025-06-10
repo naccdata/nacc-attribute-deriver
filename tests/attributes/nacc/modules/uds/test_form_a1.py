@@ -48,7 +48,6 @@ class TestUDSFormA1Attribute:
 
         # exact birthday
         set_attribute(table, form_prefix, "birthmo", 1)
-        attr = UDSFormA1Attribute(table)
         assert attr._create_naccage() == 35
 
     def test_visit_on_birthday(self, table, form_prefix):
@@ -64,7 +63,6 @@ class TestUDSFormA1Attribute:
         set_attribute(table, form_prefix, "visitdate", "2010-03-01")
         set_attribute(table, form_prefix, "birthmo", 3)
         set_attribute(table, form_prefix, "birthyr", 1956)
-        attr = UDSFormA1Attribute(table)
 
         assert attr._create_naccage() == 54
 
@@ -76,5 +74,22 @@ class TestUDSFormA1Attribute:
 
         # now set as followup packet so it should return 2
         set_attribute(table, form_prefix, "packet", "F")
-        attr = UDSFormA1Attribute(table)
         assert attr._create_naccnihr() == 2
+
+    def test_affiliate(self, table, form_prefix):
+        """Tests affiliate case."""
+        attr = UDSFormA1Attribute(table)
+        assert not attr._create_affiliate()
+
+        # source case
+        set_attribute(table, form_prefix, "source", 4)
+        assert attr._create_affiliate()
+
+        # sourcenw case
+        set_attribute(table, form_prefix, "source", 1)
+        set_attribute(table, form_prefix, "sourcenw", 2)
+        assert attr._create_affiliate()
+
+        # set but something else case
+        set_attribute(table, form_prefix, "sourcenw", 1)
+        assert not attr._create_affiliate()
