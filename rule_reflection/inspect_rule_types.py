@@ -79,7 +79,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     args = parse_arguments()
     output_file = args.output if args.output else "rule-types.csv"
 
