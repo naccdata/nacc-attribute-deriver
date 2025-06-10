@@ -4,14 +4,11 @@ Comes from 7 unique files.
 """
 
 from types import MappingProxyType
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, List, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import (
-    NamespaceScope,
-    RawNamespace,
-    ScopeDefinitionError,
-)
+from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
 from nacc_attribute_deriver.schema.errors import InvalidFieldError
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.scope import SCANMRIScope, SCANPETScope
 
 # TODO: make this more elegant
@@ -27,6 +24,10 @@ SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
 
 
 class SCANNamespace(RawNamespace):
+    def __init__(self, table: SymbolTable, scope: SCANMRIScope | SCANPETScope) -> None:
+        fields = SCAN_REQUIRED_FIELDS.get(scope)
+        super().__init__(table, required=frozenset(fields))  # type: ignore
+
     TRACER_MAPPING = MappingProxyType(
         {
             1: "fdg",
@@ -56,20 +57,8 @@ class SCANNamespace(RawNamespace):
         }
     )
 
-    def scope(
-        self,
-        *,
-        name: Optional[str] = None,
-        fields: Optional[Iterable[str]] = None,
-    ) -> NamespaceScope:
-        if not name:
-            raise ScopeDefinitionError("SCAN scope definition incomplete")
-
-        fields = fields if fields else SCAN_REQUIRED_FIELDS.get(name)
-        return super().scope(name=name, fields=fields)
-
     # get functions for common values
-    def get_tracer(self, field: str, scope: SCANPETScope) -> Optional[str]:
+    def get_tracer(self, field: str) -> Optional[str]:
         """Get the tracer string."""
         attribute_value = self.get_value(field)
         if not attribute_value:  # no falsey value is valid
@@ -84,9 +73,7 @@ class SCANNamespace(RawNamespace):
 
         return self.TRACER_MAPPING.get(tracer, None)
 
-    def get_scan_type(
-        self, field: str, scope: SCANPETScope | SCANMRIScope
-    ) -> Optional[str]:
+    def get_scan_type(self, field: str) -> Optional[str]:
         """Get the scan type from the tracer."""
         attribute_value = self.get_value(field)
         if not attribute_value:  # no falsey value is valid
