@@ -46,8 +46,10 @@ def table() -> SymbolTable:
             }
         }
     }
-
-    return SymbolTable(data)
+    table = SymbolTable(data)
+    table["file.info.forms.json.visitdate"] = "2000-01-10"
+    table["file.info.forms.json.formver"] = "3"
+    return table
 
 
 class TestCognitiveAttributeCollection:

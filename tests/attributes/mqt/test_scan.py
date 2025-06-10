@@ -3,10 +3,20 @@
 from typing import Any, Dict
 import pytest
 from nacc_attribute_deriver.attributes.base.scan_namespace import SCANNamespace
-from nacc_attribute_deriver.attributes.mqt.scan import (
-    MQTSCANAttributeCollection,
+from nacc_attribute_deriver.attributes.mqt.scan_mri import (
     MRIAnalysisTypes,
+    SCANMRIQCAttributeCollection,
+    SCANMRISBMAttributeCollection,
+    SubjectSCANMRIAttributeCollection,
+)
+from nacc_attribute_deriver.attributes.mqt.scan_pet import (
     PETAnalysisTypes,
+    SCANPETAmyloidGAAINAttributeCollection,
+    SCANPETAmyloidNPDKAAttributeCollection,
+    SCANPETFDGNPDKAAttributeCollection,
+    SCANPETQCAttributeCollection,
+    SCANPETTAUNPDKAAttributeCollection,
+    SubjectSCANPETAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -40,36 +50,36 @@ class TestSCANMRIQCAttribute:
     def test_create_scan_mri_scan_types(self, scan_mri_qc_table: SymbolTable):
         """Tests _create_scan_mri_scan_types, which should just return the
         series_type."""
-        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        attr = SCANMRIQCAttributeCollection.create(scan_mri_qc_table)
         assert attr  # type:ignore
         assert attr._create_scan_mri_scan_types() == "T1w"  # type: ignore
 
         # empty
         scan_mri_qc_table["file.info.raw.series_type"] = None
-        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        attr = SCANMRIQCAttributeCollection.create(scan_mri_qc_table)
         assert attr  # type:ignore
         assert attr._create_scan_mri_scan_types() is None  # type: ignore
 
     def test_create_scan_mri_session_count(self, scan_mri_qc_table: SymbolTable):
         """Tests _create_scan_mri_session_count, which should just count scan-
         mri-dates."""
-        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        attr = SubjectSCANMRIAttributeCollection.create(scan_mri_qc_table)
         assert attr._create_scan_mri_session_count() == 5  # type: ignore
 
         # empty
         scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
-        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        attr = SubjectSCANMRIAttributeCollection.create(scan_mri_qc_table)
         assert attr._create_scan_mri_session_count() == 0  # type: ignore
 
     def test_create_scan_mri_year_count(self, scan_mri_qc_table: SymbolTable):
         """Tests _create_scan_mri_year_count, which should just count the
         unique years in scan-mri-dates."""
-        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        attr = SubjectSCANMRIAttributeCollection.create(scan_mri_qc_table)
         assert attr._create_scan_mri_year_count() == 3  # type: ignore
 
         # empty
         scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
-        attr = MQTSCANAttributeCollection.create(scan_mri_qc_table)
+        attr = SubjectSCANMRIAttributeCollection.create(scan_mri_qc_table)
         assert attr._create_scan_mri_year_count() == 0  # type: ignore
 
 
@@ -92,35 +102,35 @@ class TestSCANPETQCAttribute:
         for k, v in SCANNamespace.TRACER_SCAN_TYPE_MAPPING.items():
             # convert to string just to make sure type conversion is correct
             scan_pet_qc_table["file.info.raw.radiotracer"] = str(k)
-            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+            attr = SCANPETQCAttributeCollection.create(scan_pet_qc_table)
             assert attr._create_scan_pet_scan_types() == v  # type: ignore
 
             # string float case
             scan_pet_qc_table["file.info.raw.radiotracer"] = str(float(k))
-            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+            attr = SCANPETQCAttributeCollection.create(scan_pet_qc_table)
             assert attr._create_scan_pet_scan_types() == v  # type: ignore
 
         # None case
         scan_pet_qc_table["file.info.raw.radiotracer"] = ""
-        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        attr = SCANPETQCAttributeCollection.create(scan_pet_qc_table)
         assert attr._create_scan_pet_scan_types() is None  # type: ignore
 
     def test_create_scan_pet_session_count(self, scan_pet_qc_table: SymbolTable):
         """Tests _create_scan_pet_session_count, which should just count scan-
         pet-dates."""
         assert scan_pet_qc_table.get("subject.info.derived.scan-pet-dates")  # type:ignore
-        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        attr = SubjectSCANPETAttributeCollection.create(scan_pet_qc_table)
         assert attr._create_scan_pet_session_count() == 1  # type: ignore
 
         # empty
         scan_pet_qc_table["subject.info.derived.scan-pet-dates"] = []
-        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        attr = SubjectSCANPETAttributeCollection.create(scan_pet_qc_table)
         assert attr._create_scan_pet_session_count() == 0  # type: ignore
 
     def test_create_scan_pet_year_count(self, scan_pet_qc_table: SymbolTable):
         """Tests _create_scan_pet_year_count, which should just count the
         unique years in scan-pet-dates."""
-        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        attr = SubjectSCANPETAttributeCollection.create(scan_pet_qc_table)
         assert attr._create_scan_pet_year_count() == 1  # type: ignore
 
         # empty
@@ -133,7 +143,7 @@ class TestSCANPETQCAttribute:
         for k, v in SCANNamespace.TRACER_MAPPING.items():
             # convert to string just to make sure type conversion is correct
             scan_pet_qc_table["file.info.raw.radiotracer"] = str(k)
-            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+            attr = SCANPETQCAttributeCollection.create(scan_pet_qc_table)
 
             # needs to == amyloid
             if k in [2, 3, 4, 5]:
@@ -143,7 +153,7 @@ class TestSCANPETQCAttribute:
 
         # None case
         scan_pet_qc_table["file.info.raw.radiotracer"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        attr = SCANPETQCAttributeCollection.create(scan_pet_qc_table)
         assert attr._create_scan_pet_amyloid_tracers() is None  # type:ignore
 
     def test_create_scan_pet_tau_tracers(self, scan_pet_qc_table: SymbolTable):
@@ -151,13 +161,13 @@ class TestSCANPETQCAttribute:
 
         == tau and returns tracer string if so.
         """
-        attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+        attr = SCANPETQCAttributeCollection.create(scan_pet_qc_table)
         assert attr._create_scan_pet_tau_tracers() is None  # type:ignore
 
         # tau scans
         for i in [6, 7, 8, 9]:
             scan_pet_qc_table["file.info.raw.radiotracer"] = i
-            attr = MQTSCANAttributeCollection.create(scan_pet_qc_table)
+            attr = SCANPETQCAttributeCollection.create(scan_pet_qc_table)
             assert (
                 attr._create_scan_pet_tau_tracers() == SCANNamespace.TRACER_MAPPING[i]  # type:ignore
             )
@@ -183,37 +193,37 @@ class TestSCANMRISBMAttribute:
     def test_create_scan_volume_analysis_indicator(self, scan_mri_sbm: SymbolTable):
         """Tests _create_scan_volume_analysis_indicator, which looks at
         cerebrumtcv when series_type == T1w."""
-        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        attr = SCANMRISBMAttributeCollection.create(scan_mri_sbm)
         assert attr._create_scan_volume_analysis_indicator()  # type:ignore
 
         # 0 case, is a valid number so should return True
         scan_mri_sbm["file.info.raw.cerebrumtcv"] = "0"
-        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        attr = SCANMRISBMAttributeCollection.create(scan_mri_sbm)
         assert attr._create_scan_volume_analysis_indicator()  # type:ignore
 
         # empty
         scan_mri_sbm["file.info.raw.cerebrumtcv"] = None
-        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        attr = SCANMRISBMAttributeCollection.create(scan_mri_sbm)
         assert not attr._create_scan_volume_analysis_indicator()  # type:ignore
 
     def test_create_scan_flair_wmh_indicator(self, scan_mri_sbm: SymbolTable):
         """Tests _create_scan_flair_wmh_indicator, which looks at wmh."""
-        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        attr = SCANMRISBMAttributeCollection.create(scan_mri_sbm)
         assert attr._create_scan_flair_wmh_indicator()  # type:ignore
 
         # 0 case, is a valid number so should return True
         scan_mri_sbm["file.info.raw.wmh"] = "0"
-        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        attr = SCANMRISBMAttributeCollection.create(scan_mri_sbm)
         assert attr._create_scan_flair_wmh_indicator()  # type:ignore
 
         # empty
         scan_mri_sbm["file.info.raw.wmh"] = None
-        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        attr = SCANMRISBMAttributeCollection.create(scan_mri_sbm)
         assert not attr._create_scan_flair_wmh_indicator()  # type:ignore
 
     def test_create_mri_scan_analysis_types(self, scan_mri_sbm: SymbolTable):
         """Tests _create_mri_scan_analysis_types."""
-        attr = MQTSCANAttributeCollection.create(scan_mri_sbm)
+        attr = SCANMRISBMAttributeCollection.create(scan_mri_sbm)
         assert attr._create_mri_scan_analysis_types() == [  # type:ignore
             MRIAnalysisTypes.T1_VOLUME,
             MRIAnalysisTypes.FLAIR_WMH,
@@ -255,36 +265,36 @@ class TestSCANAmyloidPETGAAINAttribute:
     def test_create_scan_pet_centaloid(self, scan_pet_amyloid_gaain: SymbolTable):
         """Tests _create_scan_pet_centaloid, should just return centaloid as a
         float."""
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_centaloid() == 1.5  # type:ignore
 
         # empty
         scan_pet_amyloid_gaain["file.info.raw.centiloids"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_centaloid() is None  # type:ignore
 
     def test_create_scan_pet_centaloid_x(self, scan_pet_amyloid_gaain: SymbolTable):
         """Tests _create_scan_pet_centaloid_*, should return centerloid as a
         float if the tracer is the given value."""
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "2"
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_centaloid_pib() == 1.5  # type:ignore
 
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "3.0"
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_centaloid_florbetapir() == 1.5  # type:ignore
 
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "4"
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_centaloid_florbetaben() == 1.5  # type:ignore
 
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "5"
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_centaloid_nav4694() == 1.5  # type:ignore
 
         # 99, should all be None
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "99"
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_centaloid_pib() is None  # type:ignore
         assert attr._create_scan_pet_centaloid_florbetapir() is None  # type:ignore
         assert attr._create_scan_pet_centaloid_florbetaben() is None  # type:ignore
@@ -295,29 +305,29 @@ class TestSCANAmyloidPETGAAINAttribute:
     ):
         """Tests _create_scan_pet_amyloid_positivity_indicator, which just gets
         amyloid_status."""
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_amyloid_positivity_indicator()  # type:ignore
 
         # string float case
         scan_pet_amyloid_gaain["file.info.raw.amyloid_status"] = "1.0"
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_amyloid_positivity_indicator()  # type:ignore
 
         # 0 case, should be False
         scan_pet_amyloid_gaain["file.info.raw.amyloid_status"] = "0"
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert not attr._create_scan_pet_amyloid_positivity_indicator()  # type:ignore
 
         # empty
         scan_pet_amyloid_gaain["file.info.raw.amyloid_status"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert not attr._create_scan_pet_amyloid_positivity_indicator()  # type:ignore
 
     def test_create_scan_pet_amyloid_gaain_analysis_type(
         self, scan_pet_amyloid_gaain: SymbolTable
     ):
         """Tests _create_scan_pet_amyloid_gaain_analysis_type."""
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert (
             attr._create_scan_pet_amyloid_gaain_analysis_type()  # type:ignore
             == PETAnalysisTypes.AMYLOID_GAAIN
@@ -325,18 +335,18 @@ class TestSCANAmyloidPETGAAINAttribute:
 
         # missing centiloid
         scan_pet_amyloid_gaain["file.info.raw.centiloids"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_amyloid_gaain_analysis_type() is None  # type:ignore
 
         # missing gaain_summary_suvr
         scan_pet_amyloid_gaain["file.info.raw.centiloids"] = "1.234"
         scan_pet_amyloid_gaain["file.info.raw.gaain_summary_suvr"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_amyloid_gaain_analysis_type() is None  # type:ignore
 
         # empty
         scan_pet_amyloid_gaain["file.info.raw.centiloids"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_gaain)
+        attr = SCANPETAmyloidGAAINAttributeCollection.create(scan_pet_amyloid_gaain)
         assert attr._create_scan_pet_amyloid_gaain_analysis_type() is None  # type:ignore
 
 
@@ -360,7 +370,7 @@ class TestSCANAmyloidPETNPDKAAttribute:
         self, scan_pet_amyloid_npdka: SymbolTable
     ):
         """Tests _create_scan_pet_amyloid_npdka_analysis_type."""
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_npdka)
+        attr = SCANPETAmyloidNPDKAAttributeCollection.create(scan_pet_amyloid_npdka)
         assert (
             attr._create_scan_pet_amyloid_npdka_analysis_type()  # type:ignore
             == PETAnalysisTypes.AMYLOID_NPDKA
@@ -368,7 +378,7 @@ class TestSCANAmyloidPETNPDKAAttribute:
 
         # missing
         scan_pet_amyloid_npdka["file.info.raw.npdka_summary_suvr"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_amyloid_npdka)
+        attr = SCANPETAmyloidNPDKAAttributeCollection.create(scan_pet_amyloid_npdka)
         assert attr._create_scan_pet_amyloid_npdka_analysis_type() is None  # type:ignore
 
 
@@ -392,7 +402,7 @@ class TestSCANFDGPETNPDKAAttribute:
         self, scan_pet_fdg_npdka: SymbolTable
     ):
         """Tests _create_scan_pet_fdg_npdka_analysis_type."""
-        attr = MQTSCANAttributeCollection.create(scan_pet_fdg_npdka)
+        attr = SCANPETFDGNPDKAAttributeCollection.create(scan_pet_fdg_npdka)
         assert (
             attr._create_scan_pet_fdg_npdka_analysis_type()  # type:ignore
             == PETAnalysisTypes.FDG_NPDKA
@@ -400,7 +410,7 @@ class TestSCANFDGPETNPDKAAttribute:
 
         # missing
         scan_pet_fdg_npdka["file.info.raw.fdg_metaroi_suvr"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_fdg_npdka)
+        attr = SCANPETFDGNPDKAAttributeCollection.create(scan_pet_fdg_npdka)
         assert attr._create_scan_pet_fdg_npdka_analysis_type() is None  # type:ignore
 
 
@@ -429,7 +439,7 @@ class TestSCANTauPETNPDKAAttribute:
         self, scan_pet_tau_npdka: SymbolTable
     ):
         """Tests _create_scan_pet_tau_npdka_analysis_type."""
-        attr = MQTSCANAttributeCollection.create(scan_pet_tau_npdka)
+        attr = SCANPETTAUNPDKAAttributeCollection.create(scan_pet_tau_npdka)
         assert (
             attr._create_scan_pet_tau_npdka_analysis_type()  # type:ignore
             == PETAnalysisTypes.TAU_NPDKA
@@ -437,5 +447,5 @@ class TestSCANTauPETNPDKAAttribute:
 
         # missing
         scan_pet_tau_npdka["file.info.raw.meta_temporal_suvr"] = None
-        attr = MQTSCANAttributeCollection.create(scan_pet_tau_npdka)
+        attr = SCANPETTAUNPDKAAttributeCollection.create(scan_pet_tau_npdka)
         assert attr._create_scan_pet_tau_npdka_analysis_type() is None  # type:ignore
