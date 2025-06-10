@@ -5,7 +5,18 @@ Uses a metaclass to keep track of operation types.
 
 from abc import abstractmethod
 from datetime import date
-from typing import Any, ClassVar, Dict, List, TypeAlias, Union, get_args, get_origin
+from types import FunctionType
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Tuple,
+    TypeAlias,
+    Union,
+    get_args,
+    get_origin,
+)
 
 from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -49,13 +60,17 @@ class OperationError(Exception):
 class OperationRegistry(type):
     operations: ClassVar[Dict[str, type]] = {}
 
-    def __init__(cls, name, bases, attrs):
+    def __init__(
+        cls, name: str, bases: Tuple[type], attrs: Dict[str, str | FunctionType]
+    ):
+        """Registers the class in the registry when the class has this class as
+        a metaclass."""
         if (
             name != "OperationRegistry"
-            and cls.LABEL is not None
+            and cls.LABEL is not None  # type: ignore
             and name not in OperationRegistry.operations
         ):
-            OperationRegistry.operations[cls.LABEL] = cls
+            OperationRegistry.operations[cls.LABEL] = cls  # type: ignore
 
 
 class Operation(object, metaclass=OperationRegistry):
@@ -198,7 +213,7 @@ class DateOperation(Operation):
                 f"Unable to perform {self.LABEL} operation without date"
             )
 
-        if value.value is None:
+        if value.value is None:  # type: ignore
             return
 
         if self.LABEL not in ["initial", "latest"]:
