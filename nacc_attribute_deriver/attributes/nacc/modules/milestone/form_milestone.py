@@ -9,7 +9,7 @@ from nacc_attribute_deriver.utils.date import create_death_date
 
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__milestone = FormNamespace(table)
+        self.__milestone = FormNamespace(table=table)
 
     def _create_milestone_death_date(self) -> Optional[date]:
         if not self.is_target_int(self.__milestone.get_int_value("deceased"), 1):

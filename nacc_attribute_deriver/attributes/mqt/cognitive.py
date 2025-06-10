@@ -22,7 +22,11 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        self.__derived = DerivedNamespace(table, date_attribute="visitdate")
+        self.__derived = DerivedNamespace(
+            table,
+            required=frozenset(["naccudsd", "naccetpr"]),
+            date_attribute="visitdate",
+        )
 
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS: MappingProxyType[str, str] = MappingProxyType(
@@ -154,13 +158,13 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_cognitive_status(self) -> Optional[DateTaggedValue[int]]:
         """Mapped from NACCUDSD."""
-        return self.__derived.scope(fields=["naccudsd"]).create_dated_value(
+        return self.__derived.create_dated_value(
             attribute="naccudsd", date=self.__uds.get_date()
         )
 
     def _create_etpr(self) -> Optional[DateTaggedValue[int]]:
         """Mapped from NACCETPR."""
-        return self.__derived.scope(fields=["naccetpr"]).create_dated_value(
+        return self.__derived.create_dated_value(
             attribute="naccetpr", date=self.__uds.get_date()
         )
 

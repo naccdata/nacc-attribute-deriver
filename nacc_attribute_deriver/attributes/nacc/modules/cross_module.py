@@ -30,7 +30,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
     ) -> None:
         """Override initializer to set other module prefixes."""
         self.__uds = UDSNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(
+            table=table, required=frozenset(["uds-visitdates"])
+        )
 
     def _determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
@@ -140,9 +142,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 999
 
         # compare to last UDS visit
-        visitdates = self.__subject_derived.scope(fields=["uds-visitdates"]).get_value(
-            "uds-visitdates"
-        )
+        visitdates = self.__subject_derived.get_value("uds-visitdates")
 
         # a non-valid visitdate shouldn't be possible but handle just in case
         if not visitdates:
