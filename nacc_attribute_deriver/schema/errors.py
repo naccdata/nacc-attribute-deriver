@@ -1,6 +1,6 @@
 """Errors and exception handling."""
 
-from typing import Optional
+from typing import List, Optional
 
 
 class AttributeDeriverError(Exception):
@@ -16,6 +16,9 @@ class InvalidFieldError(Exception):
 class MissingRequiredError(Exception):
     """Error for when a required field is missing."""
 
-    def __init__(self, message: str, field: Optional[str] = None):
-        super().__init__(message)
-        self.field = field
+    def __init__(self, fields: Optional[List[str]] = None):
+        super().__init__("missing required attributes")
+        self.fields: List[str] = fields if fields else []
+
+    def __str__(self) -> str:
+        return f"{super().__str__()}: {', '.join(self.fields)}"
