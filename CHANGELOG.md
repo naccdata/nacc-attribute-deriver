@@ -2,6 +2,14 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.4.0
+
+* Add check for affiliated participants
+* Adds more NP variables
+* Refactors NP functionality - added `NPMapper` (mapping functions) and `NPFormWideEvaluator` (for variables like NACCBRNN that require looking at the entire NP form)
+* Refactors to consoildate redundant cross-sectional derived variables so UDS doesn't have to redefine them, namely for NP and genetics data
+* Fix `wmh` to not be required (for `SCANMRIScope.MRI_SBM`)
+
 ## 1.3.0
 
 * Adds `historic_apoe` rule to support historical APOE values from sources other than NCRAD
