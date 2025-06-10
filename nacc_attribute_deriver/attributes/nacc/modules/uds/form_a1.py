@@ -500,3 +500,22 @@ class UDSFormA1Attribute(AttributeCollection):
             naccnihr = 6
 
         return naccnihr
+
+    def _create_affiliate(self) -> bool:
+        """Returns whether or not the participant is an affiliate.
+
+        There are some nuances, but for now just check for source == 4
+        or sourcenw == 2 (non-ADC).
+        """
+        # check if affiliate status already determined
+        # TODO - right now treating like cross-sectional, but should this change
+        # to non-affiliate if a later form defines it as such?
+        affiliate = self.__subject_derived.get_value("affiliate")
+        if affiliate:
+            return True
+
+        # check source == 4 or sourcenw == 2
+        source = self.__uds.get_value("source")
+        sourcenw = self.__uds.get_value("sourcenw")
+
+        return source == 4 or sourcenw == 2
