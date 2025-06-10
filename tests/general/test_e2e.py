@@ -49,6 +49,8 @@ def test_uds_form():
         "naccnorm": 1,
         "naccudsd": 4,
         "naccint": 888,
+        "naccmod": 88,
+        "naccyod": 8888,
     }
 
 
@@ -88,12 +90,27 @@ def test_np_form():
                 "derived": {
                     "np_death_age": 80,
                     "np_death_date": "2024-12-19",
-                    "np_arte": 9,
-                    "np_braa": 9,
-                    "np_hem": 9,
-                    "np_lewy": 9,
-                    "np_micr": 9,
-                    "np_neur": 9,
+                    "cross-sectional": {
+                        "naccbraa": 9,
+                        "naccneur": 9,
+                        "naccmicr": 9,
+                        "nacchem": 9,
+                        "naccarte": 9,
+                        "nacclewy": 9,
+                        "naccamy": 9,
+                        "naccavas": 9,
+                        "naccbrnn": 0,
+                        "nacccbd": 9,
+                        "naccdiff": 9,
+                        "naccdown": 7,
+                        "naccinf": 9,
+                        "naccnec": 9,
+                        "naccothp": 9,
+                        "naccpick": 9,
+                        "naccprio": 9,
+                        "naccprog": 9,
+                        "naccvasc": 9,
+                    },
                 }
             }
         },
@@ -109,33 +126,6 @@ def test_np_form():
         "normcog": 1,
         "formver": 3.0,
     }
-
-    deriver = AttributeDeriver()
-    deriver.curate(uds_table, "uds")
-    assert (
-        uds_table["file.info.derived.naccarte"]
-        == np_table["subject.info.derived.np_arte"]
-    )
-    assert (
-        uds_table["file.info.derived.naccbraa"]
-        == np_table["subject.info.derived.np_braa"]
-    )
-    assert (
-        uds_table["file.info.derived.nacchem"]
-        == np_table["subject.info.derived.np_hem"]
-    )
-    assert (
-        uds_table["file.info.derived.nacclewy"]
-        == np_table["subject.info.derived.np_lewy"]
-    )
-    assert (
-        uds_table["file.info.derived.naccmicr"]
-        == np_table["subject.info.derived.np_micr"]
-    )
-    assert (
-        uds_table["file.info.derived.naccneur"]
-        == np_table["subject.info.derived.np_neur"]
-    )
 
 
 def test_ncrad_apoe():
@@ -163,11 +153,11 @@ def test_niagads_investigator():
     deriver.curate(form, "niagads_availability")
 
     assert "file.info.derived" not in form
-    assert form["subject.info.derived"] == {
-        "niagads_exome": 1,
-        "niagads_gwas": 1,
-        "niagads_wes": 0,
-        "niagads_wgs": 0,
+    assert form["subject.info.derived.cross-sectional"] == {
+        "ngdsexome": 1,
+        "ngdsgwas": 1,
+        "ngdswes": 0,
+        "ngdswgs": 0,
     }
 
 

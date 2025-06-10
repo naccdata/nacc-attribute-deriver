@@ -3,6 +3,7 @@ from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 
@@ -20,6 +21,21 @@ class MilestoneAttributeCollection(AttributeCollection):
         day = self.__milestone.get_value("deathdy")  # can be 99
 
         return create_death_date(year=year, month=month, day=day)
+
+    def _create_milestone_death_month(self) -> Optional[int]:
+        """Milestone death month - can be 99."""
+        if not self.is_target_int(self.__milestone.get_value("deceased"), 1):
+            return None
+
+        month = self.__milestone.get_value("deathmo")
+
+        try:
+            if month is not None:
+                month = int(month)
+        except (ValueError, TypeError) as e:
+            raise InvalidFieldError("Milestone DEATHMO not an integer") from e
+
+        return month if month is not None else 99
 
     def _create_milestone_deceased(self) -> Optional[int]:
         return self.__milestone.get_value("deceased")

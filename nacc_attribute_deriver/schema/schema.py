@@ -54,8 +54,8 @@ class RuleFileModel(BaseModel):
     function: str
     location: str
     operation: str
-    type: str
-    description: str
+    type: Optional[str]
+    description: Optional[str]
 
     @property
     def assignment(self) -> AttributeAssignment:
