@@ -286,8 +286,11 @@ class UDSFormA1Attribute(AttributeCollection):
 
         return age
 
-    def _create_naccnihr(self) -> int:
-        """Creates NACCNIHR (race)"""
+    def _create_naccnihr(self) -> Optional[int]:
+        """Creates NACCNIHR (race) if first form."""
+        if not self.__uds.initial():
+            return None
+
         result = self.generate_naccnihr(
             race=self.__uds.get_value("race"),
             racex=self.__uds.get_value("racex"),
@@ -296,11 +299,6 @@ class UDSFormA1Attribute(AttributeCollection):
             raceter=self.__uds.get_value("raceter"),
             raceterx=self.__uds.get_value("raceterx"),
         )
-
-        # if result is 99/Unknown and not an initial packet,
-        # check for a default in subject.info.derived
-        if result == 99 and not self.__uds.is_initial():
-            return self.__subject_derived.get_cross_sectional_value("naccnihr", result)
 
         return result
 

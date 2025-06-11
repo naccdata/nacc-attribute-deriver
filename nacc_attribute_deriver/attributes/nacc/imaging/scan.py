@@ -6,7 +6,7 @@ from nacc_attribute_deriver.attributes.base.scan_namespace import (
     SCANNPETamespace,
 
 )
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 from nacc_attribute_deriver.utils.scope import (
     SCANMRIScope,

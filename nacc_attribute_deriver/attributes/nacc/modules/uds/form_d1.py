@@ -23,8 +23,10 @@ class ContributionStatus:
 
 class UDSFormD1Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table)
+        self.__uds = UDSNamespace(table, required=frozenset(['normcog']))
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+
+        self.__normcog = self.__uds.get_required('normcog', int)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
@@ -72,7 +74,7 @@ class UDSFormD1Attribute(AttributeCollection):
         Primary, contributing, or non-contributing cause of observed
         cognitive impairment -- Alzheimer's disease (AD)
         """
-        if self.__uds.get_value("normcog") == 1:
+        if self.__normcog == 1:
             return 8
 
         contr_status = self.get_contr_status(["probadif", "possadif", "alzdisif"])
@@ -87,7 +89,7 @@ class UDSFormD1Attribute(AttributeCollection):
         Presumptive etilogic diagnosis of the cognitive disorder
         - Lewy body disease (LBD)
         """
-        if self.__uds.get_value("normcog") == 1:
+        if self.__normcog == 1:
             return 8
 
         if self.__uds.normalized_formver() != 3:
@@ -112,7 +114,7 @@ class UDSFormD1Attribute(AttributeCollection):
         Primary, contributing, or non-contributing cause of cognitive
         impairment -- Lewy body disease (LBD)
         """
-        if self.__uds.get_value("normcog") == 1:
+        if self.__normcog == 1:
             return 8
 
         contr_status = None
@@ -143,7 +145,7 @@ class UDSFormD1Attribute(AttributeCollection):
             return 3
         if self.__uds.get_value("demented") == 1:
             return 4
-        if self.__uds.get_value("normcog") == 1:
+        if self.__normcog == 1:
             return 1
         if self.__uds.get_value("impnomci") == 1:
             return 2
@@ -160,7 +162,7 @@ class UDSFormD1Attribute(AttributeCollection):
         dementia
         """
 
-        if self.__uds.get_value("normcog") == 1:
+        if self.__normcog == 1:
             return 88
 
         # assuming normcog == 0 != 1 after this point
@@ -285,9 +287,7 @@ class UDSFormD1Attribute(AttributeCollection):
         try:
             if naccnorm is not None and int(naccnorm) == 0:
                 return 0
-
-            return int(self.__uds.get_value("normcog"))
         except (ValueError, TypeError):
             pass
 
-        return 1
+        return self.__normcog

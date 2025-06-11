@@ -235,7 +235,7 @@ class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
 
 
 class MQTSCANPETFTDNPDKAAttributeCollection(AttributeCollection):
-    """Class to collect SCAN FDG NPDKA attributes
+    """Class to collect SCAN PET FDG NPDKA attributes
     (v_ucberkeley_fdg_metaroi_npdka.csv)
     """
 
@@ -249,7 +249,7 @@ class MQTSCANPETFTDNPDKAAttributeCollection(AttributeCollection):
 
 
 class MQTSCANPETTAUNPDKAAttributeCollection(AttributeCollection):
-    """Class to collect SCAN TAU NPDKA attributes
+    """Class to collect SCAN PET TAU NPDKA attributes
     (v_ucberkeley_tau_mrifree_npdka.csv)
     """
 
