@@ -26,4 +26,4 @@ class TestAttribute:
         # should raise error since there's nothing int able
         with pytest.raises(MissingRequiredError) as error:
             attr.assert_required(["testvar"])
-        assert error.value.field == "file.info.forms.json.testvar"
+        assert "file.info.forms.json.testvar" in error.value.fields
