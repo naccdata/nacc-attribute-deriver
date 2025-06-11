@@ -5,12 +5,13 @@ Uses a metaclass to keep track of operation types.
 
 from abc import abstractmethod
 from datetime import date
-from types import FunctionType
+from types import FunctionType, NoneType
 from typing import (
     Any,
     ClassVar,
     Dict,
     List,
+    Set,
     Tuple,
     TypeAlias,
     Union,
@@ -50,6 +51,12 @@ def get_date_tagged_type(expression_type: type) -> type:
                 "args"
             ]  # type: ignore
             return args[0]  # type: ignore
+    return expression_type
+
+
+def get_date_str_type(expression_type: type) -> type:
+    if expression_type is date:
+        return str
     return expression_type
 
 
@@ -113,7 +120,9 @@ class UpdateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        return get_date_tagged_type(get_optional_type(expression_type))
+        return get_date_str_type(
+            get_date_tagged_type(get_optional_type(expression_type))
+        )
 
     def evaluate(  # type: ignore
         self, *, table: SymbolTable, value: Any, attribute: str
@@ -139,7 +148,8 @@ class SetOperation(Operation):
         element_type: TypeAlias = get_list_type(  # type: ignore
             get_date_tagged_type(get_optional_type(expression_type))
         )
-        return List[element_type]
+
+        return List[element_type] if element_type is not NoneType else List
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a set, although it actually is saved as a list
@@ -148,10 +158,10 @@ class SetOperation(Operation):
             value = value.value  # type: ignore
 
         cur_set = table.get(attribute)  # type: ignore
-        cur_set = set(cur_set) if cur_set else set()
+        cur_set: Set[Any] = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
-            cur_set = cur_set.union(set(value))
+            cur_set = cur_set.union(set(value)) # type: ignore
         elif value is not None:
             cur_set.add(value)
 
@@ -167,7 +177,8 @@ class SortedListOperation(Operation):
         element_type: TypeAlias = get_list_type(  # type: ignore
             get_date_tagged_type(get_optional_type(expression_type))
         )
-        return List[element_type]
+
+        return List[element_type] if element_type is not NoneType else List
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
@@ -193,11 +204,9 @@ class DateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        temp_type = get_optional_type(expression_type)
-        if hasattr(temp_type, "__pydantic_generic_metadata__"):
-            origin = temp_type.__pydantic_generic_metadata__["origin"]  # type: ignore
-            if origin is DateTaggedValue:
-                return temp_type
+        temp_type = get_date_tagged_type(get_optional_type(expression_type))
+        if temp_type is not expression_type:
+            return DateTaggedValue[temp_type]
 
         return NoAssignment
 
@@ -246,7 +255,7 @@ class ComparisonOperation(Operation):
     LABEL: str | None = None
 
     @abstractmethod
-    def compare(self, left_value, right_value) -> bool:
+    def compare(self, left_value: Any, right_value: Any) -> bool:
         """Returns the comparison for this object."""
         raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
@@ -271,7 +280,7 @@ class ComparisonOperation(Operation):
             raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
         if isinstance(value, DateTaggedValue):
-            value = value.value
+            value = value.value # type: ignore
         if value is None:
             return
 
@@ -291,12 +300,12 @@ class MinOperation(ComparisonOperation):
     def attribute_type(cls, expression_type: type) -> type:
         return super().attribute_type(expression_type)
 
-    def compare(self, left_value, right_value):
+    def compare(self, left_value: Any, right_value: Any) -> bool:
         return left_value < right_value
 
 
 class MaxOperation(ComparisonOperation):
     LABEL = "max"
 
-    def compare(self, left_value, right_value):
+    def compare(self, left_value: Any, right_value: Any) -> bool:
         return left_value > right_value
