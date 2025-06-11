@@ -161,7 +161,7 @@ class SetOperation(Operation):
         cur_set: Set[Any] = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
-            cur_set = cur_set.union(set(value)) # type: ignore
+            cur_set = cur_set.union(set(value))  # type: ignore
         elif value is not None:
             cur_set.add(value)
 
@@ -280,7 +280,7 @@ class ComparisonOperation(Operation):
             raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
         if isinstance(value, DateTaggedValue):
-            value = value.value # type: ignore
+            value = value.value  # type: ignore
         if value is None:
             return
 

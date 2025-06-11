@@ -129,8 +129,11 @@ class TestOperationAttributeType:
         wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
         assert type(wrapper) is DateTaggedValue
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
-        assert operation.attribute_type(DateTaggedValue[str]) is DateTaggedValue[type(value)]
-        assert type(table.get("date-tagged")['value']) is type(value)  # type: ignore
+        assert (
+            operation.attribute_type(DateTaggedValue[str])
+            is DateTaggedValue[type(value)]
+        )
+        assert type(table.get("date-tagged")["value"]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
@@ -158,8 +161,11 @@ class TestOperationAttributeType:
         wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
         assert type(wrapper) is DateTaggedValue
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
-        assert operation.attribute_type(DateTaggedValue[str]) is DateTaggedValue[type(value)]
-        assert type(table.get("date-tagged")['value']) is type(value)  # type: ignore
+        assert (
+            operation.attribute_type(DateTaggedValue[str])
+            is DateTaggedValue[type(value)]
+        )
+        assert type(table.get("date-tagged")["value"]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
