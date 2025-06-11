@@ -35,7 +35,19 @@ def np_form_attribute_table() -> SymbolTable:
 @pytest.fixture(scope="function")
 def np_mapper() -> NPMapper:
     """Create dummy data and return it in an attribute object."""
-    data = {"file": {"info": {"forms": {"json": {"formver": 1, "module": "NP", "visitdate": "2025-01-10",}}}}}
+    data = {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "formver": 1,
+                        "module": "NP",
+                        "visitdate": "2025-01-10",
+                    }
+                }
+            }
+        }
+    }
 
     np = FormNamespace(table=SymbolTable(data))
     return NPMapper(np)

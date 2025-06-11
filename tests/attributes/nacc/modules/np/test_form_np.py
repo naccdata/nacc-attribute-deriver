@@ -29,6 +29,7 @@ def np_form_attribute_table() -> SymbolTable:
                         "nplbod": 4,
                         "formver": 1,
                         "module": "NP",
+                        "visitdate": "2025-01-10",
                     }
                 }
             }
@@ -40,7 +41,15 @@ def np_form_attribute_table() -> SymbolTable:
 @pytest.fixture(scope="function")
 def np_form_table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {"file": {"info": {"forms": {"json": {"formver": 1, "module": "NP"}}}}}
+    data = {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {"formver": 1, "module": "NP", "visitdate": "2025-01-10"}
+                }
+            }
+        }
+    }
 
     return SymbolTable(data)
 

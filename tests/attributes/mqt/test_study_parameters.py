@@ -11,7 +11,13 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
-        "file": {"info": {"forms": {"json": {"formver": "4", "module": "UDS"}}}},
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {"formver": "4", "module": "UDS", "visitdate": "2025-01-10"}
+                }
+            }
+        },
         "subject": {"info": {"study-parameters": {"uds": {"versions": ["UDSv2"]}}}},
     }
 

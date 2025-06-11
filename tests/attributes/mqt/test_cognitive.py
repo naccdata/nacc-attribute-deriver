@@ -30,6 +30,7 @@ def table() -> SymbolTable:
                         "namndem": None,
                         "cdrglob": 0.5,
                         "module": "uds",
+                        "visitdate": "2025-01-10",
                         # rest of fields will be None
                     }
                 },

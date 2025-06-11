@@ -14,7 +14,15 @@ def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
-            "info": {"forms": {"json": {"module": "UDS", "formdate": "2025-01-01"}}}
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "UDS",
+                        "formdate": "2025-01-01",
+                        "visitdate": "2025-01-01",
+                    }
+                }
+            }
         },
         "subject": {
             "info": {
