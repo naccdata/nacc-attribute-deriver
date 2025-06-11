@@ -32,8 +32,7 @@ class NCRADAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        self.__apoe = RawNamespace(table)
-        self.__apoe.assert_required(required=["a1", "a2"])
+        self.__apoe = RawNamespace(table, required=["a1", "a2"])
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
@@ -41,13 +40,10 @@ class NCRADAttributeCollection(AttributeCollection):
         Should come from the actual imported APOE data
         <subject>_apoe_genotype.json
         """
-        a1 = self.__apoe.get_value("a1")
-        a2 = self.__apoe.get_value("a2")
+        a1 = self.__apoe.get_required("a1", str)
+        a2 = self.__apoe.get_required("a2", str)
 
-        if not a1 or not a2:
-            return 9
-
-        return self.APOE_ENCODINGS.get((a1.strip().upper(), a2.strip().upper()), 9)
+        return self.APOE_ENCODINGS.get((a1.upper(), a2.upper()), 9)
 
 
 class HistoricalNCRADAttributeCollection(AttributeCollection):
@@ -55,8 +51,7 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        self.__apoe = RawNamespace(table)
-        self.__apoe.assert_required(required=["apoe"])
+        self.__apoe = RawNamespace(table, required=["apoe"])
 
     def _create_historic_apoe(self) -> int:
         """For APOE values provided from sources other than the NCRAD APOE
@@ -64,22 +59,16 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
 
         <subject>_historic_apoe_genotype.json
         """
-        apoe = self.__apoe.get_value("apoe")
-
-        try:
-            apoe = int(apoe)
-        except (TypeError, ValueError):
-            apoe = None
+        apoe = self.__apoe.get_required("apoe", int)
 
         # while sas code handles consistency, just do a sanity check
         # to make sure entire rows lines up, else there's an issue
-        if apoe is not None:
-            for field in ["apoecenter", "apoenp", "apoeadgc", "adcapoe", "apoecomm"]:
-                source_apoe = self.__apoe.get_value(field)
-                if source_apoe:
-                    assert source_apoe == str(apoe), (
-                        f"Source {field} with value {source_apoe} does not match "
-                        + f"expected apoe value {apoe}"
-                    )
+        for field in ["apoecenter", "apoenp", "apoeadgc", "adcapoe", "apoecomm"]:
+            source_apoe = self.__apoe.get_value(field)
+            if source_apoe:
+                assert source_apoe == str(apoe), (
+                    f"Source {field} with value {source_apoe} does not match "
+                    + f"expected apoe value {apoe}"
+                )
 
-        return apoe if apoe and apoe >= 1 and apoe <= 6 else 9
+        return apoe if apoe >= 1 and apoe <= 6 else 9

@@ -10,10 +10,14 @@ from nacc_attribute_deriver.utils.date import create_death_date
 
 class MDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
-        self.__mds = FormNamespace(table=table)
+        self.__mds = FormNamespace(
+            table=table, required=frozenset(['vitalst']))
+
+        self.__vitalst = self.__mds.get_required('vitalst', int)
 
     def _create_mds_death_date(self) -> Optional[date]:
-        if not self.is_target_int(self.__mds.get_value("vitalst"), 2):
+        """MDS death date; can be unknown."""
+        if self.__vitalst != 2:
             return None
 
         year = self.__mds.get_value("deathyr")  # can be 9999
@@ -24,7 +28,7 @@ class MDSFormAttributeCollection(AttributeCollection):
 
     def _create_mds_death_month(self) -> Optional[int]:
         """MDS death month - can be 99."""
-        if not self.is_target_int(self.__mds.get_value("vitalst"), 2):
+        if self.__vitalst != 2:
             return None
 
         month = self.__mds.get_value("deathmo")
@@ -38,4 +42,5 @@ class MDSFormAttributeCollection(AttributeCollection):
         return month if month is not None else 99
 
     def _create_mds_vitalst(self) -> int:
-        return self.__mds.get_value("vitalst")
+        """MDS VITALST"""
+        return self.__vitalst

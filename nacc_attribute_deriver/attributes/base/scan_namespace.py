@@ -21,7 +21,15 @@ SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
 }
 
 
-class SCANNamespace(RawNamespace):
+class SCANMRINamespace(RawNamespace):
+
+    def __init__(self, table: SymbolTable, scope: SCANMRIScope) -> None:
+        self.__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
+        self.__scope = scope
+
+
+class SCANNPETamespace(RawNamespace):
+
     TRACER_MAPPING = MappingProxyType(
         {
             1: "fdg",
@@ -51,12 +59,15 @@ class SCANNamespace(RawNamespace):
         }
     )
 
+    def __init__(self, table: SymbolTable, scope: SCANPETScope) -> None:
+        self.__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
+        self.__scope = scope
+
     # get functions for common values
-    def get_tracer(self, field: str, scope: SCANPETScope) -> Optional[str]:
+    def get_tracer(self, field: str) -> Optional[str]:
         """Get the tracer string."""
         tracer = None
         try:
-            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
             tracer = float(self.get_value(field))
             tracer = int(tracer)  # can't call int directly on string-float
         except (ValueError, TypeError):
@@ -64,11 +75,10 @@ class SCANNamespace(RawNamespace):
 
         return self.TRACER_MAPPING.get(tracer, None)
 
-    def get_scan_type(self, field: str, scope: SCANPETScope) -> Optional[str]:
+    def get_scan_type(self, field: str) -> Optional[str]:
         """Get the scan type from the tracer."""
         tracer = None
         try:
-            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
             tracer = float(self.get_value(field))
             tracer = int(tracer)
         except (ValueError, TypeError):

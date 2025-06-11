@@ -18,16 +18,15 @@ class LongitudinalAttributeCollection(AttributeCollection):
     """Class to collect longitudinal attributes."""
 
     def __init__(self, table):
-        self.__uds = UDSNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table=table)
-        self.__subject_info = SubjectInfoNamespace(table=table)
+        self.__subject_derived = SubjectDerivedNamespace(table,
+            required=frozenset(['uds-visitdates']))
 
     def _create_total_uds_visits(self) -> int:
         """Total number of UDS visits."""
-        self.__subject_derived.assert_required(["uds-visitdates"])
-        return len(self.__subject_derived.get_value("uds-visitdates"))
+        visitdates = self.__subject_derived.get_required('uds-visitdates', list)
+        return len(visitdates)
 
     def _create_years_of_uds(self) -> int:
         """Creates subject.info.longitudinal-data.uds.year-count."""
-        self.__subject_derived.assert_required(["uds-visitdates"])
-        return len(get_unique_years(self.__subject_derived.get_value("uds-visitdates")))
+        visitdates = self.__subject_derived.get_required('uds-visitdates', list)
+        return len(get_unique_years(visitdates))

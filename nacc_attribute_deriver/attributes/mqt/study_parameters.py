@@ -18,12 +18,12 @@ class StudyParametersAttributeCollection(AttributeCollection):
     """Class to collect study-parameter attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__file = UDSNamespace(table)
+        self.__uds = UDSNamespace(table)
         self.__subject_info = SubjectInfoNamespace(table=table)
 
     def _create_uds_versions_available(self) -> List[str]:
         """Keeps track of available UDS versions."""
-        formver = self.__file.normalized_formver()
+        formver = self.__uds.normalized_formver()
         versions = self.__subject_info.get_value("study-parameters.uds.versions", [])
         versions = {
             version

@@ -78,7 +78,7 @@ class BaseNamespace:
         missing: List[str] = []
         for attribute in self.__required:
             value = self.get_value(attribute)
-            if value is not None:
+            if value is not in [None, '']:
                 continue
 
             missing.append(self.__symbol(attribute))
@@ -114,25 +114,6 @@ class BaseNamespace:
         """Returns the required fields for this namespace."""
         return self.__required
 
-    # TODO: remove this after all attribute collections transitioned
-    def assert_required(self, required: List[str]) -> bool:
-        """Asserts that the given fields in required are in the table for the
-        source.
-
-        Args:
-            required: The list of required fields
-        Returns:
-          True if all required fields are present
-        Raises:
-          MissingRequiredError if a required field is missing
-        """
-        for attribute in required:
-            full_field = f"{self.prefix}{attribute}"
-            if full_field not in self.__table:
-                raise MissingRequiredError(fields=[full_field])
-
-        return True
-
     def get_value(self, attribute: str, default: Optional[Any] = None) -> Optional[Any]:
         """Returns the value of the attribute key in the table.
 
@@ -142,7 +123,13 @@ class BaseNamespace:
         Returns:
           the value for the attribute in the table
         """
-        return self.__table.get(self.__symbol(attribute), default)  # type: ignore
+        value = self.__table.get(self.__symbol(attribute), default)
+
+        # strip whitespace
+        if isinstance(value, str):
+            value = value.strip()
+
+        return value
 
     def get_date(self) -> Optional[datetime.date]:
         """Returns the value for the date-attribute if defined.
@@ -248,6 +235,28 @@ class BaseNamespace:
             raise InvalidFieldError(
                 f"expected {attribute} to have a length, got value {attribute_value}"
             ) from error
+
+    def get_required(self, attribute: str, attr_type: Type[T]) -> T:
+        """Get required value with given type. Throws an error if the
+        attribute is missing, None, or the empty string, or cannot
+        be casted to the expected type.
+
+        Args:
+            attribute: The attribute to grab
+            attr_type: The expected attribute type
+        Returns:
+            The attribute value with the given type
+        """
+        value = self.get_value(attribute)
+        if value in [None, '']:
+            raise InvalidFieldError(
+                f"{self.__prefix}{attribute} cannot be missing")
+
+        try:
+            return attr_type(value)  # type: ignore
+        except TypeError as e:
+            raise InvalidFieldError(
+                f"{self.__prefix}{attribute} must be of type {attr_type}")
 
 
 class FormNamespace(BaseNamespace):
