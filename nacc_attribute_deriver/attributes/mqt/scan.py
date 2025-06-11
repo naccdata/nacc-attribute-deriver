@@ -38,7 +38,7 @@ class MQTSCANAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__scan = SCANNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """SCAN MRI scan types available Access series_type (scan_mridashboard

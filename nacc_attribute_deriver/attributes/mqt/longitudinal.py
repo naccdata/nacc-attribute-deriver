@@ -19,8 +19,8 @@ class LongitudinalAttributeCollection(AttributeCollection):
 
     def __init__(self, table):
         self.__uds = UDSNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table)
-        self.__subject_info = SubjectInfoNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__subject_info = SubjectInfoNamespace(table=table)
 
     def _create_total_uds_visits(self) -> int:
         """Total number of UDS visits."""

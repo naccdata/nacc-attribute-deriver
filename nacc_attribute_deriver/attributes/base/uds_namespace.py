@@ -11,7 +11,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 class UDSNamespace(FormNamespace):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is a UDS form."""
-        super().__init__(table)
+        super().__init__(table=table)
 
         module = self.get_value("module")
         if not module or module.upper() != "UDS":

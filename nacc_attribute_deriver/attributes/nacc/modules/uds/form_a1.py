@@ -20,7 +20,7 @@ class UDSFormA1Attribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     # TODO: additional worry that SAS-code was extremely case-sensitive?
     WHITEX_RESPONSES = MappingProxyType(

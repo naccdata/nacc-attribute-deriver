@@ -30,7 +30,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
     ) -> None:
         """Override initializer to set other module prefixes."""
         self.__uds = UDSNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.

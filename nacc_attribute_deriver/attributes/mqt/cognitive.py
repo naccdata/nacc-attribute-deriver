@@ -14,14 +14,15 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class CognitiveAttributeCollection(AttributeCollection):
     """Class to collect cognitive attributes."""
 
-    def __init__(self, table):
+    def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        self.__derived = DerivedNamespace(table, date_attribute="visitdate")
+        self.__derived = DerivedNamespace(table=table)
 
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS = MappingProxyType(

@@ -18,7 +18,7 @@ from .np_mapper import NPMapper
 class NPFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is an NP form."""
-        self.__np = FormNamespace(table)
+        self.__np = FormNamespace(table=table)
 
         module = self.__np.get_value("module")
         if not module or module.upper() != "NP":

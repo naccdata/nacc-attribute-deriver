@@ -91,9 +91,9 @@ class DemographicsAttributeCollection(AttributeCollection):
 
 class DerivedDemographicsAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table)
-        self.__derived = DerivedNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table)
+        self.__uds = UDSNamespace(table=table)
+        self.__derived = DerivedNamespace(table=table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _create_uds_age(self) -> DateTaggedValue[int]:
         """UDS age at form date, mapped from NACCAGE."""

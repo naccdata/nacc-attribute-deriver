@@ -24,7 +24,7 @@ class ContributionStatus:
 class UDSFormD1Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.

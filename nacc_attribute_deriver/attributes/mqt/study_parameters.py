@@ -19,7 +19,7 @@ class StudyParametersAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__file = UDSNamespace(table)
-        self.__subject_info = SubjectInfoNamespace(table)
+        self.__subject_info = SubjectInfoNamespace(table=table)
 
     def _create_uds_versions_available(self) -> List[str]:
         """Keeps track of available UDS versions."""

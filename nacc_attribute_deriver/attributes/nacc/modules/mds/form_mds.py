@@ -10,7 +10,7 @@ from nacc_attribute_deriver.utils.date import create_death_date
 
 class MDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
-        self.__mds = FormNamespace(table)
+        self.__mds = FormNamespace(table=table)
 
     def _create_mds_death_date(self) -> Optional[date]:
         if not self.is_target_int(self.__mds.get_value("vitalst"), 2):
