@@ -164,7 +164,7 @@ class BaseNamespace:
         attribute: str,
         date: Optional[datetime.date],
         default: Optional[Any] = None,
-    ) -> Optional[DateTaggedValue[Any]]:
+    ) -> DateTaggedValue[Any]:
         """Create a DateTaggedValue for the value of the attribute from this
         namespace.
 
@@ -176,8 +176,6 @@ class BaseNamespace:
           value of the attribute tagged by the date. None if there is no value.
         """
         attribute_value = self.get_value(attribute=attribute, default=default)
-        if attribute_value is None:
-            return None
 
         return DateTaggedValue(value=attribute_value, date=date)
 
