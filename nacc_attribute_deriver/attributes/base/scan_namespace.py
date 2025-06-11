@@ -65,7 +65,14 @@ class SCANNPETamespace(RawNamespace):
 
     # get functions for common values
     def get_tracer(self, field: str) -> Optional[str]:
-        """Get the tracer string."""
+        """Get the tracer string.
+
+        Args:
+            field: Name of attribute to get tracer from
+
+        Returns:
+            The tracer mapping, if found
+        """
         tracer = None
         try:
             tracer = float(self.get_value(field))
@@ -76,7 +83,14 @@ class SCANNPETamespace(RawNamespace):
         return self.TRACER_MAPPING.get(tracer, None)
 
     def get_scan_type(self, field: str) -> Optional[str]:
-        """Get the scan type from the tracer."""
+        """Get the scan type from the tracer.
+
+        Args:
+            field: Name of attribute to get tracer from
+
+        Returns:
+            The tracer SCAN type mapping
+        """
         tracer = None
         try:
             tracer = float(self.get_value(field))
@@ -85,3 +99,19 @@ class SCANNPETamespace(RawNamespace):
             return None
 
         return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
+
+    def get_pet_float(self, field: str) -> Optional[float]:
+        """Get PET float value, which may be missing.
+
+        Args:
+            field: Name of attribute to get tracer from
+
+        Returns:
+            The PET float value, if found
+        """
+        try:
+            return float(self.get_value(field))
+        except (ValueError, TypeError):
+            pass
+
+        return None
