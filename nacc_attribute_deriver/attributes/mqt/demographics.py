@@ -31,7 +31,7 @@ class DemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_sex(self) -> DateTaggedValue[str]:
         """UDS sex. Always required."""
-        sex = self.__uds.get_required("sex", int)
+        sex: int = self.__uds.get_required("sex", int)
         mapped_sex = self.SEX_MAPPING.get(sex)
 
         if not mapped_sex:
@@ -62,7 +62,7 @@ class DemographicsAttributeCollection(AttributeCollection):
         if not self.__uds.is_initial():
             return None
 
-        primlang = self.__uds.get_required("primlang", int)
+        primlang = self.__uds.get_value("primlang", int)
         mapped_primlang = self.PRIMARY_LANGUAGE_MAPPING.get(primlang)
 
         if not mapped_primlang:
@@ -73,17 +73,16 @@ class DemographicsAttributeCollection(AttributeCollection):
             date=self.__uds.get_date(),
         )
 
-    def _create_uds_education_level(self) -> DateTaggedValue[Optional[int]]:
+    def _create_uds_education_level(self) -> Optional[DateTaggedValue[int]]:
         """UDS education level."""
-        result = self.__uds.get_dated_value("educ", None)
-        # ensure int
-        try:
-            if result:
-                result.value = int(result.value)
-        except TypeError:
-            result.value = None
+        educ = self.__uds.get_value('educ', int)
+        if not educ:
+            return None
 
-        return result
+        return DateTaggedValue(
+            value=educ,
+            date=self.__uds.get_date(),
+        )
 
 
 class DerivedDemographicsAttributeCollection(AttributeCollection):
@@ -120,7 +119,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_race(self) -> DateTaggedValue[str]:
         """UDS race."""
-        naccnihr = self.__derived.get_required("naccnihr", int)
+        naccnihr: int = self.__derived.get_required("naccnihr", int)
         mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)
 
         if not mapped_naccnihr:
@@ -130,13 +129,13 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
-        return self.__derived.get_value("naccdage", int)
+        return self.__derived.get_required("naccdage", int)
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> DateTaggedValue[str]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
-        naccdied = self.__derived.get_required("naccdied", int)
+        naccdied: int = self.__derived.get_required("naccdied", int)
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)
 
         if not mapped_naccdied:
@@ -147,4 +146,4 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
     def _create_np_available(self) -> bool:
         """NP available, which is just checking for the existence of
         np_death_age."""
-        return self.__subject_derived.get_value("np_death_age") is not None
+        return self.__subject_derived.get_value("np_death_age", str) is not None

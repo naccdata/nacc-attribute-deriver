@@ -32,7 +32,7 @@ class NCRADAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        self.__apoe = RawNamespace(table, required=["a1", "a2"])
+        self.__apoe = RawNamespace(table, required=frozenset(["a1", "a2"]))
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
@@ -51,7 +51,7 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        self.__apoe = RawNamespace(table, required=["apoe"])
+        self.__apoe = RawNamespace(table, required=frozenset(["apoe"]))
 
     def _create_historic_apoe(self) -> int:
         """For APOE values provided from sources other than the NCRAD APOE
@@ -64,7 +64,7 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
         # while sas code handles consistency, just do a sanity check
         # to make sure entire rows lines up, else there's an issue
         for field in ["apoecenter", "apoenp", "apoeadgc", "adcapoe", "apoecomm"]:
-            source_apoe = self.__apoe.get_value(field)
+            source_apoe = self.__apoe.get_value(field, int)
             if source_apoe:
                 assert source_apoe == str(apoe), (
                     f"Source {field} with value {source_apoe} does not match "

@@ -16,12 +16,12 @@ class NIAGADSAttributeCollection(AttributeCollection):
         """Override initializer to set prefix to NIAGADS-specific data."""
         self.__niagads = RawNamespace(
             table,
-            required=[
+            required=frozenset([
                 "niagads_gwas",
                 "niagads_exomechip",
                 "niagads_wgs",
                 "niagads_wes",
-            ]
+            ])
         )
 
     def _evaluate_investigator(self, attribute: str) -> int:

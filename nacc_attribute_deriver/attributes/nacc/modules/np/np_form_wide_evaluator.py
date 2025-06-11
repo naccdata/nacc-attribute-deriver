@@ -27,7 +27,7 @@ class NPFormWideEvaluator:
 
     def get(self, attr: str) -> Optional[int]:
         """Get attribute."""
-        return self.np.get_value(attr)
+        return self.np.get_value(attr, int)
 
     """
     NACCBRNN

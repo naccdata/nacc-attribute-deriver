@@ -27,6 +27,7 @@ class UDSFormD1Attribute(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         self.__normcog = self.__uds.get_required('normcog', int)
+        self.__demented = self.__uds.get_value("demented", int)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
@@ -42,7 +43,7 @@ class UDSFormD1Attribute(AttributeCollection):
         all_statuses = []
 
         for field in fields:
-            all_statuses.append(self.__uds.get_value(field))
+            all_statuses.append(self.__uds.get_value(field, int))
 
         for status in ContributionStatus.all():
             if any([x == status for x in all_statuses]):
@@ -59,10 +60,10 @@ class UDSFormD1Attribute(AttributeCollection):
             1
             if any(
                 [
-                    self.__uds.get_value("mciamem"),
-                    self.__uds.get_value("mciaplus"),
-                    self.__uds.get_value("mcinon1"),
-                    self.__uds.get_value("mcinon2"),
+                    self.__uds.get_value("mciamem", int),
+                    self.__uds.get_value("mciaplus", int),
+                    self.__uds.get_value("mcinon1", int),
+                    self.__uds.get_value("mcinon2", int),
                 ]
             )
             else 0
@@ -93,15 +94,15 @@ class UDSFormD1Attribute(AttributeCollection):
             return 8
 
         if self.__uds.normalized_formver() != 3:
-            dlb = self.__uds.get_value("dlb")
-            park = self.__uds.get_value("park")
+            dlb = self.__uds.get_value("dlb", int)
+            park = self.__uds.get_value("park", int)
 
             if dlb == 1 or park == 1:
                 return 1
             if dlb == 0 and park == 0:
                 return 0
 
-        lbdis = self.__uds.get_value("lbdis")
+        lbdis = self.__uds.get_value("lbdis", int)
         if lbdis in [0, 1]:
             return lbdis
 
@@ -143,11 +144,11 @@ class UDSFormD1Attribute(AttributeCollection):
         """
         if self._create_mci() == 1:
             return 3
-        if self.__uds.get_value("demented") == 1:
+        if self.__demented == 1:
             return 4
         if self.__normcog == 1:
             return 1
-        if self.__uds.get_value("impnomci") == 1:
+        if self.__uds.get_value("impnomci", int) == 1:
             return 2
 
         # TODO: risk throwing an error here, same situation as nacclbdp.
@@ -216,23 +217,23 @@ class UDSFormD1Attribute(AttributeCollection):
 
         Primary progressive aphasia (PPA) with cognitive impairment
         """
-        ppaph = self.__uds.get_value("ppaph")
-        ppasyn = self.__uds.get_value("ppasyn")
+        ppaph = self.__uds.get_value("ppaph", int)
+        ppasyn = self.__uds.get_value("ppasyn", int)
 
-        if self.__uds.get_value("demented") == 1:
+        if self.__demented == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-        elif self.__uds.get_value("impnomci") == 1 or self._create_mci() == 1:
+        elif self.__uds.get_value("impnomci", int) == 1 or self._create_mci() == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
             formver = self.__uds.normalized_formver()
-            nodx = self.__uds.get_value("nodx")
+            nodx = self.__uds.get_value("nodx", int)
             if (formver != 3 and nodx == 1) or (formver == 3):
                 return 7
 
@@ -243,12 +244,12 @@ class UDSFormD1Attribute(AttributeCollection):
 
         Dementia syndrome -- behavioral variant FTD syndrome (bvFTD)
         """
-        if self.__uds.get_value("demented") != 1:
+        if self.__demented != 1:
             return 8
 
         # assuming demented == 1 after this point
-        ftd = self.__uds.get_value("ftd")
-        ftdsyn = self.__uds.get_value("ftdsyn")
+        ftd = self.__uds.get_value("ftd", int)
+        ftdsyn = self.__uds.get_value("ftdsyn", int)
 
         if ftd in [0, 1]:
             return ftd
@@ -263,12 +264,12 @@ class UDSFormD1Attribute(AttributeCollection):
 
         Dementia syndrome -- Lewy body dementia syndrome
         """
-        if self.__uds.get_value("demented") != 1:
+        if self.__demented != 1:
             return 8
 
         # assuming demented == 1 after this point
-        dlb = self.__uds.get_value("dlb")
-        lbdsyn = self.__uds.get_value("lbdsyn")
+        dlb = self.__uds.get_value("dlb", int)
+        lbdsyn = self.__uds.get_value("lbdsyn", int)
 
         if dlb in [0, 1]:
             return dlb
@@ -282,12 +283,8 @@ class UDSFormD1Attribute(AttributeCollection):
 
         Normal cognition at all visits to date
         """
-        naccnorm = self.__subject_derived.get_cross_sectional_value("naccnorm")
-
-        try:
-            if naccnorm is not None and int(naccnorm) == 0:
-                return 0
-        except (ValueError, TypeError):
-            pass
+        naccnorm = self.__subject_derived.get_cross_sectional_value("naccnorm", int)
+        if naccnorm is not None and naccnorm == 0:
+            return 0
 
         return self.__normcog

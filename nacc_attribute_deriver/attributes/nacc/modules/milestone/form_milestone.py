@@ -18,9 +18,9 @@ class MilestoneAttributeCollection(AttributeCollection):
         if self.__deceased != 1:
             return None
 
-        year = self.__milestone.get_value("deathyr")
-        month = self.__milestone.get_value("deathmo")  # can be 99
-        day = self.__milestone.get_value("deathdy")  # can be 99
+        year = self.__milestone.get_value("deathyr", int)
+        month = self.__milestone.get_value("deathmo", int)  # can be 99
+        day = self.__milestone.get_value("deathdy", int)  # can be 99
 
         # if month and day unknown, converted to YYYY/07/01 (SAS)
         return create_death_date(year=year, month=month, day=day)
@@ -30,7 +30,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         if self.__deceased != 1:
             return None
 
-        month = self.__milestone.get_value("deathmo")
+        month = self.__milestone.get_value("deathmo", int)
 
         try:
             if month is not None:

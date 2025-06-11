@@ -104,16 +104,13 @@ class CognitiveAttributeCollection(AttributeCollection):
         """
         attribute_list: List[str] = []
         for attribute in attributes:
-            value = self.__uds.get_value(attribute)
+            value = self.__uds.get_value(attribute, int)
             if not value:
-                value = self.__derived.get_value(attribute)
+                value = self.__derived.get_value(attribute, int)
             if not value:
                 continue
 
-            if isinstance(value, list):
-                if not any(self.is_target_int(x, expected_value) for x in value):
-                    continue
-            elif not self.is_target_int(value, expected_value):
+            if not self.is_target_int(value, expected_value):
                 continue
 
             attribute_list.append(attribute)

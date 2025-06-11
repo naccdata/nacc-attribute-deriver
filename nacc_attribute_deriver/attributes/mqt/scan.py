@@ -44,7 +44,7 @@ class MQTSCANMRIQCAttributeCollection(AttributeCollection):
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """SCAN MRI scan types available Access series_type (scan_mridashboard
         file)"""
-        return self.__scan.get_value("series_type")
+        return self.__scan.get_value("series_type", str)
 
     def _create_scan_mri_session_count(self) -> int:
         """Number of SCAN MRI session available.
@@ -83,8 +83,10 @@ class MQTSCANMRIQCAttributeCollection(AttributeCollection):
         Returns:
             Whether or not this is an indicator
         """
+        value = self.__mri_sbm.get_value(target, str)
+
         try:
-            float(self.__mri_sbm.get_value(target))
+            float(value)
         except (ValueError, TypeError):
             return False
 
@@ -166,7 +168,7 @@ class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
 
     def get_centiloid(self) -> Optional[float]:
         """Get the centiloid value."""
-        return self.__amyloiad_gaain.get_pet_float("centiloids")
+        return self.__amyloiad_gaain.get_value("centiloids", float)
 
     def _create_scan_pet_centaloid(self) -> Optional[float]:
         """SCAN Amyloid PET scans centiloid min Access CENTILOIDS in UC
@@ -216,7 +218,7 @@ class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
     def _create_scan_pet_amyloid_gaain_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid GAAIN Centiloid/SUVR analysis type."""
         centiloid = self.get_centiloid()
-        suvr = self.__amyloid_gaain.get_pet_float("gaain_summary_suvr")
+        suvr = self.__amyloid_gaain.get_value("gaain_summary_suvr", float)
         return PETAnalysisTypes.AMYLOID_GAAIN if centiloid and suvr else None
 
 
@@ -230,7 +232,7 @@ class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
 
     def _create_scan_pet_amyloid_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid NPDKA SUVR analysis type."""
-        suvr = self.__amyloid_npdka.get_pet_float("npdka_summary_suvr")
+        suvr = self.__amyloid_npdka.get_value("npdka_summary_suvr", float)
         return PETAnalysisTypes.AMYLOID_NPDKA if suvr else None
 
 
@@ -244,7 +246,7 @@ class MQTSCANPETFTDNPDKAAttributeCollection(AttributeCollection):
 
     def _create_scan_pet_fdg_npdka_analysis_type(self) -> Optional[str]:
         """Returns the FDG NPDKA SUVR analysis type."""
-        suvr = self.__fdg_npdka.get_pet_float("fdg_metaroi_suvr")
+        suvr = self.__fdg_npdka.get_value("fdg_metaroi_suvr", float)
         return PETAnalysisTypes.FDG_NPDKA if suvr else None
 
 
@@ -258,5 +260,5 @@ class MQTSCANPETTAUNPDKAAttributeCollection(AttributeCollection):
 
     def _create_scan_pet_tau_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Tau NPDKA SUVR analysis type."""
-        suvr = self.__tau_npdka.get_pet_float("meta_temporal_suvr")
+        suvr = self.__tau_npdka.get_value("meta_temporal_suvr", float)
         return PETAnalysisTypes.TAU_NPDKA if suvr else None

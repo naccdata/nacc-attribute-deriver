@@ -20,9 +20,9 @@ class MDSFormAttributeCollection(AttributeCollection):
         if self.__vitalst != 2:
             return None
 
-        year = self.__mds.get_value("deathyr")  # can be 9999
-        month = self.__mds.get_value("deathmo")  # can be 99
-        day = self.__mds.get_value("deathday")  # can be 99
+        year = self.__mds.get_value("deathyr", int)  # can be 9999
+        month = self.__mds.get_value("deathmo", int)  # can be 99
+        day = self.__mds.get_value("deathday", int)  # can be 99
 
         return create_death_date(year=year, month=month, day=day)
 
@@ -31,7 +31,7 @@ class MDSFormAttributeCollection(AttributeCollection):
         if self.__vitalst != 2:
             return None
 
-        month = self.__mds.get_value("deathmo")
+        month = self.__mds.get_value("deathmo", int)
 
         try:
             if month is not None:

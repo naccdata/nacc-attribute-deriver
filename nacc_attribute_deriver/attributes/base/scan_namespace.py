@@ -7,6 +7,7 @@ from types import MappingProxyType
 from typing import Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.scope import SCANMRIScope, SCANPETScope
 
 # TODO: make this more elegant
@@ -24,7 +25,7 @@ SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
 class SCANMRINamespace(RawNamespace):
 
     def __init__(self, table: SymbolTable, scope: SCANMRIScope) -> None:
-        self.__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
+        super().__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
         self.__scope = scope
 
 
@@ -60,7 +61,7 @@ class SCANNPETamespace(RawNamespace):
     )
 
     def __init__(self, table: SymbolTable, scope: SCANPETScope) -> None:
-        self.__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
+        super().__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
         self.__scope = scope
 
     # get functions for common values
@@ -73,12 +74,8 @@ class SCANNPETamespace(RawNamespace):
         Returns:
             The tracer mapping, if found
         """
-        tracer = None
-        try:
-            tracer = float(self.get_value(field))
-            tracer = int(tracer)  # can't call int directly on string-float
-        except (ValueError, TypeError):
-            return None
+        raw_tracer = self.get_value(field, float)
+        tracer = int(raw_tracer)
 
         return self.TRACER_MAPPING.get(tracer, None)
 
@@ -91,27 +88,7 @@ class SCANNPETamespace(RawNamespace):
         Returns:
             The tracer SCAN type mapping
         """
-        tracer = None
-        try:
-            tracer = float(self.get_value(field))
-            tracer = int(tracer)
-        except (ValueError, TypeError):
-            return None
+        raw_tracer = self.get_value(field, float)
+        tracer = int(raw_tracer)
 
         return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
-
-    def get_pet_float(self, field: str) -> Optional[float]:
-        """Get PET float value, which may be missing.
-
-        Args:
-            field: Name of attribute to get tracer from
-
-        Returns:
-            The PET float value, if found
-        """
-        try:
-            return float(self.get_value(field))
-        except (ValueError, TypeError):
-            pass
-
-        return None
