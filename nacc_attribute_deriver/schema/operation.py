@@ -157,8 +157,8 @@ class SetOperation(Operation):
         if isinstance(value, DateTaggedValue):
             value = value.value  # type: ignore
 
-        cur_set = table.get(attribute)  # type: ignore
-        cur_set: Set[Any] = set(cur_set) if cur_set else set()
+        cur_set: Set[Any] = table.get(attribute)  # type: ignore
+        cur_set = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
             cur_set = cur_set.union(set(value))  # type: ignore
@@ -204,7 +204,7 @@ class DateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        temp_type = get_date_tagged_type(get_optional_type(expression_type))
+        temp_type: TypeAlias = get_date_tagged_type(get_optional_type(expression_type))  # type: ignore
         if temp_type is not expression_type:
             return DateTaggedValue[temp_type]
 
