@@ -9,23 +9,26 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class UDSNamespace(FormNamespace):
-    def __init__(self, table: SymbolTable) -> None:
+    def __init__(
+        self, table: SymbolTable, required: Optional[frozenset[str]] = None
+    ) -> None:
         """Check that this is a UDS form."""
-        super().__init__(table=table)
+        if required is None:
+            required = frozenset()
 
-        module = self.get_value("module")
-        if not module or module.upper() != "UDS":
+        default_required = ["module", "packet", "formver", "birthmo", "birthyr"]
+        super().__init__(table=table, required=required.union(default_required))
+
+        module = self.get_required("module", str)
+        if module.upper() != "UDS":
             raise InvalidFieldError(
                 f"Current file is not an UDS form: found {module}",
             )
 
     def is_initial(self) -> bool:
         """Returns whether or not this is an initial packet."""
-        packet = self.get_value("packet")
-        if packet is not None:
-            return str(packet).startswith("I")
-
-        return False
+        packet = self.get_required("packet", str)
+        return packet.startswith("I")
 
     def normalized_formver(self) -> int:
         """Returns the normalized form version.
@@ -33,22 +36,20 @@ class UDSNamespace(FormNamespace):
         Handles cases where the form version is listed as 3.2 for
         example.
         """
+        raw_formver = self.get_required("formver", float)
+
         try:
-            raw_formver = self.get_value("formver")
-            formver = int(float(raw_formver))
+            formver = int(raw_formver)
         except (ValueError, TypeError) as e:
-            msg = f"Current file does not have a numerical formver: {raw_formver}"
-            raise InvalidFieldError(msg) from e
+            raise InvalidFieldError(
+                f"Cannot determine normalized formver: {raw_formver}"
+            ) from e
 
         return formver
 
-    def generate_uds_dob(self) -> Optional[date]:
+    def generate_uds_dob(self) -> date:
         """Creates UDS DOB, which is used to calculate ages."""
-        birthmo = self.get_value("birthmo")
-        birthyr = self.get_value("birthyr")
-        formdate = self.get_value("visitdate")
+        birthmo = self.get_required("birthmo", int)
+        birthyr = self.get_required("birthyr", int)
 
-        if None in [birthmo, birthyr, formdate]:
-            return None
-
-        return datetime(int(birthyr), int(birthmo), 1).date()
+        return datetime(birthyr, birthmo, 1).date()

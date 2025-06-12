@@ -2,10 +2,10 @@
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.scan_namespace import (
-    SCAN_REQUIRED_FIELDS,
-    SCANNamespace,
+    SCANMRINamespace,
+    SCANPETNamespace,
 )
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 from nacc_attribute_deriver.utils.scope import (
     SCANMRIScope,
@@ -13,35 +13,35 @@ from nacc_attribute_deriver.utils.scope import (
 )
 
 
-class NACCSCANAttributeCollection(AttributeCollection):
-    """Class to collect NACC SCAN attributes needed to derive MQT."""
+class NACCSCANMRIAttributeCollection(AttributeCollection):
+    """Class to collect NACC MRI SCAN attributes needed to derive MQT."""
 
     def __init__(self, table):
-        self.__scan = SCANNamespace(table)
+        self.__mri_qc = SCANMRINamespace(table, scope=SCANMRIScope.MRI_QC)
 
     def _create_scan_mri_dates(self) -> str:
         """Gets the date of the MRI scan - temporary derived variable."""
-        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[SCANMRIScope.MRI_QC])
-        scandate = self.__scan.get_value("study_date")
-
-        scandate = datetime_from_form_date(scandate)
+        raw_scandate = self.__mri_qc.get_required("study_date", str)
+        scandate = datetime_from_form_date(raw_scandate)
 
         if not scandate:
-            raise MissingRequiredError(
-                fields=["study_date"],
-            )
+            raise InvalidFieldError(f"Failed to parse scandate: {raw_scandate}")
 
         return str(scandate.date())
 
+
+class NACCSCANPETAttributeCollection(AttributeCollection):
+    """Class to collect NACC PET SCAN attributes needed to derive MQT."""
+
+    def __init__(self, table):
+        self.__pet_qc = SCANPETNamespace(table, scope=SCANPETScope.PET_QC)
+
     def _create_scan_pet_dates(self) -> str:
         """Gets the date of the PET scan - temporary derived variable"""
-        self.__scan.assert_required(SCAN_REQUIRED_FIELDS[SCANPETScope.PET_QC])
-        scandate = self.__scan.get_value("scan_date")
+        raw_scandate = self.__pet_qc.get_required("scan_date", str)
+        scandate = datetime_from_form_date(raw_scandate)
 
-        scandate = datetime_from_form_date(scandate)
         if not scandate:
-            raise MissingRequiredError(
-                fields=["scan_date"],
-            )
+            raise InvalidFieldError(f"Failed to parse scandate: {raw_scandate}")
 
         return str(scandate.date())

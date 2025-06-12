@@ -23,11 +23,11 @@ class NPFormWideEvaluator:
         """Initializer; assumes np is correct form."""
         self.np = np
         self.mapper = mapper
-        self.formver = np.get_value("formver")
+        self.formver = np.get_required("formver", int)
 
     def get(self, attr: str) -> Optional[int]:
         """Get attribute."""
-        return self.np.get_value(attr)
+        return self.np.get_value(attr, int)
 
     """
     NACCBRNN

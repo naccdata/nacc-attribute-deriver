@@ -26,6 +26,9 @@ def table() -> SymbolTable:
                         "normcog": 1,
                         "formver": 2,
                         "module": "uds",
+                        "packet": "it",
+                        "birthmo": 1,
+                        "birthyr": 1950,
                     }
                 }
             }

@@ -4,7 +4,7 @@ Assumes NACC-derived variables are already set
 """
 
 from types import MappingProxyType
-from typing import List, Mapping, Optional
+from typing import List, Mapping
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
@@ -21,8 +21,28 @@ class CognitiveAttributeCollection(AttributeCollection):
     """Class to collect cognitive attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table)
-        self.__derived = DerivedNamespace(table=table)
+        self.__uds = UDSNamespace(
+            table,
+            required=frozenset(
+                [
+                    "cdrglob",
+                ]
+            ),
+        )
+        self.__derived = DerivedNamespace(
+            table=table,
+            required=frozenset(
+                [
+                    "naccalzp",
+                    "nacclbdp",
+                    "naccppa",
+                    "naccbvft",
+                    "nacclbds",
+                    "naccudsd",
+                    "naccetpr",
+                ]
+            ),
+        )
 
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS = MappingProxyType(
@@ -83,27 +103,26 @@ class CognitiveAttributeCollection(AttributeCollection):
         }
     )
 
-    def __filter_attributes(self, attributes: List[str], expected_value: int):
+    def __filter_attributes(
+        self, attributes: List[str], expected_value: int
+    ) -> List[str]:
         """Returns a list of the attributes that have the expected value.
 
         Args:
           attributes: the list of attributes to filter
           expected_value: the value to test against in filtering
         Returns:
-          the list of attributes whose value matches the expected_value
+          the list of attributes whose value matches the expected_value. can be empty
         """
         attribute_list: List[str] = []
         for attribute in attributes:
-            value = self.__uds.get_value(attribute)
+            value = self.__uds.get_value(attribute, int)
             if not value:
-                value = self.__derived.get_value(attribute)
+                value = self.__derived.get_value(attribute, int)
             if not value:
                 continue
 
-            if isinstance(value, list):
-                if not any(self.is_target_int(x, expected_value) for x in value):
-                    continue
-            elif not self.is_target_int(value, expected_value):
+            if not self.is_target_int(value, expected_value):
                 continue
 
             attribute_list.append(attribute)
@@ -130,7 +149,6 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_contributing_diagnosis(self) -> DateTaggedValue[List[str]]:
         """Mapped from all possible contributing diagnosis."""
-        self.__derived.assert_required(["naccalzp", "nacclbdp"])
         return DateTaggedValue(
             value=self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2),
             date=self.__uds.get_date(),
@@ -138,31 +156,27 @@ class CognitiveAttributeCollection(AttributeCollection):
 
     def _create_dementia(self) -> DateTaggedValue[List[str]]:
         """Mapped from all dementia types."""
-        self.__derived.assert_required(["naccppa", "naccbvft", "nacclbds"])
         return DateTaggedValue(
             value=self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1),
             date=self.__uds.get_date(),
         )
 
-    def _create_cognitive_status(self) -> DateTaggedValue[Optional[int]]:
+    def _create_cognitive_status(self) -> DateTaggedValue[int]:
         """Mapped from NACCUDSD."""
-        self.__derived.assert_required(["naccudsd"])
-
         return DateTaggedValue(
-            value=self.__derived.get_value("naccudsd"),
+            value=self.__derived.get_required("naccudsd", int),
             date=self.__uds.get_date(),
         )
 
     def _create_etpr(self) -> DateTaggedValue[int]:
         """Mapped from NACCETPR."""
-        self.__derived.assert_required(["naccetpr"])
         return DateTaggedValue(
-            value=self.__derived.get_value("naccetpr"),
+            value=self.__derived.get_required("naccetpr", int),
             date=self.__uds.get_date(),
         )
 
-    def _create_global_cdr(self) -> Optional[DateTaggedValue[float]]:
+    def _create_global_cdr(self) -> DateTaggedValue[float]:
         """Mapped from CDRGLOB."""
-        cdrglob = self.__uds.get_value("cdrglob")
-
-        return DateTaggedValue(value=cdrglob, date=self.__uds.get_date())
+        return DateTaggedValue(
+            value=self.__uds.get_required("cdrglob", float), date=self.__uds.get_date()
+        )

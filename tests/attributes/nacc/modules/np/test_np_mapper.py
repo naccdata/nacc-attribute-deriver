@@ -71,7 +71,7 @@ class TestNPMapper:
         assert np_mapper.map_sub1(None) == 9
 
     def test_maplewy_null(self, np_mapper):
-        assert np_mapper.map_lewy() is None
+        assert np_mapper.map_lewy() == 9
 
     def test_mapgross(self, np_form_attribute_table, form_prefix):
         mapper = NPMapper(FormNamespace(table=np_form_attribute_table))

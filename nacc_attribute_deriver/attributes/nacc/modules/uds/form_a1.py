@@ -275,8 +275,8 @@ class UDSFormA1Attribute(AttributeCollection):
         """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
         compares to form date."""
         dob = self.__uds.generate_uds_dob()
-        visitdate = self.__uds.get_value("visitdate", None)
-        visitdate = datetime_from_form_date(visitdate)
+        visitdate = datetime_from_form_date(self.__uds.get_required("visitdate", str))
+
         if not dob or not visitdate:
             raise ValueError("Missing one of DOB or visitdate to calculate naccage")
 
@@ -286,21 +286,19 @@ class UDSFormA1Attribute(AttributeCollection):
 
         return age
 
-    def _create_naccnihr(self) -> int:
-        """Creates NACCNIHR (race)"""
-        result = self.generate_naccnihr(
-            race=self.__uds.get_value("race"),
-            racex=self.__uds.get_value("racex"),
-            racesec=self.__uds.get_value("racesec"),
-            racesecx=self.__uds.get_value("racesecx"),
-            raceter=self.__uds.get_value("raceter"),
-            raceterx=self.__uds.get_value("raceterx"),
-        )
+    def _create_naccnihr(self) -> Optional[int]:
+        """Creates NACCNIHR (race) if first form."""
+        if not self.__uds.is_initial():
+            return None
 
-        # if result is 99/Unknown and not an initial packet,
-        # check for a default in subject.info.derived
-        if result == 99 and not self.__uds.is_initial():
-            return self.__subject_derived.get_cross_sectional_value("naccnihr", result)
+        result = self.generate_naccnihr(
+            race=self.__uds.get_value("race", int),
+            racex=self.__uds.get_value("racex", str),
+            racesec=self.__uds.get_value("racesec", int),
+            racesecx=self.__uds.get_value("racesecx", str),
+            raceter=self.__uds.get_value("raceter", int),
+            raceterx=self.__uds.get_value("raceterx", str),
+        )
 
         return result
 
@@ -510,12 +508,12 @@ class UDSFormA1Attribute(AttributeCollection):
         # check if affiliate status already determined
         # TODO - right now treating like cross-sectional, but should this change
         # to non-affiliate if a later form defines it as such?
-        affiliate = self.__subject_derived.get_value("affiliate")
+        affiliate = self.__subject_derived.get_value("affiliate", bool)
         if affiliate:
             return True
 
         # check source == 4 or sourcenw == 2
-        source = self.__uds.get_value("source")
-        sourcenw = self.__uds.get_value("sourcenw")
+        source = self.__uds.get_value("source", int)
+        sourcenw = self.__uds.get_value("sourcenw", int)
 
         return source == 4 or sourcenw == 2

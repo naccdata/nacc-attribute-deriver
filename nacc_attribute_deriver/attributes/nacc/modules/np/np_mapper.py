@@ -15,7 +15,7 @@ class NPMapper:
         self.__np = np
 
     def map_gross(self, new: int | None) -> Optional[int]:
-        npgross = self.__np.get_value("npgross")
+        npgross = self.__np.get_value("npgross", int)
         if npgross == 2:
             return 0
         if npgross == 9:
@@ -23,7 +23,7 @@ class NPMapper:
 
         return new
 
-    def map_sub4(self, old: int) -> int:
+    def map_sub4(self, old: int | None) -> int:
         if old in [1, 2, 3, 4]:
             return 4 - old
         if old == 5:
@@ -31,7 +31,7 @@ class NPMapper:
 
         return 9
 
-    def map_v9(self, old: int) -> int:
+    def map_v9(self, old: int | None) -> int:
         if old == 1:
             return 1
         if old == 2:
@@ -42,8 +42,8 @@ class NPMapper:
         return 9
 
     def map_vasc(self, new: int | None) -> Optional[int]:
-        npgross = self.__np.get_value("npgross")
-        npvasc = self.__np.get_value("npvasc")
+        npgross = self.__np.get_value("npgross", int)
+        npvasc = self.__np.get_value("npvasc", int)
         if npgross == 2 or npvasc == 2:
             return 0
         if npgross == 9 or npvasc == 9:
@@ -53,7 +53,7 @@ class NPMapper:
 
         return new
 
-    def map_sub1(self, old: int):
+    def map_sub1(self, old: int | None):
         if old in [1, 2, 3, 4]:
             return old - 1
         if old == 5:
@@ -62,15 +62,17 @@ class NPMapper:
         return 9
 
     def map_lewy(self) -> int:
-        nplewy = self.__np.get_value("nplewy")
+        nplewy = self.__np.get_value("nplewy", int)
         if nplewy == 6:
             return 8
         if nplewy == 5:
             return 0
+        if nplewy is not None:
+            return nplewy
 
-        return nplewy
+        return 9
 
-    def map_v10(self, old: int, gateway: int) -> int:
+    def map_v10(self, old: int | None, gateway: int | None) -> int:
         if old is not None:
             return old
 
@@ -79,7 +81,7 @@ class NPMapper:
 
         return 9
 
-    def map_comb2(self, old1: int, old2: int) -> int:
+    def map_comb2(self, old1: int | None, old2: int | None) -> int:
         """Combine two variables to create new one."""
         if old1 == 1 or old2 == 1:
             return 1

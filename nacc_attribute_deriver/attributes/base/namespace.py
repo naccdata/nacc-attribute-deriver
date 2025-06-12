@@ -8,6 +8,7 @@ from typing import (
     Iterable,
     List,
     Optional,
+    Type,
     TypeVar,
 )
 
@@ -77,7 +78,7 @@ class BaseNamespace:
         """
         missing: List[str] = []
         for attribute in self.__required:
-            value = self.get_value(attribute)
+            value = self.get_value(attribute, str)
             if value is not None:
                 continue
 
@@ -114,35 +115,54 @@ class BaseNamespace:
         """Returns the required fields for this namespace."""
         return self.__required
 
-    # TODO: remove this after all attribute collections transitioned
-    def assert_required(self, required: List[str]) -> bool:
-        """Asserts that the given fields in required are in the table for the
-        source.
-
-        Args:
-            required: The list of required fields
-        Returns:
-          True if all required fields are present
-        Raises:
-          MissingRequiredError if a required field is missing
-        """
-        for attribute in required:
-            full_field = f"{self.prefix}{attribute}"
-            if full_field not in self.__table:
-                raise MissingRequiredError(fields=[full_field])
-
-        return True
-
-    def get_value(self, attribute: str, default: Optional[Any] = None) -> Optional[Any]:
+    def get_value(
+        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
+    ) -> Optional[T]:
         """Returns the value of the attribute key in the table.
 
         Args:
-          key: the attribute name
+          attribute: the attribute name
+          attr_type: the attribute type; an error is thrown if the
+            non-null grabbed value cannot be casted to it
           default: the default value
         Returns:
           the value for the attribute in the table
         """
-        return self.__table.get(self.__symbol(attribute), default)  # type: ignore
+        value = self.__table.get(self.__symbol(attribute), default)  # type: ignore
+        if value is None:
+            return value
+
+        # strip whitespace
+        if isinstance(value, str):
+            value = value.strip()
+            # treat empty string as None
+            if value == "":
+                return None
+
+        try:
+            return attr_type(value)  # type: ignore
+        except TypeError as e:
+            raise InvalidFieldError(
+                f"{self.__symbol(attribute)} must be of type {attr_type}"
+            ) from e
+
+    def get_required(self, attribute: str, attr_type: Type[T]) -> T:
+        """Get required value with given type. Throws an error if the attribute
+        is missing, None, or the empty string, or cannot be casted to the
+        expected type.
+
+        Args:
+            attribute: The attribute to grab
+            attr_type: The expected attribute type
+        Returns:
+            The attribute value with the given type
+        """
+        assert self.is_required(attribute)
+        value = self.get_value(attribute, attr_type)
+        if value is None:
+            raise InvalidFieldError(f"{self.__symbol(attribute)} cannot be missing")
+
+        return value
 
     def get_date(self) -> Optional[datetime.date]:
         """Returns the value for the date-attribute if defined.
@@ -153,101 +173,11 @@ class BaseNamespace:
         if self.__date_attribute is None:
             return None
 
-        file_date = datetime_from_form_date(self.get_value(self.__date_attribute))
+        file_date = datetime_from_form_date(self.get_value(self.__date_attribute, str))
         if not file_date:
             return None
 
         return file_date.date()
-
-    def create_dated_value(
-        self,
-        attribute: str,
-        date: Optional[datetime.date],
-        default: Optional[Any] = None,
-    ) -> DateTaggedValue[Any]:
-        """Create a DateTaggedValue for the value of the attribute from this
-        namespace.
-
-        Args:
-          attribute: the attribute
-          date: the date to tag the value with
-          default: value to use if the attribute has no value in this namespace.
-        Returns:
-          value of the attribute tagged by the date. None if there is no value.
-        """
-        attribute_value = self.get_value(attribute=attribute, default=default)
-
-        return DateTaggedValue(value=attribute_value, date=date)
-
-    def get_dated_value(
-        self, attribute: str, default: Optional[Any] = None
-    ) -> Optional[DateTaggedValue[Any]]:
-        """Grab value from the table using the key and prefix, if provided.
-
-        Args:
-            key: Key to grab value for
-            default: Default value to return if key is not found
-        """
-        return self.create_dated_value(attribute, self.get_date(), default)
-
-    def get_int_value(self, attribute: str) -> Optional[int]:
-        """Gets the value for an integer attribute.
-
-        Args:
-          attribute: the attribute
-        Returns:
-          the integer value of attribute if exists. None, otherwise.
-        Raises:
-          TypeError if the value of the attribute is not an integer
-        """
-        attribute_value = self.get_value(attribute)
-        if attribute_value is None:
-            return None
-
-        try:
-            return int(attribute_value)
-        except ValueError as error:
-            raise InvalidFieldError(f"{attribute} expected to be an integer") from error
-
-    def get_float(self, attribute: str) -> float:
-        """Gets the float value of a required attribute.
-
-        Args:
-          attribute: attribute name
-        Returns:
-          the float value of the attribute
-        Raises:
-          InvalidFieldError if the attribute does not have a float value
-        """
-        assert self.is_required(attribute)
-        attribute_value = self.get_value(attribute)
-        assert attribute_value is not None
-
-        try:
-            return float(attribute_value)
-        except (ValueError, TypeError) as error:
-            raise InvalidFieldError(
-                f"expected {attribute} to have float value, got {attribute_value}"
-            ) from error
-
-    def get_count(self, attribute: str) -> int:
-        """Returns the length of the value of the required attribute.
-
-        Args:
-          attribute: the attribute
-        Returns:
-          the length of the attribute value. None if there is no attribute
-        """
-        assert self.is_required(attribute)
-        attribute_value = self.get_value(attribute)
-        assert attribute_value is not None
-
-        try:
-            return len(attribute_value)
-        except TypeError as error:
-            raise InvalidFieldError(
-                f"expected {attribute} to have a length, got value {attribute_value}"
-            ) from error
 
 
 class FormNamespace(BaseNamespace):
@@ -340,7 +270,7 @@ class SubjectDerivedNamespace(BaseNamespace):
         )
 
     def get_cross_sectional_value(
-        self, attribute: str, default: Optional[Any] = None
+        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
     ) -> Any:
         """Returns a cross-sectional value.
 
@@ -350,10 +280,10 @@ class SubjectDerivedNamespace(BaseNamespace):
         Returns:
           the value for the attribute in the table
         """
-        return self.get_value(f"cross-sectional.{attribute}", default)
+        return self.get_value(f"cross-sectional.{attribute}", attr_type, default)
 
     def get_longitudinal_value(
-        self, attribute: str, default: Optional[Any] = None
+        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
     ) -> Any:
         """Returns a longitudinal value.
 
@@ -363,4 +293,4 @@ class SubjectDerivedNamespace(BaseNamespace):
         Returns:
           the value for the attribute in the table
         """
-        return self.get_value(f"longitudinal.{attribute}", default)
+        return self.get_value(f"longitudinal.{attribute}", attr_type, default)

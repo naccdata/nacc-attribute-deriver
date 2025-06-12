@@ -7,6 +7,7 @@ import pytest
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from tests.conftest import set_attribute
 
@@ -66,3 +67,13 @@ class TestUDSNamespace:
         # set to followup packet
         set_attribute(table, form_prefix, "formver", "3")
         assert namespace.normalized_formver() == 3
+
+    def test_invalid_module(self, table, form_prefix):
+        """Test invalid module; should throw InvalidFieldError."""
+        set_attribute(table, form_prefix, "module", "FTLD")
+        with pytest.raises(InvalidFieldError):
+            UDSNamespace(table)
+
+        set_attribute(table, form_prefix, "module", "UDS.")
+        with pytest.raises(InvalidFieldError):
+            UDSNamespace(table)
