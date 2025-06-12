@@ -8,6 +8,7 @@ from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNames
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
@@ -278,13 +279,86 @@ class UDSFormA1Attribute(AttributeCollection):
         visitdate = datetime_from_form_date(self.__uds.get_required("visitdate", str))
 
         if not dob or not visitdate:
-            raise ValueError("Missing one of DOB or visitdate to calculate naccage")
+            raise AttributeDeriverError(
+                "Missing one of DOB or visitdate to calculate naccage"
+            )
 
         age = calculate_age(dob, visitdate.date())
         if age is None:
-            raise ValueError("Unable to calculate naccage")
+            raise AttributeDeriverError("Unable to calculate naccage")
 
         return age
+
+    def _create_naccageb(self) -> Optional[int]:
+        """Creates NACCAGEB (age at initial visit)."""
+        if not self.__uds.is_initial():
+            return None
+
+        return self._create_naccage()
+
+    def _create_nacclivs(self) -> int:
+        """Creates NACCLIVS - living situation."""
+        formver = self.__uds.normalized_formver()
+        if formver >= 3:
+            livsitua = self.__uds.get_value("livsitua", int)
+            if livsitua == 4:
+                return 5
+            if livsitua in [5, 6]:
+                return 4
+            if livsitua is None:
+                return 9
+
+            return livsitua
+
+        maristat = self.__uds.get_value("maristat", int)
+        if maristat == 8:
+            return 9
+
+        livsit = self.__uds.get_value("livsit", int)
+        return livsit if livsit is not None else 9
+
+    def _create_naccreas(self) -> Optional[int]:
+        """Creates NACCREAS - primary reason for coming to ADC.
+
+        Not collected at followup visits.
+        """
+        if not self.__uds.is_initial():
+            return None
+
+        reason = self.__uds.get_value("reason", int)
+        if reason in [3, 4]:
+            return 7
+
+        return reason if reason is not None else 9
+
+    def _create_naccrefr(self) -> Optional[int]:
+        """Ceates NACCREFR - principle referral source.
+
+        Not collected at followup visits.
+        """
+        if not self.__uds.is_initial():
+            return None
+
+        formver = self.__uds.normalized_formver()
+        if formver >= 3:
+            refersc = self.__uds.get_value("refersc", int)
+            if refersc in [1, 2, 3]:
+                return 1
+            if refersc in [4, 5, 6]:
+                return 2
+            if refersc is None:
+                return 9
+            return refersc
+
+        refer = self.__uds.get_value("refer", int)
+        if refer == 5:
+            return 2
+        if refer in [3, 4, 6, 7]:
+            return 8
+        if refer is None:
+            return 9
+
+        return refer
 
     def _create_naccnihr(self) -> Optional[int]:
         """Creates NACCNIHR (race) if first form."""
