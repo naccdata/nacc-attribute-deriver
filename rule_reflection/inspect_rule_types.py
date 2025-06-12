@@ -31,8 +31,8 @@ def type_string(type_object: type) -> str:
         return "None"
 
     if hasattr(type_object, "__pydantic_generic_metadata__"):
-        origin = type_object.__pydantic_generic_metadata__["origin"]
-        args = type_object.__pydantic_generic_metadata__["args"]
+        origin = type_object.__pydantic_generic_metadata__["origin"]  # type: ignore
+        args = type_object.__pydantic_generic_metadata__["args"]  # type: ignore
     else:
         origin = get_origin(type_object)
         args = get_args(type_object)
@@ -41,11 +41,11 @@ def type_string(type_object: type) -> str:
         return type_object.__name__
 
     if origin is Union and type(None) in args:
-        str_args = [type_string(arg) for arg in args if arg is not type(None)]
+        str_args = [type_string(arg) for arg in args if arg is not type(None)]  # type: ignore
         return f"Optional[{', '.join(str_args)}]"
 
-    str_args = [type_string(arg) for arg in args]
-    return f"{origin.__name__}[{', '.join(str_args)}]"
+    str_args = [type_string(arg) for arg in args]  # type: ignore
+    return f"{origin.__name__}[{', '.join(str_args)}]"  # type: ignore
 
 
 class TypeWrapper:

@@ -62,19 +62,19 @@ class TestOperationAttributeType:
         value = "blah"
         operation.evaluate(table=table, value=value, attribute="single-value")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("single-value")[0]) is type(value)
+        assert type(table.get("single-value")[0]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("date-tagged")[0]) is type(value)
+        assert type(table.get("date-tagged")[0]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
         operation.evaluate(table=table, value=wrapper, attribute="list-wrapped")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("list-wrapped")[0]) is type(value)
+        assert type(table.get("list-wrapped")[0]) is type(value)  # type: ignore
 
     def test_sorted_list(self):
         """Tests the sorted list operation.
@@ -96,19 +96,19 @@ class TestOperationAttributeType:
         value = "blah"
         operation.evaluate(table=table, value=value, attribute="single-value")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("single-value")[0]) is type(value)
+        assert type(table.get("single-value")[0]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("date-tagged")[0]) is type(value)
+        assert type(table.get("date-tagged")[0]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
         operation.evaluate(table=table, value=wrapper, attribute="list-wrapped")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("list-wrapped")[0]) is type(value)
+        assert type(table.get("list-wrapped")[0]) is type(value)  # type: ignore
 
     def test_initial(self):
         table = SymbolTable()
@@ -133,7 +133,7 @@ class TestOperationAttributeType:
             operation.attribute_type(DateTaggedValue[str])
             is DateTaggedValue[type(value)]
         )
-        assert type(table.get("date-tagged")["value"]) is type(value)
+        assert type(table.get("date-tagged")["value"]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
@@ -165,7 +165,7 @@ class TestOperationAttributeType:
             operation.attribute_type(DateTaggedValue[str])
             is DateTaggedValue[type(value)]
         )
-        assert type(table.get("date-tagged")["value"]) is type(value)
+        assert type(table.get("date-tagged")["value"]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
@@ -200,7 +200,7 @@ class TestOperationAttributeType:
         operation.evaluate(table=table, value=wrapper, attribute="list-wrapped")
         assert operation.attribute_type(List[type(value)]) is List[type(value)]
         assert type(table.get("list-wrapped")) is list
-        assert type(table.get("list-wrapped")[0]) is type(value)
+        assert type(table.get("list-wrapped")[0]) is type(value)  # type: ignore
 
     def test_max(self):
         table = SymbolTable()
@@ -228,4 +228,4 @@ class TestOperationAttributeType:
         operation.evaluate(table=table, value=wrapper, attribute="list-wrapped")
         assert operation.attribute_type(List[type(value)]) is List[type(value)]
         assert type(table.get("list-wrapped")) is list
-        assert type(table.get("list-wrapped")[0]) is type(value)
+        assert type(table.get("list-wrapped")[0]) is type(value)  # type: ignore

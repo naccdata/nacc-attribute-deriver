@@ -128,7 +128,7 @@ class BaseNamespace:
         Returns:
           the value for the attribute in the table
         """
-        value = self.__table.get(self.__symbol(attribute), default)
+        value = self.__table.get(self.__symbol(attribute), default)  # type: ignore
         if value is None:
             return value
 
