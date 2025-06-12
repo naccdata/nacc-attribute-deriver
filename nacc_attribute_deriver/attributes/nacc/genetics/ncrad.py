@@ -66,7 +66,7 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
         for field in ["apoecenter", "apoenp", "apoeadgc", "adcapoe", "apoecomm"]:
             source_apoe = self.__apoe.get_value(field, int)
             if source_apoe:
-                assert source_apoe == str(apoe), (
+                assert source_apoe == apoe, (
                     f"Source {field} with value {source_apoe} does not match "
                     + f"expected apoe value {apoe}"
                 )

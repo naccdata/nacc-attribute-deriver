@@ -12,10 +12,6 @@ from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, ConfigDict
 
-from nacc_attribute_deriver.schema.errors import (
-    InvalidFieldError,
-    MissingRequiredError,
-)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 log = logging.getLogger(__name__)
@@ -84,23 +80,6 @@ class AttributeCollectionRegistry(type):
 class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
     def __init__(self, table: SymbolTable) -> None:
         pass
-
-    @classmethod
-    def create(cls, table: SymbolTable) -> Optional["AttributeCollection"]:
-        """Creates an attribute collection for the symbol table.
-
-        Will return None if the collection is not applicable to the table.
-
-        Args:
-          table: the symbol table
-        Returns:
-          the attribute collection if it can use the table. None otherwise.
-        """
-        try:
-            return cls(table)
-        except (MissingRequiredError, InvalidFieldError) as error:
-            log.warning(error)
-            return None
 
     @classmethod
     def get_all_hooks(cls) -> Dict[str, FunctionType]:

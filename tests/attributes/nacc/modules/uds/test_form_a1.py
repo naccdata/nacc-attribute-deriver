@@ -22,6 +22,7 @@ def table() -> SymbolTable:
                         "birthyr": 1990,
                         "module": "UDS",
                         "packet": "I",
+                        "formver": "3.0",
                     }
                 }
             }
@@ -72,9 +73,10 @@ class TestUDSFormA1Attribute:
         attr = UDSFormA1Attribute(table)
         assert attr._create_naccnihr() == 99
 
-        # now set as followup packet so it should return 2
+        # now set as followup packet, shsould return None
+        # since race is only defined at initial visit
         set_attribute(table, form_prefix, "packet", "F")
-        assert attr._create_naccnihr() == 2
+        assert attr._create_naccnihr() is None
 
     def test_affiliate(self, table, form_prefix):
         """Tests affiliate case."""

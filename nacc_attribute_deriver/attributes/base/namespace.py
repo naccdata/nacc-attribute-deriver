@@ -133,6 +133,9 @@ class BaseNamespace:
         # strip whitespace
         if isinstance(value, str):
             value = value.strip()
+            # treat empty string as None
+            if value == "":
+                return None
 
         try:
             return attr_type(value)  # type: ignore

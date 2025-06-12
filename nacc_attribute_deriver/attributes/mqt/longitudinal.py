@@ -7,15 +7,16 @@ from nacc_attribute_deriver.attributes.attribute_collection import AttributeColl
 from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
 )
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
 
 
 class LongitudinalAttributeCollection(AttributeCollection):
     """Class to collect longitudinal attributes."""
 
-    def __init__(self, table):
+    def __init__(self, table: SymbolTable):
         self.__subject_derived = SubjectDerivedNamespace(
-            table, required=frozenset(["uds-visitdates"])
+            table=table, required=frozenset(["uds-visitdates"])
         )
 
     def _create_total_uds_visits(self) -> int:

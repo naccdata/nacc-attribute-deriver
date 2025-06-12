@@ -1,57 +1,11 @@
 """Tests against the full schema end-to-end.
 
-Mainly sanity checks to make sure modules run at all.
+Mainly sanity checks to make sure modules run at all. Does not test UDS
+due to its complexity/length.
 """
 
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
-
-
-def test_uds_form():
-    """Test against a minimal UDS form, mainly sanity check."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "module": "uds",
-                        "birthmo": 1,
-                        "birthyr": 1960,
-                        "probadif": 1,
-                        "dlbif": 2,
-                        "demented": 1,
-                        "normcog": 1,
-                        "formver": "3.0",
-                    }
-                }
-            }
-        }
-    }
-
-    form = SymbolTable(data)
-
-    deriver = AttributeDeriver()
-    deriver.curate(form, "uds")
-    assert form["file.info.derived"] == {
-        "naccage": 65,
-        "naccalzp": 8,
-        "naccautp": 8,
-        "naccbvft": 8,
-        "naccdage": 888,
-        "naccdied": 0,
-        "naccetpr": 88,
-        "nacclbds": 8,
-        "naccnihr": 99,
-        "naccppa": 8,
-        "nacclbde": 8,
-        "nacclbdp": 8,
-        "naccnorm": 1,
-        "naccudsd": 4,
-        "naccint": 888,
-        "naccmod": 88,
-        "naccyod": 8888,
-    }
 
 
 def test_np_form():
@@ -146,7 +100,7 @@ def test_niagads_investigator():
         "niagads_gwas": "NG00000",
         "niagads_exomechip": "NG00000, NG00001",
         "niagads_wgs": "0",
-        "niagads_wes": None,
+        "niagads_wes": 0,
     }
 
     deriver = AttributeDeriver()

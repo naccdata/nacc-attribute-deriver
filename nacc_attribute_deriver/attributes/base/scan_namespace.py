@@ -99,6 +99,6 @@ class SCANPETNamespace(RawNamespace):
             except (ValueError, TypeError):
                 return None
 
-            self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
+            return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
 
         return None

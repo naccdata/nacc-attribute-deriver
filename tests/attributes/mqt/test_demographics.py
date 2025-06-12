@@ -5,6 +5,7 @@ from nacc_attribute_deriver.attributes.mqt.demographics import (
     DemographicsAttributeCollection,
     DerivedDemographicsAttributeCollection,
 )
+from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -22,6 +23,9 @@ def table() -> SymbolTable:
                         "visitdate": "2025-01-01",
                         "module": "uds",
                         "packet": "I",
+                        "birthmo": 1,
+                        "birthyr": 1950,
+                        "formver": 3.0,
                     }
                 },
                 "derived": {  # needed for DerivedDemographicsAttributeCollection
@@ -43,7 +47,7 @@ def table() -> SymbolTable:
 class TestDemographicsAttributeCollection:
     def test_create_uds_sex(self, table):
         """Tests _create_uds_sex."""
-        attr = DemographicsAttributeCollection.create(table)
+        attr = DemographicsAttributeCollection(table)
         assert attr._create_uds_sex().value == "Male"
 
         for k, v in DemographicsAttributeCollection.SEX_MAPPING.items():
@@ -52,11 +56,12 @@ class TestDemographicsAttributeCollection:
 
         # none case
         table["file.info.forms.json.sex"] = None
-        assert attr._create_uds_sex() is None
+        with pytest.raises(InvalidFieldError):
+            assert attr._create_uds_sex() is None
 
     def test_create_uds_primary_language(self, table):
         """Tests _create_uds_primary_language."""
-        attr = DemographicsAttributeCollection.create(table)
+        attr = DemographicsAttributeCollection(table)
         assert attr._create_uds_primary_language().value == "Spanish"
 
         for k, v in DemographicsAttributeCollection.PRIMARY_LANGUAGE_MAPPING.items():
@@ -65,7 +70,8 @@ class TestDemographicsAttributeCollection:
 
         # test None in both initial and followup packet case
         table["file.info.forms.json.primlang"] = None
-        assert attr._create_uds_primary_language() is None
+        with pytest.raises(InvalidFieldError):
+            attr._create_uds_primary_language()
 
         table["file.info.forms.json.primlang"] = 9
         table["file.info.forms.json.packet"] = "F"
@@ -73,23 +79,23 @@ class TestDemographicsAttributeCollection:
 
     def test_create_uds_education_level(self, table):
         """Tests _create_uds_education_level."""
-        attr = DemographicsAttributeCollection.create(table)
+        attr = DemographicsAttributeCollection(table)
         assert attr._create_uds_education_level().value == 3
 
         # none case
         table["file.info.forms.json.educ"] = None
-        assert attr._create_uds_education_level().value is None
+        assert attr._create_uds_education_level() is None
 
 
 class TestDerivedDemographicsAttributeCollection:
     def test_create_uds_age(self, table):
         """Tests _create_uds_age."""
-        attr = DerivedDemographicsAttributeCollection.create(table)
+        attr = DerivedDemographicsAttributeCollection(table)
         assert attr._create_uds_age().value == 78
 
     def test_create_uds_race(self, table):
         """Tests _create_uds_race."""
-        attr = DerivedDemographicsAttributeCollection.create(table)
+        attr = DerivedDemographicsAttributeCollection(table)
         assert attr._create_uds_race().value == "White"
 
         for k, v in DerivedDemographicsAttributeCollection.RACE_MAPPING.items():
@@ -98,12 +104,12 @@ class TestDerivedDemographicsAttributeCollection:
 
     def test_create_age_at_death(self, table):
         """Tests _create_age_at_death."""
-        attr = DerivedDemographicsAttributeCollection.create(table)
+        attr = DerivedDemographicsAttributeCollection(table)
         assert attr._create_age_at_death() == 80
 
     def test_create_vital_status(self, table):
         """Tests _create_vital_status."""
-        attr = DerivedDemographicsAttributeCollection.create(table)
+        attr = DerivedDemographicsAttributeCollection(table)
         assert attr._create_vital_status().value == "deceased"
 
         for (
@@ -115,7 +121,7 @@ class TestDerivedDemographicsAttributeCollection:
 
     def test_create_np_available(self, table):
         """Tests _create_np_available."""
-        attr = DerivedDemographicsAttributeCollection.create(table)
+        attr = DerivedDemographicsAttributeCollection(table)
         assert attr._create_np_available()
 
         # none case

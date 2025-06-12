@@ -35,7 +35,7 @@ class CognitiveAttributeCollection(AttributeCollection):
                 [
                     "naccalzp",
                     "nacclbdp",
-                    "nacccppa",
+                    "naccppa",
                     "naccbvft",
                     "nacclbds",
                     "naccudsd",

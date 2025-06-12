@@ -216,7 +216,8 @@ class SCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
 
         Is given as an int so check int boolean.
         """
-        return self.__amyloid_gaain.get_required("amyloid_status", bool)
+        raw_value = self.__amyloid_gaain.get_required("amyloid_status", float)
+        return raw_value == 1
 
     def _create_scan_pet_amyloid_gaain_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid GAAIN Centiloid/SUVR analysis type."""
