@@ -258,44 +258,44 @@ def scan_pet_amyloid_gaain() -> SymbolTable:
 class TestSCANAmyloidPETGAAINAttribute:
     """From v_berkeley_amyloid_pet_gaain.csv."""
 
-    def test_create_scan_pet_centaloid(self, scan_pet_amyloid_gaain):
-        """Tests _create_scan_pet_centaloid, should just return centaloid as a
+    def test_create_scan_pet_centiloid(self, scan_pet_amyloid_gaain):
+        """Tests _create_scan_pet_centiloid, should just return centiloid as a
         float."""
         attr = SCANPETAmyloidGAAINAttributeCollection(scan_pet_amyloid_gaain)
-        assert attr._create_scan_pet_centaloid() == 1.5
+        assert attr._create_scan_pet_centiloid() == 1.5
 
         # empty
         scan_pet_amyloid_gaain["file.info.raw.centiloids"] = None
         attr = SCANPETAmyloidGAAINAttributeCollection(scan_pet_amyloid_gaain)
-        assert attr._create_scan_pet_centaloid() is None
+        assert attr._create_scan_pet_centiloid() is None
 
-    def test_create_scan_pet_centaloid_x(self, scan_pet_amyloid_gaain):
-        """Tests _create_scan_pet_centaloid_*, should return centerloid as a
+    def test_create_scan_pet_centiloid_x(self, scan_pet_amyloid_gaain):
+        """Tests _create_scan_pet_centiloid_*, should return centerloid as a
         float if the tracer is the given value."""
         attr = scan_pet_amyloid_gaain
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "2"
         attr = SCANPETAmyloidGAAINAttributeCollection(scan_pet_amyloid_gaain)
-        assert attr._create_scan_pet_centaloid_pib() == 1.5
+        assert attr._create_scan_pet_centiloid_pib() == 1.5
 
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "3.0"
         attr = SCANPETAmyloidGAAINAttributeCollection(scan_pet_amyloid_gaain)
-        assert attr._create_scan_pet_centaloid_florbetapir() == 1.5
+        assert attr._create_scan_pet_centiloid_florbetapir() == 1.5
 
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "4"
         attr = SCANPETAmyloidGAAINAttributeCollection(scan_pet_amyloid_gaain)
-        assert attr._create_scan_pet_centaloid_florbetaben() == 1.5
+        assert attr._create_scan_pet_centiloid_florbetaben() == 1.5
 
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "5"
         attr = SCANPETAmyloidGAAINAttributeCollection(scan_pet_amyloid_gaain)
-        assert attr._create_scan_pet_centaloid_nav4694() == 1.5
+        assert attr._create_scan_pet_centiloid_nav4694() == 1.5
 
         # 99, should all be None
         scan_pet_amyloid_gaain["file.info.raw.tracer"] = "99"
         attr = SCANPETAmyloidGAAINAttributeCollection(scan_pet_amyloid_gaain)
-        assert attr._create_scan_pet_centaloid_pib() is None
-        assert attr._create_scan_pet_centaloid_florbetapir() is None
-        assert attr._create_scan_pet_centaloid_florbetaben() is None
-        assert attr._create_scan_pet_centaloid_nav4694() is None
+        assert attr._create_scan_pet_centiloid_pib() is None
+        assert attr._create_scan_pet_centiloid_florbetapir() is None
+        assert attr._create_scan_pet_centiloid_florbetaben() is None
+        assert attr._create_scan_pet_centiloid_nav4694() is None
 
     def test_create_scan_pet_amyloid_positivity_indicator(self, scan_pet_amyloid_gaain):
         """Tests _create_scan_pet_amyloid_positivity_indicator, which just gets

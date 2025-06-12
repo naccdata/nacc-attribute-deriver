@@ -173,12 +173,12 @@ class SCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
         """Get the centiloid value."""
         return self.__amyloid_gaain.get_value("centiloids", float)
 
-    def _create_scan_pet_centaloid(self) -> Optional[float]:
+    def _create_scan_pet_centiloid(self) -> Optional[float]:
         """SCAN Amyloid PET scans centiloid min Access CENTILOIDS in UC
         Berkeley GAAIN analysis."""
         return self.get_centiloid()
 
-    def _create_scan_pet_centaloid_pib(self) -> Optional[float]:
+    def _create_scan_pet_centiloid_pib(self) -> Optional[float]:
         """SCAN Amyloid PET scans with PIB centiloid min Access CENTILOIDS in
         UC Berkeley GAAIN analysis."""
         if self.__amyloid_gaain.get_tracer("tracer") == "pib":
@@ -186,7 +186,7 @@ class SCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
 
         return None
 
-    def _create_scan_pet_centaloid_florbetapir(self) -> Optional[float]:
+    def _create_scan_pet_centiloid_florbetapir(self) -> Optional[float]:
         """SCAN Amyloid PET scans with Florbetapir centiloid min Access
         CENTILOIDS in UC Berkeley GAAIN analysis."""
         if self.__amyloid_gaain.get_tracer("tracer") == "florbetapir":
@@ -194,7 +194,7 @@ class SCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
 
         return None
 
-    def _create_scan_pet_centaloid_florbetaben(self) -> Optional[float]:
+    def _create_scan_pet_centiloid_florbetaben(self) -> Optional[float]:
         """SCAN Amyloid PET scans with Florbetaben centiloid min Access
         CENTILOIDS in UC Berkeley GAAIN analysis."""
         if self.__amyloid_gaain.get_tracer("tracer") == "florbetaben":
@@ -202,7 +202,7 @@ class SCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
 
         return None
 
-    def _create_scan_pet_centaloid_nav4694(self) -> Optional[float]:
+    def _create_scan_pet_centiloid_nav4694(self) -> Optional[float]:
         """SCAN Amyloid PET scans with NAV4694 centiloid min Access CENTILOIDS
         in UC Berkeley GAAIN analysis."""
         if self.__amyloid_gaain.get_tracer("tracer") == "nav4694":
