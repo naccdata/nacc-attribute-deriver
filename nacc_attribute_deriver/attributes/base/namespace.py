@@ -159,7 +159,7 @@ class BaseNamespace:
         """
         assert self.is_required(attribute)
         value = self.get_value(attribute, attr_type)
-        if value is None or value == "":
+        if value is None:
             raise InvalidFieldError(f"{self.__symbol(attribute)} cannot be missing")
 
         return value
