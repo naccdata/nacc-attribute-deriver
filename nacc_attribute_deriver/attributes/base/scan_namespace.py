@@ -25,7 +25,6 @@ SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
 class SCANMRINamespace(RawNamespace):
     def __init__(self, table: SymbolTable, scope: SCANMRIScope) -> None:
         super().__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
-        self.__scope = scope
 
 
 class SCANPETNamespace(RawNamespace):
@@ -60,7 +59,6 @@ class SCANPETNamespace(RawNamespace):
 
     def __init__(self, table: SymbolTable, scope: SCANPETScope) -> None:
         super().__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
-        self.__scope = scope
 
     # get functions for common values
     def get_tracer(self, field: str) -> Optional[str]:
@@ -72,16 +70,11 @@ class SCANPETNamespace(RawNamespace):
         Returns:
             The tracer mapping, if found
         """
-        raw_tracer = self.get_value(field, float)
-        if raw_tracer is not None:
-            try:
-                tracer = int(raw_tracer)
-            except (ValueError, TypeError):
-                return None
+        tracer = self.get_value(field, float)
+        if tracer is None:
+            return None
 
-            return self.TRACER_MAPPING.get(tracer, None)
-
-        return None
+        return self.TRACER_MAPPING.get(int(tracer), None)
 
     def get_scan_type(self, field: str) -> Optional[str]:
         """Get the scan type from the tracer.
@@ -92,13 +85,8 @@ class SCANPETNamespace(RawNamespace):
         Returns:
             The tracer SCAN type mapping
         """
-        raw_tracer = self.get_value(field, float)
-        if raw_tracer is not None:
-            try:
-                tracer = int(raw_tracer)
-            except (ValueError, TypeError):
-                return None
+        tracer = self.get_value(field, float)
+        if tracer is None:
+            return None
 
-            return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
-
-        return None
+        return self.TRACER_SCAN_TYPE_MAPPING.get(int(tracer), None)

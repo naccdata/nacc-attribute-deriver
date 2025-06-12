@@ -79,7 +79,7 @@ class BaseNamespace:
         missing: List[str] = []
         for attribute in self.__required:
             value = self.get_value(attribute, str)
-            if value not in [None, ""]:
+            if value is not None:
                 continue
 
             missing.append(self.__symbol(attribute))
@@ -116,7 +116,7 @@ class BaseNamespace:
         return self.__required
 
     def get_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
+        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
     ) -> Optional[T]:
         """Returns the value of the attribute key in the table.
 
