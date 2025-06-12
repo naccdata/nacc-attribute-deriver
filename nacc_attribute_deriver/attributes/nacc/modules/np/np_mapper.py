@@ -13,6 +13,7 @@ class NPMapper:
     def __init__(self, np: FormNamespace):
         """Initializer; assumes np is correct form."""
         self.__np = np
+        self.formver = self.__np.get_required("formver", int)
 
     def map_gross(self, new: int | None) -> Optional[int]:
         npgross = self.__np.get_value("npgross", int)
@@ -89,5 +90,20 @@ class NPMapper:
             return 0
         if old1 == 3 or old2 == 3:
             return 8
+
+        return 9
+
+    def banked_v9(self, old: int | None) -> Optional[int]:
+        """Banked specimens."""
+        # -4 case in SAS, treat as None in new system
+        if self.formver in [1, 7] and old is None:
+            return None
+
+        if (self.formver in [8, 9] or
+            (self.formver in [1, 7] and old is not None)):
+            if old in [0, 2]:
+                return 0
+            if old == 1:
+                return 1
 
         return 9
