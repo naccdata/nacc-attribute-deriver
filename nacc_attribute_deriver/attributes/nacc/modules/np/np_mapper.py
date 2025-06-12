@@ -5,6 +5,7 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
 )
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 
 
 class NPMapper:
@@ -95,15 +96,16 @@ class NPMapper:
 
     def banked_v9(self, old: int | None) -> Optional[int]:
         """Banked specimens."""
+        if self.formver > 9:
+            raise AttributeDeriverError("banked_v9 not valid for formver > 9")
+
         # -4 case in SAS, treat as None in new system
         if self.formver in [1, 7] and old is None:
             return None
 
-        if (self.formver in [8, 9] or
-            (self.formver in [1, 7] and old is not None)):
-            if old in [0, 2]:
-                return 0
-            if old == 1:
-                return 1
+        if old in [0, 2]:
+            return 0
+        if old == 1:
+            return 1
 
         return 9

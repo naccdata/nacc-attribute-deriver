@@ -103,7 +103,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return naccavas if naccavas is not None else 9
 
     def _create_naccbnkf(self) -> Optional[int]:
-        """ Create the NACCBNKF variable.
+        """Create the NACCBNKF variable.
 
         Banked frozen brain. Not in v1-7.
         """
@@ -374,7 +374,6 @@ class NPFormAttributeCollection(AttributeCollection):
             )
 
         return naccneur if naccneur is not None else 9
-
 
     def _create_naccothp(self) -> int:
         """Create the NACCOTHP variable.

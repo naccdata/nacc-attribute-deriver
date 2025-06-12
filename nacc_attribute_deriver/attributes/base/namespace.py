@@ -157,7 +157,7 @@ class BaseNamespace:
         Returns:
             The attribute value with the given type
         """
-        assert self.is_required(attribute)
+        assert self.is_required(attribute), f"{attribute} must be set as required"
         value = self.get_value(attribute, attr_type)
         if value is None:
             raise InvalidFieldError(f"{self.__symbol(attribute)} cannot be missing")
