@@ -1,4 +1,4 @@
-"""Derived variables from form D1."""
+"""Derived variables from form D1: Clinician Diagnosis."""
 
 from typing import List, Optional
 
