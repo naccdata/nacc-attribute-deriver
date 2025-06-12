@@ -1,11 +1,11 @@
-"""Tests create_race specifically."""
+"""Tests generate_race specifically."""
 
 from nacc_attribute_deriver.attributes.nacc.modules.uds.helpers.generate_race import (
     generate_race,
 )
 
 
-class TestCreateRace:
+class TestGenerateRace:
     """Specifically test the generate_race function, which ultimately is also
     testing _create_naccnihr and _create_naccninr. Needs.
 
