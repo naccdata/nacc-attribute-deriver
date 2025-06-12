@@ -26,12 +26,12 @@ class StudyParametersAttributeCollection(AttributeCollection):
         formver = self.__uds.normalized_formver()
         versions = set([f"UDSv{formver}"])
 
-        raw_versions = self.__subject_info.get_value(
+        prev_versions = self.__subject_info.get_value(
             "study-parameters.uds.versions", list, default=[]
         )
 
-        if raw_versions:
-            for v in raw_versions:
+        if prev_versions:
+            for v in prev_versions:
                 if isinstance(v, str) and re.match(r"UDSv[1-4]", v):
                     versions.add(v)
 

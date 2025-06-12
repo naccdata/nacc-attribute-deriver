@@ -52,7 +52,7 @@ class AttributeCollectionRegistry(type):
         a metaclass."""
         if (
             name != "AttributeCollection"
-            and name not in AttributeCollectionRegistry.collection_types  # type: ignore
+            and name not in AttributeCollectionRegistry.collection_types
         ):
             AttributeCollectionRegistry.collection_types.append(cls)
 
@@ -70,7 +70,7 @@ class AttributeCollectionRegistry(type):
         for collection_type in cls.collection_types:
             for name, function in collection_type.get_all_hooks().items():  # type: ignore
                 methods[name] = AttributeExpression(
-                    function=function,  # type: ignore
+                    function=function,
                     attribute_class=collection_type,
                 )
 

@@ -9,7 +9,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 class UDSNamespace(FormNamespace):
     def __init__(
-        self, table: SymbolTable, required: frozenset[str] = frozenset()
+        self, table: SymbolTable, required: frozenset[str] = None
     ) -> None:
         """Check that this is a UDS form."""
         if required is None:

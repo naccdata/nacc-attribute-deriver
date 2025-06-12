@@ -45,12 +45,12 @@ def get_list_type(expression_type: type) -> type:
 
 def get_date_tagged_type(expression_type: type) -> type:
     if hasattr(expression_type, "__pydantic_generic_metadata__"):
-        origin = expression_type.__pydantic_generic_metadata__["origin"]  # type: ignore
+        origin = expression_type.__pydantic_generic_metadata__["origin"]
         if origin is DateTaggedValue:
-            args = expression_type.__pydantic_generic_metadata__[  # type: ignore
+            args = expression_type.__pydantic_generic_metadata__[
                 "args"
-            ]  # type: ignore
-            return args[0]  # type: ignore
+            ]
+            return args[0]
     return expression_type
 
 
@@ -124,13 +124,13 @@ class UpdateOperation(Operation):
             get_date_tagged_type(get_optional_type(expression_type))
         )
 
-    def evaluate(  # type: ignore
+    def evaluate(
         self, *, table: SymbolTable, value: Any, attribute: str
     ) -> None:
         """Simply updates the location."""
 
         if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
+            value = value.value
         if value is None:
             return
 
@@ -155,13 +155,13 @@ class SetOperation(Operation):
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON."""
         if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
+            value = value.value
 
         cur_set: Set[Any] = table.get(attribute)  # type: ignore
         cur_set = set(cur_set) if cur_set else set()
 
         if isinstance(value, (list, set)):
-            cur_set = cur_set.union(set(value))  # type: ignore
+            cur_set = cur_set.union(set(value))
         elif value is not None:
             cur_set.add(value)
 
@@ -183,11 +183,11 @@ class SortedListOperation(Operation):
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
         if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
+            value = value.value
 
         cur_list = table.get(attribute, [])
         if isinstance(value, (list, set)):
-            cur_list.extend(list(value))  # type: ignore
+            cur_list.extend(list(value))
         elif value is not None:
             cur_list.append(value)
 
@@ -222,7 +222,7 @@ class DateOperation(Operation):
                 f"Unable to perform {self.LABEL} operation without date"
             )
 
-        if value.value is None:  # type: ignore
+        if value.value is None:
             return
 
         if self.LABEL not in ["initial", "latest"]:
@@ -263,12 +263,12 @@ class ComparisonOperation(Operation):
     def attribute_type(cls, expression_type: type) -> type:
         temp_type = get_optional_type(expression_type)
         if hasattr(temp_type, "__pydantic_generic_metadata__"):
-            origin = temp_type.__pydantic_generic_metadata__["origin"]  # type: ignore
+            origin = temp_type.__pydantic_generic_metadata__["origin"]
             if origin is DateTaggedValue:
-                args = temp_type.__pydantic_generic_metadata__[  # type: ignore
+                args = temp_type.__pydantic_generic_metadata__[
                     "args"
-                ]  # type: ignore
-                return args[0]  # type: ignore
+                ]
+                return args[0]
 
         return temp_type
 
@@ -280,7 +280,7 @@ class ComparisonOperation(Operation):
             raise OperationError(f"Unknown comparison operation: {self.LABEL}")
 
         if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
+            value = value.value
         if value is None:
             return
 

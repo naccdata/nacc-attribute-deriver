@@ -121,7 +121,9 @@ class BaseNamespace:
         """Returns the value of the attribute key in the table.
 
         Args:
-          key: the attribute name
+          attribute: the attribute name
+          attr_type: the attribute type; an error is thrown if the
+            non-null grabbed value cannot be casted to it
           default: the default value
         Returns:
           the value for the attribute in the table

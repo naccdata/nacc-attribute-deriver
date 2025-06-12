@@ -103,7 +103,7 @@ class AttributeDeriver:
             value = method.apply(table)
             if value is None:
                 continue
-            if isinstance(value, DateTaggedValue) and value.value is None:  # type: ignore
+            if isinstance(value, DateTaggedValue) and value.value is None:
                 continue
 
             for assignment in rule.assignments:
