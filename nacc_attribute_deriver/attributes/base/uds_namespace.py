@@ -1,6 +1,7 @@
 """Class to define UDS-specific attributes."""
 
 from datetime import date, datetime
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
 from nacc_attribute_deriver.schema.errors import InvalidFieldError
@@ -9,7 +10,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 class UDSNamespace(FormNamespace):
     def __init__(
-        self, table: SymbolTable, required: frozenset[str] = None
+        self, table: SymbolTable, required: Optional[frozenset[str]] = None
     ) -> None:
         """Check that this is a UDS form."""
         if required is None:

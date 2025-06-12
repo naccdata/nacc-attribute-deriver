@@ -47,9 +47,7 @@ def get_date_tagged_type(expression_type: type) -> type:
     if hasattr(expression_type, "__pydantic_generic_metadata__"):
         origin = expression_type.__pydantic_generic_metadata__["origin"]
         if origin is DateTaggedValue:
-            args = expression_type.__pydantic_generic_metadata__[
-                "args"
-            ]
+            args = expression_type.__pydantic_generic_metadata__["args"]
             return args[0]
     return expression_type
 
@@ -124,9 +122,7 @@ class UpdateOperation(Operation):
             get_date_tagged_type(get_optional_type(expression_type))
         )
 
-    def evaluate(
-        self, *, table: SymbolTable, value: Any, attribute: str
-    ) -> None:
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Simply updates the location."""
 
         if isinstance(value, DateTaggedValue):
@@ -265,9 +261,7 @@ class ComparisonOperation(Operation):
         if hasattr(temp_type, "__pydantic_generic_metadata__"):
             origin = temp_type.__pydantic_generic_metadata__["origin"]
             if origin is DateTaggedValue:
-                args = temp_type.__pydantic_generic_metadata__[
-                    "args"
-                ]
+                args = temp_type.__pydantic_generic_metadata__["args"]
                 return args[0]
 
         return temp_type

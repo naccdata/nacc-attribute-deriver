@@ -27,9 +27,8 @@ class NIAGADSAttributeCollection(AttributeCollection):
         )
 
     def _evaluate_investigator(self, attribute: str) -> int:
-        """Evaluate investigator. If 0, return 0, otherwise
-        it's assumed to be an investigator ID (e.g. NG00000)
-        and return 1.
+        """Evaluate investigator. If 0, return 0, otherwise it's assumed to be
+        an investigator ID (e.g. NG00000) and return 1.
 
         Args:
             attribute: name of attribute
