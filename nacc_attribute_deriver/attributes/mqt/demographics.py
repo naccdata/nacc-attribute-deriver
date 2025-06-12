@@ -23,23 +23,24 @@ class DemographicsAttributeCollection(AttributeCollection):
     """Class to collect demographic attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table, required=frozenset(['sex']))
+        self.__uds = UDSNamespace(table, required=frozenset(["sex"]))
 
     SEX_MAPPING = MappingProxyType(
         {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Don't know"}
     )
 
     def _create_uds_sex(self) -> DateTaggedValue[str]:
-        """UDS sex. Always required."""
-        sex: int = self.__uds.get_required("sex", int)
+        """UDS sex.
+
+        Always required.
+        """
+        sex = self.__uds.get_required("sex", int)
         mapped_sex = self.SEX_MAPPING.get(sex)
 
         if not mapped_sex:
             raise InvalidFieldError(f"Invalid/unknown sex code: {sex}")
 
-        return DateTaggedValue(
-            value=mapped_sex, date=self.__uds.get_date()
-        )
+        return DateTaggedValue(value=mapped_sex, date=self.__uds.get_date())
 
     PRIMARY_LANGUAGE_MAPPING = MappingProxyType(
         {
@@ -63,7 +64,9 @@ class DemographicsAttributeCollection(AttributeCollection):
             return None
 
         primlang = self.__uds.get_value("primlang", int)
-        mapped_primlang = self.PRIMARY_LANGUAGE_MAPPING.get(primlang)
+        mapped_primlang = (
+            self.PRIMARY_LANGUAGE_MAPPING.get(primlang) if primlang else None
+        )
 
         if not mapped_primlang:
             raise InvalidFieldError(f"Invalid/unknown primlang code: {primlang}")
@@ -75,7 +78,7 @@ class DemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_education_level(self) -> Optional[DateTaggedValue[int]]:
         """UDS education level."""
-        educ = self.__uds.get_value('educ', int)
+        educ = self.__uds.get_value("educ", int)
         if not educ:
             return None
 
@@ -88,19 +91,17 @@ class DemographicsAttributeCollection(AttributeCollection):
 class DerivedDemographicsAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table=table)
-        self.__derived = DerivedNamespace(table=table, required=frozenset([
-            'naccage',
-            'naccnihr',
-            'naccdage',
-            'naccdied'
-        ]))
+        self.__derived = DerivedNamespace(
+            table=table,
+            required=frozenset(["naccage", "naccnihr", "naccdage", "naccdied"]),
+        )
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _create_uds_age(self) -> DateTaggedValue[int]:
         """UDS age at form date, mapped from NACCAGE."""
         return DateTaggedValue(
             value=self.__derived.get_required("naccage", int),
-            date=self.__uds.get_date()
+            date=self.__uds.get_date(),
         )
 
     RACE_MAPPING = MappingProxyType(
@@ -119,7 +120,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_race(self) -> DateTaggedValue[str]:
         """UDS race."""
-        naccnihr: int = self.__derived.get_required("naccnihr", int)
+        naccnihr = self.__derived.get_required("naccnihr", int)
         mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)
 
         if not mapped_naccnihr:
@@ -135,7 +136,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_vital_status(self) -> DateTaggedValue[str]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
-        naccdied: int = self.__derived.get_required("naccdied", int)
+        naccdied = self.__derived.get_required("naccdied", int)
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)
 
         if not mapped_naccdied:

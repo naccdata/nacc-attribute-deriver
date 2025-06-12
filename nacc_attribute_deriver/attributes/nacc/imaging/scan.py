@@ -3,8 +3,7 @@
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.scan_namespace import (
     SCANMRINamespace,
-    SCANNPETamespace,
-
+    SCANPETNamespace,
 )
 from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
@@ -26,9 +25,7 @@ class NACCSCANMRIAttributeCollection(AttributeCollection):
         scandate = datetime_from_form_date(raw_scandate)
 
         if not scandate:
-            raise InvalidFieldError(
-                f"Failed to parse scandate: {raw_scandate}"
-            )
+            raise InvalidFieldError(f"Failed to parse scandate: {raw_scandate}")
 
         return str(scandate.date())
 
@@ -37,16 +34,14 @@ class NACCSCANPETAttributeCollection(AttributeCollection):
     """Class to collect NACC PET SCAN attributes needed to derive MQT."""
 
     def __init__(self, table):
-        self.__pet_qc = SCANNPETamespace(table, scope=SCANPETScope.PET_QC)
+        self.__pet_qc = SCANPETNamespace(table, scope=SCANPETScope.PET_QC)
 
     def _create_scan_pet_dates(self) -> str:
         """Gets the date of the PET scan - temporary derived variable"""
-        raw_scandate = self.__scan.get_required("scan_date", str)
+        raw_scandate = self.__pet_qc.get_required("scan_date", str)
         scandate = datetime_from_form_date(raw_scandate)
 
         if not scandate:
-            raise InvalidFieldError(
-                f"Failed to parse scandate: {raw_scandate}"
-            )
+            raise InvalidFieldError(f"Failed to parse scandate: {raw_scandate}")
 
         return str(scandate.date())

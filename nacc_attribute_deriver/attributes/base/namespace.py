@@ -78,8 +78,8 @@ class BaseNamespace:
         """
         missing: List[str] = []
         for attribute in self.__required:
-            value = self.get_value(attribute)
-            if value not in [None, '']:
+            value = self.get_value(attribute, str)
+            if value not in [None, ""]:
                 continue
 
             missing.append(self.__symbol(attribute))
@@ -115,10 +115,9 @@ class BaseNamespace:
         """Returns the required fields for this namespace."""
         return self.__required
 
-    def get_value(self,
-                  attribute: str,
-                  attr_type: Type[T],
-                  default: Optional[Any] = None) -> Optional[T]:
+    def get_value(
+        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
+    ) -> Optional[T]:
         """Returns the value of the attribute key in the table.
 
         Args:
@@ -139,12 +138,13 @@ class BaseNamespace:
             return attr_type(value)  # type: ignore
         except TypeError as e:
             raise InvalidFieldError(
-                f"{self.__symbol(attribute)} must be of type {attr_type}")
+                f"{self.__symbol(attribute)} must be of type {attr_type}"
+            ) from e
 
     def get_required(self, attribute: str, attr_type: Type[T]) -> T:
-        """Get required value with given type. Throws an error if the
-        attribute is missing, None, or the empty string, or cannot
-        be casted to the expected type.
+        """Get required value with given type. Throws an error if the attribute
+        is missing, None, or the empty string, or cannot be casted to the
+        expected type.
 
         Args:
             attribute: The attribute to grab
@@ -153,10 +153,11 @@ class BaseNamespace:
             The attribute value with the given type
         """
         assert self.is_required(attribute)
-        value = self.get_value(attribute)
-        if value in [None, '']:
-            raise InvalidFieldError(
-                f"{self.__symbol(attribute)} cannot be missing")
+        value = self.get_value(attribute, attr_type)
+        if value is None or value == "":
+            raise InvalidFieldError(f"{self.__symbol(attribute)} cannot be missing")
+
+        return value
 
     def get_date(self) -> Optional[datetime.date]:
         """Returns the value for the date-attribute if defined.
@@ -167,7 +168,7 @@ class BaseNamespace:
         if self.__date_attribute is None:
             return None
 
-        file_date = datetime_from_form_date(self.get_value(self.__date_attribute))
+        file_date = datetime_from_form_date(self.get_value(self.__date_attribute, str))
         if not file_date:
             return None
 

@@ -11,7 +11,7 @@ from nacc_attribute_deriver.utils.date import create_death_date
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__milestone = FormNamespace(table=table)
-        self.__deceased = self.__milestone.get_value('deceased')
+        self.__deceased = self.__milestone.get_value("deceased", int)
 
     def _create_milestone_death_date(self) -> Optional[date]:
         """Create milestone death date."""
@@ -41,5 +41,5 @@ class MilestoneAttributeCollection(AttributeCollection):
         return month if month is not None else 99
 
     def _create_milestone_deceased(self) -> Optional[int]:
-        """Milestone DECEASED"""
+        """Milestone DECEASED."""
         return self.__deceased

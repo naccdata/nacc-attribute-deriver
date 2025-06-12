@@ -24,15 +24,15 @@ class StudyParametersAttributeCollection(AttributeCollection):
     def _create_uds_versions_available(self) -> List[str]:
         """Keeps track of available UDS versions."""
         formver = self.__uds.normalized_formver()
+        versions = set([f"UDSv{formver}"])
+
         raw_versions = self.__subject_info.get_value(
-            "study-parameters.uds.versions", list, default=[])
+            "study-parameters.uds.versions", list, default=[]
+        )
 
-        versions = {
-            version
-            for version in raw_versions
-            if isinstance(version, str) and re.match(r"UDSv[1-4]", version)
-        }
-        if formver:
-            versions.add(f"UDSv{formver}")
+        if raw_versions:
+            for v in raw_versions:
+                if isinstance(v, str) and re.match(r"UDSv[1-4]", v):
+                    versions.add(v)
 
-        return list(versions)
+        return sorted(list(versions))

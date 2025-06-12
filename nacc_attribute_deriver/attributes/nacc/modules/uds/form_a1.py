@@ -275,8 +275,8 @@ class UDSFormA1Attribute(AttributeCollection):
         """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
         compares to form date."""
         dob = self.__uds.generate_uds_dob()
-        visitdate = self.__uds.get_required("visitdate", str)
-        visitdate = datetime_from_form_date(visitdate)
+        visitdate = datetime_from_form_date(self.__uds.get_required("visitdate", str))
+
         if not dob or not visitdate:
             raise ValueError("Missing one of DOB or visitdate to calculate naccage")
 

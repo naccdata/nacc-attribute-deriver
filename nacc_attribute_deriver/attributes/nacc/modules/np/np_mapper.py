@@ -14,14 +14,14 @@ class NPMapper:
         """Initializer; assumes np is correct form."""
         self.__np = np
 
-    def map_gross(self) -> int:
+    def map_gross(self, new: int | None) -> Optional[int]:
         npgross = self.__np.get_value("npgross", int)
         if npgross == 2:
             return 0
         if npgross == 9:
             return 9
 
-        return 9
+        return new
 
     def map_sub4(self, old: int | None) -> int:
         if old in [1, 2, 3, 4]:
@@ -41,7 +41,7 @@ class NPMapper:
 
         return 9
 
-    def map_vasc(self) -> int:
+    def map_vasc(self, new: int | None) -> Optional[int]:
         npgross = self.__np.get_value("npgross", int)
         npvasc = self.__np.get_value("npvasc", int)
         if npgross == 2 or npvasc == 2:
@@ -51,7 +51,7 @@ class NPMapper:
         if npvasc == 3:
             return 8
 
-        return 9
+        return new
 
     def map_sub1(self, old: int | None):
         if old in [1, 2, 3, 4]:

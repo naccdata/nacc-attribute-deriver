@@ -16,12 +16,14 @@ class NIAGADSAttributeCollection(AttributeCollection):
         """Override initializer to set prefix to NIAGADS-specific data."""
         self.__niagads = RawNamespace(
             table,
-            required=frozenset([
-                "niagads_gwas",
-                "niagads_exomechip",
-                "niagads_wgs",
-                "niagads_wes",
-            ])
+            required=frozenset(
+                [
+                    "niagads_gwas",
+                    "niagads_exomechip",
+                    "niagads_wgs",
+                    "niagads_wes",
+                ]
+            ),
         )
 
     def _evaluate_investigator(self, attribute: str) -> int:
@@ -36,16 +38,16 @@ class NIAGADSAttributeCollection(AttributeCollection):
 
     def _create_ngdsgwas(self) -> int:
         """NIAGADS GWAS investigator availability."""
-        return self._evaluate_investigator('niagads_gwas')
+        return self._evaluate_investigator("niagads_gwas")
 
     def _create_ngdsexome(self) -> int:
         """NIAGADS ExomeChip investigator availability."""
-        return self._evaluate_investigator('niagads_exomechip')
+        return self._evaluate_investigator("niagads_exomechip")
 
     def _create_ngdswgs(self) -> int:
         """NIAGADS WGS investigator availability."""
-        return self._evaluate_investigator('niagads_wgs')
+        return self._evaluate_investigator("niagads_wgs")
 
     def _create_ngdswes(self) -> int:
         """NIAGADS WES investigator availability."""
-        return self._evaluate_investigator('niagads_wes')
+        return self._evaluate_investigator("niagads_wes")

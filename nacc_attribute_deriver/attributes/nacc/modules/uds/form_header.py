@@ -1,7 +1,5 @@
 """Derived variables that come from the header variables."""
 
-from typing import Optional
-
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
@@ -23,8 +21,6 @@ class UDSHeaderAttributeCollection(AttributeCollection):
         visitdate = datetime_from_form_date(raw_visitdate)
 
         if not visitdate:
-            raise InvalidFieldError(
-                f"Failed to parse visitdate: {raw_visitdate}"
-            )
+            raise InvalidFieldError(f"Failed to parse visitdate: {raw_visitdate}")
 
         return str(visitdate.date())

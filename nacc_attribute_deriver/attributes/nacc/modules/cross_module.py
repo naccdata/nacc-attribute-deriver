@@ -31,7 +31,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """Override initializer to set other module prefixes."""
         self.__uds = UDSNamespace(table)
         self.__subject_derived = SubjectDerivedNamespace(
-            table=table, required=frozenset(['uds-visitdates']))
+            table=table, required=frozenset(["uds-visitdates"])
+        )
 
     def _determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
@@ -177,12 +178,12 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # Milestone month may be 99
         milestone_mo = self.__subject_derived.get_value("milestone_death_month", int)
-        if milestone_mo not in [None, 99]:
+        if milestone_mo is not None and milestone_mo != 99:
             return milestone_mo
 
         # MDS death month may be 99
         mds_mo = self.__subject_derived.get_value("mds_death_month", int)
-        if mds_mo not in [None, 99]:
+        if mds_mo is not None and mds_mo != 99:
             return mds_mo
 
         return 99

@@ -23,10 +23,10 @@ class ContributionStatus:
 
 class UDSFormD1Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table, required=frozenset(['normcog']))
+        self.__uds = UDSNamespace(table, required=frozenset(["normcog"]))
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
-        self.__normcog = self.__uds.get_required('normcog', int)
+        self.__normcog = self.__uds.get_required("normcog", int)
         self.__demented = self.__uds.get_value("demented", int)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:

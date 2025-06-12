@@ -21,18 +21,28 @@ class CognitiveAttributeCollection(AttributeCollection):
     """Class to collect cognitive attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table, required=frozenset([
-            'cdrglob',
-        ]))
-        self.__derived = DerivedNamespace(table=table, required=frozenset([
-            'naccalzp',
-            'nacclbdp',
-            'nacccppa',
-            'naccbvft',
-            'nacclbds',
-            'naccudsd',
-            'naccetpr',
-        ]))
+        self.__uds = UDSNamespace(
+            table,
+            required=frozenset(
+                [
+                    "cdrglob",
+                ]
+            ),
+        )
+        self.__derived = DerivedNamespace(
+            table=table,
+            required=frozenset(
+                [
+                    "naccalzp",
+                    "nacclbdp",
+                    "nacccppa",
+                    "naccbvft",
+                    "nacclbds",
+                    "naccudsd",
+                    "naccetpr",
+                ]
+            ),
+        )
 
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS = MappingProxyType(
@@ -93,7 +103,9 @@ class CognitiveAttributeCollection(AttributeCollection):
         }
     )
 
-    def __filter_attributes(self, attributes: List[str], expected_value: int) -> List[str]:
+    def __filter_attributes(
+        self, attributes: List[str], expected_value: int
+    ) -> List[str]:
         """Returns a list of the attributes that have the expected value.
 
         Args:
@@ -166,6 +178,5 @@ class CognitiveAttributeCollection(AttributeCollection):
     def _create_global_cdr(self) -> DateTaggedValue[float]:
         """Mapped from CDRGLOB."""
         return DateTaggedValue(
-            value=self.__uds.get_required("cdrglob", float),
-            date=self.__uds.get_date()
+            value=self.__uds.get_required("cdrglob", float), date=self.__uds.get_date()
         )

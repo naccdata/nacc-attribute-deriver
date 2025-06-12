@@ -18,17 +18,16 @@ from .np_mapper import NPMapper
 class NPFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is an NP form."""
-        self.__np = FormNamespace(table=table, required=frozenset([
-            'formver',
-            'module'
-        ]))
+        self.__np = FormNamespace(
+            table=table, required=frozenset(["formver", "module"])
+        )
 
         module = self.__np.get_required("module", str)
         if module.upper() != "NP":
             msg = f"Current file is not an NP form: found {module}"
             raise InvalidFieldError(msg)
 
-        self.formver: int = self.__np.get_required('formver', int)
+        self.formver: int = self.__np.get_required("formver", int)
         self.mapper = NPMapper(self.__np)
         self.form_evaluator = NPFormWideEvaluator(self.__np, self.mapper)
 
@@ -65,7 +64,8 @@ class NPFormAttributeCollection(AttributeCollection):
         elif self.formver in [7, 8, 9]:
             if not npavas:
                 raise InvalidFieldError(
-                    "npvas cannot be missing for formver 7, 8, or 9")
+                    "npvas cannot be missing for formver 7, 8, or 9"
+                )
 
             naccavas = npavas - 1
             if npavas == 5:
@@ -139,9 +139,7 @@ class NPFormAttributeCollection(AttributeCollection):
         """
         npchrom = self.__np.get_value("npchrom", int)
 
-        if (self.formver in [10, 11] or
-            self.formver in [7, 8, 9] or
-            self.formver == 1):
+        if self.formver in [10, 11] or self.formver in [7, 8, 9] or self.formver == 1:
             np_down = 1 if npchrom == 11 else 7
 
         return np_down
@@ -280,7 +278,7 @@ class NPFormAttributeCollection(AttributeCollection):
         FTLD-tau subtype — progressive supranuclear palsy (PSP).
         """
         npftdtau = self.__np.get_value("npftdtau", int)
-        npprog = self.__np.get_value("npprog". int)
+        npprog = self.__np.get_value("npprog", int)
         naccprog = None
 
         if self.formver in [10, 11]:
@@ -487,7 +485,7 @@ class NPFormAttributeCollection(AttributeCollection):
         return self.__np.get_value("npdage", int)
 
     def _create_np_death_date(self) -> Optional[date]:
-        if self.__np.get_value("npdage") is None:
+        if self.__np.get_value("npdage", int) is None:
             return None
 
         year = self.__np.get_value("npdodyr", int)

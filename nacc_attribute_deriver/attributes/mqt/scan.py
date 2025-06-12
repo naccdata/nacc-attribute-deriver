@@ -11,7 +11,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 )
 from nacc_attribute_deriver.attributes.base.scan_namespace import (
     SCANMRINamespace,
-    SCANPETNamespace
+    SCANPETNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
@@ -33,18 +33,19 @@ class PETAnalysisTypes:
     TAU_NPDKA = "tau_npdka_suvr"
 
 
-class MQTSCANMRIQCAttributeCollection(AttributeCollection):
+class SCANMRIQCAttributeCollection(AttributeCollection):
     """Class to collect SCAN MRI QC attributes (scan_mridashboard.csv)"""
 
     def __init__(self, table: SymbolTable):
         self.__mri_qc = SCANMRINamespace(table, scope=SCANMRIScope.MRI_QC)
         self.__subject_derived = SubjectDerivedNamespace(
-            table, required=frozenset(['scan-mri-dates']))
+            table=table, required=frozenset(["scan-mri-dates"])
+        )
 
     def _create_scan_mri_scan_types(self) -> Optional[str]:
         """SCAN MRI scan types available Access series_type (scan_mridashboard
         file)"""
-        return self.__scan.get_value("series_type", str)
+        return self.__mri_qc.get_value("series_type", str)
 
     def _create_scan_mri_session_count(self) -> int:
         """Number of SCAN MRI session available.
@@ -66,7 +67,7 @@ class MQTSCANMRIQCAttributeCollection(AttributeCollection):
         return len(get_unique_years(dates))
 
 
-class MQTSCANMRIQCAttributeCollection(AttributeCollection):
+class SCANMRISBMAttributeCollection(AttributeCollection):
     """Class to collect SCAN MRI SBM attributes (ucdmrisbm.csv)"""
 
     def __init__(self, table: SymbolTable):
@@ -84,14 +85,14 @@ class MQTSCANMRIQCAttributeCollection(AttributeCollection):
             Whether or not this is an indicator
         """
         value = self.__mri_sbm.get_value(target, str)
+        if value is not None:
+            try:
+                float(value)
+                return True
+            except (ValueError, TypeError):
+                pass
 
-        try:
-            float(value)
-        except (ValueError, TypeError):
-            return False
-
-        # true if valid float
-        return True
+        return False
 
     def _create_scan_volume_analysis_indicator(self) -> bool:
         """SCAN T1 brain volume analysis results available Check if cerebrumtcv
@@ -115,13 +116,14 @@ class MQTSCANMRIQCAttributeCollection(AttributeCollection):
         return result if result else None
 
 
-class MQTSCANPETQCAttributeCollection(AttributeCollection):
+class SCANPETQCAttributeCollection(AttributeCollection):
     """Class to collect SCAN PET QC attributes (scan_petdashboard.csv)"""
 
     def __init__(self, table: SymbolTable):
-        self.__pet_qc = SCANPETNamespace(table, scope=SCANMRIScope.PET_QC)
+        self.__pet_qc = SCANPETNamespace(table, scope=SCANPETScope.PET_QC)
         self.__subject_derived = SubjectDerivedNamespace(
-            table, required=frozenset(['scan-pet-dates']))
+            table=table, required=frozenset(["scan-pet-dates"])
+        )
 
     def _create_scan_pet_scan_types(self) -> Optional[str]:
         """SCAN PET types available Access radiotracer (scan_petdashboard) and
@@ -131,16 +133,16 @@ class MQTSCANPETQCAttributeCollection(AttributeCollection):
     def _create_scan_pet_amyloid_tracers(self) -> Optional[str]:
         """SCAN Amyloid tracers available Access radiotracer
         (scan_petdashboard) and map to names of tracers."""
-        if self.__scan.get_scan_type("radiotracer") == "amyloid":
-            return self.__scan.get_tracer("radiotracer")
+        if self.__pet_qc.get_scan_type("radiotracer") == "amyloid":
+            return self.__pet_qc.get_tracer("radiotracer")
 
         return None
 
     def _create_scan_pet_tau_tracers(self) -> Optional[str]:
         """SCAN tau tracers available Access radiotracer (scan_petdashboard)
         and map to names of tracers."""
-        if self.__scan.get_scan_type("radiotracer") == "tau":
-            return self.__scan.get_tracer("radiotracer")
+        if self.__pet_qc.get_scan_type("radiotracer") == "tau":
+            return self.__pet_qc.get_tracer("radiotracer")
 
         return None
 
@@ -158,17 +160,18 @@ class MQTSCANPETQCAttributeCollection(AttributeCollection):
         return len(get_unique_years(dates))
 
 
-class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
+class SCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
     """Class to collect SCAN PET Amyloid GAAIN attributes
-    (v_ucberkeley_amyloid_mrifree_gaain.csv)
-    """
+    (v_ucberkeley_amyloid_mrifree_gaain.csv)"""
 
     def __init__(self, table: SymbolTable):
-        self.__amyloid_gaain = SCANPETNamespace(table, scope=SCANMRIScope.AMYLOID_PET_GAAIN)
+        self.__amyloid_gaain = SCANPETNamespace(
+            table, scope=SCANPETScope.AMYLOID_PET_GAAIN
+        )
 
     def get_centiloid(self) -> Optional[float]:
         """Get the centiloid value."""
-        return self.__amyloiad_gaain.get_value("centiloids", float)
+        return self.__amyloid_gaain.get_value("centiloids", float)
 
     def _create_scan_pet_centaloid(self) -> Optional[float]:
         """SCAN Amyloid PET scans centiloid min Access CENTILOIDS in UC
@@ -222,13 +225,14 @@ class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
         return PETAnalysisTypes.AMYLOID_GAAIN if centiloid and suvr else None
 
 
-class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
+class SCANPETAmyloidNPDKAAttributeCollection(AttributeCollection):
     """Class to collect SCAN PET Amyloid NPDKA attributes
-    (v_ucberkeley_amyloid_mrifree_npdka.csv)
-    """
+    (v_ucberkeley_amyloid_mrifree_npdka.csv)"""
 
     def __init__(self, table: SymbolTable):
-        self.__amyloid_npdka = SCANPETNamespace(table, scope=SCANMRIScope.AMYLOID_PET_NPDKA)
+        self.__amyloid_npdka = SCANPETNamespace(
+            table, scope=SCANPETScope.AMYLOID_PET_NPDKA
+        )
 
     def _create_scan_pet_amyloid_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid NPDKA SUVR analysis type."""
@@ -236,13 +240,12 @@ class MQTSCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
         return PETAnalysisTypes.AMYLOID_NPDKA if suvr else None
 
 
-class MQTSCANPETFTDNPDKAAttributeCollection(AttributeCollection):
+class SCANPETFTDNPDKAAttributeCollection(AttributeCollection):
     """Class to collect SCAN PET FDG NPDKA attributes
-    (v_ucberkeley_fdg_metaroi_npdka.csv)
-    """
+    (v_ucberkeley_fdg_metaroi_npdka.csv)"""
 
     def __init__(self, table: SymbolTable):
-        self.__fdg_npdka = SCANPETNamespace(table, scope=SCANMRIScope.FDG_PET_NPDKA)
+        self.__fdg_npdka = SCANPETNamespace(table, scope=SCANPETScope.FDG_PET_NPDKA)
 
     def _create_scan_pet_fdg_npdka_analysis_type(self) -> Optional[str]:
         """Returns the FDG NPDKA SUVR analysis type."""
@@ -250,13 +253,12 @@ class MQTSCANPETFTDNPDKAAttributeCollection(AttributeCollection):
         return PETAnalysisTypes.FDG_NPDKA if suvr else None
 
 
-class MQTSCANPETTAUNPDKAAttributeCollection(AttributeCollection):
+class SCANPETTAUNPDKAAttributeCollection(AttributeCollection):
     """Class to collect SCAN PET TAU NPDKA attributes
-    (v_ucberkeley_tau_mrifree_npdka.csv)
-    """
+    (v_ucberkeley_tau_mrifree_npdka.csv)"""
 
     def __init__(self, table: SymbolTable):
-        self.__tau_npdka = SCANPETNamespace(table, scope=SCANMRIScope.TAU_PET_NPDKA)
+        self.__tau_npdka = SCANPETNamespace(table, scope=SCANPETScope.TAU_PET_NPDKA)
 
     def _create_scan_pet_tau_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Tau NPDKA SUVR analysis type."""

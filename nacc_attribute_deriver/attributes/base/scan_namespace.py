@@ -23,14 +23,12 @@ SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
 
 
 class SCANMRINamespace(RawNamespace):
-
     def __init__(self, table: SymbolTable, scope: SCANMRIScope) -> None:
         super().__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
         self.__scope = scope
 
 
-class SCANNPETamespace(RawNamespace):
-
+class SCANPETNamespace(RawNamespace):
     TRACER_MAPPING = MappingProxyType(
         {
             1: "fdg",
@@ -75,9 +73,15 @@ class SCANNPETamespace(RawNamespace):
             The tracer mapping, if found
         """
         raw_tracer = self.get_value(field, float)
-        tracer = int(raw_tracer)
+        if raw_tracer is not None:
+            try:
+                tracer = int(raw_tracer)
+            except (ValueError, TypeError):
+                return None
 
-        return self.TRACER_MAPPING.get(tracer, None)
+            return self.TRACER_MAPPING.get(tracer, None)
+
+        return None
 
     def get_scan_type(self, field: str) -> Optional[str]:
         """Get the scan type from the tracer.
@@ -89,6 +93,12 @@ class SCANNPETamespace(RawNamespace):
             The tracer SCAN type mapping
         """
         raw_tracer = self.get_value(field, float)
-        tracer = int(raw_tracer)
+        if raw_tracer is not None:
+            try:
+                tracer = int(raw_tracer)
+            except (ValueError, TypeError):
+                return None
 
-        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
+            self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
+
+        return None

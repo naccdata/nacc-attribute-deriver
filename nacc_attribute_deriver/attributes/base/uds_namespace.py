@@ -1,7 +1,6 @@
 """Class to define UDS-specific attributes."""
 
 from datetime import date, datetime
-from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
 from nacc_attribute_deriver.schema.errors import InvalidFieldError
@@ -9,15 +8,14 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class UDSNamespace(FormNamespace):
-    def __init__(self,
-                 table: SymbolTable,
-                 required: frozenset[str] = frozenset()) -> None:
+    def __init__(
+        self, table: SymbolTable, required: frozenset[str] = frozenset()
+    ) -> None:
         """Check that this is a UDS form."""
         if required is None:
             required = frozenset()
 
-        default_required = ['module', 'packet', 'formver',
-                            'birthmo', 'birthyr']
+        default_required = ["module", "packet", "formver", "birthmo", "birthyr"]
         super().__init__(table=table, required=required.union(default_required))
 
         module = self.get_required("module", str)
@@ -43,7 +41,8 @@ class UDSNamespace(FormNamespace):
             formver = int(raw_formver)
         except (ValueError, TypeError) as e:
             raise InvalidFieldError(
-                f"Cannot determine normalized formver: {raw_formver}") from e
+                f"Cannot determine normalized formver: {raw_formver}"
+            ) from e
 
         return formver
 
