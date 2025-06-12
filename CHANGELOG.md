@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## Include in next release
 
 * Adds ability to derive type returned by a curation rule with tool to create table of rule types.
+* Adds enforcement of expected types when grabbing variables from the raw data
 
 ## 1.4.0
 

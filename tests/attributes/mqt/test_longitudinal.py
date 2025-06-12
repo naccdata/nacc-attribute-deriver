@@ -6,15 +6,21 @@ from nacc_attribute_deriver.attributes.mqt.longitudinal import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from tests.conftest import set_attribute
-
 
 @pytest.fixture(scope="function")
 def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
-            "info": {"forms": {"json": {"module": "UDS", "formdate": "2025-01-01"}}}
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "UDS",
+                        "formdate": "2025-01-01",
+                        "visitdate": "2025-01-01",
+                    }
+                }
+            }
         },
         "subject": {
             "info": {
@@ -41,21 +47,10 @@ def table() -> SymbolTable:
 class TestLongitudinalAttributeCollection:
     def test_create_total_uds_visits(self, table, form_prefix):
         """Tests _create_total_uds_visits."""
-        attr = LongitudinalAttributeCollection.create(table)
+        attr = LongitudinalAttributeCollection(table)
         assert attr._create_total_uds_visits() == 6
-
-        # set module to non-UDS
-        set_attribute(table, form_prefix, "module", "LBD")
-        attr = LongitudinalAttributeCollection.create(table)
-        assert attr is None
-        # assert attr._create_total_uds_visits() == 5
-
-        # test null case
-        attr = LongitudinalAttributeCollection.create(SymbolTable())
-        assert attr is None
-        # assert attr._create_total_uds_visits() == 0
 
     def test_create_years_of_uds(self, table):
         """Tests _create_years_of_uds, should only count unique years."""
-        attr = LongitudinalAttributeCollection.create(table)
+        attr = LongitudinalAttributeCollection(table)
         assert attr._create_years_of_uds() == 4

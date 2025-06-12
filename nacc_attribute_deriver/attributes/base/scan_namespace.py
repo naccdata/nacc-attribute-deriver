@@ -7,6 +7,7 @@ from types import MappingProxyType
 from typing import Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.scope import SCANMRIScope, SCANPETScope
 
 # TODO: make this more elegant
@@ -21,7 +22,12 @@ SCAN_REQUIRED_FIELDS: Dict[str, List[str]] = {
 }
 
 
-class SCANNamespace(RawNamespace):
+class SCANMRINamespace(RawNamespace):
+    def __init__(self, table: SymbolTable, scope: SCANMRIScope) -> None:
+        super().__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
+
+
+class SCANPETNamespace(RawNamespace):
     TRACER_MAPPING = MappingProxyType(
         {
             1: "fdg",
@@ -51,27 +57,36 @@ class SCANNamespace(RawNamespace):
         }
     )
 
+    def __init__(self, table: SymbolTable, scope: SCANPETScope) -> None:
+        super().__init__(table, required=frozenset(SCAN_REQUIRED_FIELDS[scope]))
+
     # get functions for common values
-    def get_tracer(self, field: str, scope: SCANPETScope) -> Optional[str]:
-        """Get the tracer string."""
-        tracer = None
-        try:
-            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
-            tracer = float(self.get_value(field))
-            tracer = int(tracer)  # can't call int directly on string-float
-        except (ValueError, TypeError):
+    def get_tracer(self, field: str) -> Optional[str]:
+        """Get the tracer string.
+
+        Args:
+            field: Name of attribute to get tracer from
+
+        Returns:
+            The tracer mapping, if found
+        """
+        tracer = self.get_value(field, float)
+        if tracer is None:
             return None
 
-        return self.TRACER_MAPPING.get(tracer, None)
+        return self.TRACER_MAPPING.get(int(tracer), None)
 
-    def get_scan_type(self, field: str, scope: SCANPETScope) -> Optional[str]:
-        """Get the scan type from the tracer."""
-        tracer = None
-        try:
-            self.assert_required(SCAN_REQUIRED_FIELDS[scope])
-            tracer = float(self.get_value(field))
-            tracer = int(tracer)
-        except (ValueError, TypeError):
+    def get_scan_type(self, field: str) -> Optional[str]:
+        """Get the scan type from the tracer.
+
+        Args:
+            field: Name of attribute to get tracer from
+
+        Returns:
+            The tracer SCAN type mapping
+        """
+        tracer = self.get_value(field, float)
+        if tracer is None:
             return None
 
-        return self.TRACER_SCAN_TYPE_MAPPING.get(tracer, None)
+        return self.TRACER_SCAN_TYPE_MAPPING.get(int(tracer), None)

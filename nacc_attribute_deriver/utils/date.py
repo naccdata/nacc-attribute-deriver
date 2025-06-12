@@ -2,7 +2,7 @@
 
 import re
 from datetime import date, datetime
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Union
 
 
 def datetime_from_form_date(date_string: Optional[str]) -> Optional[datetime]:
@@ -70,7 +70,10 @@ def get_unique_years(dates: List[str]) -> Set[int]:
 
 
 def create_death_date(
-    *, year: Optional[str], month: Optional[str], day: Optional[str]
+    *,
+    year: Optional[Union[str, int]],
+    month: Optional[Union[str, int]],
+    day: Optional[Union[str, int]],
 ) -> Optional[date]:
     """Creates the death date, handling conventions for unknown dates."""
 

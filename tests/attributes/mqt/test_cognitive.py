@@ -2,6 +2,7 @@
 
 import pytest
 from nacc_attribute_deriver.attributes.mqt.cognitive import CognitiveAttributeCollection
+from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -30,17 +31,24 @@ def table() -> SymbolTable:
                         "namndem": None,
                         "cdrglob": 0.5,
                         "module": "uds",
+                        "visitdate": "2025-01-10",
+                        "birthyr": 1950,
+                        "birthmo": 1,
+                        "packet": "I",
+                        "formver": "3.0",
                         # rest of fields will be None
                     }
                 },
                 "derived": {
                     "naccalzp": 7,
-                    "nacclbde": None,
-                    "nacclbdp": None,
+                    "nacclbde": 8,
+                    "nacclbdp": 8,
                     "naccppa": 8,
                     "naccbvft": 8,
                     "nacclbds": 1,
                     "naccnorm": 0,
+                    "naccetpr": 99,
+                    "naccudsd": 1,
                 },
             }
         }
@@ -58,12 +66,12 @@ class TestCognitiveAttributeCollection:
                 CognitiveAttributeCollection.DIAGNOSIS_MAPPINGS[field]
             )
 
-        attr = CognitiveAttributeCollection.create(table)
+        attr = CognitiveAttributeCollection(table)
         assert set(attr._create_contributing_diagnosis().value) == set(expected_values)
 
     def test_dementia(self, table):
         """Tests _create_dementia."""
-        attr = CognitiveAttributeCollection.create(table)
+        attr = CognitiveAttributeCollection(table)
         assert attr._create_dementia().value == [
             CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]
         ]
@@ -72,7 +80,7 @@ class TestCognitiveAttributeCollection:
         table["file.info.forms.json.amndem"] = 1
         table["file.info.forms.json.pca"] = 1
 
-        attr = CognitiveAttributeCollection.create(table)
+        attr = CognitiveAttributeCollection(table)
 
         assert set(attr._create_dementia().value) == set(
             [
@@ -85,9 +93,9 @@ class TestCognitiveAttributeCollection:
     def test_global_cdr(self, table):
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
-        attr = CognitiveAttributeCollection.create(table)
+        attr = CognitiveAttributeCollection(table)
         assert attr._create_global_cdr().value == 0.5
 
         table["file.info.forms.json.cdrglob"] = None
-        attr = CognitiveAttributeCollection.create(table)
-        assert attr._create_global_cdr().value is None
+        with pytest.raises(MissingRequiredError):
+            CognitiveAttributeCollection(table)

@@ -14,39 +14,40 @@ class NIAGADSAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NIAGADS-specific data."""
-        self.__niagads = RawNamespace(table)
-        self.__niagads.assert_required(
-            required=[
-                "niagads_gwas",
-                "niagads_exomechip",
-                "niagads_wgs",
-                "niagads_wes",
-            ]
+        self.__niagads = RawNamespace(
+            table,
+            required=frozenset(
+                [
+                    "niagads_gwas",
+                    "niagads_exomechip",
+                    "niagads_wgs",
+                    "niagads_wes",
+                ]
+            ),
         )
 
-    def _evaluate_investigator(self, value: str) -> int:
-        """Evaluate investigator. If null/missing (set to None or "0") then
-        return 0, else return 1.
+    def _evaluate_investigator(self, attribute: str) -> int:
+        """Evaluate investigator. If 0, return 0, otherwise it's assumed to be
+        an investigator ID (e.g. NG00000) and return 1.
 
         Args:
-            value: The value to evaluate.
+            attribute: name of attribute
         """
-        return 1 if value and str(value) != "0" else 0
+        value = self.__niagads.get_required(attribute, str)
+        return 1 if value != "0" else 0
 
     def _create_ngdsgwas(self) -> int:
         """NIAGADS GWAS investigator availability."""
-        return self._evaluate_investigator(self.__niagads.get_value("niagads_gwas"))
+        return self._evaluate_investigator("niagads_gwas")
 
     def _create_ngdsexome(self) -> int:
         """NIAGADS ExomeChip investigator availability."""
-        return self._evaluate_investigator(
-            self.__niagads.get_value("niagads_exomechip")
-        )
+        return self._evaluate_investigator("niagads_exomechip")
 
     def _create_ngdswgs(self) -> int:
         """NIAGADS WGS investigator availability."""
-        return self._evaluate_investigator(self.__niagads.get_value("niagads_wgs"))
+        return self._evaluate_investigator("niagads_wgs")
 
     def _create_ngdswes(self) -> int:
         """NIAGADS WES investigator availability."""
-        return self._evaluate_investigator(self.__niagads.get_value("niagads_wes"))
+        return self._evaluate_investigator("niagads_wes")
