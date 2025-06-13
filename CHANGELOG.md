@@ -9,6 +9,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds rest of NP variables
 * Adds rest of UDS A1, A2 derived variables
 * Adds A4, A5 derived variables
+* Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 
 ## 1.4.0
 
