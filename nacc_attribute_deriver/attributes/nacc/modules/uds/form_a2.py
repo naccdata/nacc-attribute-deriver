@@ -21,8 +21,7 @@ class UDSFormA2Attribute(AttributeCollection):
         self.__uds = UDSNamespace(table)
 
         # TODO - for v4 this will be modea2
-        self.__submitted = self.__uds.get('a2sub', int) == 1
-
+        self.__submitted = self.__uds.get_value("a2sub", int) == 1
 
     def _create_naccninr(self) -> Optional[int]:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
