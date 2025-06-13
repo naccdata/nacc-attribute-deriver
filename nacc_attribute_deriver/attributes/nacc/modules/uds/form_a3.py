@@ -6,6 +6,7 @@ Form A3 is optional, so may not have been submitted.
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
@@ -19,6 +20,7 @@ class UDSFormA3Attribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         # TODO - for v4 this will be modea3
         self.__submitted = self.__uds.get_value("a3sub", int) == 1
@@ -46,7 +48,7 @@ class UDSFormA3Attribute(AttributeCollection):
         if fadmut in [0, 1, 2, 3, 8]:
             return fadmut
 
-        return 9
+        return 0
 
     def _create_naccamx(self) -> Optional[str]:
         """Creates NACCAMX - If an AD mutation other than
@@ -87,12 +89,13 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted:
             return None
 
-        if self.__dad.xdem() == 1:
+        if self.__dad.xdem():
             return 1
-        if self.__dad.xnot() == 1:
+        if self.__dad.xnot():
             return 0
 
-        return 9
+        # check if defined in previous form, else return 9
+        return self.__subject_derived.get_cross_sectional_value("naccdad", int, default=9)
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -185,12 +188,13 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted:
             return None
 
-        if self.__mom.xdem() == 1:
+        if self.__mom.xdem():
             return 1
-        if self.__mom.xnot() == 1:
+        if self.__mom.xnot():
             return 0
 
-        return 9
+        # check if defined in previous form, else return 9
+        return self.__subject_derived.get_cross_sectional_value("naccmom", int, default=9)
 
     def _create_naccom(self) -> Optional[int]:
         """Creates NACCOM - In this family, is there evidence for

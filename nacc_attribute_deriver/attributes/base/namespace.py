@@ -135,8 +135,8 @@ class BaseNamespace:
         # strip whitespace
         if isinstance(value, str):
             value = value.strip()
-            # treat empty string as None
-            if value == "":
+            # treat empty string or single period as None
+            if value == "" or value == ".":
                 return None
 
         try:

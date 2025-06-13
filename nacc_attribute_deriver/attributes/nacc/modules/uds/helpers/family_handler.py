@@ -108,73 +108,74 @@ class FamilyHandler:
 
         return self._get_parent_attribute("prdx")
 
-    def xdem(self) -> int:
+    def xdem(self) -> bool:
         """Creates XDEM variables (MDEM, DDEM, SDEM, KDEM), used to compute
         other derived variables, which specifies if the family member is
         demented."""
         if self.is_parent():
             if self._dem() == 1 or (self._neur() == 1 and self._prdx() in self.DXCODES):
-                return 1
-
+                return True
         else:
             for i in range(1, self.get_bound() + 1):
                 if self._dem(i) == 1 or (
                     self._neur(i) == 1 and self._prdx(i) in self.DXCODES
                 ):
-                    return 1
+                    return True
 
             # number of sibs/kids demented specified in V1, so also check
             # if we still have not determined XDEM. leave early if 9 is found
             if self.__formver == 1:
                 num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
                 if num_dem is not None and num_dem > 0 and num_dem < 30:
-                    return 1
+                    return True
             elif self.__formver == 2:
                 for i in range(1, self.get_bound() + 1):
                     dem_i = self._dem(i)
                     if dem_i == 1:
-                        return 1
+                        return True
                     # in SAS code this was tangled with XNOT, and if
                     # dem_i == 9 then loop would set it and break early, but I
                     # feel that doesn't make sense for XDEM? comment out
-                    # for now, if it fails a bunch fo regression tests
+                    # for now, if it fails a bunch of regression tests
                     # then put back in
                     # elif dem_i == 9:
                     #     break
 
-        return 0
+        return False
 
-    def xnot(self) -> int:  # noqa: C901
+    def xnot(self) -> bool:  # noqa: C901
         """Creates XNOT variables (MNOT, DNOT, SNOT, KNOT), used to compute
         other derived variables, which specifies if the family member does NOT
         have cognitive impairment.
 
-        If unknown (9) it seems the SAS code returns 0 early to signifiy
+        If unknown (9) it seems the SAS code returns 0/False early to signifiy
         they might have cognitive impairment.
         """
         if self.__formver == 3:
             if self.is_parent():
-                if self._neur() in [2, 3, 4, 5] or self._prdx() not in self.DXCODES:
-                    return 1
+                prdx = self._prdx()
+                if self._neur() in [2, 3, 4, 5] or (prdx and prdx not in self.DXCODES):
+                    return True
             else:
-                result = 0
+                result = False
                 for i in range(1, self.get_bound() + 1):
+                    prdx = self._prdx(i)
                     if (
                         self._neur(i) in [2, 3, 4, 5, 8]
-                        or self._prdx(i) not in self.DXCODES
+                        or prdx and prdx not in self.DXCODES
                     ):
-                        result = 1
+                        result = True
                     elif self._neur(i) == 9:
-                        return 0
+                        return False
 
                 return result
 
-            return 0
+            return False
+
+        # assuming formver < 3 after this
 
         if self.is_parent():
-            if self._dem() == 0:
-                return 1
-            return 0
+            return self._dem() == 0
 
         # assuming sibs/kids after this point
         # if 0 siblings/kids, return 1; SAS code continues and theoretically
@@ -183,7 +184,7 @@ class FamilyHandler:
         # the other variables can never be set
         num_total = self.__uds.get_value(f"{self.__prefix}s", int)
         if num_total == 0:
-            return 1
+            return True
         if num_total is None:
             num_total = 0
 
@@ -191,19 +192,19 @@ class FamilyHandler:
         if self.__formver == 1:
             num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
             if num_dem == 0:
-                return 1
+                return True
             elif num_total > 0 and num_total < 30 and num_dem != 0:
-                return 0
+                return False
 
         elif self.__formver == 2:
-            result = 0
+            result = False
             for i in range(1, self.get_bound() + 1):
                 dem_i = self._dem(i)
                 if dem_i == 9:
-                    return 0
+                    return False
                 elif dem_i == 0:
-                    result = 1
+                    result = True
 
             return result
 
-        return 0
+        return False
