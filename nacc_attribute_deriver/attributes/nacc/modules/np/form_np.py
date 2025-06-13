@@ -223,8 +223,8 @@ class NPFormAttributeCollection(AttributeCollection):
         if self.formver in [10, 11]:
             return self.__np.get_value("npbnkc", int)
 
-        npbrfm = self.__np.get_value("npbrfm", int)
-        return self.mapper.banked_v9(npbrfm)
+        npbrfrm = self.__np.get_value("npbrfrm", int)
+        return self.mapper.banked_v9(npbrfrm)
 
     def _create_nacchem(self) -> int:
         """Create the NACCHEM variable.

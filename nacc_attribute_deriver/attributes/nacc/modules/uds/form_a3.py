@@ -116,12 +116,13 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted:
             return None
 
-        if any(member.xdem() == 1 for member in self.__family):
+        if any(member.xdem() for member in self.__family):
             return 1
-        elif all(member.xnot() == 1 for member in self.__family):
+        elif all(member.xnot() for member in self.__family):
             return 0
 
-        return 9
+        # check if defined in previous form, else return 9
+        return self.__subject_derived.get_cross_sectional_value("naccfam", int, default=9)
 
     def _create_naccfftd(self) -> int:
         """Creates NACCFFTD - In this family, is there evidence for
@@ -149,7 +150,7 @@ class UDSFormA3Attribute(AttributeCollection):
         if fftdmut in [0, 1, 2, 3, 4, 8]:
             return fftdmut
 
-        return 9
+        return self.__subject_derived.get_cross_sectional_value("naccfm", int, default=9)
 
     def _create_naccfms(self) -> Optional[int]:
         """Creates NACCFMS - Source of evidence for FTLD
