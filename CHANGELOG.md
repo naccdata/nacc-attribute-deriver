@@ -8,7 +8,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds enforcement of expected types when grabbing variables from the raw data
 * Adds rest of NP variables
 * Adds rest of UDS A1, A2 derived variables
-
+* Adds A4, A5 derived variables
 
 ## 1.4.0
 

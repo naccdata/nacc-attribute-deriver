@@ -1,4 +1,7 @@
-"""Derived variables from form A2: Co-participant Demographics."""
+"""Derived variables from form A2: Co-participant Demographics.
+
+From a2structrdd.sas
+"""
 
 from typing import Optional
 
