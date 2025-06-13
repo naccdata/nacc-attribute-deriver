@@ -22,6 +22,7 @@ class UDSFormA3Attribute(AttributeCollection):
 
         # TODO - for v4 this will be modea3
         self.__submitted = self.__uds.get_value("a3sub", int) == 1
+        self.__formver = self.__uds.normalized_formver()
 
         self.__mom = FamilyHandler("mom", self.__uds)
         self.__dad = FamilyHandler("dad", self.__uds)
@@ -38,7 +39,7 @@ class UDSFormA3Attribute(AttributeCollection):
         be overwritten (e.g. change from 2 -> 8 -> 3 -> etc.) so
         will ultimately report the last one since its cross-sectional.
         """
-        if not self.__submitted or self.__uds.normalized_formver() < 3:
+        if not self.__submitted or self.__formver < 3:
             return None
 
         fadmut = self.__uds.get_value("fadmut", int)
@@ -51,6 +52,9 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCAMX - If an AD mutation other than
         APP, PSEN-1, or PSEN-2 is reported.
         """
+        if not self.__submitted or self.__formver < 3:
+            return None
+
         return self.__uds.get_value("fadmutx", str)
 
     def _create_naccams(self) -> Optional[int]:
@@ -60,11 +64,7 @@ class UDSFormA3Attribute(AttributeCollection):
         Only in V3+, and None if NACCAM (FADMUT) is 0. Same
         assumption as NACCAM.
         """
-        if (
-            not self.__submitted
-            or self.__uds.normalized_formver() < 3
-            or self._create_naccam() == 0
-        ):
+        if not self.__submitted or self.__formver < 3 or self._create_naccam() == 0:
             return None
 
         fadmuso = self.__uds.get_value("fadmuso", int)
@@ -75,6 +75,9 @@ class UDSFormA3Attribute(AttributeCollection):
 
     def _create_naccamsx(self) -> Optional[str]:
         """Creates NACCAMSX - Other source of AD."""
+        if not self.__submitted or self.__formver < 3:
+            return None
+
         return self.__uds.get_value("fadmusox", str)
 
     def _create_naccdad(self) -> Optional[int]:
@@ -95,7 +98,7 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCFADM - In this family, is there evidence
         of dominantly inherited AD?
         """
-        if not self.__submitted:
+        if not self.__submitted or self.__formver < 3:
             return 0
 
         if self.__uds.get_value("fadmut", int) in [1, 2, 3, 8]:
@@ -121,7 +124,7 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCFFTD - In this family, is there evidence for
         an FTLD mutation?
         """
-        if not self.__submitted:
+        if not self.__submitted or self.__formver < 3:
             return 0
 
         if (
@@ -136,7 +139,7 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCFM - In this family, is there evidence for an
         FTLD mutation (from a list of specific mutations)?
         """
-        if not self.__submitted:
+        if not self.__submitted or self.__formver < 3:
             return None
 
         fftdmut = self.__uds.get_value("fftdmut", int)
@@ -149,7 +152,7 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCFMS - Source of evidence for FTLD
         mutation.
         """
-        if not self.__submitted:
+        if not self.__submitted or self.__formver < 3 or self._create_naccfm() == 0:
             return None
 
         fftdmusu = self.__uds.get_value("fftdmuso", int)
@@ -162,11 +165,17 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCFMSX - If other source of FTLD mutation,
         report here.
         """
+        if not self.__submitted or self.__formver < 3:
+            return None
+
         return self.__uds.get_value("fftdmusx", str)
 
     def _create_naccfmx(self) -> Optional[str]:
         """Creates NACCFMX - If an FTLD mutation other than
         provided list, report here."""
+        if not self.__submitted or self.__formver < 3:
+            return None
+
         return self.__uds.get_value("fftdmutx", str)
 
     def _create_naccmom(self) -> Optional[int]:
@@ -182,3 +191,45 @@ class UDSFormA3Attribute(AttributeCollection):
             return 0
 
         return 9
+
+    def _create_naccom(self) -> Optional[int]:
+        """Creates NACCOM - In this family, is there evidence for
+        a mutation other than an AD or FTLD mutation?
+        """
+        if not self.__submitted or self.__formver < 3:
+            return None
+
+        fothmut = self.__uds.get_value("fothmut", int)
+        if fothmut == [0, 1]:
+            return fothmut
+
+        return 9
+
+    def _create_naccoms(self) -> Optional[int]:
+        """Creates NACCOMS - Source of evidence for other
+        mutation.
+        """
+        if not self.__submitted or self.__formver < 3 or self._create_naccom() == 0:
+            return None
+
+        fothmuso = self.__uds.get_value("fothmuso", int)
+        if fothmuso in [0, 1, 2, 3, 8]:
+            return fothmuso
+
+        return 9
+
+    def _create_naccomsx(self) -> Optional[str]:
+        """Creates NACCOMSX - If mutation is reported at any
+        visit (NACCOMS == 8), report here."""
+        if not self.__submitted or self.__formver < 3:
+            return None
+
+        return self.__uds.get_value("fothmusx", str)
+
+    def _create_naccomx(self) -> Optional[str]:
+        """Creates NACCOMX - If any other mutation is reported at
+        any visit, reported here."""
+        if not self.__submitted or self.__formver < 3:
+            return None
+
+        return self.__uds.get_value("fothmutx", str)
