@@ -4,7 +4,7 @@ just looking at hardcoded strings.
 From derivedmeds.sas.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
