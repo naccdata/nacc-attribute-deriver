@@ -44,14 +44,15 @@ class NCRADAttributeCollection(AttributeCollection):
         """Comes from derive.sas and derivenew.sas (same code)
 
         Should come from the actual imported APOE data
-        <subject>_apoe_genotype.json. Needs to account for historic data.
+        <subject>_apoe_genotype.json. Needs to account for historic
+        data.
         """
 
         a1 = self.__apoe.get_required("a1", str)
         a2 = self.__apoe.get_required("a2", str)
 
         apoe = self.APOE_ENCODINGS.get((a1.upper(), a2.upper()), 9)
-        old_apoe = self.__subject_derived.get_value('historic_apoe', int)
+        old_apoe = self.__subject_derived.get_value("historic_apoe", int)
 
         if old_apoe is not None and apoe != old_apoe:
             return 9
@@ -60,7 +61,7 @@ class NCRADAttributeCollection(AttributeCollection):
 
     def _create_naccne4s(self) -> int:
         """Create NACCNE4s. From derive.sas and derivenew.sas (same code)
-        
+
         Based on APOE results.
         """
         apoe = self._create_naccapoe()
