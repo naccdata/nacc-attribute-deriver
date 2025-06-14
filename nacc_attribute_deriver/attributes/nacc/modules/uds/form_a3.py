@@ -208,7 +208,8 @@ class UDSFormA3Attribute(AttributeCollection):
         if fothmut == [0, 1]:
             return fothmut
 
-        return 9
+        # check if defined in previous form, else return 9
+        return self.__subject_derived.get_cross_sectional_value("naccom", int, default=9)
 
     def _create_naccoms(self) -> Optional[int]:
         """Creates NACCOMS - Source of evidence for other
