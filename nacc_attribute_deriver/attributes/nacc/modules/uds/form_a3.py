@@ -48,7 +48,8 @@ class UDSFormA3Attribute(AttributeCollection):
         if fadmut in [0, 1, 2, 3, 8]:
             return fadmut
 
-        return 0
+        # check if defined in previous form, else return 9
+        return self.__subject_derived.get_cross_sectional_value("naccam", int, default=9)
 
     def _create_naccamx(self) -> Optional[str]:
         """Creates NACCAMX - If an AD mutation other than

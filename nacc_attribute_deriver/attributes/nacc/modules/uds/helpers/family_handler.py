@@ -154,7 +154,7 @@ class FamilyHandler:
         if self.__formver == 3:
             if self.is_parent():
                 prdx = self._prdx()
-                if self._neur() in [2, 3, 4, 5] or (prdx and prdx not in self.DXCODES):
+                if self._neur() in [2, 3, 4, 5, 8] or (prdx and prdx not in self.DXCODES):
                     return True
             else:
                 result = False
