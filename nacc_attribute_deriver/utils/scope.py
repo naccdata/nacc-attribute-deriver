@@ -13,6 +13,7 @@ class FormScope(Scope):
     MDS = "mds"
     MILESTONE = "milestone"
     NP = "np"
+    MEDS = 'meds'
     UDS = "uds"
 
 
@@ -43,6 +44,7 @@ ScopeLiterals = Literal[
     FormScope.MDS,
     FormScope.MILESTONE,
     FormScope.NP,
+    FormScope.MEDS,
     FormScope.UDS,
     GeneticsScope.APOE,
     GeneticsScope.HISTORIC_APOE,
