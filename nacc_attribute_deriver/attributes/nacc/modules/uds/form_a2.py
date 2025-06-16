@@ -36,10 +36,10 @@ class UDSFormA2Attribute(AttributeCollection):
         result = generate_race(
             race=self.__uds.get_value("inrace", int),
             racex=self.__uds.get_value("inracex", str),
-            racesec=self.__uds.get_value("inracesec", int),
-            racesecx=self.__uds.get_value("inracesecx", str),
-            raceter=self.__uds.get_value("inraceter", int),
-            raceterx=self.__uds.get_value("inraceterx", str),
+            racesec=self.__uds.get_value("inrasec", int),
+            racesecx=self.__uds.get_value("inrasecx", str),
+            raceter=self.__uds.get_value("inrater", int),
+            raceterx=self.__uds.get_value("inraterx", str),
         )
 
         return result
