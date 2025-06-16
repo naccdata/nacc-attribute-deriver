@@ -31,6 +31,8 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 f"Current file is not a MEDS form: found {module}",
             )
 
+        # TODO: V1 does not have drugs_list and instead lists everything
+        # explicitly - do not see it in pulled SAS code, will need to investigate
         self.__formver = self.__meds.get_value("formver", float)
         date_attribute = (
             "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
