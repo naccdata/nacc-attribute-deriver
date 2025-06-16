@@ -89,7 +89,10 @@ def test_ncrad_apoe():
 
     deriver = AttributeDeriver()
     deriver.curate(form, "apoe")
-    assert form["subject.info.derived.cross-sectional"] == {"naccapoe": 5}
+    assert form["subject.info.derived.cross-sectional"] == {
+        "naccapoe": 5,
+        "naccne4s": 1,
+    }
     assert form["subject.info.genetics"] == {"apoe": 5}
 
 

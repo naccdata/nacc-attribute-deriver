@@ -7,9 +7,9 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds ability to derive type returned by a curation rule with tool to create table of rule types.
 * Adds enforcement of expected types when grabbing variables from the raw data
 * Adds rest of NP variables
-* Adds rest of UDS A1, A2, and A3 derived variables
+* Adds rest of UDS A1, A2, A3, A4, and A5 derived variables
     * Accounts for some forms being optional
-
+* Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 
 ## 1.4.0
 
