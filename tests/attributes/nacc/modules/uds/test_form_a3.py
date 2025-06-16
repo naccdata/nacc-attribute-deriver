@@ -97,3 +97,10 @@ class TestUDSFormA3Attribute:
 
         set_attribute(naccfam_table, form_prefix, 'dadprdx', 888)
         assert attr._create_naccfam() == 0
+
+        # another case, both mom and dad neur == 1
+        set_attribute(naccfam_table, form_prefix, 'dadneur', 1)
+        set_attribute(naccfam_table, form_prefix, 'dadprdx', 110)
+        set_attribute(naccfam_table, form_prefix, 'moneur', 1)
+        set_attribute(naccfam_table, form_prefix, 'momprdx', 50)
+        assert attr._create_naccfam() == 1
