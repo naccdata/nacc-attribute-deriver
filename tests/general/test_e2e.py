@@ -251,6 +251,8 @@ def test_meds():
     form["file.info.forms.json"] = {
         "frmdatea4g": "2000-01-01",
         "drugs_list": "d00004,d00170",
+        "module": "MEDS",
+        "formver": 3.0,
     }
 
     deriver = AttributeDeriver()
@@ -262,6 +264,8 @@ def test_meds():
                     "json": {
                         "frmdatea4g": "2000-01-01",
                         "drugs_list": "d00004,d00170",
+                        "module": "MEDS",
+                        "formver": 3.0,
                     }
                 }
             }

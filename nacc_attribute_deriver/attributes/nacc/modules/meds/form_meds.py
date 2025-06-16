@@ -7,19 +7,38 @@ from typing import Dict, List
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
-    FormNamespace,
+    BaseNamespace,
     SubjectDerivedNamespace,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class MEDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Initializer."""
-        date_attribute = "frmdatea4g"
-        self.__meds = FormNamespace(table=table, date_attribute=date_attribute)
-        self.__formdate = self.__meds.get_required(date_attribute, str)
+        self.__meds = BaseNamespace(
+            table=table,
+            attribute_prefix="file.info.forms.json",
+            required=frozenset(["module", "formver"]),
+        )
+        module = self.__meds.get_required("module", str)
+        if module.upper() != "MEDS":
+            raise InvalidFieldError(
+                f"Current file is not a MEDS form: found {module}",
+            )
+
+        self.__formver = self.__meds.get_value("formver", float)
+        date_attribute = (
+            "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
+        )
+        self.__formdate = self.__meds.get_value(date_attribute, str)
+
+        if not self.__formdate:
+            raise AttributeDeriverError("Cannot determine MEDS form date")
 
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 

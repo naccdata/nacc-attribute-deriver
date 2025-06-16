@@ -20,6 +20,8 @@ def table() -> SymbolTable:
                     "json": {
                         "frmdatea4g": "2011-08-10",
                         "drugs_list": "d00004,d00170,d00269,d00321,d00732",
+                        "module": "MEDS",
+                        "formver": 2.0,
                     }
                 }
             }
