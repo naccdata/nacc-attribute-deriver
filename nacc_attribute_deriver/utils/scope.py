@@ -13,7 +13,7 @@ class FormScope(Scope):
     MDS = "mds"
     MILESTONE = "milestone"
     NP = "np"
-    MEDS = 'meds'
+    MEDS = "meds"
     UDS = "uds"
 
 

@@ -34,7 +34,8 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 f"Drugs list for frmdatea4g {self.__formdate} already exists"
             )
 
-        all_drugs[self.__formdate] = self.__meds.get_value(
-            "drugs_list", list, default=[]
+        drugs_list = self.__meds.get_value("drugs_list", str)
+        all_drugs[self.__formdate] = (
+            [x.strip().lower() for x in drugs_list.split(",")] if drugs_list else []
         )
         return all_drugs
