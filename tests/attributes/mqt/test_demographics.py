@@ -39,7 +39,7 @@ def table() -> SymbolTable:
                         "naccnihr": 1,
                         "naccdage": 80,
                         "naccdied": 1,
-                    }
+                    },
                 }
             }
         },

@@ -1,7 +1,7 @@
 """Derived variables from form A2: Co-participant Demographics.
 
-Form A2 is optional, so may not have been submitted.
-From a2structrdd.sas
+Form A2 is optional, so may not have been submitted. From
+a2structrdd.sas
 """
 
 from typing import Optional

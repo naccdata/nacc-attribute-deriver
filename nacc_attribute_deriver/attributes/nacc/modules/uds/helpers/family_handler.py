@@ -148,13 +148,15 @@ class FamilyHandler:
         other derived variables, which specifies if the family member does NOT
         have cognitive impairment.
 
-        If unknown (9) it seems the SAS code returns 0/False early to signifiy
-        they might have cognitive impairment.
+        If unknown (9) it seems the SAS code returns 0/False early to
+        signifiy they might have cognitive impairment.
         """
         if self.__formver == 3:
             if self.is_parent():
                 prdx = self._prdx()
-                if self._neur() in [2, 3, 4, 5, 8] or (prdx and prdx not in self.DXCODES):
+                if self._neur() in [2, 3, 4, 5, 8] or (
+                    prdx and prdx not in self.DXCODES
+                ):
                     return True
             else:
                 result = False
@@ -162,7 +164,8 @@ class FamilyHandler:
                     prdx = self._prdx(i)
                     if (
                         self._neur(i) in [2, 3, 4, 5, 8]
-                        or prdx and prdx not in self.DXCODES
+                        or prdx
+                        and prdx not in self.DXCODES
                     ):
                         result = True
                     elif self._neur(i) == 9:
