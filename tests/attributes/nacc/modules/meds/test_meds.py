@@ -4,7 +4,10 @@ import pytest
 from nacc_attribute_deriver.attributes.nacc.modules.meds.form_meds import (
     MEDSFormAttributeCollection,
 )
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
+from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
@@ -35,3 +38,10 @@ class TestMEDSForm:
             "2000-01-01": ["d00004", "d00170"],
             "2011-08-10": ["d00004", "d00170", "d00269", "d00321", "d00732"],
         }
+
+    def test_create_drugs_list_invalid(self, table, form_prefix):
+        set_attribute(table, form_prefix, "frmdatea4g", "2000-01-01")
+        meds = MEDSFormAttributeCollection(table)
+
+        with pytest.raises(AttributeDeriverError):
+            meds._create_drugs_list()
