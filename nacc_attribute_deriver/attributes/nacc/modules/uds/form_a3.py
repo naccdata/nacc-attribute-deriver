@@ -206,7 +206,7 @@ class UDSFormA3Attribute(AttributeCollection):
             return None
 
         fothmut = self.__uds.get_value("fothmut", int)
-        if fothmut == [0, 1]:
+        if fothmut in [0, 1]:
             return fothmut
 
         # check if defined in previous form, else return 9
