@@ -49,7 +49,9 @@ class UDSFormA3Attribute(AttributeCollection):
             return fadmut
 
         # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value("naccam", int, default=9)
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccam", int, default=9
+        )
 
     def _create_naccamx(self) -> Optional[str]:
         """Creates NACCAMX - If an AD mutation other than
@@ -96,7 +98,9 @@ class UDSFormA3Attribute(AttributeCollection):
             return 0
 
         # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value("naccdad", int, default=9)
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccdad", int, default=9
+        )
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -123,7 +127,9 @@ class UDSFormA3Attribute(AttributeCollection):
             return 0
 
         # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value("naccfam", int, default=9)
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccfam", int, default=9
+        )
 
     def _create_naccfftd(self) -> int:
         """Creates NACCFFTD - In this family, is there evidence for
@@ -151,7 +157,9 @@ class UDSFormA3Attribute(AttributeCollection):
         if fftdmut in [0, 1, 2, 3, 4, 8]:
             return fftdmut
 
-        return self.__subject_derived.get_cross_sectional_value("naccfm", int, default=9)
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccfm", int, default=9
+        )
 
     def _create_naccfms(self) -> Optional[int]:
         """Creates NACCFMS - Source of evidence for FTLD
@@ -196,7 +204,9 @@ class UDSFormA3Attribute(AttributeCollection):
             return 0
 
         # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value("naccmom", int, default=9)
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccmom", int, default=9
+        )
 
     def _create_naccom(self) -> Optional[int]:
         """Creates NACCOM - In this family, is there evidence for
@@ -210,7 +220,9 @@ class UDSFormA3Attribute(AttributeCollection):
             return fothmut
 
         # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value("naccom", int, default=9)
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccom", int, default=9
+        )
 
     def _create_naccoms(self) -> Optional[int]:
         """Creates NACCOMS - Source of evidence for other

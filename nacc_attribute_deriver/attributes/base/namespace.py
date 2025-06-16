@@ -270,8 +270,11 @@ class SubjectDerivedNamespace(BaseNamespace):
         )
 
     def get_cross_sectional_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None,
-        required: bool = False
+        self,
+        attribute: str,
+        attr_type: Type[T],
+        default: Optional[Any] = None,
+        required: bool = False,
     ) -> Any:
         """Returns a cross-sectional value.
 
@@ -288,8 +291,11 @@ class SubjectDerivedNamespace(BaseNamespace):
         return self.get_value(f"cross-sectional.{attribute}", attr_type, default)
 
     def get_longitudinal_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None,
-        required: bool = False
+        self,
+        attribute: str,
+        attr_type: Type[T],
+        default: Optional[Any] = None,
+        required: bool = False,
     ) -> Any:
         """Returns a longitudinal value.
 

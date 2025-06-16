@@ -92,17 +92,20 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         self.__uds = UDSNamespace(table=table)
         self.__subject_derived = SubjectDerivedNamespace(
             table=table,
-            required=frozenset([
-                f'cross-sectional.{x}'
-                for x in ["naccage", "naccnihr", "naccdage", "naccdied"]
-            ]),
+            required=frozenset(
+                [
+                    f"cross-sectional.{x}"
+                    for x in ["naccage", "naccnihr", "naccdage", "naccdied"]
+                ]
+            ),
         )
 
     def _create_uds_age(self) -> DateTaggedValue[int]:
         """UDS age at form date, mapped from NACCAGE."""
         return DateTaggedValue(
             value=self.__subject_derived.get_cross_sectional_value(
-                "naccage", int, required=True),
+                "naccage", int, required=True
+            ),
             date=self.__uds.get_date(),
         )
 
@@ -123,7 +126,8 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
     def _create_uds_race(self) -> DateTaggedValue[str]:
         """UDS race."""
         naccnihr = self.__subject_derived.get_cross_sectional_value(
-            "naccnihr", int, required=True)
+            "naccnihr", int, required=True
+        )
         mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)
 
         if not mapped_naccnihr:
@@ -134,14 +138,16 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
         return self.__subject_derived.get_cross_sectional_value(
-            "naccdage", int, required=True)
+            "naccdage", int, required=True
+        )
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> DateTaggedValue[str]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
         naccdied = self.__subject_derived.get_cross_sectional_value(
-            "naccdied", int, required=True)
+            "naccdied", int, required=True
+        )
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)
 
         if not mapped_naccdied:

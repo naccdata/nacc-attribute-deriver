@@ -258,11 +258,12 @@ def is_multiracial(racex: Optional[str], racesecx: Optional[str]) -> bool:
     for field in [racex, racesecx]:
         if field:
             mult_satisfied = any(
-                [x in field for x in ["muiti", "mult", "muti", "multi", "mulit", "mutl"]]
+                [
+                    x in field
+                    for x in ["muiti", "mult", "muti", "multi", "mulit", "mutl"]
+                ]
             )
-            racial_satisfied = any(
-                [x in field for x in ['racial', 'racail']]
-            )
+            racial_satisfied = any([x in field for x in ["racial", "racail"]])
 
             if mult_satisfied and racial_satisfied:
                 return True
