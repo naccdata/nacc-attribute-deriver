@@ -243,3 +243,30 @@ def test_scan_amyloid_gaain():
             }
         },
     }
+
+
+def test_meds():
+    """Test against minimal MEDS data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {
+        "frmdatea4g": "2000-01-01",
+        "drugs_list": "d00004,d00170",
+    }
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "meds")
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "frmdatea4g": "2000-01-01",
+                        "drugs_list": "d00004,d00170",
+                    }
+                }
+            }
+        },
+        "subject": {
+            "info": {"derived": {"drugs_list": {"2000-01-01": ["d00004", "d00170"]}}}
+        },
+    }
