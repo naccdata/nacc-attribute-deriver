@@ -74,7 +74,6 @@ uds,nacclivs,subject.info.derived.longitudinal.nacclivs,set,,
 uds,naccnihr,subject.info.derived.cross-sectional.naccnihr,update,,
 uds,naccreas,subject.info.derived.cross-sectional.naccreas,update,,
 uds,naccrefr,subject.info.derived.cross-sectional.naccrefr,update,,
-<<<<<<< HEAD
 uds,naccninr,file.info.derived.naccninr,update,,
 uds,naccninr,subject.info.derived.longitudinal.naccninr,update,,
 uds,naccam,subject.info.derived.cross-sectional.naccam,update,,
