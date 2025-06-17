@@ -95,15 +95,24 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted:
             return None
 
+        # if reported 1 at any visit, stays as 1
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccdad", int, default=9
+        )
+        if known_value == 1:
+            return 1
+
+        # if no data, per RDD: "Known cognitive impairment history
+        # reported at any visit supersedes all visits with missing codes"
+        if not self.__dad.has_data():
+            return known_value
+
         if self.__dad.xdem():
             return 1
         if self.__dad.xnot():
             return 0
 
-        # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccdad", int, default=9
-        )
+        return 9
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -130,6 +139,11 @@ class UDSFormA3Attribute(AttributeCollection):
             return 0
 
         # check if defined in previous form, else return 9
+        # from RDD: "Those who are missing data on all first-degree
+        # family members are coded as Unknown.  If some first-degree
+        # family members are coded as No and some are coded as Unknown,
+        # then they are all coded as Unknown"
+        # that's why we don't check for has_data here
         return self.__subject_derived.get_cross_sectional_value(
             "naccfam", int, default=9
         )
@@ -175,7 +189,9 @@ class UDSFormA3Attribute(AttributeCollection):
         if fftdmusu in [0, 1, 2, 3, 8]:
             return fftdmusu
 
-        return 9
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccfms", int, default=9
+        )
 
     def _create_naccfmsx(self) -> Optional[str]:
         """Creates NACCFMSX - If other source of FTLD mutation,
@@ -201,15 +217,24 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted:
             return None
 
+        # if reported 1 at any visit, stays as 1
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccmom", int, default=9
+        )
+        if known_value == 1:
+            return 1
+
+        # if no data, per RDD: "Known cognitive impairment history
+        # reported at any visit supersedes all visits with missing codes"
+        if not self.__mom.has_data():
+            return known_value
+
         if self.__mom.xdem():
             return 1
         if self.__mom.xnot():
             return 0
 
-        # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccmom", int, default=9
-        )
+        return 9
 
     def _create_naccom(self) -> Optional[int]:
         """Creates NACCOM - In this family, is there evidence for
@@ -238,7 +263,9 @@ class UDSFormA3Attribute(AttributeCollection):
         if fothmuso in [0, 1, 2, 3, 8]:
             return fothmuso
 
-        return 9
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccoms", int, default=9
+        )
 
     def _create_naccomsx(self) -> Optional[str]:
         """Creates NACCOMSX - If mutation is reported at any

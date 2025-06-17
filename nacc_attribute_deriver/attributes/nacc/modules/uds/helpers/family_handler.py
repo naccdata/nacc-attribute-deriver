@@ -108,6 +108,18 @@ class FamilyHandler:
 
         return self._get_parent_attribute("prdx")
 
+    def has_data(self) -> bool:
+        """Return whether or not there is data to make a decision to begin
+        with."""
+        if self.is_parent():
+            return any(x is not None for x in [self._dem(), self._neur(), self._prdx()])
+
+        for i in range(1, self.get_bound() + 1):
+            if any(x is not None for x in [self._dem(i), self._neur(i), self._prdx(i)]):
+                return True
+
+        return False
+
     def xdem(self) -> bool:
         """Creates XDEM variables (MDEM, DDEM, SDEM, KDEM), used to compute
         other derived variables, which specifies if the family member is
@@ -146,15 +158,11 @@ class FamilyHandler:
     def xnot(self) -> bool:  # noqa: C901
         """Creates XNOT variables (MNOT, DNOT, SNOT, KNOT), used to compute
         other derived variables, which specifies if the family member does NOT
-        have cognitive impairment.
-
-        If unknown (9) it seems the SAS code returns 0/False early to
-        signifiy they might have cognitive impairment.
-        """
+        have cognitive impairment."""
         if self.__formver == 3:
             if self.is_parent():
                 prdx = self._prdx()
-                if self._neur() in [2, 3, 4, 5, 8] or (
+                if self._neur() in [2, 3, 4, 5, 8, 9] or (
                     prdx and prdx not in self.DXCODES
                 ):
                     return True
@@ -162,21 +170,16 @@ class FamilyHandler:
                 result = False
                 for i in range(1, self.get_bound() + 1):
                     prdx = self._prdx(i)
-                    if (
-                        self._neur(i) in [2, 3, 4, 5, 8]
-                        or prdx
-                        and prdx not in self.DXCODES
+                    if self._neur(i) in [2, 3, 4, 5, 8, 9] or (
+                        prdx and prdx not in self.DXCODES
                     ):
                         result = True
-                    elif self._neur(i) == 9:
-                        return False
 
                 return result
 
             return False
 
         # assuming formver < 3 after this
-
         if self.is_parent():
             return self._dem() == 0
 

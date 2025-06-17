@@ -69,8 +69,8 @@ def naccfam_table() -> SymbolTable:
 
 
 class TestUDSFormA3Attribute:
-    def test_create_naccdad(self, table, form_prefix):
-        """Tests creating NACCDAD."""
+    def test_create_naccdad_v3(self, table, form_prefix):
+        """Tests creating NACCDAD V3."""
         attr = UDSFormA3Attribute(table)
         assert attr._create_naccdad() == 1
 
@@ -78,8 +78,42 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "dadprdx", None)
         assert attr._create_naccdad() == 9
 
+        set_attribute(table, form_prefix, "dadneur", 9)
+        assert attr._create_naccdad() == 0
+
         set_attribute(table, form_prefix, "dadneur", 3)
         assert attr._create_naccdad() == 0
+
+    def test_create_naccdad_v1_v2(self, table, form_prefix):
+        """Tests creating NACCDAD V1/V2."""
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, form_prefix, "formver", 1.0)
+        set_attribute(table, form_prefix, "daddem", 9)
+        set_attribute(table, form_prefix, "dadneur", None)
+        set_attribute(table, form_prefix, "dadprdx", None)
+        assert attr._create_naccdad() == 9
+
+        set_attribute(table, form_prefix, "formver", 2.0)
+        assert attr._create_naccdad() == 9
+
+    def test_create_naccdad_v3_supercedes(
+        self, table, form_prefix, subject_derived_prefix
+    ):
+        """Tests creating NACCDAD when an already-computed value supercedes."""
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 1)
+        set_attribute(table, form_prefix, "daddem", None)
+        set_attribute(table, form_prefix, "dadneur", None)
+        set_attribute(table, form_prefix, "dadprdx", None)
+        assert attr._create_naccdad() == 1
+
+        set_attribute(table, form_prefix, "dadneur", 3)
+        assert attr._create_naccdad() == 1
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 9)
+        assert attr._create_naccdad() == 0
+        set_attribute(table, form_prefix, "dadneur", None)
+        assert attr._create_naccdad() == 9
 
     def test_create_naccfam(self, table, naccfam_table, form_prefix):
         """Tests creating NACCFAM."""
