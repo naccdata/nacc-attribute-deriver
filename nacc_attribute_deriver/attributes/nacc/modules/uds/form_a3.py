@@ -44,14 +44,20 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted or self.__formver < 3:
             return None
 
-        fadmut = self.__uds.get_value("fadmut", int)
-        if fadmut in [0, 1, 2, 3, 8]:
-            return fadmut
-
-        # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value(
+        known_value = self.__subject_derived.get_cross_sectional_value(
             "naccam", int, default=9
         )
+
+        fadmut = self.__uds.get_value("fadmut", int)
+        if fadmut in [1, 2, 3, 8]:
+            return fadmut
+        if fadmut == 0:
+            # a non-zero known value should supersede
+            if known_value in [1, 2, 3, 4, 8]:
+                return known_value
+            return fadmut
+
+        return known_value
 
     def _create_naccamx(self) -> Optional[str]:
         """Creates NACCAMX - If an AD mutation other than
@@ -107,12 +113,8 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__dad.has_data():
             return known_value
 
-        if self.__dad.xdem():
-            return 1
-        if self.__dad.xnot():
-            return 0
-
-        return 9
+        status = self.__dad.cognitive_impairment_status()
+        return 1 if status == 1 else 0
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -133,20 +135,20 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted:
             return None
 
-        if any(member.xdem() for member in self.__family):
+        family_status = [member.cognitive_impairment_status()
+                         for member in self.__family]
+        if any(status == 1 for status in family_status):
             return 1
-        elif all(member.xnot() for member in self.__family):
-            return 0
 
-        # check if defined in previous form, else return 9
         # from RDD: "Those who are missing data on all first-degree
-        # family members are coded as Unknown.  If some first-degree
+        # family members are coded as Unknown (9). If some first-degree
         # family members are coded as No and some are coded as Unknown,
-        # then they are all coded as Unknown"
-        # that's why we don't check for has_data here
-        return self.__subject_derived.get_cross_sectional_value(
+        # then they are all coded as Unknown (9)"
+        known_value = self.__subject_derived.get_cross_sectional_value(
             "naccfam", int, default=9
         )
+
+        return known_value if any(status == 9 for status in family_status) else 0
 
     def _create_naccfftd(self) -> int:
         """Creates NACCFFTD - In this family, is there evidence for
@@ -229,12 +231,8 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__mom.has_data():
             return known_value
 
-        if self.__mom.xdem():
-            return 1
-        if self.__mom.xnot():
-            return 0
-
-        return 9
+        status = self.__mom.cognitive_impairment_status()
+        return status if status != 9 else known_value
 
     def _create_naccom(self) -> Optional[int]:
         """Creates NACCOM - In this family, is there evidence for

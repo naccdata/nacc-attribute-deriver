@@ -74,7 +74,10 @@ class FamilyHandler:
 
     def get_bound(self) -> int:
         assert not self.is_parent(), "Parent attributes cannot have ranges"
-        return 20 if self.__prefix == "sib" else 15
+        if self.__prefix == 'sib':
+            return self.__uds.get_value('sibs', int, default=0)
+
+        return self.__uds.get_value('kids', int, default=0)
 
     def _get_parent_attribute(self, postfix: str) -> Optional[int]:
         """Build and get attribute for mom/dad."""
@@ -120,10 +123,15 @@ class FamilyHandler:
 
         return False
 
-    def xdem(self) -> bool:
-        """Creates XDEM variables (MDEM, DDEM, SDEM, KDEM), used to compute
-        other derived variables, which specifies if the family member is
-        demented."""
+    def has_cognitive_impairment(self) -> bool:
+        """In SAS code, creates XDEM variables (MDEM, DDEM, SDEM, KDEM), used to
+        specify if the family member has cognitive impairment.
+
+        This is primarily done by checking xdem (< v3) and xneur (v3+)
+
+        Returns:
+            True if they do, False otherwise
+        """
         if self.is_parent():
             if self._dem() == 1 or (self._neur() == 1 and self._prdx() in self.DXCODES):
                 return True
@@ -145,72 +153,35 @@ class FamilyHandler:
                     dem_i = self._dem(i)
                     if dem_i == 1:
                         return True
-                    # in SAS code this was tangled with XNOT, and if
-                    # dem_i == 9 then loop would set it and break early, but I
-                    # feel that doesn't make sense for XDEM? comment out
-                    # for now, if it fails a bunch of regression tests
-                    # then put back in
-                    # elif dem_i == 9:
-                    #     break
 
         return False
 
-    def xnot(self) -> bool:  # noqa: C901
-        """Creates XNOT variables (MNOT, DNOT, SNOT, KNOT), used to compute
-        other derived variables, which specifies if the family member does NOT
-        have cognitive impairment."""
-        if self.__formver == 3:
-            if self.is_parent():
-                prdx = self._prdx()
-                if self._neur() in [2, 3, 4, 5, 8, 9] or (
-                    prdx and prdx not in self.DXCODES
-                ):
-                    return True
-            else:
-                result = False
-                for i in range(1, self.get_bound() + 1):
-                    prdx = self._prdx(i)
-                    if self._neur(i) in [2, 3, 4, 5, 8, 9] or (
-                        prdx and prdx not in self.DXCODES
-                    ):
-                        result = True
+    def cognitive_impairment_status(self) -> int:  # noqa: C901
+        """In SAS code, creates XNOT variables (MNOT, DNOT, SNOT, KNOT), used to
+        specify that the family member does NOT have cognitive impairment.
 
-                return result
+        This ended up being written quite differently from the SAS code, but
+        did start from it, so logic may still be a bit unintuitive.
 
-            return False
+        Returns:
+            1. Has cognitive impairment
+            0: No cognitive impairment, or code other than specified list
+            9: Unknown
+        """
+        if self.has_cognitive_impairment():
+            return 1
 
-        # assuming formver < 3 after this
+        # if no data to evaluate, return Unknown (9)
+        if not self.has_data():
+            return 9
+
         if self.is_parent():
-            return self._dem() == 0
+            return 9 if self._neur() == 9 else 0
 
-        # assuming sibs/kids after this point
-        # if 0 siblings/kids, return 1; SAS code continues and theoretically
-        # could get overwritten by formver-specific code but shouldn't in practice
-        # so should be fine to leave early? because if there are no sibs/kids
-        # the other variables can never be set
-        num_total = self.__uds.get_value(f"{self.__prefix}s", int)
-        if num_total == 0:
-            return True
-        if num_total is None:
-            num_total = 0
+        # check all the kids/sibs; per RDD, if ANY are Unknown they are ALL
+        # coded as Unknown (9), so leave early
+        for i in range(1, self.get_bound() + 1):
+            if self._neur(i) == 9:
+                return 9
 
-        # number of sibs/kids demented specified in V1, so also check
-        if self.__formver == 1:
-            num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
-            if num_dem == 0:
-                return True
-            elif num_total > 0 and num_total < 30 and num_dem != 0:
-                return False
-
-        elif self.__formver == 2:
-            result = False
-            for i in range(1, self.get_bound() + 1):
-                dem_i = self._dem(i)
-                if dem_i == 9:
-                    return False
-                elif dem_i == 0:
-                    result = True
-
-            return result
-
-        return False
+        return 0
