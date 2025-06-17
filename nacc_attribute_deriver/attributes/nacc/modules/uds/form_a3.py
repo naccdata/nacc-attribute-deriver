@@ -76,7 +76,10 @@ class UDSFormA3Attribute(AttributeCollection):
         if fadmuso in [1, 2, 3, 4, 8]:
             return fadmuso
 
-        return 9
+        # check if defined in previous form, else return 9
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccams", int, default=9
+        )
 
     def _create_naccamsx(self) -> Optional[str]:
         """Creates NACCAMSX - Other source of AD."""
