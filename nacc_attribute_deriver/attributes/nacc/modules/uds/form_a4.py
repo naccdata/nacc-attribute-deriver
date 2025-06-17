@@ -7,9 +7,11 @@ From derivedmeds.sas.
 from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -18,27 +20,41 @@ class UDSFormA4Attribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         # TODO: for v4 this will be modea4
         # SAS code seems to set anymeds explicitly based on a meds table,
         # but should be fine to use directly
         self.__submitted = self.__uds.get_value("anymeds", int) == 1
+        self.__meds = None
+
+        # need to grab from corresponding MEDS file information
+        # keyed by form date under subject.info.derived.drugs_list
+        if self.__submitted:
+            all_meds = self.__subject_derived.get_value("drugs_list", dict)
+            if all_meds is None:
+                all_meds = {}
+
+            form_date = self.__uds.get_value("frmdatea4", str)
+            if not form_date:  # try visitdate
+                form_date = self.__uds.get_value("visitdate", str)
+
+            if form_date not in all_meds:
+                raise AttributeDeriverError(
+                    "Cannot find corresponding MEDS drugs list for "
+                    + f"form date {form_date}"
+                )
+
+            self.__meds = [x.strip().lower() for x in all_meds[form_date]]
 
     def _create_naccamd(self) -> int:
         """Creates NACCAMD - Total number of medications reported at
         each visit.
         """
-        if not self.__submitted:
+        if not self.__meds:
             return 0
 
-        count = 0
-        for i in range(1, 41):
-            drug = self.__uds.get_value(f"drug{i}", str)
-            if not drug:
-                continue
-            count += 1
-
-        return count
+        return len(self.__meds)
 
     def check_drugs(self, target_codes: List[str]) -> Optional[int]:
         """Check if any of the 40 write-in drugs match the target codes.
@@ -48,17 +64,10 @@ class UDSFormA4Attribute(AttributeCollection):
         Returns:
             1 if there is a match, 0 otherwise
         """
-        if not self.__submitted:
+        if not self.__submitted or not self.__meds:
             return None
 
-        for i in range(1, 41):
-            drug = self.__uds.get_value(f"drug{i}", str)
-            if not drug:
-                continue
-            if drug.lower() in target_codes:
-                return 1
-
-        return 0
+        return 1 if any(x in target_codes for x in self.__meds) else 0
 
     def _create_naccaaas(self) -> Optional[int]:
         """Creates NACCAAAS - Reported current use of an antiadenergic agent."""
