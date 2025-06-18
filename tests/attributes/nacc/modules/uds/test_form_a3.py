@@ -25,6 +25,8 @@ def table() -> SymbolTable:
                         "formver": "3.0",
                         "a3sub": 1,
                         "fadmut": 3,
+                        "fadmuso": 2,
+                        "fothmut": 0,
                         "sibs": 0,
                         "kids": 0
                     }
@@ -248,5 +250,49 @@ class TestUDSFormA3Attribute:
         # test superseded cases
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 2)
         assert attr._create_naccam() == 2
+        set_attribute(table, form_prefix, "fadmut", 0)
+        assert attr._create_naccam() == 2
         set_attribute(table, form_prefix, "fadmut", None)
         assert attr._create_naccam() == 2
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 0)
+        assert attr._create_naccam() == 0
+        set_attribute(table, form_prefix, "fadmut", 8)
+        assert attr._create_naccam() == 8
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 9)
+        assert attr._create_naccam() == 8
+        set_attribute(table, form_prefix, "fadmut", 0)
+        assert attr._create_naccam() == 0
+
+    def test_create_naccams(self, table, form_prefix, subject_derived_prefix):
+        """Tests creating NACCAMS."""
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccams() == 2
+        set_attribute(table, form_prefix, "fadmuso", 9)
+        assert attr._create_naccams() == 9
+        set_attribute(table, form_prefix, "fadmuso", None)
+        assert attr._create_naccams() is None
+
+        # test superseded cases
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccams", 9)
+        assert attr._create_naccams() is None
+        set_attribute(table, form_prefix, "fadmuso", 9)
+        assert attr._create_naccams() == 9
+
+    def test_create_naccom(self, table, form_prefix, subject_derived_prefix):
+        """Test creating NACCOM."""
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccom() == 0
+        set_attribute(table, form_prefix, "fothmut", 1)
+        assert attr._create_naccom() == 1
+        set_attribute(table, form_prefix, "fothmut", 9)
+        assert attr._create_naccom() == 9
+
+        # test superseded cases
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 9)
+        assert attr._create_naccom() == 9
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 0)
+        assert attr._create_naccom() == 0
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 1)
+        assert attr._create_naccom() == 1

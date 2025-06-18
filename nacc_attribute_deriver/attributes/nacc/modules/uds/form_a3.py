@@ -53,7 +53,7 @@ class UDSFormA3Attribute(AttributeCollection):
             return fadmut
         if fadmut == 0:
             # a non-zero known value should supersede
-            if known_value in [1, 2, 3, 4, 8]:
+            if known_value in [1, 2, 3, 8]:
                 return known_value
             return fadmut
 
@@ -73,19 +73,28 @@ class UDSFormA3Attribute(AttributeCollection):
         mutation.
 
         Only in V3+, and None if NACCAM (FADMUT) is 0. Same
-        assumption as NACCAM.
+        assumption as NACCAM. Also, if the source of evidence
+        is unknown at all visits (all == 9) then NACCAMS is 9.
+        If not reported at any, then None (-4).
         """
         if not self.__submitted or self.__formver < 3 or self._create_naccam() == 0:
             return None
 
         fadmuso = self.__uds.get_value("fadmuso", int)
-        if fadmuso in [1, 2, 3, 4, 8]:
+        if fadmuso in [1, 2, 3, 8]:
             return fadmuso
 
-        # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccams", int, default=9
+        if fadmuso is None:
+            return None
+
+        # for NACCAMS to be 9, it must be 9 at ALL visits, return None otherwise
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccams", int
         )
+        if fadmuso == 9 and (self.__uds.is_initial() or known_value == 9):
+            return 9
+
+        return None
 
     def _create_naccamsx(self) -> Optional[str]:
         """Creates NACCAMSX - Other source of AD."""
@@ -182,15 +191,17 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted or self.__formver < 3:
             return None
 
-        # 1 always supercedes
+        fftdmut = self.__uds.get_value("fftdmut", int)
+        if fftdmut in [1, 2, 3, 4, 8]:
+            return fftdmut
+
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccfm", int, default=9
         )
-        if known_value == 1:
-            return 1
-
-        fftdmut = self.__uds.get_value("fftdmut", int)
-        if fftdmut in [0, 1, 2, 3, 4, 8]:
+        if fftdmut == 0:
+            # a non-zero known value should supersede
+            if known_value in [1, 2, 3, 4, 8]:
+                return known_value
             return fftdmut
 
         return known_value
@@ -206,9 +217,14 @@ class UDSFormA3Attribute(AttributeCollection):
         if fftdmusu in [0, 1, 2, 3, 8]:
             return fftdmusu
 
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccfms", int, default=9
+        # for NACCFMS to be 9, it must be 9 at ALL visits, return None otherwise
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccfms", int
         )
+        if fftdmusu == 9 and (self.__uds.is_initial() or known_value == 9):
+            return 9
+
+        return None
 
     def _create_naccfmsx(self) -> Optional[str]:
         """Creates NACCFMSX - If other source of FTLD mutation,
@@ -259,6 +275,7 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted or self.__formver < 3:
             return None
 
+        # known value 1 always supersedes
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccom", int, default=9
         )
@@ -282,9 +299,14 @@ class UDSFormA3Attribute(AttributeCollection):
         if fothmuso in [0, 1, 2, 3, 8]:
             return fothmuso
 
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccoms", int, default=9
+        # for NACCOMS to be 9, it must be 9 at ALL visits, return None otherwise
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccoms", int
         )
+        if fothmuso == 9 and (self.__uds.is_initial() or known_value == 9):
+            return 9
+
+        return None
 
     def _create_naccomsx(self) -> Optional[str]:
         """Creates NACCOMSX - If mutation is reported at any
