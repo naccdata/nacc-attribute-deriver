@@ -17,7 +17,6 @@ class UDSFormB8Attribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        self.__formver = self.__uds.normalized_formver()
 
     def _create_naccnrex(self) -> Optional[int]:
         """Creates NACCNREX, were all findings unremarkable?

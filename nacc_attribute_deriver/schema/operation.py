@@ -169,6 +169,31 @@ class SetOperation(Operation):
         table[attribute] = sorted(list(cur_set))
 
 
+class ListOperation(Operation):
+    LABEL = "list"
+
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        element_type: TypeAlias = get_list_type(  # type: ignore
+            get_date_tagged_type(get_optional_type(expression_type))
+        )
+
+        return List[element_type] if element_type is not NoneType else List
+
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+        """Adds the value to list - insert order is retained."""
+        if isinstance(value, DateTaggedValue):
+            value = value.value  # type: ignore
+
+        cur_list = table.get(attribute, [])
+        if isinstance(value, (list, set)):
+            cur_list.extend(list(value))  # type: ignore
+        elif value is not None:
+            cur_list.append(value)
+
+        table[attribute] = cur_list
+
+
 class SortedListOperation(Operation):
     LABEL = "sortedlist"
 
