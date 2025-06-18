@@ -129,7 +129,10 @@ class FamilyHandler:
         if self.is_parent():
             return any(x is not None for x in [self._dem(), self._neur(), self._prdx()])
 
-        if self.__uds.get_value(f"{self.__prefix}s", int) is not None:
+        num_total = self.__uds.get_value(f"{self.__prefix}s", int)
+        if num_total is None:
+            return False
+        elif num_total == 0:  # if 0, not expecting any data
             return True
 
         if self.__formver == 1:

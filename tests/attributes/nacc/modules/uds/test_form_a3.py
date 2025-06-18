@@ -171,6 +171,16 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "sib3neu", 8)
         assert attr._create_naccfam() == 0
 
+        set_attribute(table, form_prefix, "dadneur", 8)
+        set_attribute(table, form_prefix, "dadprdx", None)
+        set_attribute(table, form_prefix, "sib1neu", 4)
+        set_attribute(table, form_prefix, "sib1pdx", 240)
+        assert attr._create_naccfam() == 0
+
+        set_attribute(table, form_prefix, "sib1neu", 1)
+        set_attribute(table, form_prefix, "sib1pdx", 240)
+        assert attr._create_naccfam() == 1
+
     def test_create_naccfam_v2(self, table, form_prefix):
         """Tests creating NACCFAM V2."""
         set_attribute(table, form_prefix, "formver", 2)
