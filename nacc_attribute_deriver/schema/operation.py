@@ -140,35 +140,6 @@ class UpdateOperation(Operation):
         table[attribute] = value
 
 
-class SetOperation(Operation):
-    LABEL = "set"
-
-    @classmethod
-    def attribute_type(cls, expression_type: type) -> type:
-        element_type: TypeAlias = get_list_type(  # type: ignore
-            get_date_tagged_type(get_optional_type(expression_type))
-        )
-
-        return List[element_type] if element_type is not NoneType else List
-
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
-        """Adds the value to a set, although it actually is saved as a list
-        since the final output is a JSON."""
-        if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
-
-        cur_set: Set[Any] = table.get(attribute)  # type: ignore
-        cur_set = set(cur_set) if cur_set else set()
-
-        if isinstance(value, (list, set)):
-            cur_set = cur_set.union(set(value))  # type: ignore
-        elif value is not None:
-            cur_set.add(value)
-
-        # sorts just for consistency
-        table[attribute] = sorted(list(cur_set))
-
-
 class ListOperation(Operation):
     LABEL = "list"
 
@@ -180,8 +151,8 @@ class ListOperation(Operation):
 
         return List[element_type] if element_type is not NoneType else List
 
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
-        """Adds the value to list - insert order is retained."""
+    def add_to_list(self, *, table: SymbolTable, value: Any, attribute: str) -> List[Any]:
+        """Handles the current list - insert order is retained."""
         if isinstance(value, DateTaggedValue):
             value = value.value  # type: ignore
 
@@ -191,32 +162,31 @@ class ListOperation(Operation):
         elif value is not None:
             cur_list.append(value)
 
+        return cur_list
+
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+        """Adds the value to list - insert order is retained."""
+        cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
         table[attribute] = cur_list
 
 
-class SortedListOperation(Operation):
+class SortedListOperation(ListOperation):
     LABEL = "sortedlist"
-
-    @classmethod
-    def attribute_type(cls, expression_type: type) -> type:
-        element_type: TypeAlias = get_list_type(  # type: ignore
-            get_date_tagged_type(get_optional_type(expression_type))
-        )
-
-        return List[element_type] if element_type is not NoneType else List
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a sorted list."""
-        if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
-
-        cur_list = table.get(attribute, [])
-        if isinstance(value, (list, set)):
-            cur_list.extend(list(value))  # type: ignore
-        elif value is not None:
-            cur_list.append(value)
-
+        cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
         table[attribute] = sorted(cur_list)
+
+
+class SetOperation(ListOperation):
+    LABEL = "set"
+
+    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+        """Adds the value to a set, although it actually is saved as a list
+        since the final output is a JSON. Sorted for consistency."""
+        cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
+        table[attribute] = sorted(list(set(cur_list)))
 
 
 class DateOperation(Operation):
