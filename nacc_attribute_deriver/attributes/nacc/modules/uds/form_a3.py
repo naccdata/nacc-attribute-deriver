@@ -75,10 +75,12 @@ class UDSFormA3Attribute(AttributeCollection):
         Only in V3+, and None if NACCAM (FADMUT) is 0. Same
         assumption as NACCAM. Also, if the source of evidence
         is unknown at all visits (all == 9) then NACCAMS is 9.
-        If not reported at any, then None (-4).
+        If not reported at any (NACCAM == 0) than -4.
         """
-        if not self.__submitted or self.__formver < 3 or self._create_naccam() == 0:
+        if not self.__submitted or self.__formver < 3:
             return None
+        if self._create_naccam() == 0:
+            return -4
 
         fadmuso = self.__uds.get_value("fadmuso", int)
         if fadmuso in [1, 2, 3, 8]:
@@ -210,8 +212,10 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCFMS - Source of evidence for FTLD
         mutation.
         """
-        if not self.__submitted or self.__formver < 3 or self._create_naccfm() == 0:
+        if not self.__submitted or self.__formver < 3:
             return None
+        if self._create_naccfm() == 0:
+            return -4
 
         fftdmusu = self.__uds.get_value("fftdmuso", int)
         if fftdmusu in [0, 1, 2, 3, 8]:
@@ -292,8 +296,10 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCOMS - Source of evidence for other
         mutation.
         """
-        if not self.__submitted or self.__formver < 3 or self._create_naccom() == 0:
+        if not self.__submitted or self.__formver < 3:
             return None
+        if self._create_naccom() == 0:
+            return -4
 
         fothmuso = self.__uds.get_value("fothmuso", int)
         if fothmuso in [0, 1, 2, 3, 8]:
