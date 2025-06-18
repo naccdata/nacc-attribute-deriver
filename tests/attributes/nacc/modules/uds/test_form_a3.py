@@ -87,6 +87,18 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "dadneur", 3)
         assert attr._create_naccdad() == 0
 
+    def test_create_naccdad_v1v2(self, table, form_prefix):
+        """Tests creating NACCDAD V1/V2."""
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, form_prefix, "formver", 1.0)
+        set_attribute(table, form_prefix, "dadneur", None)
+        set_attribute(table, form_prefix, "dadprdx", None)
+        set_attribute(table, form_prefix, "daddem", 9)
+        assert attr._create_naccdad() == 9
+
+        set_attribute(table, form_prefix, "daddem", 0)
+        assert attr._create_naccdad() == 0
+
     def test_create_naccdad_superseded(
         self, table, form_prefix, subject_derived_prefix
     ):
@@ -142,10 +154,22 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "sibs", 5)
         assert attr._create_naccfam() == 9
 
+    def test_create_naccfam_sibs_v1_v2(self, table, form_prefix):
+        """Tests creating NACCFAM with multiple siblings and varying dem statuses"""
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, form_prefix, "dadneur", 8)
+        set_attribute(table, form_prefix, "dadprdx", None)
+        set_attribute(table, form_prefix, "daddem", 0)
+        set_attribute(table, form_prefix, "momdem", 0)
+        set_attribute(table, form_prefix, "sib1dem", 0)
+        set_attribute(table, form_prefix, "sib2dem", 0)
+        set_attribute(table, form_prefix, "sib3dem", 0)
+        set_attribute(table, form_prefix, "sibs", 5)
+        assert attr._create_naccfam() == 9
+
     def test_create_naccfam_superseded(self, table, form_prefix, subject_derived_prefix):
         """Test NACCFAM superseded case."""
         attr = UDSFormA3Attribute(table)
-        set_attribute(table, form_prefix, "dadneur", None)
         set_attribute(table, form_prefix, "dadneur", None)
         set_attribute(table, form_prefix, "dadprdx", None)
         set_attribute(table, subject_derived_prefix, "naccfam", 9)

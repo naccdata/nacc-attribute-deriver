@@ -1,6 +1,4 @@
 """FamilyHandler helper class, primarily for form A3.
-
-This logic is quite confusing - need to test thoroughly.
 """
 
 from typing import ClassVar, List, Optional
@@ -70,9 +68,11 @@ class FamilyHandler:
         self.__formver = self.__uds.normalized_formver()
 
     def is_parent(self) -> bool:
+        """Returns whether or not this prefix is a parent."""
         return self.__prefix in ["mom", "dad"]
 
     def get_bound(self) -> int:
+        """Get the upper bound based on the number of sibs/kids reported."""
         assert not self.is_parent(), "Parent attributes cannot have ranges"
         if self.__prefix == 'sib':
             return self.__uds.get_value('sibs', int, default=0)
@@ -91,21 +91,29 @@ class FamilyHandler:
         return self.__uds.get_value(f"{self.__prefix}{index}{postfix}", int)
 
     def _dem(self, index: Optional[int] = None) -> Optional[int]:
-        """Get family member demented (V2 and earlier)."""
+        """Get family member demented (V2 and earlier). Grabs:
+
+        MOMDEM, DADDEM, SIB#DEM, KID#DEM
+        """
         if index is not None:
             return self._get_sib_kid_attribute("dem", index)
 
         return self._get_parent_attribute("dem")
 
     def _neur(self, index: Optional[int] = None) -> Optional[int]:
-        """Get family member neurological problem (V3 and later)."""
+        """Get family member neurological problem (V3 and later). Grabs:
+
+        MOMNEUR, DADNEUR, SIB#NEU, KID#NEU
+        """
         if index is not None:
             return self._get_sib_kid_attribute("neu", index)
 
         return self._get_parent_attribute("neur")
 
     def _prdx(self, index: Optional[int] = None) -> Optional[int]:
-        """Get family member primary diagnosis (V3 and later)."""
+        """Get family member primary diagnosis (V3 and later). Grabs:
+            MOMPRDX, DADPRDX, SIB#PDX, KID#PDX
+        """
         if index is not None:
             return self._get_sib_kid_attribute("pdx", index)
 
@@ -113,7 +121,8 @@ class FamilyHandler:
 
     def has_data(self) -> bool:
         """Return whether or not there is data to make a decision to begin
-        with."""
+        with. This helps determine whether a derived variable should return
+        9 (unknown) vs 0 (no)."""
         if self.is_parent():
             return any(x is not None for x in [self._dem(), self._neur(), self._prdx()])
 
@@ -127,7 +136,13 @@ class FamilyHandler:
         """In SAS code, creates XDEM variables (MDEM, DDEM, SDEM, KDEM), used to
         specify if the family member has cognitive impairment.
 
-        This is primarily done by checking xdem (< v3) and xneur (v3+)
+        This is primarily done by checking:
+            V3+: xdem == 1 
+            V1/V2: xneur == 1 AND xprdx one of the primary diagnosis codes
+
+        As far as derived variables are concerned, siblings/kids are only checked
+        for NACCFAM (anyone in the family), so returns early if it holds true for
+        any of them.
 
         Returns:
             True if they do, False otherwise
@@ -143,25 +158,20 @@ class FamilyHandler:
                     return True
 
             # number of sibs/kids demented specified in V1, so also check
-            # if we still have not determined XDEM. leave early if 9 is found
+            # if we still have not determined XDEM
             if self.__formver == 1:
                 num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
                 if num_dem is not None and num_dem > 0 and num_dem < 30:
                     return True
-            elif self.__formver == 2:
-                for i in range(1, self.get_bound() + 1):
-                    dem_i = self._dem(i)
-                    if dem_i == 1:
-                        return True
 
         return False
 
     def cognitive_impairment_status(self) -> int:  # noqa: C901
-        """In SAS code, creates XNOT variables (MNOT, DNOT, SNOT, KNOT), used to
-        specify that the family member does NOT have cognitive impairment.
+        """Gets the cognitive impairment status.
 
-        This ended up being written quite differently from the SAS code, but
-        did start from it, so logic may still be a bit unintuitive.
+        In SAS, this was the XNOT variable code (MNOT, DNOT, SNOT, KNOT), but
+        ended up being quite confusing, so was rewritten based on RDD
+        specs and regression testing.
 
         Returns:
             1. Has cognitive impairment
@@ -176,12 +186,12 @@ class FamilyHandler:
             return 9
 
         if self.is_parent():
-            return 9 if self._neur() == 9 else 0
+            return 9 if self._dem() == 9 else 0
 
         # check all the kids/sibs; per RDD, if ANY are Unknown they are ALL
         # coded as Unknown (9), so leave early
         for i in range(1, self.get_bound() + 1):
-            if self._neur(i) == 9:
+            if self._dem(i) == 9:
                 return 9
 
         return 0

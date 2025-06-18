@@ -113,8 +113,7 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__dad.has_data():
             return known_value
 
-        status = self.__dad.cognitive_impairment_status()
-        return 1 if status == 1 else 0
+        return self.__dad.cognitive_impairment_status()
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -126,7 +125,9 @@ class UDSFormA3Attribute(AttributeCollection):
         if self.__uds.get_value("fadmut", int) in [1, 2, 3, 8]:
             return 1
 
-        return 0
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccfadm", int, default=0
+        )
 
     def _create_naccfam(self) -> Optional[int]:
         """Creates NACCFAM - Indicator of first-degree family
@@ -163,7 +164,9 @@ class UDSFormA3Attribute(AttributeCollection):
         ):
             return 1
 
-        return 0
+        return self.__subject_derived.get_cross_sectional_value(
+            "naccfftd", int, default=0
+        )
 
     def _create_naccfm(self) -> Optional[int]:
         """Creates NACCFM - In this family, is there evidence for an
@@ -172,13 +175,18 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted or self.__formver < 3:
             return None
 
+        # 1 always supercedes
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccfm", int, default=9
+        )
+        if known_value == 1:
+            return 1
+
         fftdmut = self.__uds.get_value("fftdmut", int)
         if fftdmut in [0, 1, 2, 3, 4, 8]:
             return fftdmut
 
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccfm", int, default=9
-        )
+        return known_value
 
     def _create_naccfms(self) -> Optional[int]:
         """Creates NACCFMS - Source of evidence for FTLD
@@ -231,8 +239,7 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__mom.has_data():
             return known_value
 
-        status = self.__mom.cognitive_impairment_status()
-        return status if status != 9 else known_value
+        return self.__mom.cognitive_impairment_status()
 
     def _create_naccom(self) -> Optional[int]:
         """Creates NACCOM - In this family, is there evidence for
@@ -241,14 +248,17 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted or self.__formver < 3:
             return None
 
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccom", int, default=9
+        )
+        if known_value == 1:
+            return 1
+
         fothmut = self.__uds.get_value("fothmut", int)
         if fothmut in [0, 1]:
             return fothmut
 
-        # check if defined in previous form, else return 9
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccom", int, default=9
-        )
+        return known_value
 
     def _create_naccoms(self) -> Optional[int]:
         """Creates NACCOMS - Source of evidence for other
