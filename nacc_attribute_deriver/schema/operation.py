@@ -11,7 +11,6 @@ from typing import (
     ClassVar,
     Dict,
     List,
-    Set,
     Tuple,
     TypeAlias,
     Union,
@@ -151,7 +150,9 @@ class ListOperation(Operation):
 
         return List[element_type] if element_type is not NoneType else List
 
-    def add_to_list(self, *, table: SymbolTable, value: Any, attribute: str) -> List[Any]:
+    def add_to_list(
+        self, *, table: SymbolTable, value: Any, attribute: str
+    ) -> List[Any]:
         """Handles the current list - insert order is retained."""
         if isinstance(value, DateTaggedValue):
             value = value.value  # type: ignore
@@ -184,7 +185,10 @@ class SetOperation(ListOperation):
 
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
         """Adds the value to a set, although it actually is saved as a list
-        since the final output is a JSON. Sorted for consistency."""
+        since the final output is a JSON.
+
+        Sorted for consistency.
+        """
         cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
         table[attribute] = sorted(list(set(cur_list)))
 

@@ -23,25 +23,22 @@ class UDSFormB1Attribute(AttributeCollection):
     def get_height(self) -> Optional[float]:
         """Get height; may need to add decimal.
 
-        Min 36
-        UDSv3+, max is 87.9, UDSv2 and earlier max is 96.0
+        Min 36 UDSv3+, max is 87.9, UDSv2 and earlier max is 96.0
         """
-        height = self.__uds.get_value('height', float)
+        height = self.__uds.get_value("height", float)
 
-        if (height is None or
-            height == 99 or
-            (self.__formver == 3 and height == 88)):
+        if height is None or height == 99 or (self.__formver == 3 and height == 88):
             return None
 
-        heigdec = self.__uds.get_value('heigdec', float)
+        heigdec = self.__uds.get_value("heigdec", float)
         if heigdec is not None and heigdec != 0:
-            height += (heigdec / 10)
+            height += heigdec / 10
 
         return None if height < 36 else height
 
     def get_weight(self) -> Optional[int]:
-        """Get weight; min 50, max 400"""
-        weight = self.__uds.get_value('weight', int)
+        """Get weight; min 50, max 400."""
+        weight = self.__uds.get_value("weight", int)
         if weight is None or weight < 50 or weight > 400:
             return None
 

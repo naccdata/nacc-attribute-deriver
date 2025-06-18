@@ -19,10 +19,9 @@ class UDSFormB8Attribute(AttributeCollection):
         self.__uds = UDSNamespace(table)
 
     def _create_naccnrex(self) -> Optional[int]:
-        """Creates NACCNREX, were all findings unremarkable?
-        """
-        normal = self.__uds.get_value('normal', int)
-        normexam = self.__uds.get_value('normexam', int)
+        """Creates NACCNREX, were all findings unremarkable?"""
+        normal = self.__uds.get_value("normal", int)
+        normexam = self.__uds.get_value("normexam", int)
 
         if normal == 1 or normexam in [0, 2]:
             return 1

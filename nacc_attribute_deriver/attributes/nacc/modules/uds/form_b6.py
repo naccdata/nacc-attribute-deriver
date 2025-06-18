@@ -19,27 +19,30 @@ class UDSFormB6Attribute(AttributeCollection):
         self.__uds = UDSNamespace(table)
         self.__submitted = self.__uds.get_value("b6sub", int) == 1
 
-    GDS_VARS: frozenset[str] = frozenset([
-        "satis",
-        "dropact",
-        "empty",
-        "bored",
-        "spirits",
-        "afraid",
-        "happy",
-        "helpless",
-        "stayhome",
-        "memprob",
-        "wondrful",
-        "wrthless",
-        "energy",
-        "hopeless",
-        "better"
-    ])
+    GDS_VARS: frozenset[str] = frozenset(
+        [
+            "satis",
+            "dropact",
+            "empty",
+            "bored",
+            "spirits",
+            "afraid",
+            "happy",
+            "helpless",
+            "stayhome",
+            "memprob",
+            "wondrful",
+            "wrthless",
+            "energy",
+            "hopeless",
+            "better",
+        ]
+    )
 
     def _create_naccgds(self) -> Optional[int]:
-        """Create NACCGDS, total GDS score. See coding guidebook for
-        details.
+        """Create NACCGDS, total GDS score.
+
+        See coding guidebook for details.
         """
         if not self.__submitted:
             return None
