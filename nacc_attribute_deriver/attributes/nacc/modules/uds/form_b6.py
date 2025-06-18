@@ -20,7 +20,6 @@ class UDSFormB6Attribute(AttributeCollection):
         self.__formver = self.__uds.normalized_formver()
         self.__submitted = self.__uds.get_value("b6sub", int) == 1
 
-
     GDS_VARS: frozenset[str] = frozenset([
         "satis",
         "dropact",
