@@ -6,7 +6,6 @@ Form B1 is optional, so may not have been submitted.
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
@@ -18,7 +17,7 @@ class UDSFormB1Attribute(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
-        self.__formver = self.__uds.get_normalized_formver()
+        self.__formver = self.__uds.normalized_formver()
         self.__submitted = self.__uds.get_value("b1sub", int) == 1
 
     def get_height(self) -> Optional[float]:
