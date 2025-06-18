@@ -24,10 +24,9 @@ def table() -> SymbolTable:
                         "packet": "I",
                         "formver": "3.0",
                         "a3sub": 1,
-                        "daddem": None,
-                        "dadneur": 1,
-                        "dadprdx": 110,
-                        "fadmut": 3
+                        "fadmut": 3,
+                        "sibs": 0,
+                        "kids": 0
                     }
                 }
             }
@@ -61,7 +60,7 @@ def naccfam_table() -> SymbolTable:
                         "kid1neu": 8,
                         "kid2neu": 8,
                         "sibs": 3,
-                        "kids": 2
+                        "kids": 2,
                     }
                 }
             }
@@ -72,14 +71,17 @@ def naccfam_table() -> SymbolTable:
 
 
 class TestUDSFormA3Attribute:
-    def test_create_naccdad(self, table, form_prefix):
+    def test_create_naccdad_v3(self, table, form_prefix):
         """Tests creating NACCDAD V3."""
         attr = UDSFormA3Attribute(table)
+        assert attr._create_naccdad() == 9
+
+        set_attribute(table, form_prefix, "dadneur", 1)
+        set_attribute(table, form_prefix, "dadprdx", 110)
         assert attr._create_naccdad() == 1
 
-        set_attribute(table, form_prefix, "dadneur", None)
-        set_attribute(table, form_prefix, "dadprdx", None)
-        assert attr._create_naccdad() == 9
+        set_attribute(table, form_prefix, "dadprdx", 789)
+        assert attr._create_naccdad() == 0
 
         set_attribute(table, form_prefix, "dadneur", 9)
         assert attr._create_naccdad() == 0
@@ -89,12 +91,15 @@ class TestUDSFormA3Attribute:
 
     def test_create_naccdad_v1v2(self, table, form_prefix):
         """Tests creating NACCDAD V1/V2."""
-        attr = UDSFormA3Attribute(table)
         set_attribute(table, form_prefix, "formver", 1.0)
-        set_attribute(table, form_prefix, "dadneur", None)
-        set_attribute(table, form_prefix, "dadprdx", None)
-        set_attribute(table, form_prefix, "daddem", 9)
+        attr = UDSFormA3Attribute(table)
         assert attr._create_naccdad() == 9
+
+        set_attribute(table, form_prefix, "daddem", 1)
+        assert attr._create_naccdad() == 1
+
+        set_attribute(table, form_prefix, "daddem", 9)
+        assert attr._create_naccdad() == 0
 
         set_attribute(table, form_prefix, "daddem", 0)
         assert attr._create_naccdad() == 0
@@ -105,9 +110,6 @@ class TestUDSFormA3Attribute:
         """Tests creating NACCDAD when an already-computed value supersedes."""
         attr = UDSFormA3Attribute(table)
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 1)
-        set_attribute(table, form_prefix, "daddem", None)
-        set_attribute(table, form_prefix, "dadneur", None)
-        set_attribute(table, form_prefix, "dadprdx", None)
         assert attr._create_naccdad() == 1
 
         set_attribute(table, form_prefix, "dadneur", 3)
@@ -141,8 +143,15 @@ class TestUDSFormA3Attribute:
         set_attribute(naccfam_table, form_prefix, "momprdx", 50)
         assert attr._create_naccfam() == 1
 
-    def test_create_naccfam_sibs(self, table, form_prefix):
-        """Tests creating NACCFAM with multiple siblings and varying neu statuses"""
+        set_attribute(naccfam_table, form_prefix, "dadneur", 4)
+        set_attribute(naccfam_table, form_prefix, "dadprdx", 210)
+        set_attribute(naccfam_table, form_prefix, "moneur", 8)
+        set_attribute(naccfam_table, form_prefix, "momprdx", None)
+        assert attr._create_naccfam() == 0
+
+    def test_create_naccfam_v3(self, table, form_prefix):
+        """Tests creating NACCFAM with multiple siblings and varying neu
+        statuses."""
         attr = UDSFormA3Attribute(table)
         set_attribute(table, form_prefix, "dadneur", 8)
         set_attribute(table, form_prefix, "momneur", 8)
@@ -154,26 +163,80 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "sibs", 5)
         assert attr._create_naccfam() == 9
 
-    def test_create_naccfam_sibs_v1_v2(self, table, form_prefix):
-        """Tests creating NACCFAM with multiple siblings and varying dem statuses"""
+        set_attribute(table, form_prefix, "dadneur", 4)
+        set_attribute(table, form_prefix, "dadprdx", 210)
+        set_attribute(table, form_prefix, "sib1neu", 8)
+        set_attribute(table, form_prefix, "sib3neu", 8)
+        assert attr._create_naccfam() == 0
+
+    def test_create_naccfam_v2(self, table, form_prefix):
+        """Tests creating NACCFAM V2."""
+        set_attribute(table, form_prefix, "formver", 2)
         attr = UDSFormA3Attribute(table)
-        set_attribute(table, form_prefix, "dadneur", 8)
-        set_attribute(table, form_prefix, "dadprdx", None)
         set_attribute(table, form_prefix, "daddem", 0)
         set_attribute(table, form_prefix, "momdem", 0)
         set_attribute(table, form_prefix, "sib1dem", 0)
         set_attribute(table, form_prefix, "sib2dem", 0)
         set_attribute(table, form_prefix, "sib3dem", 0)
         set_attribute(table, form_prefix, "sibs", 5)
+        assert attr._create_naccfam() == 0
+
+        set_attribute(table, form_prefix, "sib2dem", 9)
         assert attr._create_naccfam() == 9
 
-    def test_create_naccfam_superseded(self, table, form_prefix, subject_derived_prefix):
+    def test_create_naccfam_v3_no_sibs_kids(self, table, form_prefix):
+        """Tests creating NACCFAM V3, no sibs/kids."""
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, form_prefix, "dadneur", 0)
+        set_attribute(table, form_prefix, "momneur", 0)
+        set_attribute(table, form_prefix, "sibs", 0)
+        set_attribute(table, form_prefix, "kids", 0)
+        assert attr._create_naccfam() == 0
+
+    def test_create_naccfam_v1_v2_no_sibs_kids(self, table, form_prefix):
+        """Tests creating NACCFAM V1/V2, no sibs/kids."""
+        set_attribute(table, form_prefix, "formver", 1)
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, form_prefix, "daddem", 0)
+        set_attribute(table, form_prefix, "momdem", 0)
+        set_attribute(table, form_prefix, "sibs", 0)
+        set_attribute(table, form_prefix, "kids", 0)
+        assert attr._create_naccfam() == 0
+
+        set_attribute(table, form_prefix, "formver", 2)
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccfam() == 0
+
+    def test_create_naccfam_v1(self, table, form_prefix):
+        """Tests creating NACCFAM v1."""
+        set_attribute(table, form_prefix, "formver", 1)
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, form_prefix, "daddem", 0)
+        set_attribute(table, form_prefix, "momdem", 0)
+        set_attribute(table, form_prefix, "sibsdem", 0)
+        set_attribute(table, form_prefix, "kidsdem", 0)
+        set_attribute(table, form_prefix, "sibs", 5)
+        set_attribute(table, form_prefix, "kids", 10)
+        assert attr._create_naccfam() == 0
+
+        set_attribute(table, form_prefix, "sibsdem", 99)
+        assert attr._create_naccfam() == 9
+        set_attribute(table, form_prefix, "kidsdem", 9)
+        assert attr._create_naccfam() == 1
+
+    def test_create_naccfam_superseded(
+        self, table, form_prefix, subject_derived_prefix
+    ):
         """Test NACCFAM superseded case."""
         attr = UDSFormA3Attribute(table)
-        set_attribute(table, form_prefix, "dadneur", None)
-        set_attribute(table, form_prefix, "dadprdx", None)
-        set_attribute(table, subject_derived_prefix, "naccfam", 9)
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 9)
         assert attr._create_naccfam() == 9
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 0)
+        assert attr._create_naccfam() == 9
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 1)
+        assert attr._create_naccfam() == 1
 
     def test_create_naccam(self, table, form_prefix, subject_derived_prefix):
         """Tests creating NACCAM."""

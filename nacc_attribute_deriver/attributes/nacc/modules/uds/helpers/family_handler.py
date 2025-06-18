@@ -1,5 +1,4 @@
-"""FamilyHandler helper class, primarily for form A3.
-"""
+"""FamilyHandler helper class, primarily for form A3."""
 
 from typing import ClassVar, List, Optional
 
@@ -73,21 +72,20 @@ class FamilyHandler:
 
     def get_bound(self) -> int:
         """Get the upper bound based on the number of sibs/kids reported."""
-        assert not self.is_parent(), "Parent attributes cannot have ranges"
-        if self.__prefix == 'sib':
-            return self.__uds.get_value('sibs', int, default=0)
+        assert not self.is_parent(), "Trying to get bound on parent attribute"
+        if self.__prefix == "sib":
+            return self.__uds.get_value("sibs", int, default=0)  # type: ignore
 
-        return self.__uds.get_value('kids', int, default=0)
+        return self.__uds.get_value("kids", int, default=0)  # type: ignore
 
     def _get_parent_attribute(self, postfix: str) -> Optional[int]:
         """Build and get attribute for mom/dad."""
-        assert self.is_parent(), "Must specify index on mom/dad attribute"
+        assert self.is_parent(), "Trying to get a parent attribute on a SIB/KID"
         return self.__uds.get_value(f"{self.__prefix}{postfix}", int)
 
     def _get_sib_kid_attribute(self, postfix: str, index: int) -> Optional[int]:
         """Build and get the attribute for sib/kid."""
-        assert not self.is_parent(), "Cannot specify index on a sib/kid attribute"
-
+        assert not self.is_parent(), "Trying to get SIB/KID attribute on a parent"
         return self.__uds.get_value(f"{self.__prefix}{index}{postfix}", int)
 
     def _dem(self, index: Optional[int] = None) -> Optional[int]:
@@ -111,8 +109,10 @@ class FamilyHandler:
         return self._get_parent_attribute("neur")
 
     def _prdx(self, index: Optional[int] = None) -> Optional[int]:
-        """Get family member primary diagnosis (V3 and later). Grabs:
-            MOMPRDX, DADPRDX, SIB#PDX, KID#PDX
+        """Get family member primary diagnosis (V3 and later).
+
+        Grabs:
+        MOMPRDX, DADPRDX, SIB#PDX, KID#PDX
         """
         if index is not None:
             return self._get_sib_kid_attribute("pdx", index)
@@ -120,11 +120,20 @@ class FamilyHandler:
         return self._get_parent_attribute("prdx")
 
     def has_data(self) -> bool:
-        """Return whether or not there is data to make a decision to begin
-        with. This helps determine whether a derived variable should return
-        9 (unknown) vs 0 (no)."""
+        """Return whether or not there is the necessary data to make a decision
+        to begin with.
+
+        This helps determine whether a derived variable should return 9
+        (unknown) vs 0 (no).
+        """
         if self.is_parent():
             return any(x is not None for x in [self._dem(), self._neur(), self._prdx()])
+
+        if self.__uds.get_value(f"{self.__prefix}s", int) is not None:
+            return True
+
+        if self.__formver == 1:
+            return self.__uds.get_value(f"{self.__prefix}sdem", int) is not None
 
         for i in range(1, self.get_bound() + 1):
             if any(x is not None for x in [self._dem(i), self._neur(i), self._prdx(i)]):
@@ -133,12 +142,12 @@ class FamilyHandler:
         return False
 
     def has_cognitive_impairment(self) -> bool:
-        """In SAS code, creates XDEM variables (MDEM, DDEM, SDEM, KDEM), used to
-        specify if the family member has cognitive impairment.
+        """In SAS code, creates XDEM variables (MDEM, DDEM, SDEM, KDEM), used
+        to specify if the family member has cognitive impairment.
 
         This is primarily done by checking:
-            V3+: xdem == 1 
-            V1/V2: xneur == 1 AND xprdx one of the primary diagnosis codes
+            V1/V2: xdem == 1
+            V3+: xneur == 1 AND xprdx one of the primary diagnosis codes
 
         As far as derived variables are concerned, siblings/kids are only checked
         for NACCFAM (anyone in the family), so returns early if it holds true for
@@ -148,30 +157,45 @@ class FamilyHandler:
             True if they do, False otherwise
         """
         if self.is_parent():
-            if self._dem() == 1 or (self._neur() == 1 and self._prdx() in self.DXCODES):
-                return True
-        else:
-            for i in range(1, self.get_bound() + 1):
-                if self._dem(i) == 1 or (
-                    self._neur(i) == 1 and self._prdx(i) in self.DXCODES
-                ):
-                    return True
+            # V3+, neur/pdx
+            if self.__formver >= 3:
+                return self._neur() == 1 and self._prdx() in self.DXCODES
 
-            # number of sibs/kids demented specified in V1, so also check
-            # if we still have not determined XDEM
-            if self.__formver == 1:
-                num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
-                if num_dem is not None and num_dem > 0 and num_dem < 30:
+            # V1/V2, dem
+            return self._dem() == 1
+
+        # handle sibs/kids. return True if ANY have cognitive impairment
+        # in V1, each sib/kid doesn't have their own DEM value, instead
+        # stored in an overall SIBSDEM or KIDSDEM variable
+        if self.__formver == 1:
+            num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
+            return num_dem is not None and num_dem > 0 and num_dem < 30
+
+        # in V2+, each sib/kid does have specific dem/neur values
+        # in V2, look for SIB#DEM and KID#DEM
+        # in V3+, look for SIB#NEU/SIB#PDX and KID#NEU/KID#PDX
+        for i in range(1, self.get_bound() + 1):
+            # V3+, neur/pdx
+            if self.__formver >= 3:
+                if self._neur(i) == 1 and self._prdx(i) in self.DXCODES:
                     return True
+            # V1/V2, dem
+            elif self._dem(i) == 1:
+                return True
 
         return False
 
-    def cognitive_impairment_status(self) -> int:  # noqa: C901
+    def cognitive_impairment_status(self) -> int:
         """Gets the cognitive impairment status.
 
         In SAS, this was the XNOT variable code (MNOT, DNOT, SNOT, KNOT), but
         ended up being quite confusing, so was rewritten based on RDD
         specs and regression testing.
+
+        Once we determine there is no cognitive impairment, we need
+        to differentiate between an absolute no (0) vs an unknown (9).
+        This is done by looking at whether or not the corresponding XDEM
+        or XNEUR variable is 9.
 
         Returns:
             1. Has cognitive impairment
@@ -186,12 +210,18 @@ class FamilyHandler:
             return 9
 
         if self.is_parent():
-            return 9 if self._dem() == 9 else 0
+            return 9 if (self._dem() == 9 or self._neur() == 9) else 0
+
+        # in V1, each sib/kid doesn't have their own DEM value, instead
+        # stored in an overall SIBSDEM or KIDSDEM variable
+        if self.__formver == 1:
+            num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
+            return 9 if num_dem == 99 else 0
 
         # check all the kids/sibs; per RDD, if ANY are Unknown they are ALL
         # coded as Unknown (9), so leave early
         for i in range(1, self.get_bound() + 1):
-            if self._dem(i) == 9:
+            if self._dem(i) == 9 or self._neur(i) == 9:
                 return 9
 
         return 0

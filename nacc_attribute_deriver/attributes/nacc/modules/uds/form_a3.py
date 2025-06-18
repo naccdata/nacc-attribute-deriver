@@ -110,10 +110,14 @@ class UDSFormA3Attribute(AttributeCollection):
 
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
+        # and
+        # "Those with submitted Form A3 who are missing necessary data are
+        # coded as Unknown (9), which known_value might be by default"
         if not self.__dad.has_data():
             return known_value
 
-        return self.__dad.cognitive_impairment_status()
+        # otherwise, check cognitive impairment
+        return 1 if self.__dad.has_cognitive_impairment() else 0
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -136,8 +140,15 @@ class UDSFormA3Attribute(AttributeCollection):
         if not self.__submitted:
             return None
 
-        family_status = [member.cognitive_impairment_status()
-                         for member in self.__family]
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccfam", int, default=9
+        )
+        if known_value == 1:
+            return 1
+
+        family_status = [
+            member.cognitive_impairment_status() for member in self.__family
+        ]
         if any(status == 1 for status in family_status):
             return 1
 
@@ -145,11 +156,7 @@ class UDSFormA3Attribute(AttributeCollection):
         # family members are coded as Unknown (9). If some first-degree
         # family members are coded as No and some are coded as Unknown,
         # then they are all coded as Unknown (9)"
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccfam", int, default=9
-        )
-
-        return known_value if any(status == 9 for status in family_status) else 0
+        return 9 if any(status == 9 for status in family_status) else 0
 
     def _create_naccfftd(self) -> int:
         """Creates NACCFFTD - In this family, is there evidence for
@@ -236,10 +243,14 @@ class UDSFormA3Attribute(AttributeCollection):
 
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
+        # and
+        # "Those with submitted Form A3 who are missing necessary data are
+        # coded as Unknown (9), which known_value might be by default"
         if not self.__mom.has_data():
             return known_value
 
-        return self.__mom.cognitive_impairment_status()
+        # otherwise, check cognitive impairment
+        return 1 if self.__mom.has_cognitive_impairment() else 0
 
     def _create_naccom(self) -> Optional[int]:
         """Creates NACCOM - In this family, is there evidence for
