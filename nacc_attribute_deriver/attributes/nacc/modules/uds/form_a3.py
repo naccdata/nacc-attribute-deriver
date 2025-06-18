@@ -121,12 +121,12 @@ class UDSFormA3Attribute(AttributeCollection):
         # reported at any visit supersedes all visits with missing codes"
         # and
         # "Those with submitted Form A3 who are missing necessary data are
-        # coded as Unknown (9), which known_value might be by default"
+        # coded as Unknown (9)", which known_value might be by default
         if not self.__dad.has_data():
             return known_value
 
-        # otherwise, check cognitive impairment
-        return 1 if self.__dad.has_cognitive_impairment() else 0
+        # otherwise, check cognitive impairment status
+        return self.__dad.cognitive_impairment_status()
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -261,12 +261,12 @@ class UDSFormA3Attribute(AttributeCollection):
         # reported at any visit supersedes all visits with missing codes"
         # and
         # "Those with submitted Form A3 who are missing necessary data are
-        # coded as Unknown (9), which known_value might be by default"
+        # coded as Unknown (9)", which known_value might be by default
         if not self.__mom.has_data():
             return known_value
 
-        # otherwise, check cognitive impairment
-        return 1 if self.__mom.has_cognitive_impairment() else 0
+        # otherwise, check cognitive impairment status
+        return self.__mom.cognitive_impairment_status()
 
     def _create_naccom(self) -> Optional[int]:
         """Creates NACCOM - In this family, is there evidence for

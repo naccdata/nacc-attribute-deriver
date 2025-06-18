@@ -101,7 +101,7 @@ class TestUDSFormA3Attribute:
         assert attr._create_naccdad() == 1
 
         set_attribute(table, form_prefix, "daddem", 9)
-        assert attr._create_naccdad() == 0
+        assert attr._create_naccdad() == 9
 
         set_attribute(table, form_prefix, "daddem", 0)
         assert attr._create_naccdad() == 0

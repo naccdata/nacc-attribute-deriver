@@ -196,6 +196,9 @@ class FamilyHandler:
         to differentiate between an absolute no (0) vs an unknown (9).
         This is done by looking at whether or not the corresponding XDEM
         or XNEUR variable is 9.
+            TODO: V3+ and V1/V2 behavior seem to intuitively be doing different
+                things (e.g. when is 0 vs 9 returned), but coded to match
+                regression tests/QAF. May want to look more into
 
         Returns:
             1. Has cognitive impairment
@@ -210,7 +213,10 @@ class FamilyHandler:
             return 9
 
         if self.is_parent():
-            return 9 if (self._dem() == 9 or self._neur() == 9) else 0
+            if self.__formver >= 3:
+                return 0 if self._neur() is not None else 9
+
+            return 9 if self._dem() == 9 else 0
 
         # in V1, each sib/kid doesn't have their own DEM value, instead
         # stored in an overall SIBSDEM or KIDSDEM variable
