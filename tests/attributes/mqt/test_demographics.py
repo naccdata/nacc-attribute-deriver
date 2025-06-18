@@ -35,11 +35,13 @@ def table() -> SymbolTable:
                 "derived": {
                     "np_death_age": 80,
                     "cross-sectional": {
-                        "naccage": 78,
                         "naccnihr": 1,
                         "naccdage": 80,
                         "naccdied": 1,
                     },
+                    "longitudinal": {
+                        "naccage": [75, 78]
+                    }
                 }
             }
         },

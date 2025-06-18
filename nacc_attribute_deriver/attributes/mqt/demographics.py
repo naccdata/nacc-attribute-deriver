@@ -14,7 +14,10 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -95,17 +98,28 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
             required=frozenset(
                 [
                     f"cross-sectional.{x}"
-                    for x in ["naccage", "naccnihr", "naccdage", "naccdied"]
+                    for x in ["naccnihr", "naccdage", "naccdied"]
+                ] + [
+                    f"longitudinal.{x}"
+                    for x in ["naccage"]
                 ]
             ),
         )
 
     def _create_uds_age(self) -> DateTaggedValue[int]:
         """UDS age at form date, mapped from NACCAGE."""
+        ages = self.__subject_derived.get_longitudinal_value(
+            "naccage", list, required=True
+        )
+
+        # grab latest age, which should correspond to this visit
+        # TODO - should update to use dated list from other PR
+        if not ages:
+            raise AttributeDeriverError(
+                "Cannot determine age for current visit")
+
         return DateTaggedValue(
-            value=self.__subject_derived.get_cross_sectional_value(
-                "naccage", int, required=True
-            ),
+            value=ages[-1],
             date=self.__uds.get_date(),
         )
 
