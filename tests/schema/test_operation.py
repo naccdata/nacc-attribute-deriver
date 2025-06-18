@@ -70,9 +70,17 @@ class TestOperation:
         """Tests the update operation."""
         op = UpdateOperation()
         assert op.LABEL == "update"
+        # new value
         op.evaluate(table=table, value=5, attribute=location)
-
         assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
+
+        # update
+        op.evaluate(table=table, value=6, attribute=location)
+        assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 6}}
+
+        # test force blank situation
+        op.evaluate(table=table, value="-4", attribute=location)
+        assert table.to_dict() == {"test": {"date": "2025-01-01", "location": None}}
 
     def test_set(self, table, location):
         """Tests the set operation."""

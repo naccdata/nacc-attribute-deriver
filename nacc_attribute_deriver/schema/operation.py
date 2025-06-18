@@ -24,6 +24,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
+FORCE_BLANK: str = "-4"
+
+
 class NoAssignment:
     pass
 
@@ -136,6 +139,10 @@ class UpdateOperation(Operation):
 
         if isinstance(value, date):
             value = str(value)
+
+        # force blank
+        if value == FORCE_BLANK:
+            value = None
 
         table[attribute] = value
 

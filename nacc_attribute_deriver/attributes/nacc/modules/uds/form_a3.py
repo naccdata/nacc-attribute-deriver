@@ -10,13 +10,14 @@ from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNames
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.operation import FORCE_BLANK
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .helpers.family_handler import FamilyHandler
 
 
 class UDSFormA3Attribute(AttributeCollection):
-    """Class to collect UDS A2 attributes."""
+    """Class to collect UDS A3 attributes."""
 
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
@@ -75,10 +76,12 @@ class UDSFormA3Attribute(AttributeCollection):
         Only in V3+, and None if NACCAM (FADMUT) is 0. Same
         assumption as NACCAM. Also, if the source of evidence
         is unknown at all visits (all == 9) then NACCAMS is 9.
-        If not reported at any, then None (-4).
+        If NACCAMS == 0, then -4
         """
-        if not self.__submitted or self.__formver < 3 or self._create_naccam() == 0:
+        if not self.__submitted or self.__formver < 3:
             return None
+        if self._create_naccam() == 0:
+            return FORCE_BLANK
 
         fadmuso = self.__uds.get_value("fadmuso", int)
         if fadmuso in [1, 2, 3, 8]:
@@ -210,8 +213,10 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCFMS - Source of evidence for FTLD
         mutation.
         """
-        if not self.__submitted or self.__formver < 3 or self._create_naccfm() == 0:
+        if not self.__submitted or self.__formver < 3:
             return None
+        if self._create_naccfm() == 0:
+            return FORCE_BLANK
 
         fftdmusu = self.__uds.get_value("fftdmuso", int)
         if fftdmusu in [0, 1, 2, 3, 8]:
@@ -292,8 +297,11 @@ class UDSFormA3Attribute(AttributeCollection):
         """Creates NACCOMS - Source of evidence for other
         mutation.
         """
-        if not self.__submitted or self.__formver < 3 or self._create_naccom() == 0:
+        if not self.__submitted or self.__formver < 3:
             return None
+
+        if self._create_naccom() == 0:
+            return FORCE_BLANK
 
         fothmuso = self.__uds.get_value("fothmuso", int)
         if fothmuso in [0, 1, 2, 3, 8]:

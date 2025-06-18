@@ -284,11 +284,18 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "fadmuso", None)
         assert attr._create_naccams() is None
 
+        # reliant on NACCAM/FADMUT case - when 0, force blank
+        set_attribute(table, form_prefix, "fadmut", 0)
+        assert attr._create_naccams() == "-4"
+
         # test superseded cases
+        set_attribute(table, form_prefix, "fadmut", None)
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccams", 9)
         assert attr._create_naccams() is None
         set_attribute(table, form_prefix, "fadmuso", 9)
         assert attr._create_naccams() == 9
+        set_attribute(table, form_prefix, "fadmut", 0)
+        assert attr._create_naccams() == "-4"
 
     def test_create_naccom(self, table, form_prefix, subject_derived_prefix):
         """Test creating NACCOM."""
