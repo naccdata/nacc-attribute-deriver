@@ -7499,6 +7499,7 @@ dyazide,hydrochlorothiazide-triamterene,,d03052
 hydrochlorothiazide-triamterene,hydrochlorothiazide-triamterene,,d03052
 maxzide,hydrochlorothiazide-triamterene,,d03052
 maxzide-25,hydrochlorothiazide-triamterene,,d03052
+,,triamterene/hctz,d03052
 ,amylase,,d03054
 attapulgite,attapulgite,,d03056
 diarrheaandcramp,attapulgite,,d03056
@@ -10586,6 +10587,7 @@ lotensinhct,benazepril-hydrochlorothiazide,,d03265
 hydrochlorothiazide-lisinopril,hydrochlorothiazide-lisinopril,,d03266
 prinzide,hydrochlorothiazide-lisinopril,,d03266
 zestoretic,hydrochlorothiazide-lisinopril,,d03266
+,,lisinopril/hctz,d03266
 chlorthalidone-clonidine,chlorthalidone-clonidine,,d03267
 clorpres,chlorthalidone-clonidine,,d03267
 combipres,chlorthalidone-clonidine,,d03267
@@ -17003,6 +17005,8 @@ istalol,timololophthalmic,,d04037
 "timololhemihydrate,ophthalmic",timololophthalmic,,d04037
 timololmaleate(eqv-timoptic),timololophthalmic,,d04037
 "timololmaleate,ophthalmic",timololophthalmic,,d04037
+,,timololophthgtts,d04037
+,,timololgtts,d04037
 timoptic,timololophthalmic,,d04037
 timopticinocudose,timololophthalmic,,d04037
 timopticocumeter,timololophthalmic,,d04037
@@ -18017,6 +18021,7 @@ lotemaxsm,loteprednolophthalmic,,d04292
 loteprednoletabonate,loteprednolophthalmic,,d04292
 diovanhct,hydrochlorothiazide-valsartan,,d04293
 hydrochlorothiazide-valsartan,hydrochlorothiazide-valsartan,,d04293
+,,diovanhct,d04293
 detrol,tolterodine,,d04294
 detrolla,tolterodine,,d04294
 tolterodinetartrate,tolterodine,,d04294
@@ -18215,6 +18220,7 @@ novolinninnolet,insulinisophane(nph),,d04370
 novolinnpenfill,insulinisophane(nph),,d04370
 relion/novolinn,insulinisophane(nph),,d04370
 relion/novolinnflexpen,insulinisophane(nph),,d04370
+,,insulin nph,d04370
 humulinl,insulinzinc,,d04371
 iletiniilentepork,insulinzinc,,d04371
 iletinlente,insulinzinc,,d04371
