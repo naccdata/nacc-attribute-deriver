@@ -157,6 +157,11 @@ class UDSFormA3Attribute(AttributeCollection):
         if known_value == 1:
             return 1
 
+        # if all have no data, then fallback to known value
+        if all(not member.has_data() for member in self.__family):
+            return known_value
+
+        # get cognitive status for each family member
         family_status = [
             member.cognitive_impairment_status() for member in self.__family
         ]

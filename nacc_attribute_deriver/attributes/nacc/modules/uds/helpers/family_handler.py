@@ -73,10 +73,7 @@ class FamilyHandler:
     def get_bound(self) -> int:
         """Get the upper bound based on the number of sibs/kids reported."""
         assert not self.is_parent(), "Trying to get bound on parent attribute"
-        if self.__prefix == "sib":
-            return self.__uds.get_value("sibs", int, default=0)  # type: ignore
-
-        return self.__uds.get_value("kids", int, default=0)  # type: ignore
+        return self.__uds.get_value(f"{self.__prefix}s", int, default=0)  # type: ignore
 
     def _get_parent_attribute(self, postfix: str) -> Optional[int]:
         """Build and get attribute for mom/dad."""
