@@ -59,6 +59,24 @@ def v1_table() -> SymbolTable:
     }
     return SymbolTable(data)
 
+@pytest.fixture(scope="function")
+def empty_table() -> SymbolTable:
+    """Create dummy data and return it in an attribute object."""
+    data = {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "frmdatea4": "2011-08-10",
+                        "module": "MEDS",
+                        "formver": 1.0,
+                    }
+                }
+            }
+        }
+    }
+    return SymbolTable(data)
+
 
 class TestMEDSForm:
     def test_create_drugs_list(self, table):
@@ -75,9 +93,36 @@ class TestMEDSForm:
         with pytest.raises(AttributeDeriverError):
             meds._create_drugs_list()
 
-    def test_create_drugs_list_v1(self, v1_table, form_prefix):
+    def test_create_drugs_list_v1(self, v1_table):
         meds = MEDSFormAttributeCollection(v1_table)
         assert meds._create_drugs_list() == {
             "2000-01-01": ["d00004", "d00170"],
             "2011-08-10": ["d00003", "d00004", "d03316", "d03431", "unknown drug"],
         }
+
+
+class TestPrefixTree:
+    """Test the prefix tree can find closest matches."""
+
+    def test_closest_match(self, empty_table, form_prefix):
+        meds = MEDSFormAttributeCollection(empty_table)
+
+        # should match flomax, d04121
+        set_attribute(empty_table, form_prefix, "pma", "flomax hcl")
+        assert meds._create_drugs_list() == {"2011-08-10": ["d04121"]}
+
+        # should match novolinr, d04369
+        set_attribute(empty_table, form_prefix, "pma", "novolin")
+        assert meds._create_drugs_list() == {"2011-08-10": ["d04369"]}
+
+        # should match lisinopril, d00732
+        set_attribute(empty_table, form_prefix, "pma", "lisinopril/hctz")
+        assert meds._create_drugs_list() == {"2011-08-10": ["d00732"]}
+
+        # should match tramadol, d03826
+        set_attribute(empty_table, form_prefix, "pma", "tramadol hcl")
+        assert meds._create_drugs_list() == {"2011-08-10": ["d03826"]}
+
+        # should match coumadin, d00022
+        set_attribute(empty_table, form_prefix, "pma", "coumadin 2-3mg")
+        assert meds._create_drugs_list() == {"2011-08-10": ["d00022"]}

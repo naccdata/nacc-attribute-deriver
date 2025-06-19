@@ -19,6 +19,8 @@ from nacc_attribute_deriver.schema.errors import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
+from .prefix_tree import PrefixTree
+
 
 class MEDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
@@ -80,6 +82,8 @@ class MEDSFormAttributeCollection(AttributeCollection):
         """
         udsmeds_table_file = resources.files(config).joinpath("UDSMEDS_combined.csv")
         udsmeds: Dict[str, str] = {}
+        prefix_tree = PrefixTree()  # prefix tree for searching
+
         with udsmeds_table_file.open("r") as fh:
             reader = csv.DictReader(fh)
 
@@ -93,6 +97,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
                     if not name or name in udsmeds:
                         continue
                     udsmeds[name] = drug_id
+                    prefix_tree.insert(name, drug_id)
 
         # now look at every drug name in drugs_list; if we cannot
         # find a drug_id, put name in anyways so count is accurate
@@ -102,7 +107,15 @@ class MEDSFormAttributeCollection(AttributeCollection):
             if not drug_name:
                 continue
 
-            drug_id = udsmeds.get(drug_name.replace(" ", "").lower())
-            drugs_list.append(drug_name.strip().lower() if drug_id is None else drug_id)
+            # first try exact match
+            drug_name = drug_name.strip().lower()
+            condensed_drug_name = drug_name.replace(" ", "")
+            drug_id = udsmeds.get(condensed_drug_name)
+
+            # next try a prefix lookup
+            if not drug_id:
+                drug_id = prefix_tree.get_closest_match(condensed_drug_name)
+
+            drugs_list.append(drug_name if drug_id is None else drug_id)
 
         return sorted(drugs_list)
