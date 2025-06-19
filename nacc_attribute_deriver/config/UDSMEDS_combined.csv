@@ -1034,6 +1034,8 @@ lopressor,metoprolol,,d00134
 metoprololsuccinateer,metoprolol,,d00134
 metoprololtartrate,metoprolol,,d00134
 toprol-xl,metoprolol,,d00134
+toprol xl,metoprolol,,d00134
+torpol xl,metoprolol,,d00134
 loniten,minoxidil,,d00135
 minoxidil,minoxidil,,d00135
 nipridertu,sodiumnitroprusside,,d00136
@@ -1144,6 +1146,10 @@ zetran,diazepam,,d00148
 ativan,lorazepam,,d00149
 lorazepam,lorazepam,,d00149
 loreevxr,lorazepam,,d00149
+,,ativn,d00149
+,,lorazepan,d00149
+,,lorazempam,d00149
+,,lorazapam,d00149
 colchicine,colchicine,,d00150
 colcrys,colchicine,,d00150
 gloperba,colchicine,,d00150
@@ -1190,6 +1196,7 @@ alprazolamer,alprazolam,,d00168
 niravam,alprazolam,,d00168
 xanax,alprazolam,,d00168
 xanaxxr,alprazolam,,d00168
+,,alzprazolam,d00168
 amiloridehydrochloride,amiloride,,d00169
 amiloridehydrochloridedihydrate,amiloride,,d00169
 midamor,amiloride,,d00169
@@ -1461,7 +1468,9 @@ clofibrate,clofibrate,,d00196
 clonazepam,clonazepam,,d00197
 klonopin,clonazepam,,d00197
 klonopinwafer,clonazepam,,d00197
+,,klonapin,d00197
 ,,clonazetam,d00197
+,,clonacepam,d00197
 clorazepatedipotassium,clorazepate,,d00198
 gen-xene,clorazepate,,d00198
 tranxenesd,clorazepate,,d00198
@@ -1885,6 +1894,7 @@ inzirqo,hydrochlorothiazide,,d00253
 loqua,hydrochlorothiazide,,d00253
 microzide,hydrochlorothiazide,,d00253
 oretic,hydrochlorothiazide,,d00253
+,,hctz,d00253
 a-hydrocort,hydrocortisone,,d00254
 alkindisprinkle,hydrocortisone,,d00254
 colocort,hydrocortisone,,d00254
@@ -2544,8 +2554,10 @@ soltamox,tamoxifen,,d00381
 tamoxifencitrate,tamoxifen,,d00381
 restoril,temazepam,,d00384
 temazepam,temazepam,,d00384
+,,temazapam,d00384
 hytrin,terazosin,,d00386
 terazosinhydrochloride,terazosin,,d00386
+,,hytrrin,d00386
 tezruly,terazosin,,d00386
 seldane,terfenadine,,d00387
 terfenadine,terfenadine,,d00387
@@ -2572,6 +2584,7 @@ desyreldividose,trazodone,,d00395
 oleptro,trazodone,,d00395
 raldesy,trazodone,,d00395
 trazodonehydrochloride,trazodone,,d00395
+,,trazadone,d00395
 dyrenium,triamterene,,d00396
 triamterene,triamterene,,d00396
 halcion,triazolam,,d00397
@@ -18868,6 +18881,7 @@ zoledronicacid,zoledronicacid,,d04708
 zometa,zoledronicacid,,d04708
 rescula,unoprostoneophthalmic,,d04709
 atacandhct,candesartan-hydrochlorothiazide,,d04711
+,,atacandw/hctz,d04711
 candesartancilexetil-hydrochlorothiazide,candesartan-hydrochlorothiazide,,d04711
 ,lopinavir,,d04716
 kaletra,lopinavir-ritonavir,,d04717

@@ -46,20 +46,23 @@ class PrefixTree:
 
         return None
 
-    def find_prefix(self, target: str) -> Optional[str]:
-        """Check if the target string starts with any string in the list."""
+    def find_longest_prefix(self, target: str) -> Optional[str]:
+        """Find longest match where target string starts
+        with the string in the list.
+        """
+        longest = None
         node = self.root
         for char in target:
             if node.leaf:
-                return node.drug_id
+                longest =  node.drug_id
             if char not in node.children:
-                return None
+                break
             node = node.children[char]
 
         if node.leaf:
             return node.drug_id
 
-        return None
+        return longest
 
     def get_closest_match(self, target: str) -> Optional[str]:
         """Get closest match of target string by checking if it is
@@ -68,6 +71,6 @@ class PrefixTree:
         startswith = self.find_starts_with(target)
 
         if startswith is None: 
-            return self.find_prefix(target)
+            return self.find_longest_prefix(target)
 
         return startswith

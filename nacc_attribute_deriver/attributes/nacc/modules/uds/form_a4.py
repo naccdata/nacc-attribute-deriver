@@ -29,7 +29,7 @@ class UDSFormA4Attribute(AttributeCollection):
 
         # need to grab from corresponding MEDS file information
         # keyed by form date under subject.info.derived.drugs_list
-        self.__meds = self.__load_drugs_list() if self.__submitted else []
+        self.__meds = self.__load_drugs_list() if self.__submitted else None
 
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
@@ -50,10 +50,13 @@ class UDSFormA4Attribute(AttributeCollection):
 
         return [x.replace(" ", "").lower() for x in all_meds[form_date]]
 
-    def _create_naccamd(self) -> int:
+    def _create_naccamd(self) -> Optional[int]:
         """Creates NACCAMD - Total number of medications reported at
         each visit.
         """
+        if not self.__submitted or self.__meds is None:
+            return None
+
         return len(self.__meds)
 
     def check_drugs(self, target_codes: List[str]) -> Optional[int]:

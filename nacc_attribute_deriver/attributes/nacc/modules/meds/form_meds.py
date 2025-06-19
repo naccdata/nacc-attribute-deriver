@@ -4,6 +4,7 @@ This is mainly used to inform UDS A4 NACC derived variables.
 """
 
 import csv
+import re
 from importlib import resources
 from typing import Dict, List
 
@@ -20,6 +21,9 @@ from nacc_attribute_deriver.schema.errors import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .prefix_tree import PrefixTree
+
+
+ALPHA_NUMERIC = re.compile(r'[^a-zA-Z0-9]')
 
 
 class MEDSFormAttributeCollection(AttributeCollection):
@@ -94,6 +98,10 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 drug_id = row["drug_id"]
                 for field in ["brand_name", "drug_name", "alternative_name"]:
                     name = row[field]
+
+                    # CSV is already lowercased/stripped, but also
+                    # remove all non-alphanumeric characters
+                    name = ALPHA_NUMERIC.sub('', name) if name else None
                     if not name or name in udsmeds:
                         continue
                     udsmeds[name] = drug_id
@@ -109,7 +117,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
 
             # first try exact match
             drug_name = drug_name.strip().lower()
-            condensed_drug_name = drug_name.replace(" ", "")
+            condensed_drug_name = ALPHA_NUMERIC.sub('', drug_name)
             drug_id = udsmeds.get(condensed_drug_name)
 
             # next try a prefix lookup
