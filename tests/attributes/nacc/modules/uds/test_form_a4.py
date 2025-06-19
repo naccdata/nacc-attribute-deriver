@@ -7,8 +7,6 @@ from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a4 import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from tests.conftest import set_attribute
-
 
 @pytest.fixture(scope="function")
 def table() -> Dict[str, Any]:
@@ -32,7 +30,7 @@ def table() -> Dict[str, Any]:
 
 
 @pytest.fixture(scope="function")
-def meds_table(table) -> SymbolTable:
+def table1(table) -> SymbolTable:
     """Create dummy data and return it in a SymbolTable."""
     table.update(
         {
@@ -57,8 +55,11 @@ def meds_table(table) -> SymbolTable:
 
 
 @pytest.fixture(scope="function")
-def udsmeds_table(table) -> SymbolTable:
-    """Create dummy data and return it in a SymbolTable."""
+def table2(table) -> SymbolTable:
+    """Create dummy data and return it in a SymbolTable.
+
+    Badly formed.
+    """
     table.update(
         {
             "subject": {
@@ -66,11 +67,12 @@ def udsmeds_table(table) -> SymbolTable:
                     "derived": {
                         "drugs_list": {
                             "2025-01-01": [
-                                "hydrALAZINE     ",  # triggers NACCVASD
-                                "Benztropine Mesylate",  # triggers NACCPDMD,
-                                "acetaminophen/magnesium salicylate/pamabrom",  # triggers NACCNSD
-                                "BUMETAMIDE",  # known typo/alternative, triggers NACCDIUR,
-                                "   RISPERADONE",  # known typo/alternative, triggers NACCAPSY
+                                "d00132     ",  # triggers NACCVASD
+                                "     d00175",  # triggers NACCPDMD,
+                                "D07768",  # triggers NACCNSD
+                                "d00179",  # triggers NACCDIUR,
+                                "d03180",  # triggers NACCAPSY
+                                "unknown drug",  # unknown write-in, possible in V1
                             ]
                         }
                     }
@@ -85,9 +87,9 @@ def udsmeds_table(table) -> SymbolTable:
 
 
 class TestUDSFormA4Attribute:
-    def test_drugs_from_meds_file(self, meds_table):
-        """Tests A4 derived variables when using MEDS file."""
-        attr = UDSFormA4Attribute(meds_table)
+    def test_drugs_1(self, table1):
+        """Tests A4 derived variables, well formed."""
+        attr = UDSFormA4Attribute(table1)
         assert attr._create_naccamd() == 4
         assert attr._create_naccaaas() == 1
         assert attr._create_naccaanx() == 1
@@ -97,10 +99,10 @@ class TestUDSFormA4Attribute:
         assert attr._create_naccahtn() == 1  # based on others
         assert attr._create_naccvasd() == 0
 
-    def test_drugs_from_udsmeds_table(self, udsmeds_table):
-        """Tests A4 derived variables when using UDSMEDS table."""
-        attr = UDSFormA4Attribute(udsmeds_table)
-        assert attr._create_naccamd() == 5
+    def test_drugs_2(self, table2):
+        """Tests A4 derived variables, badly formed from V1."""
+        attr = UDSFormA4Attribute(table2)
+        assert attr._create_naccamd() == 6
         assert attr._create_naccvasd() == 1
         assert attr._create_naccpdmd() == 1
         assert attr._create_naccnsd() == 1

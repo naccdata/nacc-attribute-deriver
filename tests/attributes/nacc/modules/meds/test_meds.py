@@ -46,7 +46,9 @@ def v1_table() -> SymbolTable:
                         "formver": 1.0,
                         "pma": "atenoLOL",
                         "pmb": "     ampicillin",
-                        "pmf": "PERCOSET 5/325",
+                        "pmc": "unknown drug",  # unknown
+                        "pmf": "PERCOSET 5/325",  # known typo/alternative name
+                        "pmt": "PSEUDO TRIPRODINE",  # known typo/alternative name
                     }
                 }
             }
@@ -77,5 +79,5 @@ class TestMEDSForm:
         meds = MEDSFormAttributeCollection(v1_table)
         assert meds._create_drugs_list() == {
             "2000-01-01": ["d00004", "d00170"],
-            "2011-08-10": ["atenolol", "ampicillin", "percoset 5/325"],
+            "2011-08-10": ["d00003", "d00004", "d03316", "d03431", "unknown drug"],
         }

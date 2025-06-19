@@ -3,8 +3,11 @@
 This is mainly used to inform UDS A4 NACC derived variables.
 """
 
+import csv
+from importlib import resources
 from typing import Dict, List
 
+from nacc_attribute_deriver import config
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     BaseNamespace,
@@ -58,17 +61,48 @@ class MEDSFormAttributeCollection(AttributeCollection):
         # in V1, each prescription medication is specified by variables
         # PMA - PMT, need to extract
         if self.__formver == 1:
-            drugs_list = []
-            for i in range(ord("a"), ord("t") + 1):
-                drug_name = self.__meds.get_value(f"pm{chr(i)}", str)
-                if drug_name:
-                    drugs_list.append(drug_name.strip().lower())
-
-            all_drugs[self.__formdate] = drugs_list
+            all_drugs[self.__formdate] = self.__load_from_udsmeds_table()
         else:
             drugs_str = self.__meds.get_value("drugs_list", str)
-            all_drugs[self.__formdate] = (
+            all_drugs[self.__formdate] = sorted(
                 [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
             )
 
         return all_drugs
+
+    def __load_from_udsmeds_table(self) -> List[str]:
+        """V1.
+
+        In this version all the drugs were written in. Need to use
+        UDSMEDS CSV (combination of UDSMEDS table from Oracle DB +
+        drugs.sas which translated typos/alternative spellings) and map
+        each possible drug variable to its ID.
+        """
+        udsmeds_table_file = resources.files(config).joinpath("UDSMEDS_combined.csv")
+        udsmeds: Dict[str, str] = {}
+        with udsmeds_table_file.open("r") as fh:
+            reader = csv.DictReader(fh)
+
+            # map every possible name to its drug ID
+            # TODO: unfortunately UDSMEDS does have name clashes. for now,
+            # just keep the first one and ignore the others
+            for row in reader:
+                drug_id = row["drug_id"]
+                for field in ["brand_name", "drug_name", "alternative_name"]:
+                    name = row[field]
+                    if not name or name in udsmeds:
+                        continue
+                    udsmeds[name] = drug_id
+
+        # now look at every drug name in drugs_list; if we cannot
+        # find a drug_id, put name in anyways so count is accurate
+        drugs_list = []
+        for i in range(ord("a"), ord("t") + 1):
+            drug_name = self.__meds.get_value(f"pm{chr(i)}", str)
+            if not drug_name:
+                continue
+
+            drug_id = udsmeds.get(drug_name.replace(" ", "").lower())
+            drugs_list.append(drug_name.strip().lower() if drug_id is None else drug_id)
+
+        return sorted(drugs_list)
