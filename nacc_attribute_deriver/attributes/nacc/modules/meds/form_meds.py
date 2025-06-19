@@ -55,8 +55,20 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 f"Drugs list for frmdatea4g {self.__formdate} already exists"
             )
 
-        drugs_list = self.__meds.get_value("drugs_list", str)
-        all_drugs[self.__formdate] = (
-            [x.strip().lower() for x in drugs_list.split(",")] if drugs_list else []
-        )
+        # in V1, each prescription medication is specified by variables
+        # PMA - PMT, need to extract
+        if self.__formver == 1:
+            drugs_list = []
+            for i in range(ord("a"), ord("t") + 1):
+                drug_name = self.__meds.get_value(f"pm{chr(i)}", str)
+                if drug_name:
+                    drugs_list.append(drug_name.strip().lower())
+
+            all_drugs[self.__formdate] = drugs_list
+        else:
+            drugs_str = self.__meds.get_value("drugs_list", str)
+            all_drugs[self.__formdate] = (
+                [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
+            )
+
         return all_drugs

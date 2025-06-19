@@ -28,7 +28,7 @@ def table() -> SymbolTable:
                         "fadmuso": 2,
                         "fothmut": 0,
                         "sibs": 0,
-                        "kids": 0
+                        "kids": 0,
                     }
                 }
             }

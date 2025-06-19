@@ -4,7 +4,9 @@ just looking at hardcoded strings.
 From derivedmeds.sas.
 """
 
-from typing import List, Optional
+import csv
+from importlib import resources
+from typing import Dict, List, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
@@ -14,6 +16,8 @@ from nacc_attribute_deriver.attributes.base.uds_namespace import (
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
+from nacc_attribute_deriver import config
+
 
 class UDSFormA4Attribute(AttributeCollection):
     """Class to collect UDS A4 attributes."""
@@ -21,39 +25,82 @@ class UDSFormA4Attribute(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__formver = self.__uds.normalized_formver()
 
         # TODO: for v4 this will be modea4
         # SAS code seems to set anymeds explicitly based on a meds table,
         # but should be fine to use directly
         self.__submitted = self.__uds.get_value("anymeds", int) == 1
-        self.__meds = None
+        self.__meds: List[str] = []
 
         # need to grab from corresponding MEDS file information
         # keyed by form date under subject.info.derived.drugs_list
         if self.__submitted:
-            all_meds = self.__subject_derived.get_value("drugs_list", dict)
-            if all_meds is None:
-                all_meds = {}
+            if self.__formver == 1:
+                self.__meds = self.__load_from_udsmeds_table()
+            else:
+                self.__meds = self.__load_from_meds_form()
 
-            form_date = self.__uds.get_value("frmdatea4", str)
-            if not form_date:  # try visitdate
-                form_date = self.__uds.get_value("visitdate", str)
+    def __load_from_udsmeds_table(self) -> List[str]:
+        """V1.
 
-            if form_date not in all_meds:
-                raise AttributeDeriverError(
-                    "Cannot find corresponding MEDS drugs list for "
-                    + f"form date {form_date}"
-                )
+        In this version all the drugs were written in. Need to use
+        UDSMEDS CSV (combination of UDSMEDS table from Oracle DB +
+        drugs.sas which translated typos/alternative spellings) and map
+        each possible drug variable to its ID.
+        """
+        udsmeds_table_file = resources.files(config).joinpath("UDSMEDS_combined.csv")
+        udsmeds: Dict[str, str] = {}
+        with udsmeds_table_file.open("r") as fh:
+            reader = csv.DictReader(fh)
 
-            self.__meds = [x.strip().lower() for x in all_meds[form_date]]
+            # map every possible name to its drug ID
+            # TODO: unfortunately UDSMEDS does have name clashes. for now,
+            # just keep the first one and ignore the others
+            for row in reader:
+                drug_id = row["drug_id"]
+                for field in ["brand_name", "drug_name", "alternative_name"]:
+                    name = row[field]
+                    if not name or name in udsmeds:
+                        continue
+                    udsmeds[name] = drug_id
+
+        # now look at every drug name in drugs_list; if we cannot
+        # find a drug_id, put name back in so count is accurate
+        drugs_list = self.__load_from_meds_form()
+        for i, drug in enumerate(drugs_list):
+            drug_id = udsmeds.get(drug)
+            if drug_id:
+                drugs_list[i] = drug_id
+
+        return drugs_list
+
+    def __load_from_meds_form(self) -> List[str]:
+        """V2+.
+
+        Loads drugs_list from MEDS form data that was saved under
+        subject.info.derived.drugs_list.<visitdate>.
+        """
+        all_meds = self.__subject_derived.get_value("drugs_list", dict)
+        if all_meds is None:
+            all_meds = {}
+
+        form_date = self.__uds.get_value("frmdatea4", str)
+        if not form_date:  # try visitdate
+            form_date = self.__uds.get_value("visitdate", str)
+
+        if form_date not in all_meds:
+            raise AttributeDeriverError(
+                "Cannot find corresponding MEDS drugs list for "
+                + f"form date {form_date}"
+            )
+
+        return [x.replace(" ", "").lower() for x in all_meds[form_date]]
 
     def _create_naccamd(self) -> int:
         """Creates NACCAMD - Total number of medications reported at
         each visit.
         """
-        if not self.__meds:
-            return 0
-
         return len(self.__meds)
 
     def check_drugs(self, target_codes: List[str]) -> Optional[int]:

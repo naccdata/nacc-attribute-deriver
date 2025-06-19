@@ -96,13 +96,8 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(
             table=table,
             required=frozenset(
-                [
-                    f"cross-sectional.{x}"
-                    for x in ["naccnihr", "naccdage", "naccdied"]
-                ] + [
-                    f"longitudinal.{x}"
-                    for x in ["naccage"]
-                ]
+                [f"cross-sectional.{x}" for x in ["naccnihr", "naccdage", "naccdied"]]
+                + [f"longitudinal.{x}" for x in ["naccage"]]
             ),
         )
 
@@ -115,8 +110,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         # grab latest age, which should correspond to this visit
         # TODO - should update to use dated list from other PR
         if not ages:
-            raise AttributeDeriverError(
-                "Cannot determine age for current visit")
+            raise AttributeDeriverError("Cannot determine age for current visit")
 
         return DateTaggedValue(
             value=ages[-1],

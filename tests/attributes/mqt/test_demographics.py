@@ -39,9 +39,7 @@ def table() -> SymbolTable:
                         "naccdage": 80,
                         "naccdied": 1,
                     },
-                    "longitudinal": {
-                        "naccage": [75, 78]
-                    }
+                    "longitudinal": {"naccage": [75, 78]},
                 }
             }
         },

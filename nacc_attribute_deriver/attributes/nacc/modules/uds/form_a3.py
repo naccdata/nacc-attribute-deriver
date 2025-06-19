@@ -90,9 +90,7 @@ class UDSFormA3Attribute(AttributeCollection):
             return None
 
         # for NACCAMS to be 9, it must be 9 at ALL visits, return None otherwise
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccams", int
-        )
+        known_value = self.__subject_derived.get_cross_sectional_value("naccams", int)
         if fadmuso == 9 and (self.__uds.is_initial() or known_value == 9):
             return 9
 
@@ -227,9 +225,7 @@ class UDSFormA3Attribute(AttributeCollection):
             return fftdmusu
 
         # for NACCFMS to be 9, it must be 9 at ALL visits, return None otherwise
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccfms", int
-        )
+        known_value = self.__subject_derived.get_cross_sectional_value("naccfms", int)
         if fftdmusu == 9 and (self.__uds.is_initial() or known_value == 9):
             return 9
 
@@ -311,9 +307,7 @@ class UDSFormA3Attribute(AttributeCollection):
             return fothmuso
 
         # for NACCOMS to be 9, it must be 9 at ALL visits, return None otherwise
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccoms", int
-        )
+        known_value = self.__subject_derived.get_cross_sectional_value("naccoms", int)
         if fothmuso == 9 and (self.__uds.is_initial() or known_value == 9):
             return 9
 

@@ -185,6 +185,7 @@ class TestCreateNACCLEWY:
         np_form_attribute = NPFormAttributeCollection(np_form_attribute_table)
         assert np_form_attribute._create_nacclewy() == 2
 
+
 class TestCreateNACCCBD:
     def test_create_nacccbd(self, np_form_attribute_table, form_prefix):
         np_form_attribute = NPFormAttributeCollection(np_form_attribute_table)

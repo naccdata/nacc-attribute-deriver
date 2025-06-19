@@ -33,6 +33,31 @@ def table() -> SymbolTable:
     return SymbolTable(data)
 
 
+@pytest.fixture(scope="function")
+def v1_table() -> SymbolTable:
+    """Create dummy data and return it in an attribute object."""
+    data = {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "frmdatea4": "2011-08-10",
+                        "module": "MEDS",
+                        "formver": 1.0,
+                        "pma": "atenoLOL",
+                        "pmb": "     ampicillin",
+                        "pmf": "PERCOSET 5/325",
+                    }
+                }
+            }
+        },
+        "subject": {
+            "info": {"derived": {"drugs_list": {"2000-01-01": ["d00004", "d00170"]}}}
+        },
+    }
+    return SymbolTable(data)
+
+
 class TestMEDSForm:
     def test_create_drugs_list(self, table):
         meds = MEDSFormAttributeCollection(table)
@@ -47,3 +72,10 @@ class TestMEDSForm:
 
         with pytest.raises(AttributeDeriverError):
             meds._create_drugs_list()
+
+    def test_create_drugs_list_v1(self, v1_table, form_prefix):
+        meds = MEDSFormAttributeCollection(v1_table)
+        assert meds._create_drugs_list() == {
+            "2000-01-01": ["d00004", "d00170"],
+            "2011-08-10": ["atenolol", "ampicillin", "percoset 5/325"],
+        }
