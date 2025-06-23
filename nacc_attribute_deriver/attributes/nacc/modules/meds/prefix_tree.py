@@ -1,17 +1,16 @@
-"""
-Prefix tree to help with searching for drug name matches.
-"""
+"""Prefix tree to help with searching for drug name matches."""
+
 from typing import Dict, Optional
 
-class Node:
 
+class Node:
     def __init__(self) -> None:
         self.children: Dict[str, "Node"] = {}
         self.leaf = False
         self.drug_id: str | None = None  # ID is stored at end of word/leaf
 
-class PrefixTree:
 
+class PrefixTree:
     def __init__(self) -> None:
         self.root = Node()
 
@@ -47,14 +46,13 @@ class PrefixTree:
         return None
 
     def find_longest_prefix(self, target: str) -> Optional[str]:
-        """Find longest match where target string starts
-        with the string in the list.
-        """
+        """Find longest match where target string starts with the string in the
+        list."""
         longest = None
         node = self.root
         for char in target:
             if node.leaf:
-                longest =  node.drug_id
+                longest = node.drug_id
             if char not in node.children:
                 break
             node = node.children[char]
@@ -65,12 +63,11 @@ class PrefixTree:
         return longest
 
     def get_closest_match(self, target: str) -> Optional[str]:
-        """Get closest match of target string by checking if it is
-        close enough to any string in this tree.
-        """
+        """Get closest match of target string by checking if it is close enough
+        to any string in this tree."""
         startswith = self.find_starts_with(target)
 
-        if startswith is None: 
+        if startswith is None:
             return self.find_longest_prefix(target)
 
         return startswith

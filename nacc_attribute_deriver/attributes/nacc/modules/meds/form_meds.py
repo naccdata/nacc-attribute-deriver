@@ -22,8 +22,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .prefix_tree import PrefixTree
 
-
-ALPHA_NUMERIC = re.compile(r'[^a-zA-Z0-9]')
+ALPHA_NUMERIC = re.compile(r"[^a-zA-Z0-9]")
 
 
 class MEDSFormAttributeCollection(AttributeCollection):
@@ -67,7 +66,8 @@ class MEDSFormAttributeCollection(AttributeCollection):
         # in V1, each prescription medication is specified by variables
         # PMA - PMT, need to extract
         if self.__formver == 1:
-            all_drugs[self.__formdate] = self.__load_from_udsmeds_table()
+            # all_drugs[self.__formdate] = self.__load_from_udsmeds_table()
+            all_drugs[self.__formdate] = []
         else:
             drugs_str = self.__meds.get_value("drugs_list", str)
             all_drugs[self.__formdate] = sorted(
@@ -101,7 +101,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
 
                     # CSV is already lowercased/stripped, but also
                     # remove all non-alphanumeric characters
-                    name = ALPHA_NUMERIC.sub('', name) if name else None
+                    name = ALPHA_NUMERIC.sub("", name) if name else None
                     if not name or name in udsmeds:
                         continue
                     udsmeds[name] = drug_id
@@ -117,7 +117,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
 
             # first try exact match
             drug_name = drug_name.strip().lower()
-            condensed_drug_name = ALPHA_NUMERIC.sub('', drug_name)
+            condensed_drug_name = ALPHA_NUMERIC.sub("", drug_name)
             drug_id = udsmeds.get(condensed_drug_name)
 
             # next try a prefix lookup
