@@ -103,9 +103,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_age(self) -> DateTaggedValue[int]:
         """UDS age at form date, mapped from NACCAGE."""
-        ages = self.__subject_derived.get_longitudinal_value(
-            "naccage", list, required=True
-        )
+        ages = self.__subject_derived.get_longitudinal_value("naccage", list)
 
         # grab latest age, which should correspond to this visit
         # TODO - should update to use dated list from other PR
@@ -133,9 +131,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_race(self) -> DateTaggedValue[str]:
         """UDS race."""
-        naccnihr = self.__subject_derived.get_cross_sectional_value(
-            "naccnihr", int, required=True
-        )
+        naccnihr = self.__subject_derived.get_cross_sectional_value("naccnihr", int)
         mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)
 
         if not mapped_naccnihr:
@@ -145,17 +141,13 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
-        return self.__subject_derived.get_cross_sectional_value(
-            "naccdage", int, required=True
-        )
+        return self.__subject_derived.get_cross_sectional_value("naccdage", int)
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> DateTaggedValue[str]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
-        naccdied = self.__subject_derived.get_cross_sectional_value(
-            "naccdied", int, required=True
-        )
+        naccdied = self.__subject_derived.get_cross_sectional_value("naccdied", int)
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)
 
         if not mapped_naccdied:
