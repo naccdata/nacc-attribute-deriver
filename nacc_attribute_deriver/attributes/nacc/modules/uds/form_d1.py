@@ -40,10 +40,12 @@ class UDSFormD1Attribute(AttributeCollection):
             The overall contributed status, None if none satisfy
         """
         # TODO: seems like this could be a set
-        all_statuses = []
+        all_statuses: List[int] = []
 
         for field in fields:
-            all_statuses.append(self.__uds.get_value(field, int))
+            status_value = self.__uds.get_value(field, int)
+            if status_value is not None:
+                all_statuses.append(status_value)
 
         for status in ContributionStatus.all():
             if any([x == status for x in all_statuses]):
