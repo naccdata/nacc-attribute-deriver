@@ -5,6 +5,7 @@ from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.schema.operation import (
     InitialOperation,
     LatestOperation,
+    ListOperation,
     MaxOperation,
     MinOperation,
     OperationError,
@@ -45,8 +46,9 @@ class TestOperation:
                 set(OperationRegistry.operations.keys()).difference(
                     {
                         "update",
-                        "set",
+                        "list",
                         "sortedlist",
+                        "set",
                         "initial",
                         "latest",
                         "min",
@@ -58,8 +60,9 @@ class TestOperation:
         )
         assert list(OperationRegistry.operations.values()) == [
             UpdateOperation,
-            SetOperation,
+            ListOperation,
             SortedListOperation,
+            SetOperation,
             InitialOperation,
             LatestOperation,
             MinOperation,
@@ -73,6 +76,16 @@ class TestOperation:
         op.evaluate(table=table, value=5, attribute=location)
 
         assert table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
+
+    def test_list(self, table, location):
+        op = ListOperation()
+        assert op.LABEL == "list"
+        table[location] = [1, 2, 3, 4]
+        op.evaluate(table=table, value=2, attribute=location)
+
+        assert table.to_dict() == {
+            "test": {"date": "2025-01-01", "location": [1, 2, 3, 4, 2]}
+        }
 
     def test_set(self, table, location):
         """Tests the set operation."""

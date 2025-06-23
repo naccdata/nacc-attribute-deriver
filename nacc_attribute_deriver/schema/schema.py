@@ -42,10 +42,6 @@ class CurationRule(BaseModel):
     function: str  # Name of the attribute function
     assignments: List[AttributeAssignment]
 
-    # this is more for human readability, not necessary for any processing
-    type: Optional[str] = None
-    description: Optional[str] = None
-
 
 class RuleFileModel(BaseModel):
     """Model for loading serialized rule definitions."""
@@ -54,8 +50,11 @@ class RuleFileModel(BaseModel):
     function: str
     location: str
     operation: str
-    type: Optional[str]
-    description: Optional[str]
+    dated: bool = False
+
+    @field_validator("dated", mode="before")
+    def cast_bool(cls, value: str) -> Operation:
+        return value.lower() in ['true', '1']:
 
     @property
     def assignment(self) -> AttributeAssignment:
