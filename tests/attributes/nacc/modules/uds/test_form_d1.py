@@ -1,5 +1,6 @@
 """Tests UDS Form D1 attributes."""
 
+from typing import Any, Dict
 import pytest
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_d1 import (
     ContributionStatus,
@@ -17,7 +18,7 @@ def table() -> SymbolTable:
     In this case most will want to manually set fields so only leave
     bare minimum in.
     """
-    data = {
+    data: Dict[str, Any] = {
         "file": {
             "info": {
                 "forms": {
@@ -38,8 +39,14 @@ def table() -> SymbolTable:
     return SymbolTable(data)
 
 
+class TestContributionStatus:
+    def test_status_order(self):
+        status_list = ContributionStatus.all()
+        assert sorted(status_list) == status_list
+
+
 class TestUDSFormD1Attribute:
-    def test_create_mci(self, table, form_prefix):
+    def test_create_mci(self, table: SymbolTable, form_prefix: str):
         """Tests creating MCI."""
         attr = UDSFormD1Attribute(table)
         assert attr._create_mci() == 0
