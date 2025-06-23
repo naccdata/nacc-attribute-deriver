@@ -50,11 +50,6 @@ class RuleFileModel(BaseModel):
     function: str
     location: str
     operation: str
-    dated: bool = False
-
-    @field_validator("dated", mode="before")
-    def cast_bool(cls, value: str) -> Operation:
-        return value.lower() in ['true', '1']:
 
     @property
     def assignment(self) -> AttributeAssignment:

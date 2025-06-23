@@ -22,6 +22,8 @@ from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
+from .errors import OperationError
+
 
 class NoAssignment:
     pass
@@ -59,10 +61,6 @@ def get_date_str_type(expression_type: type) -> type:
     return expression_type
 
 
-class OperationError(Exception):
-    pass
-
-
 class OperationRegistry(type):
     operations: ClassVar[Dict[str, type]] = {}
 
@@ -98,7 +96,7 @@ class Operation(object, metaclass=OperationRegistry):
         if operation:
             return operation()
 
-        raise ValueError(f"Unrecognized operation: {label}")
+        raise OperationError(f"Unrecognized operation: {label}")
 
     @abstractmethod
     def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
@@ -209,31 +207,33 @@ class DateOperation(Operation):
 
         return NoAssignment
 
+    def grab_cur_date(self, *, table: SymbolTable, value: Any) -> datetime:
+        """Grab the current date based no scope."""
+        if not self.__date_key:
+            raise OperationError(f"date_key not set for {self.LABEL} operation")
+
+        cur_date = datetime_from_form_date(table.get(self.__date_key))
+        if not cur_date:
+            raise OperationError(f"Current date is required: {value.model_dump()}")
+
+        return cur_date
+
     def evaluate(
-        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+        self, *, table: SymbolTable, Any, value: Any, attribute: str
     ) -> None:
         """Compares dates to determine the result."""
-        if value is None:
-            return
-
-        if not isinstance(value, DateTaggedValue):
-            raise OperationError(
-                f"Unable to perform {self.LABEL} operation without date"
-            )
-
-        if value.value is None:  # type: ignore
-            return
-
         if self.LABEL not in ["initial", "latest"]:
             raise OperationError(f"Unknown date operation: {self.LABEL}")
 
-        if not value.date:
-            raise OperationError(f"Current date is required: {value.model_dump()}")
+        if value is None:
+            return
 
+        cur_date = self.grab_cur_date(table, value)
         dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
 
-        if not dest_date or self.compare(value.date, dest_date.date()):
-            table[attribute] = value.model_dump()
+        if not dest_date or self.compare(cur_date.date(), dest_date.date()):
+            dated_value = DateTaggedValue(date=cur_date, value=value)
+            table[attribute] = dated_value.model_dump()
 
 
 class InitialOperation(DateOperation):
@@ -248,6 +248,32 @@ class LatestOperation(DateOperation):
 
     def compare(self, left_value: date, right_value: date):
         return left_value >= right_value
+
+
+class DateMapOperation(DateOperation):
+    LABEL = 'datemap'
+
+    def compare(self, left_value: date, right_value: date):
+        pass
+
+    def evaluate(
+        self, *, table: SymbolTable, value: Any, attribute: str
+    ) -> None:
+        """Stores all dates as a mapping from date to value."""
+        if self.LABEL not in ["datemap"]:
+            raise OperationError(f"Unknown date operation: {self.LABEL}")
+
+        if value is None:
+            return
+
+        cur_date = self.grab_cur_date(table, value)
+        dated_value = DateTaggedValue(date=cur_date, value=value)
+        if attribute not in table:
+            table[attribute] = {}
+
+        # could map straight back onto value since it's redundant with the key,
+        # but for now retain model so its easy to cast back to DateTaggedValues
+        table[attribute][cur_date] = dated_value.model_dump()
 
 
 class ComparisonOperation(Operation):

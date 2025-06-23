@@ -107,6 +107,8 @@ class AttributeDeriver:
                 continue
 
             for assignment in rule.assignments:
-                assignment.operation.evaluate(
+                operation = assignment.operation
+                operation.set_scope(scope)
+                operation.evaluate(
                     table=table, value=value, attribute=assignment.attribute
                 )
