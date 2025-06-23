@@ -11,6 +11,12 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class ContributionStatus:
+    """Enumeration for contributing status codes for diagnoses.
+
+    Note that the values are ordered so that primary has the lowest
+    code.
+    """
+
     PRIMARY = 1
     CONTRIBUTING = 2
     NON_CONTRIBUTING = 3
@@ -31,25 +37,30 @@ class UDSFormD1Attribute(AttributeCollection):
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
-        Assumes all fields have values null or 1, 2, or 3 (primary,
-        contributing, or non-contributing)
+
+        Assumes status values are 1, 2, or 3 (primary,
+        contributing, or non-contributing), and that a smaller value overrides a
+        larger value.
 
         Args:
             fields: Fields to get overall status from
         Returns:
             The overall contributed status, None if none satisfy
         """
-        # TODO: seems like this could be a set
-        all_statuses: List[int] = []
+        min_status: Optional[int] = None
 
         for field in fields:
             status_value = self.__uds.get_value(field, int)
-            if status_value is not None:
-                all_statuses.append(status_value)
+            if status_value is None:
+                continue
+            min_status = (
+                min(min_status, status_value)
+                if min_status is not None
+                else status_value
+            )
 
-        for status in ContributionStatus.all():
-            if any([x == status for x in all_statuses]):
-                return status
+        if min_status in ContributionStatus.all():
+            return min_status
 
         return None
 
