@@ -102,25 +102,21 @@ class OperationRegistry(type):
 class Operation(object, metaclass=OperationRegistry):
     LABEL: str | None = None
 
-    def __init__(self, dated: bool = False) -> None:
-        self.dated = dated
-
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
         """Returns the type assigned to the attribute by this operation."""
         return NoAssignment
 
     @classmethod
-    def create(cls, label: str, dated: bool = False) -> "Operation":
+    def create(cls, label: str) -> "Operation":
         """Create the operation based on the label.
 
         Args:
             label: label of the operation
-            dated: Whether or not this operation needs to be dated
         """
         operation = OperationRegistry.operations.get(label, None)
         if operation:
-            return operation(dated)
+            return operation()
 
         raise OperationError(f"Unrecognized operation: {label}")
 
@@ -180,6 +176,18 @@ class ListOperation(Operation):
     ) -> List[Any]:
         """Handles the current list - insert order is retained."""
         cur_list = table.get(attribute, [])
+        if not isinstance(cur_list, list):
+            raise OperationError(
+                f"Attempting to perform list operation on non-list attribute: {attribute}")
+
+        # try converting any dicts to DateTaggedValues so list can be sorted
+        for i, item in enumerate(cur_list):
+            if isinstance(item, dict):
+                try:
+                    cur_list[i] = DateTaggedValue(**item)
+                except ValidationError:
+                    pass
+
         if isinstance(value, (list, set)):
             cur_list.extend(list(value))  # type: ignore
         elif value is not None:
@@ -216,7 +224,11 @@ class SortedListOperation(ListOperation):
     ) -> None:
         """Adds the value to a sorted list."""
         cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
-        table[attribute] = sorted(cur_list)
+        try:
+            table[attribute] = sorted(cur_list)
+        except TypeError as e:
+            raise OperationError(f"Cannot sort mixed types for {self.LABEL}: {e}")
+
         self.serialize(table=table, attribute=attribute)
 
 
@@ -232,12 +244,16 @@ class SetOperation(ListOperation):
         Attempts to sort if hashable.
         """
         cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
-        table[attribute] = sorted(list(set(cur_list)))
+        try:
+            table[attribute] = sorted(list(set(cur_list)))
+        except TypeError as e:
+            raise OperationError(f"Cannot sort mixed types for {self.LABEL}: {e}")
+
         self.serialize(table=table, attribute=attribute)
 
 
 class DateMapOperation(Operation):
-    label = "datemap"
+    LABEL = "datemap"
 
     def evaluate(
         self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
@@ -347,7 +363,7 @@ class ComparisonOperation(Operation):
         dest_value = table.get(attribute)
         if isinstance(dest_value, dict):
             try:
-                dest_value = DateTaggedValue(**dest_value)
+                dest_value = DateTaggedValue(**dest_value).value
             except ValidationError as e:
                 raise OperationError(
                     f"Cannot use comparison operator on dict (from {attribute})"

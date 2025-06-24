@@ -13,6 +13,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * This makes it so that `_create` functions don't have to worry about dates, allowing for better reusability (previously we would need two different rules just to compute the value and the value wrapped in a date)
     * Date-related operations (initial, latest, datemap) require this to be True
     * Other operations can store a date but will still be evaluated/compared as before (e.g. if using `update`, a non-dated value can override a dated value or vice-versa)
+        * Insert-ordered lists can hold items of different types, however set and sorted lists cannot intermix `DateTaggedValue` with regular Python types as they cannot be directly compared with `sort`
 
 
 ## 1.4.0

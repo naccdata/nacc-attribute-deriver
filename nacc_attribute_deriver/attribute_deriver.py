@@ -105,9 +105,9 @@ class AttributeDeriver:
 
             for assignment in rule.assignments:
                 operation = assignment.operation
-                if operation.dated and not date:
+                if assignment.dated and not date:
                     raise OperationError(
-                        f"Cannot compute date for date operation on rule {rule}"
+                        f"Cannot compute date for dated operation on rule {rule}"
                     )
 
                     value = DateTaggedValue(value=value, date=date)

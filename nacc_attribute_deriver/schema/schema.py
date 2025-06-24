@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from nacc_attribute_deriver.utils.scope import ScopeLiterals
 
@@ -22,15 +22,9 @@ class AttributeAssignment(BaseModel):
     operation: Operation
     dated: bool = False
 
-    @model_validator(mode="before")
-    @classmethod
-    def validate_dated(cls, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create Operation based on operation name and dated argument."""
-        data["operation"] = Operation.create(
-            label=data.get("operation"),  # type: ignore
-            dated=bool(data.get("dated", False)),
-        )
-        return data
+    @field_validator("operation", mode="before")
+    def generate_operation(cls, value: str) -> Operation:
+        return Operation.create(value)
 
 
 class CurationRule(BaseModel):
@@ -72,4 +66,5 @@ class RuleFileModel(BaseModel):
         return AttributeAssignment(
             attribute=self.location,
             operation=self.operation,  # type: ignore
+            dated=self.dated
         )
