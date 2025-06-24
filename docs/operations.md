@@ -14,18 +14,15 @@ The following table summarizes the available operations.
 | `min` | Raw values comparable | Updates the destination value if the current value is LESS (`<`) than the desetination. If the value is `DateTaggedValue`, compares `value.value`. |
 | `max` | Raw values comparable | Updates the destination value if the current value is GREATER (`>`) than the destination. If the value is `DateTaggedValue`, compares `value.value`. |
 
-"Destination value" refers to the value already sitting in the Flywheel metadata. "Current value" refers to the value that is currently being derived, and may override the destination value based on the operation.
+"Destination value" refers to the value already sitting in the input SymbolTable (Flywheel metadata). "Current value" refers to the value that is currently being derived, and may override the destination value based on the operation.
 
 Aside from standard types (e.g. int), dated values are also supported and represented by a `DateTaggedValue`, which when serialized look like a dict:
 
 ```json
 {
 	"date": "YYYY-MM-DD",
-	"value": Any
+	"value": "any JSON-serializable data"
 }
 ```
 
-All operations support dated values, but some explicitly require it, and some list-based operations may not allow mixing of dated and non-dated values.
-
-For all operations, None values are ignored (e.g. will not update the destination value).
-
+All operations support dated values, but some explicitly require it, and some list-based operations may not allow mixing of dated and non-dated values. For all operations, None values are ignored (e.g. operation is not executed and the destination value is not updated).

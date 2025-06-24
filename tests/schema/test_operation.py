@@ -104,9 +104,7 @@ class TestOperation:
         table[location] = [1, 2, 3, 4]
         op.evaluate(table=table, value=2, attribute=location)
 
-        assert table.to_dict() == {
-            "test": {"location": [1, 2, 3, 4, 2]}
-        }
+        assert table.to_dict() == {"test": {"location": [1, 2, 3, 4, 2]}}
 
         # test adding dated value
         value = DateTaggedValue(date=date(2025, 12, 31), value=10)
@@ -149,7 +147,6 @@ class TestOperation:
             "test": {"date": "2025-01-01", "location": [1, 2, 3, 4, 5, 6]}
         }
 
-
     def test_set_dated(self, table, location):
         """Test adding dates to a set."""
         op = SetOperation()
@@ -182,9 +179,7 @@ class TestOperation:
         table[location] = [1, 2, 3, 4]
         op.evaluate(table=table, value=2, attribute=location)
 
-        assert table.to_dict() == {
-            "test": {"location": [1, 2, 2, 3, 4]}
-        }
+        assert table.to_dict() == {"test": {"location": [1, 2, 2, 3, 4]}}
 
     def test_sorted_list_dated(self, table, location):
         op = SortedListOperation()
@@ -236,7 +231,7 @@ class TestOperation:
     def test_datemap(self, table, location):
         """Tests datemap."""
         op = DateMapOperation()
-        assert op.LABEL == 'datemap'
+        assert op.LABEL == "datemap"
 
         for i in range(1, 4):
             value = DateTaggedValue(date=date(2020 + i, i, i), value=i)
@@ -246,22 +241,12 @@ class TestOperation:
         assert table.to_dict() == {
             "test": {
                 "location": {
-                    "2021-01-01": {
-                        "date": "2021-01-01",
-                        "value": 1
-                    },
-                    "2022-02-02": {
-                        "date": "2022-02-02",
-                        "value": 2
-                    },
-                    "2023-03-03": {
-                        "date": "2023-03-03",
-                        "value": 3
-                    },
+                    "2021-01-01": {"date": "2021-01-01", "value": 1},
+                    "2022-02-02": {"date": "2022-02-02", "value": 2},
+                    "2023-03-03": {"date": "2023-03-03", "value": 3},
                 }
             }
         }
-
 
     def test_initial(self, dated_table, location):
         """Tests the initial operation; will NOT be set since current date >
@@ -321,7 +306,9 @@ class TestOperation:
         # test with date
         value = DateTaggedValue(date=date(2025, 12, 31), value=1)
         op.evaluate(table=table, value=value, attribute=location)
-        assert table.to_dict() == {"test": {"location": {"date": "2025-12-31", "value": 1}}}
+        assert table.to_dict() == {
+            "test": {"location": {"date": "2025-12-31", "value": 1}}
+        }
 
         # test a number again
         op.evaluate(table=table, value=-1, attribute=location)
@@ -341,4 +328,6 @@ class TestOperation:
         table[location] = {"date": "2025-01-01", "value": 10}
         value = DateTaggedValue(date=date(2024, 12, 31), value=20)
         op.evaluate(table=table, value=value, attribute=location)
-        assert table.to_dict() == {"test": {"location": {"date": "2024-12-31", "value": 20}}}
+        assert table.to_dict() == {
+            "test": {"location": {"date": "2024-12-31", "value": 20}}
+        }

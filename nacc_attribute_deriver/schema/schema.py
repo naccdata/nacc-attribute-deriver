@@ -1,6 +1,6 @@
 """Defines the curation schema."""
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
@@ -66,5 +66,5 @@ class RuleFileModel(BaseModel):
         return AttributeAssignment(
             attribute=self.location,
             operation=self.operation,  # type: ignore
-            dated=self.dated
+            dated=self.dated,
         )

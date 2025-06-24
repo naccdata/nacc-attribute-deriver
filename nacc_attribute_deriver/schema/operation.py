@@ -3,6 +3,7 @@
 Uses a metaclass to keep track of operation types.
 """
 
+import contextlib
 import datetime
 from abc import abstractmethod
 from types import FunctionType, NoneType
@@ -178,15 +179,15 @@ class ListOperation(Operation):
         cur_list = table.get(attribute, [])
         if not isinstance(cur_list, list):
             raise OperationError(
-                f"Attempting to perform list operation on non-list attribute: {attribute}")
+                "Attempting to perform list operation on non-list "
+                + f"attribute: {attribute}"
+            )
 
         # try converting any dicts to DateTaggedValues so list can be sorted
         for i, item in enumerate(cur_list):
             if isinstance(item, dict):
-                try:
+                with contextlib.suppress(ValidationError):
                     cur_list[i] = DateTaggedValue(**item)
-                except ValidationError:
-                    pass
 
         if isinstance(value, (list, set)):
             cur_list.extend(list(value))  # type: ignore
@@ -227,7 +228,9 @@ class SortedListOperation(ListOperation):
         try:
             table[attribute] = sorted(cur_list)
         except TypeError as e:
-            raise OperationError(f"Cannot sort mixed types for {self.LABEL}: {e}")
+            raise OperationError(
+                f"Cannot sort mixed types for {self.LABEL}: {e}"
+            ) from e
 
         self.serialize(table=table, attribute=attribute)
 
@@ -247,13 +250,23 @@ class SetOperation(ListOperation):
         try:
             table[attribute] = sorted(list(set(cur_list)))
         except TypeError as e:
-            raise OperationError(f"Cannot sort mixed types for {self.LABEL}: {e}")
+            raise OperationError(
+                f"Cannot sort mixed types for {self.LABEL}: {e}"
+            ) from e
 
         self.serialize(table=table, attribute=attribute)
 
 
 class DateMapOperation(Operation):
     LABEL = "datemap"
+
+    @classmethod
+    def attribute_type(cls, expression_type: type) -> type:
+        temp_type: TypeAlias = get_date_tagged_type(get_optional_type(expression_type))  # type: ignore
+        if temp_type is not expression_type:
+            return DateTaggedValue[temp_type]
+
+        return NoAssignment
 
     def evaluate(
         self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
@@ -265,13 +278,16 @@ class DateMapOperation(Operation):
         key, but done so that pulled values can easily be casted back as
         a DateTaggedValue as needed.
         """
-        if value.value is None:
-            return
+        if value is None:
+            return None
 
         if not isinstance(value, DateTaggedValue):
             raise OperationError(
                 f"Unable to perform {self.LABEL} operation without date"
             )
+
+        if value.value is None:
+            return None
 
         cur_map = table.get(attribute, {})
         cur_map[str(value.date)] = value.model_dump()
