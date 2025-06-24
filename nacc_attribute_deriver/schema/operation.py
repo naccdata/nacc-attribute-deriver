@@ -11,83 +11,18 @@ from typing import (
     Any,
     ClassVar,
     Dict,
-    Generic,
     List,
     Tuple,
     TypeAlias,
-    Union,
-    get_args,
-    get_origin,
 )
 
-from pydantic import BaseModel, ConfigDict, ValidationError, field_serializer
+from pydantic import ValidationError
 
-from nacc_attribute_deriver.attributes.base.namespace import T
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 from .errors import OperationError
-
-
-class DateTaggedValue(BaseModel, Generic[T]):
-    """Model for a date-tagged attribute value."""
-
-    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
-
-    date: datetime.date
-    value: T
-
-    @field_serializer("date")
-    def serialize_date_as_str(self, date: datetime.date):
-        return str(date)
-
-    def __lt__(self, other: object) -> bool:
-        if not isinstance(other, DateTaggedValue):
-            return False
-
-        return self.date <= other.date
-
-
-class NoAssignment:
-    pass
-
-
-def get_optional_type(expression_type: type) -> type:
-    origin = get_origin(expression_type)
-    args = get_args(expression_type)
-    if origin is Union and type(None) in args:
-        return args[0]
-    return expression_type
-
-
-def get_list_type(expression_type: type) -> type:
-    origin = get_origin(expression_type)
-    if origin is list:
-        return get_args(expression_type)[0]
-    return expression_type
-
-
-def is_date_tagged_type(expression_type: type) -> bool:
-    if hasattr(expression_type, "__pydantic_generic_metadata__"):
-        origin = expression_type.__pydantic_generic_metadata__["origin"]  # type: ignore
-        return origin is DateTaggedValue
-
-    return False
-
-
-def get_date_tagged_type(expression_type: type) -> type:
-    if is_date_tagged_type(expression_type):
-        args = expression_type.__pydantic_generic_metadata__[  # type: ignore
-            "args"
-        ]  # type: ignore
-        return args[0]  # type: ignore
-    return expression_type
-
-
-def get_date_str_type(expression_type: type) -> type:
-    if expression_type is datetime.date:
-        return str
-    return expression_type
+from .rule_types import DateTaggedValue, NoAssignment, TypeGetter
 
 
 class OperationRegistry(type):
@@ -147,11 +82,11 @@ class UpdateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        element_type: TypeAlias = get_date_str_type(  # type: ignore
-            get_date_tagged_type(get_optional_type(expression_type))
+        element_type: TypeAlias = TypeGetter.get_date_str_type(  # type: ignore
+            TypeGetter.get_optional_date_tagged_type(expression_type)
         )
 
-        if is_date_tagged_type(expression_type):
+        if TypeGetter.is_date_tagged_type(expression_type):
             element_type = DateTaggedValue[element_type]
 
         return element_type
@@ -177,10 +112,10 @@ class ListOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        element_type: TypeAlias = get_list_type(  # type: ignore
-            get_date_tagged_type(get_optional_type(expression_type))
+        element_type: TypeAlias = TypeGetter.get_list_type(  # type: ignore
+            TypeGetter.get_optional_date_tagged_type(expression_type)
         )
-        if is_date_tagged_type(expression_type):
+        if TypeGetter.is_date_tagged_type(expression_type):
             element_type = DateTaggedValue[element_type]
 
         return List[element_type] if element_type is not NoneType else List
@@ -280,7 +215,7 @@ class DateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        temp_type: TypeAlias = get_date_tagged_type(get_optional_type(expression_type))  # type: ignore
+        temp_type: TypeAlias = TypeGetter.get_optional_date_tagged_type(expression_type)  # type: ignore
         if temp_type is not expression_type:
             return DateTaggedValue[temp_type]
 
@@ -334,7 +269,7 @@ class ComparisonOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        temp_type = get_optional_type(expression_type)
+        temp_type = TypeGetter.get_optional_type(expression_type)
         if hasattr(temp_type, "__pydantic_generic_metadata__"):
             origin = temp_type.__pydantic_generic_metadata__["origin"]  # type: ignore
             if origin is DateTaggedValue:
@@ -343,7 +278,7 @@ class ComparisonOperation(Operation):
                 ]  # type: ignore
                 return args[0]  # type: ignore
 
-        if is_date_tagged_type(expression_type):
+        if TypeGetter.is_date_tagged_type(expression_type):
             temp_type = DateTaggedValue[temp_type]  # type: ignore
 
         return temp_type
