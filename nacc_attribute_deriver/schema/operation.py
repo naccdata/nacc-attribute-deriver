@@ -67,14 +67,20 @@ def get_list_type(expression_type: type) -> type:
     return expression_type
 
 
-def get_date_tagged_type(expression_type: type) -> type:
+def is_date_tagged_type(expression_type: type) -> bool:
     if hasattr(expression_type, "__pydantic_generic_metadata__"):
         origin = expression_type.__pydantic_generic_metadata__["origin"]  # type: ignore
-        if origin is DateTaggedValue:
-            args = expression_type.__pydantic_generic_metadata__[  # type: ignore
-                "args"
-            ]  # type: ignore
-            return args[0]  # type: ignore
+        return origin is DateTaggedValue
+
+    return False
+
+
+def get_date_tagged_type(expression_type: type) -> type:
+    if is_date_tagged_type(expression_type):
+        args = expression_type.__pydantic_generic_metadata__[  # type: ignore
+            "args"
+        ]  # type: ignore
+        return args[0]  # type: ignore
     return expression_type
 
 
@@ -141,9 +147,14 @@ class UpdateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        return get_date_str_type(
+        element_type: TypeAlias = get_date_str_type(
             get_date_tagged_type(get_optional_type(expression_type))
         )
+
+        if is_date_tagged_type(expression_type):
+            element_type = DateTaggedValue[element_type]
+
+        return element_type
 
     def evaluate(
         self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
@@ -169,6 +180,8 @@ class ListOperation(Operation):
         element_type: TypeAlias = get_list_type(  # type: ignore
             get_date_tagged_type(get_optional_type(expression_type))
         )
+        if is_date_tagged_type(expression_type):
+            element_type = DateTaggedValue[element_type]
 
         return List[element_type] if element_type is not NoneType else List
 
@@ -257,43 +270,6 @@ class SetOperation(ListOperation):
         self.serialize(table=table, attribute=attribute)
 
 
-class DateMapOperation(Operation):
-    LABEL = "datemap"
-
-    @classmethod
-    def attribute_type(cls, expression_type: type) -> type:
-        temp_type: TypeAlias = get_date_tagged_type(get_optional_type(expression_type))  # type: ignore
-        if temp_type is not expression_type:
-            return DateTaggedValue[temp_type]
-
-        return NoAssignment
-
-    def evaluate(
-        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
-    ) -> None:
-        """Adds the value to mapping where the key is the date and mapped to a
-        DateTaggedValue.
-
-        Having the nested DateTaggedValue is a little redundant with the
-        key, but done so that pulled values can easily be casted back as
-        a DateTaggedValue as needed.
-        """
-        if value is None:
-            return None
-
-        if not isinstance(value, DateTaggedValue):
-            raise OperationError(
-                f"Unable to perform {self.LABEL} operation without date"
-            )
-
-        if value.value is None:
-            return None
-
-        cur_map = table.get(attribute, {})
-        cur_map[str(value.date)] = value.model_dump()
-        table[attribute] = cur_map
-
-
 class DateOperation(Operation):
     LABEL: str | None = None
 
@@ -366,6 +342,9 @@ class ComparisonOperation(Operation):
                     "args"
                 ]  # type: ignore
                 return args[0]  # type: ignore
+
+        if is_date_tagged_type(expression_type):
+            temp_type = DateTaggedValue[temp_type]
 
         return temp_type
 

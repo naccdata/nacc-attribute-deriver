@@ -5,10 +5,9 @@ The following table summarizes the available operations.
 | Name | Requirements | Description |
 | - | - | - |
 | `update` | None | Updates the destination value with the current value. |
-| `list` | Destination is a list | Inserts the current value at the end of a list, retaining insert order. Can mix/match value types. |
-| `sortedlist` | Destination is a list, and `DateTaggedValue`s are not mixed with other types | Inserts the current value into a lexicographically sorted list. Cannot mix `DateTaggedValue` with regular types. |
-| `set` | Destination is a set, and `DateTaggedValue`s are not mixed with other types | Inserts the current value into a set (no duplicates). The set is sorted for consistency since it is ultimately converted to a list since Flywheel only supports lists. Can alternatively be thought of as a `sortedlist` where every value is unique, and similarly cannot mix `DateTaggedValue` with regular types. |
-| `datemap` | Destination is a mapping, value is a `DateTaggedValue` | Inserts the value into a mapping from a date to a `DateTaggedValue`. This is mainly used for keeping track of longitudinal derived variables. |
+| `list` | Destination is a list | Inserts the current value at the end of a list, retaining insert order. |
+| `sortedlist` | Destination is a list, and `DateTaggedValue`s are not mixed with other types | Inserts the current value into a lexicographically sorted list. |
+| `set` | Destination is a set, and `DateTaggedValue`s are not mixed with other types | Inserts the current value into a set (no duplicates). The set is sorted for consistency since it is ultimately converted to a list since Flywheel only supports lists. Can alternatively be thought of as a `sortedlist` where every value is unique. |
 | `initial` | Value is a `DateTaggedValue` | Updates the destination value if the current value's date comes BEFORE the destination value's. |
 | `latest` | Value is a `DateTaggedValue` | Updates the destination value if the current value's date comes AFTER the destination value's. |
 | `min` | Raw values comparable | Updates the destination value if the current value is LESS (`<`) than the desetination. If the value is `DateTaggedValue`, compares `value.value`. |
@@ -25,4 +24,4 @@ Aside from standard types (e.g. int), dated values are also supported and repres
 }
 ```
 
-All operations support dated values, but some explicitly require it, and some list-based operations may not allow mixing of dated and non-dated values. For all operations, None values are ignored (e.g. operation is not executed and the destination value is not updated).
+All operations support dated values, but some explicitly require it. For all operations, None values are ignored (e.g. operation is not executed and the destination value is not updated).

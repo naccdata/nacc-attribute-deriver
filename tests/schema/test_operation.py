@@ -4,7 +4,6 @@ import pytest
 from datetime import date
 
 from nacc_attribute_deriver.schema.operation import (
-    DateMapOperation,
     DateTaggedValue,
     InitialOperation,
     LatestOperation,
@@ -58,7 +57,6 @@ class TestOperation:
                         "list",
                         "sortedlist",
                         "set",
-                        "datemap",
                         "initial",
                         "latest",
                         "min",
@@ -73,7 +71,6 @@ class TestOperation:
             ListOperation,
             SortedListOperation,
             SetOperation,
-            DateMapOperation,
             InitialOperation,
             LatestOperation,
             MinOperation,
@@ -106,20 +103,42 @@ class TestOperation:
 
         assert table.to_dict() == {"test": {"location": [1, 2, 3, 4, 2]}}
 
+
+    def test_list_dated(self, table, location):
         # test adding dated value
+        op = ListOperation()
+        assert op.LABEL == "list"
+
         value = DateTaggedValue(date=date(2025, 12, 31), value=10)
         op.evaluate(table=table, value=value, attribute=location)
         assert table.to_dict() == {
             "test": {
-                "location": [1, 2, 3, 4, 2, {"date": "2025-12-31", "value": 10}],
+                "location": [{"date": "2025-12-31", "value": 10}],
             }
         }
 
-        # add number again
-        op.evaluate(table=table, value=7, attribute=location)
+        # different date, same value
+        value = DateTaggedValue(date=date(2025, 6, 1), value=10)
+        op.evaluate(table=table, value=value, attribute=location)
         assert table.to_dict() == {
             "test": {
-                "location": [1, 2, 3, 4, 2, {"date": "2025-12-31", "value": 10}, 7],
+                "location": [
+                    {"date": "2025-12-31", "value": 10},
+                    {"date": "2025-06-01", "value": 10},
+                ],
+            }
+        }
+
+        # same date/value
+        value = DateTaggedValue(date=date(2025, 6, 1), value=10)
+        op.evaluate(table=table, value=value, attribute=location)
+        assert table.to_dict() == {
+            "test": {
+                "location": [
+                    {"date": "2025-12-31", "value": 10},
+                    {"date": "2025-06-01", "value": 10},
+                    {"date": "2025-06-01", "value": 10},
+                ],
             }
         }
 
@@ -225,26 +244,6 @@ class TestOperation:
                     {"date": "2022-08-14", "value": 10},
                     {"date": "2025-12-31", "value": 10},
                 ],
-            }
-        }
-
-    def test_datemap(self, table, location):
-        """Tests datemap."""
-        op = DateMapOperation()
-        assert op.LABEL == "datemap"
-
-        for i in range(1, 4):
-            value = DateTaggedValue(date=date(2020 + i, i, i), value=i)
-            op.evaluate(table=table, value=value, attribute=location)
-            assert len(table[location]) == i
-
-        assert table.to_dict() == {
-            "test": {
-                "location": {
-                    "2021-01-01": {"date": "2021-01-01", "value": 1},
-                    "2022-02-02": {"date": "2022-02-02", "value": 2},
-                    "2023-03-03": {"date": "2023-03-03", "value": 3},
-                }
             }
         }
 

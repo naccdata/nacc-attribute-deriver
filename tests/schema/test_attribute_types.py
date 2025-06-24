@@ -7,7 +7,6 @@ from typing import List
 
 import pytest
 from nacc_attribute_deriver.schema.operation import (
-    DateMapOperation,
     DateTaggedValue,
     InitialOperation,
     LatestOperation,
@@ -112,40 +111,6 @@ class TestOperationAttributeType:
         operation.evaluate(table=table, value=wrapper, attribute="list-wrapped")
         assert operation.attribute_type(type(value)) is List[type(value)]
         assert type(table.get("list-wrapped")[0]) is type(value)  # type: ignore
-
-    def test_datemap(self):
-        """Tests the datemap operation."""
-        table = SymbolTable()
-        operation = DateMapOperation()
-
-        value = None
-        operation.evaluate(table=table, value=value, attribute="none-case")
-        assert operation.attribute_type(type(value)) is NoAssignment
-        assert type(table.get("none-case")) is NoneType
-
-        value = "blah"
-        with pytest.raises(OperationError):
-            operation.evaluate(table=table, value=value, attribute="single-value")
-        assert operation.attribute_type(type(value)) is NoAssignment
-        assert type(table.get("single-value")) is NoneType
-
-        value = "blah"
-        wrapper = [value]
-        with pytest.raises(OperationError):
-            operation.evaluate(table=table, value=wrapper, attribute="list-wrapped")
-        assert operation.attribute_type(type(wrapper)) is NoAssignment
-        assert type(table.get("list-wrapped")) is NoneType
-
-        value = "blah"
-        wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
-        assert type(wrapper) is DateTaggedValue
-        operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
-        assert (
-            operation.attribute_type(DateTaggedValue[str])
-            is DateTaggedValue[type(value)]
-        )
-        next_value = next(iter(table.get("date-tagged").values()))
-        assert type(next_value["value"]) is type(value)
 
     def test_initial(self):
         table = SymbolTable()
