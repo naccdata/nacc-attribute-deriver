@@ -29,7 +29,6 @@ def table() -> SymbolTable:
                     }
                 },
                 "derived": {  # needed for DerivedDemographicsAttributeCollection
-                    "naccage": 78,
                     "naccnihr": 1,
                     "naccdage": 80,
                     "naccdied": 1,
@@ -48,11 +47,11 @@ class TestDemographicsAttributeCollection:
     def test_create_uds_sex(self, table):
         """Tests _create_uds_sex."""
         attr = DemographicsAttributeCollection(table)
-        assert attr._create_uds_sex().value == "Male"
+        assert attr._create_uds_sex() == "Male"
 
         for k, v in DemographicsAttributeCollection.SEX_MAPPING.items():
             table["file.info.forms.json.sex"] = k
-            assert attr._create_uds_sex().value == v
+            assert attr._create_uds_sex() == v
 
         # none case
         table["file.info.forms.json.sex"] = None
@@ -62,11 +61,11 @@ class TestDemographicsAttributeCollection:
     def test_create_uds_primary_language(self, table):
         """Tests _create_uds_primary_language."""
         attr = DemographicsAttributeCollection(table)
-        assert attr._create_uds_primary_language().value == "Spanish"
+        assert attr._create_uds_primary_language() == "Spanish"
 
         for k, v in DemographicsAttributeCollection.PRIMARY_LANGUAGE_MAPPING.items():
             table["file.info.forms.json.primlang"] = k
-            assert attr._create_uds_primary_language().value == v
+            assert attr._create_uds_primary_language() == v
 
         # test None in both initial and followup packet case
         table["file.info.forms.json.primlang"] = None
@@ -80,7 +79,7 @@ class TestDemographicsAttributeCollection:
     def test_create_uds_education_level(self, table):
         """Tests _create_uds_education_level."""
         attr = DemographicsAttributeCollection(table)
-        assert attr._create_uds_education_level().value == 3
+        assert attr._create_uds_education_level() == 3
 
         # none case
         table["file.info.forms.json.educ"] = None
@@ -88,19 +87,14 @@ class TestDemographicsAttributeCollection:
 
 
 class TestDerivedDemographicsAttributeCollection:
-    def test_create_uds_age(self, table):
-        """Tests _create_uds_age."""
-        attr = DerivedDemographicsAttributeCollection(table)
-        assert attr._create_uds_age().value == 78
-
     def test_create_uds_race(self, table):
         """Tests _create_uds_race."""
         attr = DerivedDemographicsAttributeCollection(table)
-        assert attr._create_uds_race().value == "White"
+        assert attr._create_uds_race() == "White"
 
         for k, v in DerivedDemographicsAttributeCollection.RACE_MAPPING.items():
             table["file.info.derived.naccnihr"] = k
-            assert attr._create_uds_race().value == v
+            assert attr._create_uds_race() == v
 
     def test_create_age_at_death(self, table):
         """Tests _create_age_at_death."""
@@ -110,14 +104,14 @@ class TestDerivedDemographicsAttributeCollection:
     def test_create_vital_status(self, table):
         """Tests _create_vital_status."""
         attr = DerivedDemographicsAttributeCollection(table)
-        assert attr._create_vital_status().value == "deceased"
+        assert attr._create_vital_status() == "deceased"
 
         for (
             k,
             v,
         ) in DerivedDemographicsAttributeCollection.VITAL_STATUS_MAPPINGS.items():
             table["file.info.derived.naccdied"] = k
-            assert attr._create_vital_status().value == v
+            assert attr._create_vital_status() == v
 
     def test_create_np_available(self, table):
         """Tests _create_np_available."""

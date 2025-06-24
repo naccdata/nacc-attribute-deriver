@@ -5,6 +5,7 @@ Heavily based off of
     https://eli.thegreenplace.net/2012/08/07/fundamental-concepts-of-plugin-infrastructures
 """
 
+import datetime
 import logging
 from inspect import isfunction
 from types import FunctionType
@@ -30,16 +31,18 @@ class AttributeExpression(BaseModel):
     function: FunctionType
     attribute_class: type
 
-    def apply(self, table: SymbolTable) -> Any:
+    def apply(self, table: SymbolTable) -> Tuple[Any, datetime.date | None]:
         """Calls the function on the instance.
 
         Returns:
-          the value returned by the function applied to the instance
+          the value returned by the function applied to the instance and
+          corresponding date, if applicable
         Raises:
             MissingRequiredError if the attribute class cannot be instantiated
             on the table
         """
-        return self.function(self.attribute_class(table))
+        instance = self.attribute_class(table)
+        return self.function(instance), instance.get_date()
 
 
 class AttributeCollectionRegistry(type):
@@ -129,3 +132,13 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             return int(value) == target
         except ValueError:
             return False
+
+    def get_date(self) -> Optional[datetime.date]:
+        """Get date corresponding to this attribute collection from a specific
+        namespace, if applicable.
+
+        May return None for collections where dates do not make sense
+        (genetics, derived) or those with multiple dated namespaces
+        (cross-module).
+        """
+        return None

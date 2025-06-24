@@ -11,11 +11,10 @@ from typing import Dict, List
 
 from pydantic import ValidationError
 
-from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
-
 from . import config
 from .attributes.attribute_collection import AttributeCollectionRegistry
-from .schema.errors import AttributeDeriverError
+from .schema.errors import AttributeDeriverError, OperationError
+from .schema.operation import DateTaggedValue
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
 from .utils.scope import ScopeLiterals
@@ -100,15 +99,19 @@ class AttributeDeriver:
                     f"Unknown attribute function: {rule.function}"
                 )
 
-            value = method.apply(table)
+            value, date = method.apply(table)
             if value is None:
-                continue
-            if isinstance(value, DateTaggedValue) and value.value is None:  # type: ignore
                 continue
 
             for assignment in rule.assignments:
                 operation = assignment.operation
-                operation.set_scope(scope)
+                if operation.dated and not date:
+                    raise OperationError(
+                        f"Cannot compute date for date operation on rule {rule}"
+                    )
+
+                    value = DateTaggedValue(value=value, date=date)
+
                 operation.evaluate(
                     table=table, value=value, attribute=assignment.attribute
                 )

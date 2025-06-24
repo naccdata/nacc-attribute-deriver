@@ -1,3 +1,4 @@
+import json
 from collections import deque
 from typing import Any, Dict, Iterator, MutableMapping, Optional
 
@@ -94,4 +95,5 @@ class SymbolTable(MutableMapping[str, Any]):
         return self.to_dict() == other.to_dict()
 
     def to_dict(self) -> MutableMapping[str, Any]:
-        return self.__table
+        # dump and load JSON to force serialize any Pydantic models
+        return json.loads(json.dumps(self.__table))

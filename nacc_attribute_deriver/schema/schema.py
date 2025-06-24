@@ -1,8 +1,8 @@
 """Defines the curation schema."""
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from nacc_attribute_deriver.utils.scope import ScopeLiterals
 
@@ -20,10 +20,17 @@ class AttributeAssignment(BaseModel):
 
     attribute: str
     operation: Operation
+    dated: bool = False
 
-    @field_validator("operation", mode="before")
-    def generate_operation(cls, value: str) -> Operation:
-        return Operation.create(value)
+    @model_validator(mode="before")
+    @classmethod
+    def validate_dated(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create Operation based on operation name and dated argument."""
+        data["operation"] = Operation.create(
+            label=data.get("operation"),  # type: ignore
+            dated=bool(data.get("dated", False)),
+        )
+        return data
 
 
 class CurationRule(BaseModel):
@@ -50,6 +57,14 @@ class RuleFileModel(BaseModel):
     function: str
     location: str
     operation: str
+    dated: bool = False
+
+    @field_validator("dated", mode="before")
+    def cast_bool(cls, value: Optional[str]) -> bool:
+        if not value:
+            return False
+
+        return value.lower() in ["true", "1"]
 
     @property
     def assignment(self) -> AttributeAssignment:

@@ -2,12 +2,10 @@
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
-    UDSNamespace,
-)
 from nacc_attribute_deriver.symbol_table import SymbolTable
+
+from .uds_attribute_collection import UDSAttributeCollection
 
 
 class ContributionStatus:
@@ -21,13 +19,12 @@ class ContributionStatus:
         return [cls.PRIMARY, cls.CONTRIBUTING, cls.NON_CONTRIBUTING]
 
 
-class UDSFormD1Attribute(AttributeCollection):
+class UDSFormD1Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table, required=frozenset(["normcog"]))
+        super().__init__(table, uds_required=frozenset(["normcog"]))
         self.__subject_derived = SubjectDerivedNamespace(table=table)
-
-        self.__normcog = self.__uds.get_required("normcog", int)
-        self.__demented = self.__uds.get_value("demented", int)
+        self.__normcog = self.uds.get_required("normcog", int)
+        self.__demented = self.uds.get_value("demented", int)
 
     def get_contr_status(self, fields: List[str]) -> Optional[int]:
         """Gets the overall contributing status based on the given list.
@@ -43,7 +40,7 @@ class UDSFormD1Attribute(AttributeCollection):
         all_statuses = []
 
         for field in fields:
-            all_statuses.append(self.__uds.get_value(field, int))
+            all_statuses.append(self.uds.get_value(field, int))
 
         for status in ContributionStatus.all():
             if any([x == status for x in all_statuses]):
@@ -60,10 +57,10 @@ class UDSFormD1Attribute(AttributeCollection):
             1
             if any(
                 [
-                    self.__uds.get_value("mciamem", int),
-                    self.__uds.get_value("mciaplus", int),
-                    self.__uds.get_value("mcinon1", int),
-                    self.__uds.get_value("mcinon2", int),
+                    self.uds.get_value("mciamem", int),
+                    self.uds.get_value("mciaplus", int),
+                    self.uds.get_value("mcinon1", int),
+                    self.uds.get_value("mcinon2", int),
                 ]
             )
             else 0
@@ -93,16 +90,16 @@ class UDSFormD1Attribute(AttributeCollection):
         if self.__normcog == 1:
             return 8
 
-        if self.__uds.normalized_formver() != 3:
-            dlb = self.__uds.get_value("dlb", int)
-            park = self.__uds.get_value("park", int)
+        if self.formver != 3:
+            dlb = self.uds.get_value("dlb", int)
+            park = self.uds.get_value("park", int)
 
             if dlb == 1 or park == 1:
                 return 1
             if dlb == 0 and park == 0:
                 return 0
 
-        lbdis = self.__uds.get_value("lbdis", int)
+        lbdis = self.uds.get_value("lbdis", int)
         if lbdis in [0, 1]:
             return lbdis
 
@@ -119,7 +116,7 @@ class UDSFormD1Attribute(AttributeCollection):
             return 8
 
         contr_status = None
-        if self.__uds.normalized_formver() != 3:
+        if self.formver != 3:
             contr_status = self.get_contr_status(["dlbif", "parkif"])
         else:
             contr_status = self.get_contr_status(["lbdif"])
@@ -130,7 +127,7 @@ class UDSFormD1Attribute(AttributeCollection):
         if self._create_nacclbde() == 0:
             return 7
 
-        # return self.__uds.check_default("nacclbdp", None)
+        # return self.uds.check_default("nacclbdp", None)
         # TODO: raising error instead of returning None
         # I think in theory it seems it shouldn't ever get here
         # and nacclbdp should always be set to something
@@ -148,7 +145,7 @@ class UDSFormD1Attribute(AttributeCollection):
             return 4
         if self.__normcog == 1:
             return 1
-        if self.__uds.get_value("impnomci", int) == 1:
+        if self.uds.get_value("impnomci", int) == 1:
             return 2
 
         # TODO: risk throwing an error here, same situation as nacclbdp.
@@ -172,7 +169,7 @@ class UDSFormD1Attribute(AttributeCollection):
         all_status = [
             self.get_contr_status(["probadif", "possadif", "alzdisif"]),
             self.get_contr_status(["dlbif", "parkif"])
-            if self.__uds.normalized_formver() != 3
+            if self.formver != 3
             else self.get_contr_status(["lbdif"]),
             # could just grab directly for those with only 1 but this is more readable
             self.get_contr_status(["msaif"]),
@@ -217,8 +214,8 @@ class UDSFormD1Attribute(AttributeCollection):
 
         Primary progressive aphasia (PPA) with cognitive impairment
         """
-        ppaph = self.__uds.get_value("ppaph", int)
-        ppasyn = self.__uds.get_value("ppasyn", int)
+        ppaph = self.uds.get_value("ppaph", int)
+        ppasyn = self.uds.get_value("ppasyn", int)
 
         if self.__demented == 1:
             if ppaph == 1 or ppasyn == 1:
@@ -226,15 +223,14 @@ class UDSFormD1Attribute(AttributeCollection):
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-        elif self.__uds.get_value("impnomci", int) == 1 or self._create_mci() == 1:
+        elif self.uds.get_value("impnomci", int) == 1 or self._create_mci() == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-            formver = self.__uds.normalized_formver()
-            nodx = self.__uds.get_value("nodx", int)
-            if (formver != 3 and nodx == 1) or (formver == 3):
+            nodx = self.uds.get_value("nodx", int)
+            if (self.formver != 3 and nodx == 1) or (self.formver == 3):
                 return 7
 
         return 8
@@ -248,15 +244,15 @@ class UDSFormD1Attribute(AttributeCollection):
             return 8
 
         # assuming demented == 1 after this point
-        ftd = self.__uds.get_value("ftd", int)
-        ftdsyn = self.__uds.get_value("ftdsyn", int)
+        ftd = self.uds.get_value("ftd", int)
+        ftdsyn = self.uds.get_value("ftdsyn", int)
 
         if ftd in [0, 1]:
             return ftd
         if ftdsyn in [0, 1]:
             return ftdsyn
 
-        # return self.__uds.check_default("naccbvft", 8)
+        # return self.uds.check_default("naccbvft", 8)
         return 8
 
     def _create_nacclbds(self) -> int:
@@ -268,8 +264,8 @@ class UDSFormD1Attribute(AttributeCollection):
             return 8
 
         # assuming demented == 1 after this point
-        dlb = self.__uds.get_value("dlb", int)
-        lbdsyn = self.__uds.get_value("lbdsyn", int)
+        dlb = self.uds.get_value("dlb", int)
+        lbdsyn = self.uds.get_value("lbdsyn", int)
 
         if dlb in [0, 1]:
             return dlb
