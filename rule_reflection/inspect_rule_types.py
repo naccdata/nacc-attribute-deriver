@@ -14,7 +14,7 @@ from nacc_attribute_deriver import config
 from nacc_attribute_deriver.attributes.attribute_collection import (
     AttributeCollectionRegistry,
 )
-from nacc_attribute_deriver.schema.operation import *
+from nacc_attribute_deriver.schema.operation import DateTaggedValue
 from nacc_attribute_deriver.schema.schema import RuleFileModel
 
 log = logging.getLogger(__name__)
@@ -112,8 +112,9 @@ def main() -> None:
                     attribute_type=str(
                         TypeWrapper(
                             rule_schema.assignment.operation.attribute_type(
-                                return_type if not rule_schema.dated else
-                                DateTaggedValue[return_type]
+                                return_type
+                                if not rule_schema.dated
+                                else DateTaggedValue[return_type]  # type: ignore
                             )
                         )
                     ),

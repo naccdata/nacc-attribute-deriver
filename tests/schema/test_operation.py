@@ -103,7 +103,6 @@ class TestOperation:
 
         assert table.to_dict() == {"test": {"location": [1, 2, 3, 4, 2]}}
 
-
     def test_list_dated(self, table, location):
         # test adding dated value
         op = ListOperation()

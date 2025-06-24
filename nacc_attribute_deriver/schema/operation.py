@@ -147,7 +147,7 @@ class UpdateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        element_type: TypeAlias = get_date_str_type(
+        element_type: TypeAlias = get_date_str_type(  # type: ignore
             get_date_tagged_type(get_optional_type(expression_type))
         )
 
@@ -344,7 +344,7 @@ class ComparisonOperation(Operation):
                 return args[0]  # type: ignore
 
         if is_date_tagged_type(expression_type):
-            temp_type = DateTaggedValue[temp_type]
+            temp_type = DateTaggedValue[temp_type]  # type: ignore
 
         return temp_type
 
