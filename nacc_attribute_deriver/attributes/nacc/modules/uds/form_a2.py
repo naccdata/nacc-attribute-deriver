@@ -13,17 +13,14 @@ from .uds_attribute_collection import UDSAttributeCollection
 class UDSFormA2Attribute(UDSAttributeCollection):
     """Class to collect UDS A2 attributes."""
 
-
-    def __init__(self, table: SymbolTable):
-        super().__init__(table)
-
-        # TODO - for v4 this will be modea2
-        self.__submitted = self.uds.get_value("a2sub", int) == 1
+    @property
+    def submitted(self) -> bool:
+        return self.uds.get_value("a2sub", int) == 1
 
     def _create_naccninr(self) -> Optional[int]:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
         co-participant)."""
-        if not self.__submitted:
+        if not self.submitted:
             return None
 
         newinf = self.uds.get_value("newinf", int)

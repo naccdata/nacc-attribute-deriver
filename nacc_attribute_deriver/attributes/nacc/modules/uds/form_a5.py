@@ -9,19 +9,11 @@ investigate.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
-    UDSNamespace,
-)
-from nacc_attribute_deriver.symbol_table import SymbolTable
+from .uds_attribute_collection import UDSAttributeCollection
 
 
-class UDSFormA45ttribute(AttributeCollection):
+class UDSFormA45ttribute(UDSAttributeCollection):
     """Class to collect UDS A5 attributes."""
-
-    def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table)
-        self.__formver = self.__uds.normalized_formver()
 
     def calculate_mrsyear(self, prefix: str, max_index: int = 6) -> Optional[int]:
         """Calculate mrsyear, which is the maximum of all {PREFIX}{I}YR
@@ -29,12 +21,12 @@ class UDSFormA45ttribute(AttributeCollection):
 
         Prefix expected to be STROK or TIA (UDS formver < 3)
         """
-        if self.__formver >= 3:
+        if self.formver >= 3:
             return None
 
         found = []
         for i in range(1, max_index + 1):
-            value = self.__uds.get_value(f"{prefix}{i}yr", int)
+            value = self.uds.get_value(f"{prefix}{i}yr", int)
             if value is not None and value not in [-4, 8888, 9999]:
                 found.append(value)
 
@@ -44,13 +36,13 @@ class UDSFormA45ttribute(AttributeCollection):
         """Creates NACCSTYR - Most recently reported year of stroke
         as of the initial visit.
         """
-        if not self.__uds.is_initial():
+        if not self.uds.is_initial():
             return None
 
-        cbstroke = self.__uds.get_value("cbstroke", int)
+        cbstroke = self.uds.get_value("cbstroke", int)
         if cbstroke in [1, 2]:
             mrsyear = self.calculate_mrsyear("strok")  # v1, v2
-            strokyr = self.__uds.get_value("strokyr", int)  # v3+
+            strokyr = self.uds.get_value("strokyr", int)  # v3+
             if mrsyear is None and strokyr is not None:
                 mrsyear = strokyr
 
@@ -66,13 +58,13 @@ class UDSFormA45ttribute(AttributeCollection):
     def _create_nacctiyr(self) -> Optional[int]:
         """Creates NACCTIYR - Most recently reported year of TIA as of
         the Initial Visit."""
-        if not self.__uds.is_initial():
+        if not self.uds.is_initial():
             return None
 
-        cbtia = self.__uds.get_value("cbtia", int)
+        cbtia = self.uds.get_value("cbtia", int)
         if cbtia in [1, 2]:
             mrsyear = self.calculate_mrsyear("tia")  # v1, v2
-            tiayear = self.__uds.get_value("tiayear", int)  # v3+
+            tiayear = self.uds.get_value("tiayear", int)  # v3+
             if mrsyear is None and tiayear is not None:
                 mrsyear = tiayear
 
@@ -87,10 +79,10 @@ class UDSFormA45ttribute(AttributeCollection):
 
     def _create_nacctbi(self) -> Optional[int]:
         """Creates NACCTBI - History of traumatic brain injury (TBI)."""
-        traumbrf = self.__uds.get_value("traumbrf", int)
-        traumchr = self.__uds.get_value("traumchr", int)
-        traumext = self.__uds.get_value("traumext", int)
-        tbi = self.__uds.get_value("tbi", int)
+        traumbrf = self.uds.get_value("traumbrf", int)
+        traumchr = self.uds.get_value("traumchr", int)
+        traumext = self.uds.get_value("traumext", int)
+        tbi = self.uds.get_value("tbi", int)
         all_vars = [traumbrf, traumchr, traumext, tbi]
 
         if any(x in [1, 2] for x in all_vars):

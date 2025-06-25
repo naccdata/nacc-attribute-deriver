@@ -223,7 +223,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-        elif self.__uds.get_value("impnomci", int) == 1 or self.generate_mci() == 1:
+        elif self.uds.get_value("impnomci", int) == 1 or self.generate_mci() == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:

@@ -6,30 +6,30 @@ From derivedmeds.sas.
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
-    UDSNamespace,
-)
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
+from .uds_attribute_collection import UDSAttributeCollection
 
-class UDSFormA4Attribute(AttributeCollection):
+
+class UDSFormA4Attribute(UDSAttributeCollection):
     """Class to collect UDS A4 attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table)
+        super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
-
-        # TODO: for v4 this will be modea4
-        # SAS code seems to set anymeds explicitly based on a meds table,
-        # but should be fine to use directly
-        self.__submitted = self.__uds.get_value("anymeds", int) == 1
 
         # need to grab from corresponding MEDS file information
         # keyed by form date under subject.info.derived.drugs_list
-        self.__meds = self.__load_drugs_list() if self.__submitted else None
+        self.__meds = self.__load_drugs_list() if self.submitted else None
+
+    @property
+    def submitted(self) -> bool:
+        # TODO: for v4 this will be modea4
+        # SAS code seems to set anymeds explicitly based on a meds table,
+        # but should be fine to use directly
+        return self.uds.get_value("anymeds", int) == 1
 
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
@@ -38,9 +38,9 @@ class UDSFormA4Attribute(AttributeCollection):
         if all_meds is None:
             all_meds = {}
 
-        form_date = self.__uds.get_value("frmdatea4", str)
+        form_date = self.uds.get_value("frmdatea4", str)
         if not form_date:  # try visitdate
-            form_date = self.__uds.get_value("visitdate", str)
+            form_date = self.uds.get_value("visitdate", str)
 
         if form_date not in all_meds:
             raise AttributeDeriverError(
@@ -54,7 +54,7 @@ class UDSFormA4Attribute(AttributeCollection):
         """Creates NACCAMD - Total number of medications reported at
         each visit.
         """
-        if not self.__submitted or self.__meds is None:
+        if not self.submitted or self.__meds is None:
             return None
 
         return len(self.__meds)
@@ -67,7 +67,7 @@ class UDSFormA4Attribute(AttributeCollection):
         Returns:
             1 if there is a match, 0 otherwise
         """
-        if not self.__submitted or not self.__meds:
+        if not self.submitted or not self.__meds:
             return None
 
         return 1 if any(x in target_codes for x in self.__meds) else 0

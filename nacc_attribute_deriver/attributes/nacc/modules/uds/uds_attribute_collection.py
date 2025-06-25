@@ -25,5 +25,9 @@ class UDSAttributeCollection(AttributeCollection):
     def formver(self) -> int:
         return self.__formver
 
+    @property
+    def submitted(self) -> bool:
+        return True
+
     def get_date(self) -> Optional[datetime.date]:
         return self.uds.get_date()
