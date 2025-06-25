@@ -3,8 +3,10 @@
 Uses a metaclass to keep track of operation types.
 """
 
+import contextlib
+import datetime
 from abc import abstractmethod
-from datetime import date
+from itertools import groupby
 from types import FunctionType, NoneType
 from typing import (
     Any,
@@ -13,54 +15,15 @@ from typing import (
     List,
     Tuple,
     TypeAlias,
-    Union,
-    get_args,
-    get_origin,
 )
 
-from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
+from pydantic import ValidationError
+
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
-
-class NoAssignment:
-    pass
-
-
-def get_optional_type(expression_type: type) -> type:
-    origin = get_origin(expression_type)
-    args = get_args(expression_type)
-    if origin is Union and type(None) in args:
-        return args[0]
-    return expression_type
-
-
-def get_list_type(expression_type: type) -> type:
-    origin = get_origin(expression_type)
-    if origin is list:
-        return get_args(expression_type)[0]
-    return expression_type
-
-
-def get_date_tagged_type(expression_type: type) -> type:
-    if hasattr(expression_type, "__pydantic_generic_metadata__"):
-        origin = expression_type.__pydantic_generic_metadata__["origin"]  # type: ignore
-        if origin is DateTaggedValue:
-            args = expression_type.__pydantic_generic_metadata__[  # type: ignore
-                "args"
-            ]  # type: ignore
-            return args[0]  # type: ignore
-    return expression_type
-
-
-def get_date_str_type(expression_type: type) -> type:
-    if expression_type is date:
-        return str
-    return expression_type
-
-
-class OperationError(Exception):
-    pass
+from .errors import OperationError
+from .rule_types import DateTaggedValue, NoAssignment, TypeGetter
 
 
 class OperationRegistry(type):
@@ -98,10 +61,12 @@ class Operation(object, metaclass=OperationRegistry):
         if operation:
             return operation()
 
-        raise ValueError(f"Unrecognized operation: {label}")
+        raise OperationError(f"Unrecognized operation: {label}")
 
     @abstractmethod
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+    ) -> None:
         """Evaluate the operation, and stores the computed value at the
         specified location.
 
@@ -109,7 +74,6 @@ class Operation(object, metaclass=OperationRegistry):
             table: Table to read/write from
             value: Value to perform the operation against
             attribute: Target location to write to
-            date_key: Date key string
         """
         pass
 
@@ -119,22 +83,27 @@ class UpdateOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        return get_date_str_type(
-            get_date_tagged_type(get_optional_type(expression_type))
+        element_type: TypeAlias = TypeGetter.get_date_str_type(  # type: ignore
+            TypeGetter.get_optional_date_tagged_type(expression_type)
         )
 
-    def evaluate(  # type: ignore
-        self, *, table: SymbolTable, value: Any, attribute: str
+        if TypeGetter.is_date_tagged_type(expression_type):
+            element_type = DateTaggedValue[element_type]
+
+        return element_type
+
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
     ) -> None:
         """Simply updates the location."""
-
-        if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
         if value is None:
             return
-
-        if isinstance(value, date):
+        elif isinstance(value, datetime.date):
             value = str(value)
+        elif isinstance(value, DateTaggedValue):
+            if value.value is None:
+                return
+            value = value.model_dump()
 
         table[attribute] = value
 
@@ -144,20 +113,31 @@ class ListOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        element_type: TypeAlias = get_list_type(  # type: ignore
-            get_date_tagged_type(get_optional_type(expression_type))
+        element_type: TypeAlias = TypeGetter.get_list_type(  # type: ignore
+            TypeGetter.get_optional_date_tagged_type(expression_type)
         )
+        if TypeGetter.is_date_tagged_type(expression_type):
+            element_type = DateTaggedValue[element_type]
 
         return List[element_type] if element_type is not NoneType else List
 
     def add_to_list(
-        self, *, table: SymbolTable, value: Any, attribute: str
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
     ) -> List[Any]:
         """Handles the current list - insert order is retained."""
-        if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
-
         cur_list = table.get(attribute, [])
+        if not isinstance(cur_list, list):
+            raise OperationError(
+                "Attempting to perform list operation on non-list "
+                + f"attribute: {attribute}"
+            )
+
+        # try converting any dicts to DateTaggedValues so list can be sorted
+        for i, item in enumerate(cur_list):
+            if isinstance(item, dict):
+                with contextlib.suppress(ValidationError):
+                    cur_list[i] = DateTaggedValue(**item)
+
         if isinstance(value, (list, set)):
             cur_list.extend(list(value))  # type: ignore
         elif value is not None:
@@ -165,45 +145,78 @@ class ListOperation(Operation):
 
         return cur_list
 
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+    def serialize(self, *, table: SymbolTable, attribute: str) -> None:
+        """Serialize - may need to be done after sorting."""
+        cur_list = table.get(attribute)
+        if not isinstance(cur_list, list):
+            return
+
+        for i, item in enumerate(cur_list):
+            if isinstance(item, DateTaggedValue):
+                cur_list[i] = item.model_dump()
+
+        table[attribute] = cur_list
+
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+    ) -> None:
         """Adds the value to list - insert order is retained."""
         cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
         table[attribute] = cur_list
+        self.serialize(table=table, attribute=attribute)
 
 
 class SortedListOperation(ListOperation):
     LABEL = "sortedlist"
 
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+    ) -> None:
         """Adds the value to a sorted list."""
         cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
-        table[attribute] = sorted(cur_list)
+        try:
+            table[attribute] = sorted(cur_list)
+        except TypeError as e:
+            raise OperationError(
+                f"Cannot sort mixed types for {self.LABEL} for {attribute}: {e}"
+            ) from e
+
+        self.serialize(table=table, attribute=attribute)
 
 
 class SetOperation(ListOperation):
     LABEL = "set"
 
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+    ) -> None:
         """Adds the value to a set, although it actually is saved as a list
         since the final output is a JSON.
 
-        Sorted for consistency.
+        Attempts to sort if hashable.
         """
         cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
-        table[attribute] = sorted(list(set(cur_list)))
+        try:
+            table[attribute] = [k for k, v in groupby(sorted(cur_list))]
+        except TypeError as e:
+            raise OperationError(
+                f"Cannot sort mixed types for {self.LABEL} for {attribute}: {e}"
+            ) from e
+
+        self.serialize(table=table, attribute=attribute)
 
 
 class DateOperation(Operation):
     LABEL: str | None = None
 
     @abstractmethod
-    def compare(self, left_value: date, right_value: date) -> bool:
+    def compare(self, left_value: datetime.date, right_value: datetime.date) -> bool:
         """Returns the comparison for this object."""
         raise OperationError(f"Unknown date operation: {self.LABEL}")
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        temp_type: TypeAlias = get_date_tagged_type(get_optional_type(expression_type))  # type: ignore
+        temp_type: TypeAlias = TypeGetter.get_optional_date_tagged_type(expression_type)  # type: ignore
         if temp_type is not expression_type:
             return DateTaggedValue[temp_type]
 
@@ -214,21 +227,21 @@ class DateOperation(Operation):
     ) -> None:
         """Compares dates to determine the result."""
         if value is None:
-            return
+            return None
 
         if not isinstance(value, DateTaggedValue):
             raise OperationError(
-                f"Unable to perform {self.LABEL} operation without date"
+                f"Unable to perform {self.LABEL} operation on attribute "
+                + f"{attribute} without date"
             )
 
         if value.value is None:  # type: ignore
             return
 
         if self.LABEL not in ["initial", "latest"]:
-            raise OperationError(f"Unknown date operation: {self.LABEL}")
-
-        if not value.date:
-            raise OperationError(f"Current date is required: {value.model_dump()}")
+            raise OperationError(
+                f"Unknown date operation {self.LABEL} for attribute {attribute}"
+            )
 
         dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
 
@@ -239,14 +252,14 @@ class DateOperation(Operation):
 class InitialOperation(DateOperation):
     LABEL = "initial"
 
-    def compare(self, left_value: date, right_value: date):
+    def compare(self, left_value: datetime.date, right_value: datetime.date):
         return left_value <= right_value
 
 
 class LatestOperation(DateOperation):
     LABEL = "latest"
 
-    def compare(self, left_value: date, right_value: date):
+    def compare(self, left_value: datetime.date, right_value: datetime.date):
         return left_value >= right_value
 
 
@@ -260,7 +273,7 @@ class ComparisonOperation(Operation):
 
     @classmethod
     def attribute_type(cls, expression_type: type) -> type:
-        temp_type = get_optional_type(expression_type)
+        temp_type = TypeGetter.get_optional_type(expression_type)
         if hasattr(temp_type, "__pydantic_generic_metadata__"):
             origin = temp_type.__pydantic_generic_metadata__["origin"]  # type: ignore
             if origin is DateTaggedValue:
@@ -269,26 +282,43 @@ class ComparisonOperation(Operation):
                 ]  # type: ignore
                 return args[0]  # type: ignore
 
+        if TypeGetter.is_date_tagged_type(expression_type):
+            temp_type = DateTaggedValue[temp_type]  # type: ignore
+
         return temp_type
 
-    def evaluate(self, *, table: SymbolTable, value: Any, attribute: str) -> None:
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+    ) -> None:
         """Does a comparison between the value and location value."""
-        dest_value = table.get(attribute)
-
         if self.LABEL not in ["min", "max"]:
-            raise OperationError(f"Unknown comparison operation: {self.LABEL}")
+            raise OperationError(
+                f"Unknown comparison operation {self.LABEL} for attribute {attribute}"
+            )
 
-        if isinstance(value, DateTaggedValue):
-            value = value.value  # type: ignore
-        if value is None:
+        dest_value = table.get(attribute)
+        if isinstance(dest_value, dict):
+            try:
+                dest_value = DateTaggedValue(**dest_value).value
+            except ValidationError as e:
+                raise OperationError(
+                    f"Cannot use comparison operator on dict (from {attribute})"
+                ) from e
+
+        raw_value = value.value if isinstance(value, DateTaggedValue) else value
+        if raw_value is None:
             return
 
         try:
-            if not dest_value or self.compare(value, dest_value):
+            if not dest_value or self.compare(raw_value, dest_value):
+                if isinstance(value, DateTaggedValue):
+                    value = value.model_dump()
+
                 table[attribute] = value
         except TypeError as error:
             raise OperationError(
-                f"Cannot compare types for {self.LABEL} operation: {error}"
+                f"Cannot compare types for {self.LABEL} operation for "
+                + f"{attribute}: {error}"
             ) from error
 
 
