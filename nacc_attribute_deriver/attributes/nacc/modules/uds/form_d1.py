@@ -51,9 +51,9 @@ class UDSFormD1Attribute(AttributeCollection):
 
         return None
 
-    def _create_mci(self) -> int:
-        """Mild cognitive impairment Create MCI, which is not a derived
-        variable itself but is used to calculate other derived variables."""
+    def generate_mci(self) -> int:
+        """Mild cognitive impairment MCI, which is not a derived variable
+        itself but is used to calculate other derived variables."""
 
         # all of these fields are null, 0, or 1
         return (
@@ -142,7 +142,7 @@ class UDSFormD1Attribute(AttributeCollection):
 
         Cognitive status at UDS visit
         """
-        if self._create_mci() == 1:
+        if self.generate_mci() == 1:
             return 3
         if self.__demented == 1:
             return 4
@@ -226,7 +226,7 @@ class UDSFormD1Attribute(AttributeCollection):
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-        elif self.__uds.get_value("impnomci", int) == 1 or self._create_mci() == 1:
+        elif self.__uds.get_value("impnomci", int) == 1 or self.generate_mci() == 1:
             if ppaph == 1 or ppasyn == 1:
                 return 1
             if ppaph == 0 or ppasyn == 0:

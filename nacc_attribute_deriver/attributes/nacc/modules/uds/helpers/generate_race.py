@@ -255,14 +255,20 @@ class RaceResponses:
 
 def is_multiracial(racex: Optional[str], racesecx: Optional[str]) -> bool:
     """Returns whether or not the write-in values denote multiracial."""
-    if racex:
-        mult_satisfied = any(
-            [x in racex for x in ["muiti", "mult", "muti", "multi", "mulit", "mutl"]]
-        )
-        if mult_satisfied and "racial" in racex:
-            return True
+    for field in [racex, racesecx]:
+        if field:
+            mult_satisfied = any(
+                [
+                    x in field
+                    for x in ["muiti", "mult", "muti", "multi", "mulit", "mutl"]
+                ]
+            )
+            racial_satisfied = any([x in field for x in ["racial", "racail"]])
 
-    return bool(racesecx and "multi" in racesecx and "racial" in racesecx)
+            if mult_satisfied and racial_satisfied:
+                return True
+
+    return False
 
 
 def generate_race(  # noqa: C901
