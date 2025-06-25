@@ -6,6 +6,7 @@ Uses a metaclass to keep track of operation types.
 import contextlib
 import datetime
 from abc import abstractmethod
+from itertools import groupby
 from types import FunctionType, NoneType
 from typing import (
     Any,
@@ -177,7 +178,7 @@ class SortedListOperation(ListOperation):
             table[attribute] = sorted(cur_list)
         except TypeError as e:
             raise OperationError(
-                f"Cannot sort mixed types for {self.LABEL}: {e}"
+                f"Cannot sort mixed types for {self.LABEL} for {attribute}: {e}"
             ) from e
 
         self.serialize(table=table, attribute=attribute)
@@ -196,10 +197,10 @@ class SetOperation(ListOperation):
         """
         cur_list = self.add_to_list(table=table, value=value, attribute=attribute)
         try:
-            table[attribute] = sorted(list(set(cur_list)))
+            table[attribute] = [k for k, v in groupby(sorted(cur_list))]
         except TypeError as e:
             raise OperationError(
-                f"Cannot sort mixed types for {self.LABEL}: {e}"
+                f"Cannot sort mixed types for {self.LABEL} for {attribute}: {e}"
             ) from e
 
         self.serialize(table=table, attribute=attribute)
@@ -230,14 +231,17 @@ class DateOperation(Operation):
 
         if not isinstance(value, DateTaggedValue):
             raise OperationError(
-                f"Unable to perform {self.LABEL} operation without date"
+                f"Unable to perform {self.LABEL} operation on attribute "
+                + f"{attribute} without date"
             )
 
         if value.value is None:  # type: ignore
             return
 
         if self.LABEL not in ["initial", "latest"]:
-            raise OperationError(f"Unknown date operation: {self.LABEL}")
+            raise OperationError(
+                f"Unknown date operation {self.LABEL} for attribute {attribute}"
+            )
 
         dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
 
@@ -288,7 +292,9 @@ class ComparisonOperation(Operation):
     ) -> None:
         """Does a comparison between the value and location value."""
         if self.LABEL not in ["min", "max"]:
-            raise OperationError(f"Unknown comparison operation: {self.LABEL}")
+            raise OperationError(
+                f"Unknown comparison operation {self.LABEL} for attribute {attribute}"
+            )
 
         dest_value = table.get(attribute)
         if isinstance(dest_value, dict):
@@ -311,7 +317,8 @@ class ComparisonOperation(Operation):
                 table[attribute] = value
         except TypeError as error:
             raise OperationError(
-                f"Cannot compare types for {self.LABEL} operation: {error}"
+                f"Cannot compare types for {self.LABEL} operation for "
+                + f"{attribute}: {error}"
             ) from error
 
 

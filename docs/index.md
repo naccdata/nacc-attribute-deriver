@@ -53,7 +53,7 @@ The NACC Attribute deriver works in coordination with the Attribute Curation gea
 
 The Attribute Curation gear runs over an entire project with a single instance of the NACC Attribute Deriver. Each subject's files are scheduled using a `MinHeap` ordered by scope. Within each scope, the files are ordered by a form-specific date key, if applicable (some curation types such as NCARD APOE curation have no ordering).
 
-The curation order matters since many derived variables, particularly for UDS, assume certain variables have already been derived before it (scope), and it also affects the behavior of longitudinal and cross-sectional values (dates). In general, the UDS namespace is always the last to be curated.
+The curation order matters since many derived variables, particularly for UDS, assume certain variables have already been derived before it (scope), and it also affects the behavior of longitudinal and cross-sectional values (dates). In general, the UDS namespace is always the last to be curated. If variables within a scope rely on each other, the order is determined by their order in the curationr ules CSV file.
 
 For each file, both the file AND parent subject's `.info` metadata is pulled and stored in a SymbolTable under `file.info.x` and `subject.info`, respectively. In turn, the deriver expects to find file-specific fields to curate on in either `file.info.forms.json` (for forms like UDS or NP) or `file.info.raw` (for external raw data like genetic or SCAN data), which is most NACC derived variables. Similarly, it expects to find global fields required for deriving across all forms under `subject.info`, which is most of the MQT derived variables.
 

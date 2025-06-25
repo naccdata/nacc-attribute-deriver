@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from . import config
 from .attributes.attribute_collection import AttributeCollectionRegistry
 from .schema.errors import AttributeDeriverError, OperationError
-from .schema.operation import DateTaggedValue
+from .schema.rule_types import DateTaggedValue
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
 from .utils.scope import ScopeLiterals
@@ -87,10 +87,10 @@ class AttributeDeriver:
         # collect all attributes beforehand so they're easily hashable
         instance_collections = AttributeCollectionRegistry.get_attribute_methods()
 
-        # derive the variables
+        # derive the variables, if no rules for this scope, return
         rules = self.__rule_map.get(scope)
         if not rules:
-            raise AttributeDeriverError(f"No rules for scope {scope}")
+            return
 
         for rule in rules:
             method = instance_collections.get(rule.function, None)
@@ -105,12 +105,14 @@ class AttributeDeriver:
 
             for assignment in rule.assignments:
                 operation = assignment.operation
-                if assignment.dated and not date:
-                    raise OperationError(
-                        f"Cannot compute date for dated operation on rule {rule}"
-                    )
+                if assignment.dated:
+                    if not date:
+                        raise OperationError(
+                            f"Cannot compute date for dated operation on rule {rule}"
+                        )
 
-                    value = DateTaggedValue(value=value, date=date)
+                    if not isinstance(value, DateTaggedValue):
+                        value = DateTaggedValue(value=value, date=date)
 
                 operation.evaluate(
                     table=table, value=value, attribute=assignment.attribute

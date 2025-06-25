@@ -27,16 +27,20 @@ def table() -> SymbolTable:
                         "birthyr": 1950,
                         "formver": 3.0,
                     }
-                },
-                "derived": {  # needed for DerivedDemographicsAttributeCollection
-                    "naccnihr": 1,
-                    "naccdage": 80,
-                    "naccdied": 1,
-                },
+                }
             }
         },
         "subject": {  # needed for DerivedDemographicsAttributeCollection
-            "info": {"derived": {"np_death_age": 80}}
+            "info": {
+                "derived": {
+                    "np_death_age": 80,
+                    "cross-sectional": {
+                        "naccnihr": 1,
+                        "naccdage": 80,
+                        "naccdied": 1,
+                    },
+                },
+            }
         },
     }
 
@@ -93,7 +97,7 @@ class TestDerivedDemographicsAttributeCollection:
         assert attr._create_uds_race() == "White"
 
         for k, v in DerivedDemographicsAttributeCollection.RACE_MAPPING.items():
-            table["file.info.derived.naccnihr"] = k
+            table["subject.info.derived.cross-sectional.naccnihr"] = k
             assert attr._create_uds_race() == v
 
     def test_create_age_at_death(self, table):
@@ -110,7 +114,7 @@ class TestDerivedDemographicsAttributeCollection:
             k,
             v,
         ) in DerivedDemographicsAttributeCollection.VITAL_STATUS_MAPPINGS.items():
-            table["file.info.derived.naccdied"] = k
+            table["subject.info.derived.cross-sectional.naccdied"] = k
             assert attr._create_vital_status() == v
 
     def test_create_np_available(self, table):

@@ -64,7 +64,9 @@ scan_pet_qc,scan_pet_session_count,subject.info.imaging.pet.scan.count,max,FALSE
 scan_pet_qc,scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,FALSE
 scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
+uds,uds_visitdates,subject.info.derived.uds-visitdates,set,FALSE
 uds,naccage,file.info.derived.naccage,update,FALSE
+uds,naccage,subject.info.derived.longitudinal.naccage,list,TRUE
 uds,naccageb,subject.info.derived.cross-sectional.naccageb,update,FALSE
 uds,nacclivs,file.info.derived.nacclivs,update,FALSE
 uds,nacclivs,subject.info.derived.longitudinal.nacclivs,list,TRUE
@@ -89,10 +91,9 @@ uds,naccbvft,subject.info.derived.longitudinal.naccbvft,list,TRUE
 uds,nacclbds,file.info.derived.nacclbds,update,FALSE
 uds,nacclbds,subject.info.derived.longitudinal.nacclbds,list,TRUE
 uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,min,FALSE
-uds,naccdage,file.info.derived.naccdage,update,FALSE
-uds,naccdied,file.info.derived.naccdied,update,FALSE
+uds,naccdage,subject.info.derived.cross-sectional.naccdage,update,FALSE
+uds,naccdied,subject.info.derived.cross-sectional.naccdied,update,FALSE
 uds,naccautp,subject.info.derived.cross-sectional.naccautp,update,FALSE
-uds,uds_visitdates,subject.info.derived.uds-visitdates,set,FALSE
 uds,contributing_diagnosis,subject.info.cognitive.uds.other-diagnosis.initial,initial,TRUE
 uds,contributing_diagnosis,subject.info.cognitive.uds.other-diagnosis.latest,latest,TRUE
 uds,contributing_diagnosis,subject.info.cognitive.uds.other-diagnosis.all,set,FALSE

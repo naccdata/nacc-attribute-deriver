@@ -8,10 +8,8 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds enforcement of expected types when grabbing variables from the raw data
 * Adds rest of NP variables
 * Adds rest of UDS A1, A2 derived variables
-* Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled by Operations
+* Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s
-    * This makes it so that `_create` functions don't have to worry about dates, allowing for better reusability (previously we would need two different rules just to compute the value and the value wrapped in a date)
-    * Date-related operations (initial, latest) require this to be True, error thrown otherwise
 
 
 ## 1.4.0

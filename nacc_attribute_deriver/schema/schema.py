@@ -20,7 +20,7 @@ class AttributeAssignment(BaseModel):
 
     attribute: str
     operation: Operation
-    dated: bool = False
+    dated: bool
 
     @field_validator("operation", mode="before")
     def generate_operation(cls, value: str) -> Operation:
@@ -51,14 +51,14 @@ class RuleFileModel(BaseModel):
     function: str
     location: str
     operation: str
-    dated: bool = False
+    dated: bool
 
     @field_validator("dated", mode="before")
     def cast_bool(cls, value: Optional[str]) -> bool:
         if not value:
             return False
 
-        return value.lower() in ["true", "1"]
+        return value.upper() in ["TRUE", "1"]
 
     @property
     def assignment(self) -> AttributeAssignment:

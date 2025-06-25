@@ -8,6 +8,51 @@ from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
+def test_uds_form():
+    """UDS is more of a runnable sanity check."""
+    uds_table = SymbolTable()
+    deriver = AttributeDeriver()
+
+    uds_table.update(
+        {
+            "file": {
+                "info": {
+                    "forms": {
+                        "json": {
+                            "visitdate": "2025-01-01",
+                            "module": "uds",
+                            "packet": "I",
+                            "birthyr": "2024",
+                            "birthmo": "12",
+                            "formver": 3.0,
+                            "normcog": 0,
+                            "impnomci": 1,
+                            "cdrglob": 1,
+                            "sex": "1",
+                            "primlang": 1,
+                            "educ": 1,
+                        }
+                    }
+                }
+            },
+            "subject": {
+                "info": {
+                    "derived": {
+                        "uds-visitdates": ["2025-01-01"],
+                        "cross-sectional": {
+                            "naccnihr": 1,
+                            "naccdage": 1,
+                            "naccdied": 1,
+                        },
+                    }
+                }
+            },
+        }
+    )
+
+    deriver.curate(uds_table, "uds")
+
+
 def test_np_form():
     """Test against a minimal NP form - all derived variables
     should be 9 with no data.

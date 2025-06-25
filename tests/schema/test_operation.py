@@ -128,15 +128,15 @@ class TestOperation:
             }
         }
 
-        # same date/value
-        value = DateTaggedValue(date=date(2025, 6, 1), value=10)
+        # same date/value as first one
+        value = DateTaggedValue(date=date(2025, 12, 31), value=10)
         op.evaluate(table=table, value=value, attribute=location)
         assert table.to_dict() == {
             "test": {
                 "location": [
                     {"date": "2025-12-31", "value": 10},
                     {"date": "2025-06-01", "value": 10},
-                    {"date": "2025-06-01", "value": 10},
+                    {"date": "2025-12-31", "value": 10},
                 ],
             }
         }
@@ -265,7 +265,9 @@ class TestOperation:
         }
 
         with pytest.raises(
-            OperationError, match=r"Unable to perform initial operation without date"
+            OperationError,
+            match=r"Unable to perform initial operation on attribute "
+            + r"test.location without date",
         ):
             op.evaluate(table=dated_table, value=5, attribute=location)
 
@@ -288,7 +290,9 @@ class TestOperation:
         }
 
         with pytest.raises(
-            OperationError, match=r"Unable to perform latest operation without date"
+            OperationError,
+            match=r"Unable to perform latest operation on attribute "
+            + r"test.location without date",
         ):
             op.evaluate(table=dated_table, value=5, attribute=location)
 
