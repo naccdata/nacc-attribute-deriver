@@ -134,7 +134,10 @@ def test_ncrad_apoe():
 
     deriver = AttributeDeriver()
     deriver.curate(form, "apoe")
-    assert form["subject.info.derived.cross-sectional"] == {"naccapoe": 5}
+    assert form["subject.info.derived.cross-sectional"] == {
+        "naccapoe": 5,
+        "naccne4s": 1,
+    }
     assert form["subject.info.genetics"] == {"apoe": 5}
 
 
@@ -283,5 +286,36 @@ def test_scan_amyloid_gaain():
                     }
                 }
             }
+        },
+    }
+
+
+def test_meds():
+    """Test against minimal MEDS data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {
+        "frmdatea4g": "2000-01-01",
+        "drugs_list": "d00004,d00170",
+        "module": "MEDS",
+        "formver": 3.0,
+    }
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "meds")
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "frmdatea4g": "2000-01-01",
+                        "drugs_list": "d00004,d00170",
+                        "module": "MEDS",
+                        "formver": 3.0,
+                    }
+                }
+            }
+        },
+        "subject": {
+            "info": {"derived": {"drugs_list": {"2000-01-01": ["d00004", "d00170"]}}}
         },
     }

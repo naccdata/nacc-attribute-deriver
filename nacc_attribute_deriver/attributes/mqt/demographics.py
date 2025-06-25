@@ -14,7 +14,10 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -87,7 +90,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
             table=table,
             required=frozenset(
                 [f"cross-sectional.{x}" for x in ["naccnihr", "naccdage", "naccdied"]]
-            ),
+            )
         )
 
     def get_date(self) -> Optional[datetime.date]:

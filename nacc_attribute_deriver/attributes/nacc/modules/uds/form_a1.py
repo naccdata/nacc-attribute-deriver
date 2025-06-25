@@ -1,4 +1,7 @@
-"""Derived variables from form A1: Participant Demographics."""
+"""Derived variables from form A1: Participant Demographics.
+
+From derive.sas and a1structrdd.sas
+"""
 
 from typing import Optional
 
