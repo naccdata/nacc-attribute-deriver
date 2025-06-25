@@ -44,6 +44,23 @@ class TestNCRADAttributeCollection:
         with pytest.raises(MissingRequiredError):
             NCRADAttributeCollection(SymbolTable())
 
+    def test_historical_different(self, table, subject_derived_prefix):
+        set_attribute(table, subject_derived_prefix, "historic_apoe", 4)
+        attr = NCRADAttributeCollection(table)
+        assert attr._create_naccapoe() == 9
+
+    def test_create_naccne4s(self, table, raw_prefix):
+        attr = NCRADAttributeCollection(table)
+        assert attr._create_naccne4s() == 0
+        set_attribute(table, raw_prefix, "a1", "e4")
+        assert attr._create_naccne4s() == 1
+        set_attribute(table, raw_prefix, "a2", "e4")
+        assert attr._create_naccne4s() == 2
+
+        set_attribute(table, raw_prefix, "a2", "aa")
+        set_attribute(table, raw_prefix, "a2", "aa")
+        assert attr._create_naccne4s() == 9
+
 
 class TestHistoricalNCRADAttributeCollection:
     def test_create_historic_apoe(self, table, raw_prefix):
