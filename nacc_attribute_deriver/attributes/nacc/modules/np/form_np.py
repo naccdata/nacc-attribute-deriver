@@ -145,7 +145,7 @@ class NPFormAttributeCollection(AttributeCollection):
         """
         return self.form_evaluator.determine_naccbrnn()
 
-    def _create_nacccbd(self) -> int:
+    def _create_nacccbd(self) -> Optional[int]:
         """Create the NACCCBD variable.
 
         FTLD-tau subtype — corticobasal degeneration (CBD)
@@ -155,7 +155,7 @@ class NPFormAttributeCollection(AttributeCollection):
         nacc_cbd = None
 
         if self.formver in [10, 11]:
-            nacc_cbd = self.mapper.map_v10(npcort, npftdtau)
+            return self.mapper.map_v10(npcort, npftdtau)
         elif self.formver in [7, 8, 9]:
             nacc_cbd = self.mapper.map_v9(npcort)
         elif self.formver == 1:
@@ -223,8 +223,8 @@ class NPFormAttributeCollection(AttributeCollection):
         if self.formver in [10, 11]:
             return self.__np.get_value("npbnkc", int)
 
-        npbrfm = self.__np.get_value("npbrfm", int)
-        return self.mapper.banked_v9(npbrfm)
+        npbrfrm = self.__np.get_value("npbrfrm", int)
+        return self.mapper.banked_v9(npbrfrm)
 
     def _create_nacchem(self) -> int:
         """Create the NACCHEM variable.
@@ -325,7 +325,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccmicr if naccmicr is not None else 9
 
-    def _create_naccnec(self) -> int:
+    def _create_naccnec(self) -> Optional[int]:
         """Create the NACCNEC variable.
 
         Laminar necrosis
@@ -419,7 +419,7 @@ class NPFormAttributeCollection(AttributeCollection):
         npbparf = self.__np.get_value("npbparf", int)
         return self.mapper.banked_v9(npbparf)
 
-    def _create_naccpick(self) -> int:
+    def _create_naccpick(self) -> Optional[int]:
         """Create the NACCPICK variable.
 
         FTLD-tau subtype — Pick's (PiD).
@@ -461,7 +461,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccprio if naccprio is not None else 9
 
-    def _create_naccprog(self) -> int:
+    def _create_naccprog(self) -> Optional[int]:
         """Create the NACCPROG variable.
 
         FTLD-tau subtype — progressive supranuclear palsy (PSP).

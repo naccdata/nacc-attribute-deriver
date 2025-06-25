@@ -39,19 +39,19 @@ def table() -> SymbolTable:
 
 
 class TestUDSFormD1Attribute:
-    def test_create_mci(self, table, form_prefix):
-        """Tests creating MCI."""
+    def test_generate_mci(self, table, form_prefix):
+        """Tests generating MCI."""
         attr = UDSFormD1Attribute(table)
-        assert attr._create_mci() == 0
+        assert attr.generate_mci() == 0
 
         for field in ["mciamem", "mciaplus", "mcinon1", "mcinon2"]:
             set_attribute(table, form_prefix, field, 1)
             attr = UDSFormD1Attribute(table)
-            assert attr._create_mci() == 1
+            assert attr.generate_mci() == 1
             attr = UDSFormD1Attribute(table)
             set_attribute(table, form_prefix, field, 0)
 
-        assert attr._create_mci() == 0
+        assert attr.generate_mci() == 0
 
     def test_create_naccalzp(self, table, form_prefix):
         """Tests creating NACCALZP."""
