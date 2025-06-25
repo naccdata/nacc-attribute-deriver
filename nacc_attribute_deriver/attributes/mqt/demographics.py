@@ -9,13 +9,15 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     DateTaggedValue,
-    DerivedNamespace,
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -91,16 +93,25 @@ class DemographicsAttributeCollection(AttributeCollection):
 class DerivedDemographicsAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table=table)
-        self.__derived = DerivedNamespace(
+        self.__subject_derived = SubjectDerivedNamespace(
             table=table,
-            required=frozenset(["naccage", "naccnihr", "naccdage", "naccdied"]),
+            required=frozenset(
+                [f"cross-sectional.{x}" for x in ["naccnihr", "naccdage", "naccdied"]]
+                + [f"longitudinal.{x}" for x in ["naccage"]]
+            ),
         )
-        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _create_uds_age(self) -> DateTaggedValue[int]:
         """UDS age at form date, mapped from NACCAGE."""
+        ages = self.__subject_derived.get_longitudinal_value("naccage", list)
+
+        # grab latest age, which should correspond to this visit
+        # TODO - should update to use dated list from other PR
+        if not ages:
+            raise AttributeDeriverError("Cannot determine age for current visit")
+
         return DateTaggedValue(
-            value=self.__derived.get_required("naccage", int),
+            value=ages[-1],
             date=self.__uds.get_date(),
         )
 
@@ -120,7 +131,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_race(self) -> DateTaggedValue[str]:
         """UDS race."""
-        naccnihr = self.__derived.get_required("naccnihr", int)
+        naccnihr = self.__subject_derived.get_cross_sectional_value("naccnihr", int)
         mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)
 
         if not mapped_naccnihr:
@@ -130,13 +141,13 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
-        return self.__derived.get_required("naccdage", int)
+        return self.__subject_derived.get_cross_sectional_value("naccdage", int)
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> DateTaggedValue[str]:
         """Creates subject.info.demographics.uds.vital-status.latest."""
-        naccdied = self.__derived.get_required("naccdied", int)
+        naccdied = self.__subject_derived.get_cross_sectional_value("naccdied", int)
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)
 
         if not mapped_naccdied:
