@@ -5,18 +5,11 @@ Form B8 is required and expected to have been filled out.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
-    UDSNamespace,
-)
-from nacc_attribute_deriver.symbol_table import SymbolTable
+from .uds_attribute_collection import UDSAttributeCollection
 
 
-class UDSFormB8Attribute(AttributeCollection):
+class UDSFormB8Attribute(UDSAttributeCollection):
     """Class to collect UDS B8 attributes."""
-
-    def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table)
 
     def _create_naccnrex(self) -> Optional[int]:
         """Creates NACCNREX, were all findings unremarkable?"""

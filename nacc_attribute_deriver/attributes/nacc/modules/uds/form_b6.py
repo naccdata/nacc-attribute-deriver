@@ -5,19 +5,15 @@ Form B6 may not have been filled out.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
-    UDSNamespace,
-)
-from nacc_attribute_deriver.symbol_table import SymbolTable
+from .uds_attribute_collection import UDSAttributeCollection
 
 
-class UDSFormB6Attribute(AttributeCollection):
+class UDSFormB6Attribute(UDSAttributeCollection):
     """Class to collect UDS B6 attributes."""
 
-    def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table)
-        self.__submitted = self.__uds.get_value("b6sub", int) == 1
+    @property
+    def submitted(self) -> bool:
+        return self.uds.get_value("b6sub", int) == 1
 
     GDS_VARS: frozenset[str] = frozenset(
         [
@@ -44,7 +40,7 @@ class UDSFormB6Attribute(AttributeCollection):
 
         See coding guidebook for details.
         """
-        if not self.__submitted:
+        if not self.submitted:
             return None
 
         num_completed = 0
@@ -52,7 +48,7 @@ class UDSFormB6Attribute(AttributeCollection):
         unanswered = 0
 
         for field in self.GDS_VARS:
-            value = self.__uds.get_value(field, int)
+            value = self.uds.get_value(field, int)
             if value in [0, 1]:
                 num_completed += 1
                 completed_score += value
