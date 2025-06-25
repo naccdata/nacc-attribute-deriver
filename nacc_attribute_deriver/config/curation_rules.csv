@@ -144,6 +144,8 @@ uds,nacctbi,subject.info.derived.longitudinal.nacctbi,list,TRUE
 uds,nacctiyr,subject.info.derived.cross-sectional.nacctiyr,update,FALSE
 uds,naccc1,file.info.derived.naccc1,update,FALSE
 uds,naccc1,subject.info.derived.longitudinal.naccc1,list,TRUE
+uds,naccc2,file.info.derived.naccc2,update,FALSE
+uds,naccc2,subject.info.derived.longitudinal.naccc2,list,TRUE
 uds,naccmmse,file.info.derived.naccmmse,update,FALSE
 uds,naccmmse,subject.info.derived.longitudinal.naccmmse,list,TRUE
 uds,naccmoca,file.info.derived.naccmoca,update,FALSE
