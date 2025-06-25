@@ -7,6 +7,10 @@ class AttributeDeriverError(Exception):
     pass
 
 
+class OperationError(Exception):
+    pass
+
+
 class InvalidFieldError(Exception):
     """Error for when a field is invalid."""
 

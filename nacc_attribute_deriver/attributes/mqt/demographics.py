@@ -3,19 +3,18 @@
 Assumes NACC-derived variables are already set
 """
 
+import datetime
 from types import MappingProxyType
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
-    DateTaggedValue,
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.schema.errors import (
-    AttributeDeriverError,
     InvalidFieldError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -27,11 +26,14 @@ class DemographicsAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__uds = UDSNamespace(table, required=frozenset(["sex"]))
 
+    def get_date(self) -> Optional[datetime.date]:
+        return self.__uds.get_date()
+
     SEX_MAPPING = MappingProxyType(
         {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Don't know"}
     )
 
-    def _create_uds_sex(self) -> DateTaggedValue[str]:
+    def _create_uds_sex(self) -> str:
         """UDS sex.
 
         Always required.
@@ -42,7 +44,7 @@ class DemographicsAttributeCollection(AttributeCollection):
         if not mapped_sex:
             raise InvalidFieldError(f"Invalid/unknown sex code: {sex}")
 
-        return DateTaggedValue(value=mapped_sex, date=self.__uds.get_date())
+        return mapped_sex
 
     PRIMARY_LANGUAGE_MAPPING = MappingProxyType(
         {
@@ -57,7 +59,7 @@ class DemographicsAttributeCollection(AttributeCollection):
         }
     )
 
-    def _create_uds_primary_language(self) -> Optional[DateTaggedValue[str]]:
+    def _create_uds_primary_language(self) -> Optional[str]:
         """UDS primary language.
 
         Only for initial forms.
@@ -73,21 +75,11 @@ class DemographicsAttributeCollection(AttributeCollection):
         if not mapped_primlang:
             raise InvalidFieldError(f"Invalid/unknown primlang code: {primlang}")
 
-        return DateTaggedValue(
-            value=mapped_primlang,
-            date=self.__uds.get_date(),
-        )
+        return mapped_primlang
 
-    def _create_uds_education_level(self) -> Optional[DateTaggedValue[int]]:
+    def _create_uds_education_level(self) -> Optional[int]:
         """UDS education level."""
-        educ = self.__uds.get_value("educ", int)
-        if not educ:
-            return None
-
-        return DateTaggedValue(
-            value=educ,
-            date=self.__uds.get_date(),
-        )
+        return self.__uds.get_value("educ", int)
 
 
 class DerivedDemographicsAttributeCollection(AttributeCollection):
@@ -97,23 +89,11 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
             table=table,
             required=frozenset(
                 [f"cross-sectional.{x}" for x in ["naccnihr", "naccdage", "naccdied"]]
-                + [f"longitudinal.{x}" for x in ["naccage"]]
             ),
         )
 
-    def _create_uds_age(self) -> DateTaggedValue[int]:
-        """UDS age at form date, mapped from NACCAGE."""
-        ages = self.__subject_derived.get_longitudinal_value("naccage", list)
-
-        # grab latest age, which should correspond to this visit
-        # TODO - should update to use dated list from other PR
-        if not ages:
-            raise AttributeDeriverError("Cannot determine age for current visit")
-
-        return DateTaggedValue(
-            value=ages[-1],
-            date=self.__uds.get_date(),
-        )
+    def get_date(self) -> Optional[datetime.date]:
+        return self.__uds.get_date()
 
     RACE_MAPPING = MappingProxyType(
         {
@@ -129,7 +109,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         }
     )
 
-    def _create_uds_race(self) -> DateTaggedValue[str]:
+    def _create_uds_race(self) -> str:
         """UDS race."""
         naccnihr = self.__subject_derived.get_cross_sectional_value("naccnihr", int)
         mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)
@@ -137,7 +117,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         if not mapped_naccnihr:
             raise InvalidFieldError(f"Invalid/unknown naccnihr code: {naccnihr}")
 
-        return DateTaggedValue(value=mapped_naccnihr, date=self.__uds.get_date())
+        return mapped_naccnihr
 
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
@@ -145,7 +125,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
-    def _create_vital_status(self) -> DateTaggedValue[str]:
+    def _create_vital_status(self) -> str:
         """Creates subject.info.demographics.uds.vital-status.latest."""
         naccdied = self.__subject_derived.get_cross_sectional_value("naccdied", int)
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)
@@ -153,7 +133,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         if not mapped_naccdied:
             raise InvalidFieldError(f"Invalid/unknown naccdied code: {naccdied}")
 
-        return DateTaggedValue(value=mapped_naccdied, date=self.__uds.get_date())
+        return mapped_naccdied
 
     def _create_np_available(self) -> bool:
         """NP available, which is just checking for the existence of

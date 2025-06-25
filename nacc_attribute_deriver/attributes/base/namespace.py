@@ -4,15 +4,12 @@ import datetime
 import logging
 from typing import (
     Any,
-    Generic,
     Iterable,
     List,
     Optional,
     Type,
     TypeVar,
 )
-
-from pydantic import BaseModel, ConfigDict, field_serializer
 
 from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -22,19 +19,6 @@ log = logging.getLogger(__name__)
 
 
 T = TypeVar("T")
-
-
-class DateTaggedValue(BaseModel, Generic[T]):
-    """Model for a date-tagged attribute value."""
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    date: Optional[datetime.date]
-    value: T
-
-    @field_serializer("date")
-    def serialize_date_as_str(self, date: Optional[datetime.date]):
-        return str(date)
 
 
 class BaseNamespace:
