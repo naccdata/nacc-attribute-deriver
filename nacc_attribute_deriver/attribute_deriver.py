@@ -91,7 +91,7 @@ class AttributeDeriver:
         # derive the variables
         rules = self.__rule_map.get(scope)
         if not rules:
-            raise AttributeDeriverError(f"No rules for scope {scope}")
+            return
 
         for rule in rules:
             method = instance_collections.get(rule.function, None)
