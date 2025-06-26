@@ -12,7 +12,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s
 
-## Include in next release
+## 1.4.1
 
 * Adds ability to derive type returned by a curation rule with tool to create table of rule types.
 * Adds enforcement of expected types when grabbing variables from the raw data
