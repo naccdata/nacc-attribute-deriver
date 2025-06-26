@@ -73,7 +73,6 @@ uds,naccage,subject.info.derived.longitudinal.naccage,list,TRUE
 uds,naccageb,subject.info.derived.cross-sectional.naccageb,update,FALSE
 uds,nacclivs,file.info.derived.nacclivs,update,FALSE
 uds,nacclivs,subject.info.derived.longitudinal.nacclivs,list,TRUE
-uds,naccnihr,file.info.derived.naccnihr,update,FALSE
 uds,naccnihr,subject.info.derived.cross-sectional.naccnihr,update,FALSE
 uds,naccreas,subject.info.derived.cross-sectional.naccreas,update,FALSE
 uds,naccrefr,subject.info.derived.cross-sectional.naccrefr,update,FALSE
