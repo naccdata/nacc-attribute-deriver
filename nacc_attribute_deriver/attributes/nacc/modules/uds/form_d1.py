@@ -284,3 +284,22 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return 0
 
         return self.__normcog
+
+    def _create_naccadmu(self) -> int:
+        """Creates NACCADMU - Does the subject have a dominantly
+        inherited AD mutation?
+
+        Requires NPCHROM/NPPDXP from NP.
+        """
+        naccadmu = self.__subject_derived.get_cross_sectional_value("naccadmu", int)
+        if naccadmu == 1:
+            return naccadmu
+
+        admut = self.uds.get_value("admut")
+        npchrom = self.__subject_derived.get_value("npchrom", int)
+        nppdxp = self.__subject_derived.get_value("nppdxp", int)
+
+        if any(x == 1 for x in [admut, npchrom, nppdxp]):
+            return 1
+
+        return 0
