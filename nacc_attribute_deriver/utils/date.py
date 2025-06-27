@@ -39,8 +39,9 @@ def calculate_age(date1: date | None, date2: date | None) -> Optional[int]:
     # use date objects, not doing division with leap year
     # since it's not always precise when visitdate == birthdate
 
-    return (date2.year - date1.year) - (
-        (date2.month, date2.day) < (date1.month, date1.day)
+    return abs(
+        (date2.year - date1.year)
+        - ((date2.month, date2.day) < (date1.month, date1.day))
     )
 
 
@@ -56,7 +57,7 @@ def calculate_months(date1: date | None, date2: date | None) -> Optional[int]:
     if not date1 or not date2:
         return None
 
-    return (date2.year - date1.year) * 12 + date2.month - date1.month
+    return abs((date2.year - date1.year) * 12 + date2.month - date1.month)
 
 
 def calculate_days(date1: date | None, date2: date | None) -> Optional[int]:
@@ -71,7 +72,7 @@ def calculate_days(date1: date | None, date2: date | None) -> Optional[int]:
     if not date1 or not date2:
         return None
 
-    return (date2 - date1).days
+    return abs((date2 - date1).days)
 
 
 def get_unique_years(dates: List[str]) -> Set[int]:
