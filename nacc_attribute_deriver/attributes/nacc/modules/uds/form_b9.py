@@ -8,8 +8,10 @@ Form B9 is required and expected to have been filled out.
 """
 
 from typing import List, Optional
+from pydantic import ValidationError
 
 from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -36,12 +38,21 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         """
         visitdate = str(self.get_date())
         prev_records = self.__subject_derived.get_longitudinal_value(field, List)
+        prev_record = prev_records[-1] if prev_records else None
 
-        # look for the corresponding visit, starting from the most recent
-        for record in reversed(prev_records):
-            
+        # even for non-initial visits sometimes we simply don't
+        # have the previous visit in Flywheel
+        if not prev_record:
+            return None
 
-        return prev_records[-1] if prev_records else None
+        try:
+            return int(DateTaggedValue(**record).value)
+        except ValidationError as e:
+            raise AttributeDeriverError(
+                f"Cannot cast longitudinal value to DateTaggedValue: {e}"
+            ) from e
+        except (TypeError, ValueError):
+            return None
 
     def _create_naccbehf(self) -> int:
         """Create NACCBEHF, indicate the predominant symptom that was first

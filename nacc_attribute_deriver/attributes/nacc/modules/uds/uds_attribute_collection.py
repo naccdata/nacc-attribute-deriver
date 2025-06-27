@@ -35,7 +35,6 @@ class UDSAttributeCollection(AttributeCollection):
         """All UDS visits must have a visitdate."""
         visitdate = self.__uds.get_date()
         if not visitdate:
-            raise AttributeDeriverError(
-                "Cannot determine visitdate for UDS visit")
+            raise AttributeDeriverError("Cannot determine visitdate for UDS visit")
 
         return visitdate

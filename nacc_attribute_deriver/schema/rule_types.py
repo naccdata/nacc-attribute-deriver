@@ -3,6 +3,7 @@
 import datetime
 from typing import (
     Generic,
+    TypeVar,
     Union,
     get_args,
     get_origin,
@@ -10,7 +11,8 @@ from typing import (
 
 from pydantic import BaseModel, ConfigDict, field_serializer
 
-from nacc_attribute_deriver.attributes.base.namespace import T
+
+T = TypeVar("T")
 
 
 class NoAssignment:
