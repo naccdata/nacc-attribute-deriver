@@ -1,8 +1,12 @@
-"""Derived variables from form C1: Neuropsychological Battery Summary
-Scores."""
+"""Derived variables from form C1/C2: Neuropsychological Battery Summary
+Scores.
+
+One of form C1 or C2 is expected to have been submitted.
+"""
 
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
@@ -13,19 +17,14 @@ from nacc_attribute_deriver.utils.date import (
 from .uds_attribute_collection import UDSAttributeCollection
 
 
-class UDSFormC1Attribute(UDSAttributeCollection):
-    """Class to collect UDS C1 attributes."""
+class UDSFormC1C2Attribute(UDSAttributeCollection):
+    """Class to collect UDS C1/C2 attributes."""
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
         self.__frmdatec1 = self.uds.get_value("frmdatec1", str)
         self.__frmdatec2 = self.uds.get_value("frmdatec2", str)
-
-    @property
-    def submitted(self) -> bool:
-        return self.formver >= 3 and (
-            self.__frmdatec1 is not None or self.__frmdatec2 is not None
-        )
 
     def __calculate_interval_from_a1(self, cmp_date: str) -> Optional[int]:
         """Calculates discrepency between UDS Form A1 and Form C1/C2."""
@@ -64,9 +63,6 @@ class UDSFormC1Attribute(UDSAttributeCollection):
 
     def _create_naccmmse(self) -> Optional[int]:
         """Creates NACCMMSE, Total MMSE score (using D-L-R-O-W)"""
-        if not self.submitted:
-            return None
-
         mmse = self.uds.get_value("mmse", int)
         mmsereas = self.uds.get_value("mmsereas", int)
 
@@ -80,7 +76,7 @@ class UDSFormC1Attribute(UDSAttributeCollection):
 
         MoCA Total Score -- corrected for education
         """
-        if not self.submitted:
+        if self.formver < 3:
             return None
 
         precise_formver = self.uds.get_required("formver", float)
@@ -88,7 +84,7 @@ class UDSFormC1Attribute(UDSAttributeCollection):
 
         if precise_formver == 3 and packet != "IT":
             mocatots = self.uds.get_value("mocatots", int)
-            educ = self.uds.get_value("educ", int)
+            educ = self.__subject_derived.get_value("educ", int)
             if mocatots is None or mocatots == 88:
                 return 88
             if educ is None or educ == 99:
@@ -105,7 +101,7 @@ class UDSFormC1Attribute(UDSAttributeCollection):
 
         MoCA-Blind Total Score -- corrected for education
         """
-        if not self.submitted:
+        if self.formver < 3:
             return None
 
         precise_formver = self.uds.get_required("formver", float)
@@ -114,7 +110,7 @@ class UDSFormC1Attribute(UDSAttributeCollection):
         if precise_formver == 3.2 or (precise_formver == 3 and packet == "IT"):
             mocbtots = self.uds.get_value("mocbtots", int)
             mocacomp = self.uds.get_value("mocacomp", int)
-            educ = self.uds.get_value("educ", int)
+            educ = self.__subject_derived.get_value("educ", int)
             if mocbtots is None or mocbtots == 88 or mocacomp == 0:
                 return 88
             if educ is None or educ == 99:
