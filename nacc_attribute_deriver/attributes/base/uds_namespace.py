@@ -17,7 +17,11 @@ class UDSNamespace(FormNamespace):
             required = frozenset()
 
         default_required = ["module", "packet", "formver", "birthmo", "birthyr"]
-        super().__init__(table=table, required=required.union(default_required))
+        super().__init__(
+            table=table,
+            required=required.union(default_required),
+            date_attribute="visitdate",
+        )
 
         module = self.get_required("module", str)
         if module.upper() != "UDS":

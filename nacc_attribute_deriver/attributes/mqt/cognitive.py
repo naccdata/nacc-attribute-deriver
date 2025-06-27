@@ -3,12 +3,12 @@
 Assumes NACC-derived variables are already set
 """
 
+import datetime
 from types import MappingProxyType
-from typing import List, Mapping
+from typing import List, Mapping, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
-    DateTaggedValue,
     DerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
@@ -43,6 +43,9 @@ class CognitiveAttributeCollection(AttributeCollection):
                 ]
             ),
         )
+
+    def get_date(self) -> Optional[datetime.date]:
+        return self.__uds.get_date()
 
     # maps each diagnosis to their string value
     DIAGNOSIS_MAPPINGS = MappingProxyType(
@@ -147,36 +150,14 @@ class CognitiveAttributeCollection(AttributeCollection):
         )
         return list({mapping[attribute] for attribute in attributes})
 
-    def _create_contributing_diagnosis(self) -> DateTaggedValue[List[str]]:
+    def _create_contributing_diagnosis(self) -> List[str]:
         """Mapped from all possible contributing diagnosis."""
-        return DateTaggedValue(
-            value=self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2),
-            date=self.__uds.get_date(),
-        )
+        return self.map_attributes(self.DIAGNOSIS_MAPPINGS, expected_value=2)
 
-    def _create_dementia(self) -> DateTaggedValue[List[str]]:
+    def _create_dementia(self) -> List[str]:
         """Mapped from all dementia types."""
-        return DateTaggedValue(
-            value=self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1),
-            date=self.__uds.get_date(),
-        )
+        return self.map_attributes(self.DEMENTIA_MAPPINGS, expected_value=1)
 
-    def _create_cognitive_status(self) -> DateTaggedValue[int]:
-        """Mapped from NACCUDSD."""
-        return DateTaggedValue(
-            value=self.__derived.get_required("naccudsd", int),
-            date=self.__uds.get_date(),
-        )
-
-    def _create_etpr(self) -> DateTaggedValue[int]:
-        """Mapped from NACCETPR."""
-        return DateTaggedValue(
-            value=self.__derived.get_required("naccetpr", int),
-            date=self.__uds.get_date(),
-        )
-
-    def _create_global_cdr(self) -> DateTaggedValue[float]:
+    def _create_global_cdr(self) -> float:
         """Mapped from CDRGLOB."""
-        return DateTaggedValue(
-            value=self.__uds.get_required("cdrglob", float), date=self.__uds.get_date()
-        )
+        return self.__uds.get_required("cdrglob", float)

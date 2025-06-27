@@ -22,3 +22,5 @@ __pycache__/
 regression/
 debug.json
 tests/*/tmp
+
+rule_reflection/*.csv

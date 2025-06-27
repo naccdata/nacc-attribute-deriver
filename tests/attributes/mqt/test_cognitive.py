@@ -67,12 +67,12 @@ class TestCognitiveAttributeCollection:
             )
 
         attr = CognitiveAttributeCollection(table)
-        assert set(attr._create_contributing_diagnosis().value) == set(expected_values)
+        assert set(attr._create_contributing_diagnosis()) == set(expected_values)
 
     def test_dementia(self, table):
         """Tests _create_dementia."""
         attr = CognitiveAttributeCollection(table)
-        assert attr._create_dementia().value == [
+        assert attr._create_dementia() == [
             CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]
         ]
 
@@ -82,7 +82,7 @@ class TestCognitiveAttributeCollection:
 
         attr = CognitiveAttributeCollection(table)
 
-        assert set(attr._create_dementia().value) == set(
+        assert set(attr._create_dementia()) == set(
             [
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["amndem"],
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["pca"],
@@ -94,7 +94,7 @@ class TestCognitiveAttributeCollection:
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
         attr = CognitiveAttributeCollection(table)
-        assert attr._create_global_cdr().value == 0.5
+        assert attr._create_global_cdr() == 0.5
 
         table["file.info.forms.json.cdrglob"] = None
         with pytest.raises(MissingRequiredError):

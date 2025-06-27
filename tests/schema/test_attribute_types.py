@@ -6,8 +6,8 @@ from types import NoneType
 from typing import List
 
 import pytest
-from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
 from nacc_attribute_deriver.schema.operation import (
+    DateTaggedValue,
     InitialOperation,
     LatestOperation,
     MinOperation,
@@ -36,7 +36,9 @@ class TestOperationAttributeType:
         value = "blah"
         wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
-        assert operation.attribute_type(type(value)) is type(table.get("date-tagged"))
+        assert operation.attribute_type(type(value)) is type(
+            table.get("date-tagged")["value"]
+        )
 
         value = date(year=2025, month=1, day=10)
         operation.evaluate(table=table, value=value, attribute="date")
@@ -68,7 +70,7 @@ class TestOperationAttributeType:
         wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("date-tagged")[0]) is type(value)  # type: ignore
+        assert type(table.get("date-tagged")[0]["value"]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
@@ -102,7 +104,7 @@ class TestOperationAttributeType:
         wrapper = DateTaggedValue(date=date(year=2025, month=1, day=10), value=value)
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
         assert operation.attribute_type(type(value)) is List[type(value)]
-        assert type(table.get("date-tagged")[0]) is type(value)  # type: ignore
+        assert type(table.get("date-tagged")[0]["value"]) is type(value)  # type: ignore
 
         value = "blah"
         wrapper = [value]
@@ -193,7 +195,7 @@ class TestOperationAttributeType:
         assert type(wrapper) is DateTaggedValue
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
         assert operation.attribute_type(DateTaggedValue[type(value)]) is type(value)
-        assert type(table.get("date-tagged")) is type(value)
+        assert type(table.get("date-tagged")["value"]) is type(value)
 
         value = "blah"
         wrapper = [value]
@@ -221,7 +223,7 @@ class TestOperationAttributeType:
         assert type(wrapper) is DateTaggedValue
         operation.evaluate(table=table, value=wrapper, attribute="date-tagged")
         assert operation.attribute_type(DateTaggedValue[type(value)]) is type(value)
-        assert type(table.get("date-tagged")) is type(value)
+        assert type(table.get("date-tagged")["value"]) is type(value)
 
         value = "blah"
         wrapper = [value]
