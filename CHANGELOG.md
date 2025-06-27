@@ -11,6 +11,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s
+* Refactors working/temporary variables to be written under `working`
 
 ## 1.4.1
 
