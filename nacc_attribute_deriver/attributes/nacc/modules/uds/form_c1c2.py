@@ -26,6 +26,10 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
         self.__frmdatec1 = self.uds.get_value("frmdatec1", str)
         self.__frmdatec2 = self.uds.get_value("frmdatec2", str)
 
+    @property
+    def submitted(self) -> bool:
+        return self.__frmdatec1 or self.__frmdatec2
+
     def __calculate_interval_from_a1(self, cmp_date: str) -> Optional[int]:
         """Calculates discrepency between UDS Form A1 and Form C1/C2."""
         frmdate_a1 = datetime_from_form_date(self.uds.get_value("frmdatea1", str))
@@ -79,7 +83,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
         MoCA Total Score -- corrected for education
         """
-        if self.formver < 3:
+        if self.formver < 3 or not self.submitted:
             return None
 
         precise_formver = self.uds.get_required("formver", float)
@@ -104,7 +108,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
         MoCA-Blind Total Score -- corrected for education
         """
-        if self.formver < 3:
+        if self.formver < 3 or not self.submitted:
             return None
 
         precise_formver = self.uds.get_required("formver", float)
