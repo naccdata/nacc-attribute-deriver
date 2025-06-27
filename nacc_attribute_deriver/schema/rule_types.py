@@ -11,7 +11,6 @@ from typing import (
 
 from pydantic import BaseModel, ConfigDict, field_serializer
 
-
 T = TypeVar("T")
 
 
