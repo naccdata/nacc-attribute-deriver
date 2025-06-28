@@ -26,14 +26,16 @@ def scan_mri_qc_table() -> SymbolTable:
         "file": {"info": {"raw": {"series_type": "T1w", "study_date": "2025-01-01"}}},
         "subject": {
             "info": {
-                "derived": {
-                    "scan-mri-dates": [
-                        "1995-01-01",
-                        "1996-01-01",
-                        "1997-01-01",
-                        "1997-02-02",
-                        "1997-03-03",
-                    ]
+                "working": {
+                    "cross-sectional": {
+                        "scan-mri-dates": [
+                            "1995-01-01",
+                            "1996-01-01",
+                            "1997-01-01",
+                            "1997-02-02",
+                            "1997-03-03",
+                        ]
+                    }
                 }
             }
         },
@@ -63,7 +65,7 @@ class TestSCANMRIQCAttribute:
         assert attr._create_scan_mri_session_count() == 5
 
         # empty
-        scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
+        scan_mri_qc_table["subject.info.working.cross-sectional.scan-mri-dates"] = []
         attr = SCANMRIQCAttributeCollection(scan_mri_qc_table)
         assert attr._create_scan_mri_session_count() == 0
 
@@ -74,7 +76,7 @@ class TestSCANMRIQCAttribute:
         assert attr._create_scan_mri_year_count() == 3
 
         # empty
-        scan_mri_qc_table["subject.info.derived.scan-mri-dates"] = []
+        scan_mri_qc_table["subject.info.working.cross-sectional.scan-mri-dates"] = []
         attr = SCANMRIQCAttributeCollection(scan_mri_qc_table)
         assert attr._create_scan_mri_year_count() == 0
 
@@ -84,7 +86,7 @@ def scan_pet_qc_table() -> SymbolTable:
     """Create dummy data for a SCAN PET QC-focused curation."""
     data = {
         "file": {"info": {"raw": {"radiotracer": 1, "scan_date": "2025-01-01"}}},
-        "subject": {"info": {"derived": {"scan-pet-dates": ["2000-12-12"]}}},
+        "subject": {"info": {"working": {"cross-sectional": {"scan-pet-dates": ["2000-12-12"]}}}},
     }
 
     return SymbolTable(data)
@@ -118,7 +120,7 @@ class TestSCANPETQCAttribute:
         assert attr._create_scan_pet_session_count() == 1
 
         # empty
-        scan_pet_qc_table["subject.info.derived.scan-pet-dates"] = []
+        scan_pet_qc_table["subject.info.working.cross-sectional.scan-pet-dates"] = []
         attr = SCANPETQCAttributeCollection(scan_pet_qc_table)
         assert attr._create_scan_pet_session_count() == 0
 
@@ -129,7 +131,7 @@ class TestSCANPETQCAttribute:
         assert attr._create_scan_pet_year_count() == 1
 
         # empty
-        scan_pet_qc_table["subject.info.derived.scan-pet-dates"] = []
+        scan_pet_qc_table["subject.info.working.cross-sectional.scan-pet-dates"] = []
         assert attr._create_scan_pet_year_count() == 0
 
     def test_create_scan_pet_amyloid_tracers(self, scan_pet_qc_table):

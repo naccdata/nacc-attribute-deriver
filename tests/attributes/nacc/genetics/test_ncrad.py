@@ -44,8 +44,8 @@ class TestNCRADAttributeCollection:
         with pytest.raises(MissingRequiredError):
             NCRADAttributeCollection(SymbolTable())
 
-    def test_historical_different(self, table, subject_derived_prefix):
-        set_attribute(table, subject_derived_prefix, "historic_apoe", 4)
+    def test_historical_different(self, table, working_derived_prefix):
+        set_attribute(table, working_derived_prefix, "cross-sectional.historic-apoe", 4)
         attr = NCRADAttributeCollection(table)
         assert attr._create_naccapoe() == 9
 
