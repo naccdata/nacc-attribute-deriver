@@ -541,7 +541,8 @@ class NPFormAttributeCollection(AttributeCollection):
         return create_death_date(year=year, month=month, day=day)
 
     def _create_npchrom(self) -> Optional[int]:
-        """Keeps track of NPCHROM - required for NACCADMU in UDS D1.
+        """Keeps track of NPCHROM - required for NACCADMU, NACCFTDM
+        in UDS D1.
 
         V9 and earlier.
         """
@@ -553,3 +554,10 @@ class NPFormAttributeCollection(AttributeCollection):
         V10+
         """
         return self.__np.get_value("nppdxp", int)
+
+    def _create_nppdxq(self) -> Optional[int]:
+        """Keeps track of NPPDXQ - required for NACCFTDM in UDS D1.
+
+        V10+
+        """
+        return self.__np.get_value("nppdxq", int)

@@ -274,16 +274,79 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         return 8
 
+    def _create_naccalzd(self) -> int:
+        """Creates NACCALZD - Presumptive etiologic diagnosis of
+        the cognitive disorder - Alzheimer's disease.
+        """
+        if self.__normcog == 1:
+            return 8
+
+        probad = self.uds.get_value("probad", int)
+        possad = self.uds.get_value("possad", int)
+        alzdis = self.uds.get_value("alzdis", int)
+
+        if any(x == 1 for x in [probad, possad, alzdis]):
+            return 1
+
+        if (probad == 0 and possad == 0) or alzdis == 0:
+            return 0
+
+        # the above are expected to always be defined, so throw
+        # error if we cannot determine it
+        raise AttributeDeriverError("Cannot determine NACCALZD")
+
     def _create_naccnorm(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
 
         Normal cognition at all visits to date
         """
         naccnorm = self.__subject_derived.get_cross_sectional_value("naccnorm", int)
-        if naccnorm is not None and naccnorm == 0:
+        if naccnorm == 0:
             return 0
 
         return self.__normcog
+
+    def _create_notdemin(self) -> Optional[int]:
+        """Creates NOTDEMIN, which is a helper variable for whether someone
+        is demented at the initial visit.
+
+        Used for NACCIDEM.
+        """
+        if not self.uds.is_initial():
+            return None
+
+        impnomci = self.uds.get_value("impnomci", int)
+        mci = self.uds.generate_mci()
+        if self.__normcog == 1 or impnomci == 1 or mci == 1:
+            return 1
+
+        return 0
+
+    def _create_naccidem(self) -> int:
+        """Creates NACCIDEM - Incident dementia during UDS follow-up
+        """
+        naccidem = self.__subject_derived.get_cross_sectional_value("naccidem", int)
+        if naccidem in 1:
+            return 1
+
+        # requires followup visit, so if initial return 0/9 - visits
+        # should be curated in order anyways
+        if self.uds.is_initial():
+            if self.__demented == 1:
+                return 8
+
+            return 0
+
+        notdemin = self.__working_derived.get_cross_sectional_value("notdemin", int)
+
+        if notdemin == 1 and self.__demented == 1:
+            return 1
+
+        return 0
+
+    """
+    The following require NP variables.
+    """
 
     def _create_naccadmu(self) -> int:
         """Creates NACCADMU - Does the subject have a dominantly
@@ -293,13 +356,32 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         """
         naccadmu = self.__subject_derived.get_cross_sectional_value("naccadmu", int)
         if naccadmu == 1:
-            return naccadmu
+            return 1
 
-        admut = self.uds.get_value("admut")
-        npchrom = self.__subject_derived.get_value("npchrom", int)
-        nppdxp = self.__subject_derived.get_value("nppdxp", int)
+        admut = self.uds.get_value("admut", int)
+        npchrom = self.__working_derived.get_cross_sectional_value("npchrom", int)
+        nppdxp = self.__working_derived.get_cross_sectional_value("nppdxp", int)
 
-        if any(x == 1 for x in [admut, npchrom, nppdxp]):
+        if admut == 1 or npchrom in [1, 2, 3] or nppdxp == 1:
+            return 1
+
+        return 0
+
+    def _create_naccftdm(self) -> int:
+        """Creates NACCFTDM - Does the subject have an hereditary
+        FTLD mutation?
+
+        Requires NPCHROM/NPPDXQ from NP.
+        """
+        naccftdm = self.__subject_derived.get_cross_sectional_value("naccftdm", int)
+        if naccftdm == 1:
+            return 1
+
+        ftldmut = self.uds.get_value("ftldmut", int)
+        npchrom = self.__working_derived.get_cross_sectional_value("npchrom", int)
+        nppdxq = self.__working_derived.get_cross_sectional_value("nppdxq", int)
+
+        if admut == 1 or npchrom == 4 or nppdxq == 1:
             return 1
 
         return 0

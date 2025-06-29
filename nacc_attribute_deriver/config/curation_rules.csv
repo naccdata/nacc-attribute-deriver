@@ -43,8 +43,9 @@ np,naccwri2,subject.info.derived.cross-sectional.naccwri2,update,FALSE
 np,naccwri3,subject.info.derived.cross-sectional.naccwri3,update,FALSE
 np,np_death_age,subject.info.derived.np_death_age,update,FALSE
 np,np_death_date,subject.info.derived.np_death_date,update,FALSE
-np,npchrom,subject.info.derived.npchrom,update,FALSE
-np,nppdxp,subject.info.derived.nppdxp,update,FALSE
+np,npchrom,subject.info.working.cross-sectional.npchrom,update,FALSE
+np,nppdxp,subject.info.working.cross-sectional.nppdxp,update,FALSE
+np,nppdxq,subject.info.working.cross-sectional.nppdxq,update,FALSE
 scan_mri_sbm,scan_volume_analysis_indicator,subject.info.imaging.mri.scan.t1.brain-volume,max,FALSE
 scan_mri_sbm,scan_flair_wmh_indicator,subject.info.imaging.mri.scan.flair.wmh,max,FALSE
 scan_mri_sbm,mri_scan_analysis_types,subject.info.imaging.mri.scan.analysis-types,set,FALSE
@@ -70,6 +71,7 @@ scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,F
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 meds,drugs_list,subject.info.derived.drugs_list,update,FALSE
 uds,uds_visitdates,subject.info.derived.uds-visitdates,set,FALSE
+uds,notdemin,subject.info.working.cross-sectional.notdemin,update,FALSE
 uds,naccage,file.info.derived.naccage,update,FALSE
 uds,naccage,subject.info.derived.longitudinal.naccage,list,TRUE
 uds,naccageb,subject.info.derived.cross-sectional.naccageb,update,FALSE
@@ -159,8 +161,12 @@ uds,naccbvft,file.info.derived.naccbvft,update,FALSE
 uds,naccbvft,subject.info.derived.longitudinal.naccbvft,list,TRUE
 uds,nacclbds,file.info.derived.nacclbds,update,FALSE
 uds,nacclbds,subject.info.derived.longitudinal.nacclbds,list,TRUE
-uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,min,FALSE
+uds,naccalzd,file.info.derived.naccalzd,update,FALSE
+uds,naccalzd,subject.info.derived.longitudinal.naccalzd,list,TRUE
+uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,update,FALSE
+uds,naccidem,subject.info.derived.cross-sectional.naccidem,update,FALSE
 uds,naccadmu,subject.info.derived.cross-sectional.naccadmu,update,FALSE
+uds,naccftdm,subject.info.derived.cross-sectional.naccftdm,update,FALSE
 uds,naccdage,subject.info.derived.cross-sectional.naccdage,update,FALSE
 uds,naccdied,subject.info.derived.cross-sectional.naccdied,update,FALSE
 uds,naccautp,subject.info.derived.cross-sectional.naccautp,update,FALSE
