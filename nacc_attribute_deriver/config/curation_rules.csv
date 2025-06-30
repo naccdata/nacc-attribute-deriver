@@ -182,6 +182,8 @@ uds,nacclbds,file.info.derived.nacclbds,update,FALSE
 uds,nacclbds,subject.info.derived.longitudinal.nacclbds,list,TRUE
 uds,naccalzd,file.info.derived.naccalzd,update,FALSE
 uds,naccalzd,subject.info.derived.longitudinal.naccalzd,list,TRUE
+uds,naccmcia,file.info.derived.naccmcia,update,FALSE
+uds,naccmcia,subject.info.derived.longitudinal.naccmcia,list,TRUE
 uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,update,FALSE
 uds,naccidem,subject.info.derived.cross-sectional.naccidem,update,FALSE
 uds,naccadmu,subject.info.derived.cross-sectional.naccadmu,update,FALSE

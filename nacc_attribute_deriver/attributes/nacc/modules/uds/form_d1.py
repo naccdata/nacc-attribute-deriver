@@ -2,7 +2,11 @@
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.base.namespace import (
+    SubjectDerivedNamespace,
+    WorkingDerivedNamespace,
+)
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .uds_attribute_collection import UDSAttributeCollection
@@ -23,6 +27,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table, uds_required=frozenset(["normcog"]))
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working_derived = WorkingDerivedNamespace(table=table)
         self.__normcog = self.uds.get_required("normcog", int)
         self.__demented = self.uds.get_value("demented", int)
 
@@ -316,7 +321,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return None
 
         impnomci = self.uds.get_value("impnomci", int)
-        mci = self.uds.generate_mci()
+        mci = self.generate_mci()
         if self.__normcog == 1 or impnomci == 1 or mci == 1:
             return 1
 
@@ -326,7 +331,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         """Creates NACCIDEM - Incident dementia during UDS follow-up
         """
         naccidem = self.__subject_derived.get_cross_sectional_value("naccidem", int)
-        if naccidem in 1:
+        if naccidem == 1:
             return 1
 
         # requires followup visit, so if initial return 0/9 - visits
@@ -381,7 +386,33 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         npchrom = self.__working_derived.get_cross_sectional_value("npchrom", int)
         nppdxq = self.__working_derived.get_cross_sectional_value("nppdxq", int)
 
-        if admut == 1 or npchrom == 4 or nppdxq == 1:
+        if ftldmut == 1 or npchrom == 4 or nppdxq == 1:
             return 1
 
         return 0
+
+    def _create_naccmcia(self) -> int:
+        """Creates NACCMCIA - MCI domain affected -- attention"""
+        mci_attention = self.uds.group_attributes(
+            ["mciapatt", "mcin1att", "mcin2att"], int)
+
+        if any(x == 1 for x in mci_attention):
+            return 1
+
+        if all(x == 0 for x in mci_attention):
+            return 0
+
+        return 8
+
+    def _create_naccmcie(self) -> int:
+        """Creates NACCMCIE - MCI domain affected -- executive function"""
+        mci_executive = self.uds.group_attributes(
+            ["mciapex", "mcin1ex", "mcin2ex"], int)
+
+        if any(x == 1 for x in mci_executive):
+            return 1
+
+        if all(x == 0 for x in mci_executive):
+            return 0
+
+        return 8

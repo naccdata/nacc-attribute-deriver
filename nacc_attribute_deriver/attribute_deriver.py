@@ -99,7 +99,11 @@ class AttributeDeriver:
                     f"Unknown attribute function: {rule.function}"
                 )
 
-            value, date = method.apply(table)
+            try:
+                value, date = method.apply(table)
+            except Exception as e:
+                raise AttributeDeriverError(f"Failed to derive rule {rule.function}: {e}") from e
+
             if value is None:
                 continue
 
