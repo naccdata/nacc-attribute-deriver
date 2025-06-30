@@ -7,7 +7,8 @@ Derived variables from form B9: Clinician Judgement of Symptoms.
 Form B9 is required and expected to have been filled out.
 """
 
-from typing import List, Optional
+from typing import Optional
+
 from pydantic import ValidationError
 
 from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
@@ -36,7 +37,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         Args:
             field: The field to grab the previous longitudinal records for
         """
-        prev_records = self.__working_derived.get_longitudinal_value(field, list, default=[])
+        prev_records = self.__working_derived.get_longitudinal_value(
+            field, list, default=[]
+        )
         prev_record = None
 
         # by order of curation rules, we should only add this form's values

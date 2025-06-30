@@ -102,7 +102,9 @@ class AttributeDeriver:
             try:
                 value, date = method.apply(table)
             except Exception as e:
-                raise AttributeDeriverError(f"Failed to derive rule {rule.function}: {e}") from e
+                raise AttributeDeriverError(
+                    f"Failed to derive rule {rule.function}: {e}"
+                ) from e
 
             if value is None:
                 continue

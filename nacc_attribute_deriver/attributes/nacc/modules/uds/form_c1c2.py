@@ -23,10 +23,8 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__working_derived = WorkingDerivedNamespace(
-            table=table,
-            required=frozenset([
-                'cross-sectional.educ'
-            ]))
+            table=table, required=frozenset(["cross-sectional.educ"])
+        )
         self.__frmdatec1 = self.uds.get_value("frmdatec1", str)
         self.__frmdatec2 = self.uds.get_value("frmdatec2", str)
 

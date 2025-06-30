@@ -31,7 +31,7 @@ def test_uds_form():
                             "sex": "1",
                             "primlang": 1,
                             "educ": 1,
-                            "probad": 1
+                            "probad": 1,
                         }
                     }
                 }

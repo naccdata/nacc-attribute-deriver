@@ -163,7 +163,9 @@ class BaseNamespace:
 
         return file_date.date()
 
-    def group_attributes(self, attributes: List[str], attr_type: Type[T]) -> List[T]:
+    def group_attributes(
+        self, attributes: List[str], attr_type: Type[T]
+    ) -> List[T | None]:
         """Group attributes into a list. Assumes all are the same type.
 
         Args:

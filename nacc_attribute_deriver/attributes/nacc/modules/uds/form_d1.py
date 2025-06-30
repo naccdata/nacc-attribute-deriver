@@ -55,9 +55,47 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         # all of these fields are null, 0, or 1
         mci_vars = self.uds.group_attributes(
-            ["mciamem", "mciaplus", "mcinon1", "mcinon2"], int)
+            ["mciamem", "mciaplus", "mcinon1", "mcinon2"], int
+        )
 
         return 1 if any(x == 1 for x in mci_vars) else 0
+
+    def generate_nodx(self) -> int:
+        """No diagnosis - used to derive other variables."""
+
+        diagnosis = self.uds.group_attributes(
+            [
+                "probad",
+                "possad",
+                "dlb",
+                "vasc",
+                "vascps",
+                "alcdem",
+                "demun",
+                "ftd",
+                "ppaph",
+                "psp",
+                "cort",
+                "hunt",
+                "prion",
+                "meds",
+                "dysill",
+                "dep",
+                "othpsy",
+                "downs",
+                "park",
+                "stroke",
+                "hyceph",
+                "brninj",
+                "neop",
+                "cogoth",
+                "cogoth2",
+                "cogoth3",
+            ],
+            int,
+        )
+
+        return all(x != 1 for x in diagnosis)
 
     def _create_naccalzp(self) -> int:
         """From d1structrdd.sas.
@@ -222,8 +260,8 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             if ppaph == 0 or ppasyn == 0:
                 return 0
 
-            nodx = self.uds.get_value("nodx", int)
-            if (self.formver != 3 and nodx == 1) or (self.formver == 3):
+            nodx = self.generate_nodx()
+            if (self.formver < 3 and nodx == 1) or (self.formver >= 3):
                 return 7
 
         return 8
@@ -300,8 +338,8 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         return self.__normcog
 
     def _create_notdemin(self) -> Optional[int]:
-        """Creates NOTDEMIN, which is a helper variable for whether someone
-        is demented at the initial visit.
+        """Creates NOTDEMIN, which is a helper variable for whether someone is
+        demented at the initial visit.
 
         Used for NACCIDEM.
         """
@@ -316,8 +354,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         return 0
 
     def _create_naccidem(self) -> int:
-        """Creates NACCIDEM - Incident dementia during UDS follow-up
-        """
+        """Creates NACCIDEM - Incident dementia during UDS follow-up"""
         naccidem = self.__subject_derived.get_cross_sectional_value("naccidem", int)
         if naccidem == 1:
             return 1
@@ -357,6 +394,73 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         return 0 if naccmcii is None else naccmcii
 
+    def _create_naccppag(self) -> Optional[int]:
+        """Creates NACCPPAG - Dementia syndrome -- Primary progressive aphasia (PPA)
+        subtype according to the criteria outlined by Gorno-Tempini et al. 2011
+
+        Not asessed this way in v1.2 or v2.
+        """
+        if self.formver < 3:
+            return None
+
+        ppasynt = self.uds.get_value("ppasynt", int)
+        if ppasynt in [1, 2, 3, 4]:
+            return ppasynt
+
+        naccppa = self._create_naccppa()
+        if self.__demented == 1 and naccppa == 0:
+            return 7
+
+        return 8
+
+    def _create_naccppme(self) -> Optional[int]:
+        """Creates NACCPPME - Primary progressive aphasia (PPA) subtype according to
+        older criteria outlined by Mesulam et al. (2001 and 2003)
+
+        Not assessed this way in v3+
+        """
+        if self.formver >= 3:
+            return None
+
+        if self.uds.get_value("pnaph", int) == 1:
+            return 1
+        if self.uds.get_value("semdeman", int) == 1:
+            return 2
+        if self.uds.get_value("semdemag", int) == 1:
+            return 3
+        if self.uds.get_value("ppaothr", int) == 1:
+            return 4
+
+        impnomci = self.uds.get_value("impnomci", int)
+        mci = self.generate_mci()
+        nodx = self.generate_nodx()
+        if (impnomci == 1 or mci == 1) and nodx == 1:
+            return 6
+
+        naccppa = self._create_naccppa()
+        if (self.__demented == 1 or impnomci == 1 or mci == 1) and naccppa != 1:
+            return 7
+
+        if impnomci != 1 and mci != 1 and self.__demented != 1:
+            return 8
+
+        # TODO: SAS sets default to -9, but -9 is not valid per RDD. not sure
+        # if it's translated to -4 or something else elsewhere
+        return -9
+
+    def _create_nacctmci(self) -> int:
+        """Creates NACCTMCI - Mild cognitive impairment (MCI) type"""
+        if self.uds.get_value("mciamem", int) == 1:
+            return 1
+        if self.uds.get_value("mciaplus", int) == 1:
+            return 2
+        if self.uds.get_value("mcinon1", int) == 1:
+            return 3
+        if self.uds.get_value("mcinon2", int) == 1:
+            return 4
+
+        return 8
+
     def determine_mci_domain_affected(self, mci_domain: List[str]) -> int:
         """Determines if the given MCI domain is affected.
 
@@ -374,27 +478,19 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
     def _create_naccmcia(self) -> int:
         """Creates NACCMCIA - MCI domain affected -- attention"""
-        return self.determine_mci_domain_affected(
-            ["mciapatt", "mcin1att", "mcin2att"]
-        )
+        return self.determine_mci_domain_affected(["mciapatt", "mcin1att", "mcin2att"])
 
     def _create_naccmcie(self) -> int:
         """Creates NACCMCIE - MCI domain affected -- executive function"""
-        return self.determine_mci_domain_affected(
-            ["mciapex", "mcin1ex", "mcin2ex"]
-        )
+        return self.determine_mci_domain_affected(["mciapex", "mcin1ex", "mcin2ex"])
 
     def _create_naccmcil(self) -> int:
         """Creates NACCMCIL - MCI domain affected -- language"""
-        return self.determine_mci_domain_affected(
-            ["mciaplan", "mcin1lan", "mcin2lan"]
-        )
+        return self.determine_mci_domain_affected(["mciaplan", "mcin1lan", "mcin2lan"])
 
     def _create_naccmciv(self) -> int:
         """Creates NACCMCIV - MCI domain affected -- visuospatial"""
-        return self.determine_mci_domain_affected(
-            ["mciapvis", "mcin1vis", "mcin2vis"]
-        )
+        return self.determine_mci_domain_affected(["mciapvis", "mcin1vis", "mcin2vis"])
 
     """
     The following are working variables (non-NACC derived variables but used

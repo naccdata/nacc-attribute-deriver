@@ -192,6 +192,12 @@ uds,naccmcil,file.info.derived.naccmcil,update,FALSE
 uds,naccmcil,subject.info.derived.longitudinal.naccmcil,list,TRUE
 uds,naccmciv,file.info.derived.naccmciv,update,FALSE
 uds,naccmciv,subject.info.derived.longitudinal.naccmciv,list,TRUE
+uds,naccppag,file.info.derived.naccppag,update,FALSE
+uds,naccppag,subject.info.derived.longitudinal.naccppag,list,TRUE
+uds,naccppme,file.info.derived.naccppme,update,FALSE
+uds,naccppme,subject.info.derived.longitudinal.naccppme,list,TRUE
+uds,nacctmci,file.info.derived.naccppme,update,FALSE
+uds,nacctmci,subject.info.derived.longitudinal.nacctmci,list,TRUE
 uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,update,FALSE
 uds,naccidem,subject.info.derived.cross-sectional.naccidem,update,FALSE
 uds,naccadmu,subject.info.derived.cross-sectional.naccadmu,update,FALSE

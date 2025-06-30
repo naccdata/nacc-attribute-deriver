@@ -4,7 +4,6 @@ import pytest
 from datetime import date
 
 from nacc_attribute_deriver.schema.operation import (
-    DateTaggedValue,
     InitialOperation,
     LatestOperation,
     ListOperation,
