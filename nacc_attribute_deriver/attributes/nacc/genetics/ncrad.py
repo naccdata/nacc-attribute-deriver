@@ -12,7 +12,7 @@ from typing import Mapping, Tuple
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     RawNamespace,
-    SubjectDerivedNamespace,
+    WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -38,7 +38,7 @@ class NCRADAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
         self.__apoe = RawNamespace(table, required=frozenset(["a1", "a2"]))
-        self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working_derived = WorkingDerivedNamespace(table=table)
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
@@ -52,7 +52,9 @@ class NCRADAttributeCollection(AttributeCollection):
         a2 = self.__apoe.get_required("a2", str)
 
         apoe = self.APOE_ENCODINGS.get((a1.upper(), a2.upper()), 9)
-        old_apoe = self.__subject_derived.get_value("historic_apoe", int)
+        old_apoe = self.__working_derived.get_cross_sectional_value(
+            "historic-apoe", int
+        )
 
         if old_apoe is not None and apoe != old_apoe:
             return 9

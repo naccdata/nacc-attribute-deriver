@@ -7,6 +7,7 @@ from nacc_attribute_deriver.attributes.attribute_collection import AttributeColl
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -29,5 +30,10 @@ class UDSAttributeCollection(AttributeCollection):
     def submitted(self) -> bool:
         return True
 
-    def get_date(self) -> Optional[datetime.date]:
-        return self.uds.get_date()
+    def get_date(self) -> datetime.date:
+        """All UDS visits must have a visitdate."""
+        visitdate = self.__uds.get_date()
+        if not visitdate:
+            raise AttributeDeriverError("Cannot determine visitdate for UDS visit")
+
+        return visitdate

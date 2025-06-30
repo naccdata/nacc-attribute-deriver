@@ -16,6 +16,7 @@ from nacc_attribute_deriver.schema.operation import (
     SortedListOperation,
     UpdateOperation,
 )
+from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

@@ -140,3 +140,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         sourcenw = self.uds.get_value("sourcenw", int)
 
         return source == 4 or sourcenw == 2
+
+    def _create_educ(self) -> Optional[int]:
+        """UDS education level."""
+        return self.uds.get_value("educ", int)
