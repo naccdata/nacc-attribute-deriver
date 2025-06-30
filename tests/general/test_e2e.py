@@ -38,13 +38,17 @@ def test_uds_form():
             "subject": {
                 "info": {
                     "derived": {
-                        "uds-visitdates": ["2025-01-01"],
                         "cross-sectional": {
                             "naccnihr": 1,
                             "naccdage": 1,
                             "naccdied": 1,
                         },
-                    }
+                    },
+                    "working": {
+                        "cross-sectional": {
+                            "uds-visitdates": ["2025-01-01"],
+                        }
+                    },
                 }
             },
         }
@@ -87,8 +91,6 @@ def test_np_form():
         "subject": {
             "info": {
                 "derived": {
-                    "np_death_age": 80,
-                    "np_death_date": "2024-12-19",
                     "cross-sectional": {
                         "naccbraa": 9,
                         "naccneur": 9,
@@ -110,7 +112,13 @@ def test_np_form():
                         "naccprog": 9,
                         "naccvasc": 9,
                     },
-                }
+                },
+                "working": {
+                    "cross-sectional": {
+                        "np-death-age": 80,
+                        "np-death-date": "2024-12-19",
+                    }
+                },
             }
         },
     }
@@ -174,7 +182,7 @@ def test_scan_mri_qc():
         "file": {"info": {"raw": {"series_type": "T1w", "study_date": "2025-01-01"}}},
         "subject": {
             "info": {
-                "derived": {"scan-mri-dates": ["2025-01-01"]},
+                "working": {"cross-sectional": {"scan-mri-dates": ["2025-01-01"]}},
                 "imaging": {
                     "mri": {"scan": {"types": ["T1w"], "count": 1, "year-count": 1}}
                 },
@@ -190,7 +198,9 @@ def test_scan_pet_qc():
 
     deriver = AttributeDeriver()
     deriver.curate(form, "scan_pet_qc")
-    assert form["subject.info.derived"] == {"scan-pet-dates": ["2025-01-01"]}
+    assert form["subject.info.working.cross-sectional"] == {
+        "scan-pet-dates": ["2025-01-01"]
+    }
     assert form["subject.info.imaging"] == {
         "pet": {
             "scan": {
@@ -316,6 +326,12 @@ def test_meds():
             }
         },
         "subject": {
-            "info": {"derived": {"drugs_list": {"2000-01-01": ["d00004", "d00170"]}}}
+            "info": {
+                "working": {
+                    "cross-sectional": {
+                        "drugs-list": {"2000-01-01": ["d00004", "d00170"]}
+                    }
+                }
+            }
         },
     }

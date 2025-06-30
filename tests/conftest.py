@@ -36,3 +36,8 @@ def subject_prefix():
 @fixture
 def subject_derived_prefix():
     return "subject.info.derived."
+
+
+@fixture
+def working_derived_prefix():
+    return "subject.info.working."

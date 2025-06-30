@@ -6,7 +6,7 @@ One of form C1 or C2 is expected to have been submitted.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
@@ -22,7 +22,11 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working_derived = WorkingDerivedNamespace(
+            table=table,
+            required=frozenset([
+                'cross-sectional.educ'
+            ]))
         self.__frmdatec1 = self.uds.get_value("frmdatec1", str)
         self.__frmdatec2 = self.uds.get_value("frmdatec2", str)
 
@@ -91,7 +95,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
         if precise_formver == 3 and packet != "IT":
             mocatots = self.uds.get_value("mocatots", int)
-            educ = self.__subject_derived.get_value("educ", int)
+            educ = self.__working_derived.get_cross_sectional_value("educ", int)
             if mocatots is None or mocatots == 88:
                 return 88
             if educ is None or educ == 99:
@@ -117,7 +121,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
         if precise_formver == 3.2 or (precise_formver == 3 and packet == "IT"):
             mocbtots = self.uds.get_value("mocbtots", int)
             mocacomp = self.uds.get_value("mocacomp", int)
-            educ = self.__subject_derived.get_value("educ", int)
+            educ = self.__working_derived.get_cross_sectional_value("educ", int)
             if mocbtots is None or mocbtots == 88 or mocacomp == 0:
                 return 88
             if educ is None or educ == 99:

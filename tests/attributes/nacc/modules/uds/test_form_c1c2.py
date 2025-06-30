@@ -36,7 +36,7 @@ def table() -> SymbolTable:
                 }
             }
         },
-        "subject": {"info": {"derived": {"educ": "3"}}},
+        "subject": {"info": {"working": {"cross-sectional": {"educ": "3"}}}},
     }
 
     return SymbolTable(data)
@@ -65,7 +65,7 @@ class TestUDSFormC1C2Attribute:
         set_attribute(table, form_prefix, "mmse", None)
         assert attr._create_naccmmse() == 98
 
-    def test_create_naccmoca(self, table, form_prefix, subject_derived_prefix):
+    def test_create_naccmoca(self, table, form_prefix, working_derived_prefix):
         """Tests creating NACCMOCA."""
         attr = UDSFormC1C2Attribute(table)
         assert attr._create_naccmoca() == 30
@@ -75,14 +75,14 @@ class TestUDSFormC1C2Attribute:
         assert attr._create_naccmoca() == 34
 
         # educ > 12 and mocatots < 30, should not + 1
-        set_attribute(table, subject_derived_prefix, "educ", 20)
+        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 20)
         set_attribute(table, form_prefix, "mocatots", 25)
         assert attr._create_naccmoca() == 25
 
         # educ is 99 or None
-        set_attribute(table, subject_derived_prefix, "educ", 99)
+        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 99)
         assert attr._create_naccmoca() == 99
-        set_attribute(table, subject_derived_prefix, "educ", None)
+        set_attribute(table, working_derived_prefix, "cross-sectional.educ", None)
         assert attr._create_naccmoca() == 99
 
         # mocatots is 88 or None
@@ -95,7 +95,7 @@ class TestUDSFormC1C2Attribute:
         set_attribute(table, form_prefix, "packet", "IT")
         assert attr._create_naccmoca() is None
 
-    def test_create_naccmocb(self, table, form_prefix, subject_derived_prefix):
+    def test_create_naccmocb(self, table, form_prefix, working_derived_prefix):
         """Tests creating NACCMOCB."""
         attr = UDSFormC1C2Attribute(table)
 
@@ -112,13 +112,13 @@ class TestUDSFormC1C2Attribute:
         assert attr._create_naccmocb() == 16
 
         # educ > 12, mocbtots < 22, should not add 1
-        set_attribute(table, subject_derived_prefix, "educ", 15)
+        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 15)
         assert attr._create_naccmocb() == 15
 
         # educ is 99 or None
-        set_attribute(table, subject_derived_prefix, "educ", 99)
+        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 99)
         assert attr._create_naccmocb() == 99
-        set_attribute(table, subject_derived_prefix, "educ", None)
+        set_attribute(table, working_derived_prefix, "cross-sectional.educ", None)
         assert attr._create_naccmocb() == 99
 
         # mocacomp == 0

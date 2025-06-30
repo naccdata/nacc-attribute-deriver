@@ -6,7 +6,7 @@ From derivedmeds.sas.
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -18,7 +18,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working_derived = WorkingDerivedNamespace(table=table)
 
         # need to grab from corresponding MEDS file information
         # keyed by form date under subject.info.derived.drugs_list
@@ -34,7 +34,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
         subject.info.derived.drugs_list.<visitdate>."""
-        all_meds = self.__subject_derived.get_value("drugs_list", dict)
+        all_meds = self.__working_derived.get_cross_sectional_value("drugs-list", dict)
         if all_meds is None:
             all_meds = {}
 
