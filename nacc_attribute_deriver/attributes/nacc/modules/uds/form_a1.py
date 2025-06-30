@@ -61,10 +61,6 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
             return livsitua
 
-        maristat = self.uds.get_value("maristat", int)
-        if maristat == 8:
-            return 9
-
         livsit = self.uds.get_value("livsit", int)
         return livsit if livsit is not None else 9
 
@@ -144,3 +140,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         sourcenw = self.uds.get_value("sourcenw", int)
 
         return source == 4 or sourcenw == 2
+
+    def _create_educ(self) -> Optional[int]:
+        """UDS education level."""
+        return self.uds.get_value("educ", int)

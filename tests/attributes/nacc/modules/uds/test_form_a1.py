@@ -23,6 +23,7 @@ def table() -> SymbolTable:
                         "module": "UDS",
                         "packet": "I",
                         "formver": "3.0",
+                        "educ": "3",
                     }
                 }
             }
@@ -95,3 +96,12 @@ class TestUDSFormA1Attribute:
         # set but something else case
         set_attribute(table, form_prefix, "sourcenw", 1)
         assert not attr._create_affiliate()
+
+    def test_create_educ(self, table):
+        """Tests _create_educ."""
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_educ() == 3
+
+        # none case
+        table["file.info.forms.json.educ"] = None
+        assert attr._create_educ() is None

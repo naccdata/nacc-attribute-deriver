@@ -36,14 +36,16 @@ def table1(table) -> SymbolTable:
         {
             "subject": {
                 "info": {
-                    "derived": {
-                        "drugs_list": {
-                            "2025-01-01": [
-                                "d00131",  # triggers NACCAAAS
-                                "d00171",  # triggers NACCAANX
-                                "d00252",  # triggers NACCAC
-                                "d00006",  # triggers NACCACEI
-                            ]
+                    "working": {
+                        "cross-sectional": {
+                            "drugs-list": {
+                                "2025-01-01": [
+                                    "d00131",  # triggers NACCAAAS
+                                    "d00171",  # triggers NACCAANX
+                                    "d00252",  # triggers NACCAC
+                                    "d00006",  # triggers NACCACEI
+                                ]
+                            }
                         }
                     }
                 }
@@ -64,16 +66,18 @@ def table2(table) -> SymbolTable:
         {
             "subject": {
                 "info": {
-                    "derived": {
-                        "drugs_list": {
-                            "2025-01-01": [
-                                "d00132     ",  # triggers NACCVASD
-                                "     d00175",  # triggers NACCPDMD,
-                                "D07768",  # triggers NACCNSD
-                                "d00179",  # triggers NACCDIUR,
-                                "d03180",  # triggers NACCAPSY
-                                "unknown drug",  # unknown write-in, possible in V1
-                            ]
+                    "working": {
+                        "cross-sectional": {
+                            "drugs-list": {
+                                "2025-01-01": [
+                                    "d00132     ",  # triggers NACCVASD
+                                    "     d00175",  # triggers NACCPDMD,
+                                    "D07768",  # triggers NACCNSD
+                                    "d00179",  # triggers NACCDIUR,
+                                    "d03180",  # triggers NACCAPSY
+                                    "unknown drug",  # unknown write-in, possible in V1
+                                ]
+                            }
                         }
                     }
                 }

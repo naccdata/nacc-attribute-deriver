@@ -19,7 +19,6 @@ def table() -> SymbolTable:
                     "json": {  # needed for DemographicsAttributeCollection
                         "sex": "1",
                         "primlang": "2",
-                        "educ": "3",
                         "visitdate": "2025-01-01",
                         "module": "uds",
                         "packet": "I",
@@ -79,15 +78,6 @@ class TestDemographicsAttributeCollection:
         table["file.info.forms.json.primlang"] = 9
         table["file.info.forms.json.packet"] = "F"
         assert attr._create_uds_primary_language() is None
-
-    def test_create_uds_education_level(self, table):
-        """Tests _create_uds_education_level."""
-        attr = DemographicsAttributeCollection(table)
-        assert attr._create_uds_education_level() == 3
-
-        # none case
-        table["file.info.forms.json.educ"] = None
-        assert attr._create_uds_education_level() is None
 
 
 class TestDerivedDemographicsAttributeCollection:

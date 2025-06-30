@@ -12,7 +12,7 @@ from nacc_attribute_deriver import config
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     BaseNamespace,
-    SubjectDerivedNamespace,
+    WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.errors import (
     AttributeDeriverError,
@@ -50,11 +50,11 @@ class MEDSFormAttributeCollection(AttributeCollection):
         if not self.__formdate:
             raise AttributeDeriverError("Cannot determine MEDS form date")
 
-        self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working_derived = WorkingDerivedNamespace(table=table)
 
     def _create_drugs_list(self) -> Dict[str, List[str]]:
         """Returns list of drugs for this visit, adding to overall mapping."""
-        all_drugs = self.__subject_derived.get_value("drugs_list", dict)
+        all_drugs = self.__working_derived.get_cross_sectional_value("drugs-list", dict)
         if all_drugs is None:
             all_drugs = {}
 

@@ -238,6 +238,8 @@ class SubjectInfoNamespace(BaseNamespace):
 
 
 class SubjectDerivedNamespace(BaseNamespace):
+    """For NACC derived cross-sectional and longitudinal variables."""
+
     def __init__(
         self,
         *,
@@ -278,3 +280,23 @@ class SubjectDerivedNamespace(BaseNamespace):
           the value for the attribute in the table
         """
         return self.get_value(f"longitudinal.{attribute}", attr_type, default)
+
+
+class WorkingDerivedNamespace(SubjectDerivedNamespace):
+    """Similar to SubjectDerivedNamespace but specifically for
+    working/temporary variables."""
+
+    def __init__(
+        self,
+        *,
+        table: SymbolTable,
+        attribute_prefix: str = "subject.info.working.",
+        required: frozenset[str] = frozenset(),
+        date_attribute: Optional[str] = None,
+    ) -> None:
+        super().__init__(
+            table=table,
+            attribute_prefix=attribute_prefix,
+            required=required,
+            date_attribute=date_attribute,
+        )

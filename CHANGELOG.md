@@ -9,15 +9,19 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Accounts for some forms being optional
     * For A4, adds MEDS scope
 * Adds UDS B1, B6, B8, and B9 derived variables
+* Adds UDS C1/C2 variables
+    * `_create_uds_education_level` gets moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s
+* Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
+    * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s
+* Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
 
-## Include in next release
+## 1.4.1
 
 * Adds ability to derive type returned by a curation rule with tool to create table of rule types.
 * Adds enforcement of expected types when grabbing variables from the raw data
->>>>>>> refactor/dated-values
 
 ## 1.4.0
 

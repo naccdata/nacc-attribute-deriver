@@ -5,7 +5,7 @@ from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
-    SubjectDerivedNamespace,
+    WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
@@ -13,7 +13,7 @@ from nacc_attribute_deriver.attributes.base.uds_namespace import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
-    calculate_interval,
+    calculate_months,
     datetime_from_form_date,
 )
 
@@ -30,8 +30,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
     ) -> None:
         """Override initializer to set other module prefixes."""
         self.__uds = UDSNamespace(table)
-        self.__subject_derived = SubjectDerivedNamespace(
-            table=table, required=frozenset(["uds-visitdates"])
+        self.__working_derived = WorkingDerivedNamespace(
+            table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
 
     def _determine_death_date(self) -> Optional[date]:
@@ -45,17 +45,21 @@ class CrossModuleAttributeCollection(AttributeCollection):
         Returns:
             Death date if found, None otherwise
         """
-        np_date = self.__subject_derived.get_value("np_death_date", str)
+        np_date = self.__working_derived.get_cross_sectional_value("np-death-date", str)
         death_date = datetime_from_form_date(np_date)
         if death_date:
             return death_date.date()
 
-        milestone_date = self.__subject_derived.get_value("milestone_death_date", str)
+        milestone_date = self.__working_derived.get_cross_sectional_value(
+            "milestone-death-date", str
+        )
         death_date = datetime_from_form_date(milestone_date)
         if death_date:
             return death_date.date()
 
-        mds_date = self.__subject_derived.get_value("mds_death_date", str)
+        mds_date = self.__working_derived.get_cross_sectional_value(
+            "mds-death-date", str
+        )
         death_date = datetime_from_form_date(mds_date)
         if death_date:
             return death_date.date()
@@ -66,13 +70,13 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """From derive.sas and derivenew.sas."""
         # check that subject is deceased at all
         mds_deceased = self.is_target_int(
-            self.__subject_derived.get_value("mds_vital_status", int), 2
+            self.__working_derived.get_cross_sectional_value("mds-vital-status", int), 2
         )
         if self._create_naccdied() == 0 and not mds_deceased:
             return 888
 
         # NP, grab from NPDAGE
-        npdage = self.__subject_derived.get_value("np_death_age", int)
+        npdage = self.__working_derived.get_cross_sectional_value("np-death-age", int)
         if npdage:
             return npdage
 
@@ -93,11 +97,15 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """Creates NACCDIED - determined if death
         has been reported by NP or Milestone form.
         """
-        death_age = self.__subject_derived.get_value("np_death_age", int)
+        death_age = self.__working_derived.get_cross_sectional_value(
+            "np-death-age", int
+        )
         if death_age is not None:
             return 1
 
-        deceased = self.__subject_derived.get_value("milestone_deceased", int)
+        deceased = self.__working_derived.get_cross_sectional_value(
+            "milestone-deceased", int
+        )
         if self.is_target_int(deceased, 1):
             return 1
 
@@ -108,8 +116,12 @@ class CrossModuleAttributeCollection(AttributeCollection):
         needs to differentiate if an NP form was submitted
         or not.
         """
-        death_age = self.__subject_derived.get_value("np_death_age", int)
-        deceased = self.__subject_derived.get_value("milestone_deceased", int)
+        death_age = self.__working_derived.get_cross_sectional_value(
+            "np-death-age", int
+        )
+        deceased = self.__working_derived.get_cross_sectional_value(
+            "milestone-deceased", int
+        )
         np_deceased = death_age is not None
         mile_deceased = self.is_target_int(deceased, 1)
 
@@ -142,7 +154,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 999
 
         # compare to last UDS visit
-        visitdates = self.__subject_derived.get_required("uds-visitdates", list)
+        visitdates = self.__working_derived.get_cross_sectional_value(
+            "uds-visitdates", list
+        )
 
         # a non-valid visitdate shouldn't be possible but handle just in case
         if not visitdates:
@@ -152,7 +166,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if not last_visit:
             return 999
 
-        result = calculate_interval(last_visit.date(), deathdate)
+        result = calculate_months(last_visit.date(), deathdate)
 
         # handle negative
         return 999 if result is None or result < 0 else result
@@ -171,18 +185,22 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 88
 
         # NP will always have a known month
-        np_date = self.__subject_derived.get_value("np_death_date", str)
+        np_date = self.__working_derived.get_cross_sectional_value("np-death-date", str)
         death_date = datetime_from_form_date(np_date)
         if death_date:
             return death_date.date().month
 
         # Milestone month may be 99
-        milestone_mo = self.__subject_derived.get_value("milestone_death_month", int)
+        milestone_mo = self.__working_derived.get_cross_sectional_value(
+            "milestone-death-month", int
+        )
         if milestone_mo is not None and milestone_mo != 99:
             return milestone_mo
 
         # MDS death month may be 99
-        mds_mo = self.__subject_derived.get_value("mds_death_month", int)
+        mds_mo = self.__working_derived.get_cross_sectional_value(
+            "mds-death-month", int
+        )
         if mds_mo is not None and mds_mo != 99:
             return mds_mo
 
