@@ -29,6 +29,7 @@ def table() -> SymbolTable:
                         "packet": "it",
                         "birthmo": 1,
                         "birthyr": 1950,
+                        "probad": 1
                     }
                 }
             }

@@ -41,11 +41,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         Returns:
             The overall contributed status, None if none satisfy
         """
-        # TODO: seems like this could be a set
-        all_statuses = []
-
-        for field in fields:
-            all_statuses.append(self.uds.get_value(field, int))
+        all_statuses = self.uds.group_attributes(fields, int)
 
         for status in ContributionStatus.all():
             if any([x == status for x in all_statuses]):
@@ -58,18 +54,10 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         itself but is used to calculate other derived variables."""
 
         # all of these fields are null, 0, or 1
-        return (
-            1
-            if any(
-                [
-                    self.uds.get_value("mciamem", int),
-                    self.uds.get_value("mciaplus", int),
-                    self.uds.get_value("mcinon1", int),
-                    self.uds.get_value("mcinon2", int),
-                ]
-            )
-            else 0
-        )
+        mci_vars = self.uds.group_attributes(
+            ["mciamem", "mciaplus", "mcinon1", "mcinon2"], int)
+
+        return 1 if any(x == 1 for x in mci_vars) else 0
 
     def _create_naccalzp(self) -> int:
         """From d1structrdd.sas.

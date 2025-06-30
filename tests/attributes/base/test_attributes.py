@@ -16,14 +16,13 @@ class TestAttribute:
 
     def test_group_attributes(self):
         """Test grouping attributes."""
-        table = SymbolTable()
-        table = {
+        table = SymbolTable({
             "test": {
                 "var1": "1",
                 "var2": "2",
                 "var3": "3"
             }
-        }
+        })
 
         attr = BaseNamespace(table=table, attribute_prefix="test.")
         assert attr.group_attributes(["var1", "var2", "var3"], int) == [1, 2, 3]
