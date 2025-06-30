@@ -28,7 +28,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        return self.__frmdatec1 or self.__frmdatec2
+        return self.__frmdatec1 is not None or self.__frmdatec2 is not None
 
     def __calculate_interval_from_a1(self, cmp_date: str) -> Optional[int]:
         """Calculates discrepency between UDS Form A1 and Form C1/C2."""
