@@ -77,10 +77,6 @@ class DemographicsAttributeCollection(AttributeCollection):
 
         return mapped_primlang
 
-    def _create_uds_education_level(self) -> Optional[int]:
-        """UDS education level."""
-        return self.__uds.get_value("educ", int)
-
 
 class DerivedDemographicsAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
