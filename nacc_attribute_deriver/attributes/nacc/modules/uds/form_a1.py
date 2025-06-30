@@ -61,10 +61,6 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
             return livsitua
 
-        maristat = self.uds.get_value("maristat", int)
-        if maristat == 8:
-            return 9
-
         livsit = self.uds.get_value("livsit", int)
         return livsit if livsit is not None else 9
 
