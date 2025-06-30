@@ -21,10 +21,14 @@ class LongitudinalAttributeCollection(AttributeCollection):
 
     def _create_total_uds_visits(self) -> int:
         """Total number of UDS visits."""
-        visitdates = self.__working_derived.get_cross_sectional_value("uds-visitdates", list)
+        visitdates = self.__working_derived.get_cross_sectional_value(
+            "uds-visitdates", list
+        )
         return len(visitdates)
 
     def _create_years_of_uds(self) -> int:
         """Creates subject.info.longitudinal-data.uds.year-count."""
-        visitdates = self.__working_derived.get_cross_sectional_value("uds-visitdates", list)
+        visitdates = self.__working_derived.get_cross_sectional_value(
+            "uds-visitdates", list
+        )
         return len(get_unique_years(visitdates))

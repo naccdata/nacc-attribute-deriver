@@ -86,7 +86,9 @@ def scan_pet_qc_table() -> SymbolTable:
     """Create dummy data for a SCAN PET QC-focused curation."""
     data = {
         "file": {"info": {"raw": {"radiotracer": 1, "scan_date": "2025-01-01"}}},
-        "subject": {"info": {"working": {"cross-sectional": {"scan-pet-dates": ["2000-12-12"]}}}},
+        "subject": {
+            "info": {"working": {"cross-sectional": {"scan-pet-dates": ["2000-12-12"]}}}
+        },
     }
 
     return SymbolTable(data)

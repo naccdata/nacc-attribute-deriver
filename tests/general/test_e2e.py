@@ -48,7 +48,7 @@ def test_uds_form():
                         "cross-sectional": {
                             "uds-visitdates": ["2025-01-01"],
                         }
-                    }
+                    },
                 }
             },
         }
@@ -118,7 +118,7 @@ def test_np_form():
                         "np-death-age": 80,
                         "np-death-date": "2024-12-19",
                     }
-                }
+                },
             }
         },
     }
@@ -198,7 +198,9 @@ def test_scan_pet_qc():
 
     deriver = AttributeDeriver()
     deriver.curate(form, "scan_pet_qc")
-    assert form["subject.info.working.cross-sectional"] == {"scan-pet-dates": ["2025-01-01"]}
+    assert form["subject.info.working.cross-sectional"] == {
+        "scan-pet-dates": ["2025-01-01"]
+    }
     assert form["subject.info.imaging"] == {
         "pet": {
             "scan": {
@@ -324,6 +326,12 @@ def test_meds():
             }
         },
         "subject": {
-            "info": {"working": {"cross-sectional": {"drugs-list": {"2000-01-01": ["d00004", "d00170"]}}}}
+            "info": {
+                "working": {
+                    "cross-sectional": {
+                        "drugs-list": {"2000-01-01": ["d00004", "d00170"]}
+                    }
+                }
+            }
         },
     }

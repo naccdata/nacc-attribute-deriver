@@ -52,7 +52,9 @@ class NCRADAttributeCollection(AttributeCollection):
         a2 = self.__apoe.get_required("a2", str)
 
         apoe = self.APOE_ENCODINGS.get((a1.upper(), a2.upper()), 9)
-        old_apoe = self.__working_derived.get_cross_sectional_value("historic-apoe", int)
+        old_apoe = self.__working_derived.get_cross_sectional_value(
+            "historic-apoe", int
+        )
 
         if old_apoe is not None and apoe != old_apoe:
             return 9

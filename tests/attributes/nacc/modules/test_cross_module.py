@@ -52,7 +52,7 @@ def table() -> SymbolTable:
                             "2024-01-01",
                             "2024-02-02",
                             "2025-03-03",
-                        ]
+                        ],
                     }
                 }
             }
@@ -82,7 +82,9 @@ class TestCrossModuleAttribute:
         # test when month/day is unknown for milestone
         # this will transform dmo = 7 and ddy = 1 which changes
         # the age since the birthday is before then
-        table["subject.info.working.cross-sectional.milestone-death-date"] = "2050-07-01"
+        table["subject.info.working.cross-sectional.milestone-death-date"] = (
+            "2050-07-01"
+        )
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccdage() == 60
 

@@ -27,7 +27,13 @@ def table() -> SymbolTable:
             }
         },
         "subject": {
-            "info": {"working": {"cross-sectional": {"drugs-list": {"2000-01-01": ["d00004", "d00170"]}}}}
+            "info": {
+                "working": {
+                    "cross-sectional": {
+                        "drugs-list": {"2000-01-01": ["d00004", "d00170"]}
+                    }
+                }
+            }
         },
     }
     return SymbolTable(data)
@@ -54,7 +60,13 @@ def v1_table() -> SymbolTable:
             }
         },
         "subject": {
-            "info": {"working": {"cross-sectional": {"drugs-list": {"2000-01-01": ["d00004", "d00170"]}}}}
+            "info": {
+                "working": {
+                    "cross-sectional": {
+                        "drugs-list": {"2000-01-01": ["d00004", "d00170"]}
+                    }
+                }
+            }
         },
     }
     return SymbolTable(data)
