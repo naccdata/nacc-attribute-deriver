@@ -13,7 +13,7 @@ from nacc_attribute_deriver.attributes.base.uds_namespace import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
-    calculate_interval,
+    calculate_months,
     datetime_from_form_date,
 )
 
@@ -152,7 +152,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if not last_visit:
             return 999
 
-        result = calculate_interval(last_visit.date(), deathdate)
+        result = calculate_months(last_visit.date(), deathdate)
 
         # handle negative
         return 999 if result is None or result < 0 else result

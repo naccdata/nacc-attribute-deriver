@@ -68,11 +68,13 @@ scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,F
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 meds,drugs_list,subject.info.derived.drugs_list,update,FALSE
 uds,uds_visitdates,subject.info.derived.uds-visitdates,set,FALSE
+uds,educ,subject.info.derived.educ,update,FALSE
 uds,naccage,file.info.derived.naccage,update,FALSE
 uds,naccage,subject.info.derived.longitudinal.naccage,list,TRUE
 uds,naccageb,subject.info.derived.cross-sectional.naccageb,update,FALSE
 uds,nacclivs,file.info.derived.nacclivs,update,FALSE
 uds,nacclivs,subject.info.derived.longitudinal.nacclivs,list,TRUE
+uds,naccnihr,file.info.derived.naccnihr,update,FALSE
 uds,naccnihr,subject.info.derived.cross-sectional.naccnihr,update,FALSE
 uds,naccreas,subject.info.derived.cross-sectional.naccreas,update,FALSE
 uds,naccrefr,subject.info.derived.cross-sectional.naccrefr,update,FALSE
@@ -141,6 +143,14 @@ uds,naccstyr,subject.info.derived.cross-sectional.naccstyr,update,FALSE
 uds,nacctbi,file.info.derived.nacctbi,update,FALSE
 uds,nacctbi,subject.info.derived.longitudinal.nacctbi,list,TRUE
 uds,nacctiyr,subject.info.derived.cross-sectional.nacctiyr,update,FALSE
+uds,naccc1,file.info.derived.naccc1,update,FALSE
+uds,naccc1,subject.info.derived.longitudinal.naccc1,list,TRUE
+uds,naccc2,file.info.derived.naccc2,update,FALSE
+uds,naccc2,subject.info.derived.longitudinal.naccc2,list,TRUE
+uds,naccmmse,file.info.derived.naccmmse,update,FALSE
+uds,naccmmse,subject.info.derived.longitudinal.naccmmse,list,TRUE
+uds,naccmoca,file.info.derived.naccmoca,update,FALSE
+uds,naccmoca,subject.info.derived.longitudinal.naccmoca,list,TRUE
 uds,naccalzp,file.info.derived.naccalzp,update,FALSE
 uds,naccalzp,subject.info.derived.longitudinal.naccalzp,list,TRUE
 uds,nacclbde,file.info.derived.nacclbde,update,FALSE
@@ -181,7 +191,7 @@ uds,naccage,subject.info.demographics.uds.age.latest,latest,TRUE
 uds,uds_sex,subject.info.demographics.uds.sex.latest,latest,TRUE
 uds,uds_race,subject.info.demographics.uds.race.latest,latest,TRUE
 uds,uds_primary_language,subject.info.demographics.uds.primary-language.latest,latest,TRUE
-uds,uds_education_level,subject.info.demographics.uds.education-level.latest,latest,TRUE
+uds,educ,subject.info.demographics.uds.education-level.latest,latest,TRUE
 uds,age_at_death,subject.info.demographics.uds.age-at-death,update,FALSE
 uds,vital_status,subject.info.demographics.uds.vital-status.latest,latest,TRUE
 uds,np_available,subject.info.demographics.uds.np-available,max,FALSE
