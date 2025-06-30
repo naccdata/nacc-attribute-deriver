@@ -68,7 +68,7 @@ scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,F
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
 uds,uds_visitdates,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
-uds,educ,subject.info.working-cross-sectional.educ,update,FALSE
+uds,educ,subject.info.working.cross-sectional.educ,update,FALSE
 uds,naccage,file.info.derived.naccage,update,FALSE
 uds,naccage,subject.info.derived.longitudinal.naccage,list,TRUE
 uds,naccageb,subject.info.derived.cross-sectional.naccageb,update,FALSE
