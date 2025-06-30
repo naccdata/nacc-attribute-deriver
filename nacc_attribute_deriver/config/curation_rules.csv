@@ -69,12 +69,6 @@ scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
 uds,uds_visitdates,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
 uds,educ,subject.info.working.cross-sectional.educ,update,FALSE
-uds,decclin,subject.info.working.longitudinal.decclin,list,TRUE
-uds,befrst,subject.info.working.longitudinal.befrst,list,TRUE
-uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
-uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
-uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
-uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE
 uds,naccage,file.info.derived.naccage,update,FALSE
 uds,naccage,subject.info.derived.longitudinal.naccage,list,TRUE
 uds,naccageb,subject.info.derived.cross-sectional.naccageb,update,FALSE
@@ -217,3 +211,9 @@ uds,naccint,subject.info.derived.cross-sectional.naccint,update,FALSE
 uds,naccmod,subject.info.derived.cross-sectional.naccmod,update,FALSE
 uds,naccyod,subject.info.derived.cross-sectional.naccyod,update,FALSE
 uds,affiliate,subject.info.derived.affiliate,update,FALSE
+uds,decclin,subject.info.working.longitudinal.decclin,list,TRUE
+uds,befrst,subject.info.working.longitudinal.befrst,list,TRUE
+uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
+uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
+uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
+uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE

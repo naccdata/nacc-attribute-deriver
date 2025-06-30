@@ -10,7 +10,7 @@ Form B9 is required and expected to have been filled out.
 from typing import List, Optional
 from pydantic import ValidationError
 
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -23,7 +23,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working_derived = WorkingDerivedNamespace(table=table)
 
         # if b9chg == 1 was selected in version 1.2 of UDS (no meaningful changes),
         # indicates NACC has brought forward data from previous visit
@@ -36,9 +36,23 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         Args:
             field: The field to grab the previous longitudinal records for
         """
-        visitdate = str(self.get_date())
-        prev_records = self.__subject_derived.get_longitudinal_value(field, List)
-        prev_record = prev_records[-1] if prev_records else None
+        prev_records = self.__working_derived.get_longitudinal_value(field, list, default=[])
+        prev_record = None
+
+        # by order of curation rules, we should only add this form's values
+        # after deriving variables, but just as a sanity check make sure we are
+        # not grabbing this form's values; e.g. break for loop as soon as we
+        # get the most recent record that isn't this form's
+        for record in reversed(prev_records):
+            try:
+                prev_record = DateTaggedValue(**record)
+            except ValidationError as e:
+                raise AttributeDeriverError(
+                    f"Cannot cast longitudinal value to DateTaggedValue: {e}"
+                ) from e
+
+            if prev_record.date != self.get_date():
+                break
 
         # even for non-initial visits sometimes we simply don't
         # have the previous visit in Flywheel
@@ -46,11 +60,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             return None
 
         try:
-            return int(DateTaggedValue(**record).value)
-        except ValidationError as e:
-            raise AttributeDeriverError(
-                f"Cannot cast longitudinal value to DateTaggedValue: {e}"
-            ) from e
+            return int(prev_record.value)
         except (TypeError, ValueError):
             return None
 

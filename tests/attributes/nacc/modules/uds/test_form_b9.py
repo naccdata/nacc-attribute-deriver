@@ -23,15 +23,32 @@ def table() -> SymbolTable:
                         "module": "UDS",
                         "packet": "I",
                         "formver": "3.0",
+                        "b9chg": 1,
+                        "befpred": 0
                     }
                 }
             }
         },
         "subject": {
             "info": {
-                "derived": {
+                "working": {
                     "longitudinal": {
-                        "decclin": 2,
+                        "decclin": [
+                            {
+                                "date": "2024-12-01",
+                                "value": 0
+                            }
+                        ],
+                        "befrst": [
+                            {
+                                "date": "2024-01-01",
+                                "value": 88
+                            },
+                            {
+                                "date": "2025-01-01",
+                                "value": 0
+                            }
+                        ]
                     }
                 }
             }
@@ -39,3 +56,29 @@ def table() -> SymbolTable:
     }
 
     return SymbolTable(data)
+
+
+class TestUDSFormB9Attribute:
+
+    def test_grab_prev(self, table):
+        """Test the grab_prev method."""
+        attr = UDSFormB9Attribute(table)
+        assert attr.grab_prev("decclin") == 0
+
+        # this should ignore the second record since it has the
+        # same visitdate as the current record
+        assert attr.grab_prev("befrst") == 88
+
+        # no previous record
+        assert attr.grab_prev("cogfrst") is None
+
+    def test_create_naccbehf(self, table, working_derived_prefix):
+        """Tests create NACCBEHF."""
+        attr = UDSFormB9Attribute(table)
+        assert attr._create_naccbehf() == 0
+
+        # p_befpred drives value when formver >= 3
+        set_attribute(table, working_derived_prefix, "longitudinal.befpred", [{"date": "2024-01-01", "value": "3"}])
+        assert attr._create_naccbehf() == 3
+        set_attribute(table, working_derived_prefix, "longitudinal.befpred", [{"date": "2024-01-01", "value": "0"}])
+        assert attr._create_naccbehf() == 99
