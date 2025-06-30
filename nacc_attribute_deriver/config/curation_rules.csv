@@ -143,6 +143,15 @@ uds,naccstyr,subject.info.derived.cross-sectional.naccstyr,update,FALSE
 uds,nacctbi,file.info.derived.nacctbi,update,FALSE
 uds,nacctbi,subject.info.derived.longitudinal.nacctbi,list,TRUE
 uds,nacctiyr,subject.info.derived.cross-sectional.nacctiyr,update,FALSE
+uds,naccbmi,file.info.derived.naccbmi,update,FALSE
+uds,naccbmi,subject.info.derived.longitudinal.naccbmi,list,TRUE
+uds,naccgds,file.info.derived.naccgds,update,FALSE
+uds,naccgds,subject.info.derived.longitudinal.naccgds,list,TRUE
+uds,naccnrex,file.info.derived.naccnrex,update,FALSE
+uds,naccnrex,subject.info.derived.longitudinal.naccnrex,list,TRUE
+uds,naccbehf,subject.info.derived.cross-sectional.naccbehf,update,FALSE
+uds,naccbefx,subject.info.derived.cross-sectional.naccbefx,update,FALSE
+uds,nacccgfx,subject.info.derived.cross-sectional.nacccgfx,update,FALSE
 uds,naccc1,file.info.derived.naccc1,update,FALSE
 uds,naccc1,subject.info.derived.longitudinal.naccc1,list,TRUE
 uds,naccc2,file.info.derived.naccc2,update,FALSE
@@ -202,3 +211,9 @@ uds,naccint,subject.info.derived.cross-sectional.naccint,update,FALSE
 uds,naccmod,subject.info.derived.cross-sectional.naccmod,update,FALSE
 uds,naccyod,subject.info.derived.cross-sectional.naccyod,update,FALSE
 uds,affiliate,subject.info.derived.affiliate,update,FALSE
+uds,decclin,subject.info.working.longitudinal.decclin,list,TRUE
+uds,befrst,subject.info.working.longitudinal.befrst,list,TRUE
+uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
+uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
+uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
+uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE
