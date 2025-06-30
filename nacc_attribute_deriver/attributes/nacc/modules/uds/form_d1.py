@@ -337,6 +337,100 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         return 0
 
+    def _create_naccmcii(self) -> int:
+        """Creates NACCMCII - Incident MCI during USD follow-up
+
+        Requires working variables FVMCI.
+        """
+        if self.uds.is_initial():
+            if self.__demented == 1 or self.generate_mci() == 1:
+                return 8
+            return 0
+
+        naccmcii = self.__subject_derived.get_cross_sectional_value("naccmcii", int)
+        fvmci = self.__working_derived.get_cross_sectional_value("fvmci", int)
+
+        if fvmci == 1 and naccmcii != 8:
+            return 1
+        if fvmci == 2:
+            return 8
+
+        return 0 if naccmcii is None else naccmcii
+
+    def determine_mci_domain_affected(self, mci_domain: List[str]) -> int:
+        """Determines if the given MCI domain is affected.
+
+        Args:
+            mci_domain: List of strings specifying vars for the MCI domain
+        """
+        mci_vars = self.uds.group_attributes(mci_domain, int)
+        if any(x == 1 for x in mci_vars):
+            return 1
+
+        if all(x == 0 for x in mci_vars):
+            return 0
+
+        return 8
+
+    def _create_naccmcia(self) -> int:
+        """Creates NACCMCIA - MCI domain affected -- attention"""
+        return self.determine_mci_domain_affected(
+            ["mciapatt", "mcin1att", "mcin2att"]
+        )
+
+    def _create_naccmcie(self) -> int:
+        """Creates NACCMCIE - MCI domain affected -- executive function"""
+        return self.determine_mci_domain_affected(
+            ["mciapex", "mcin1ex", "mcin2ex"]
+        )
+
+    def _create_naccmcil(self) -> int:
+        """Creates NACCMCIL - MCI domain affected -- language"""
+        return self.determine_mci_domain_affected(
+            ["mciaplan", "mcin1lan", "mcin2lan"]
+        )
+
+    def _create_naccmciv(self) -> int:
+        """Creates NACCMCIV - MCI domain affected -- visuospatial"""
+        return self.determine_mci_domain_affected(
+            ["mciapvis", "mcin1vis", "mcin2vis"]
+        )
+
+    """
+    The following are working variables (non-NACC derived variables but used
+    to help derive other NAC-derived variables.)
+    """
+
+    def _create_ivcstat(self) -> Optional[int]:
+        """Creates IVCSTAT - helper variable for FVMCI. Only defined
+        at initial visit."""
+        if not self.uds.is_initial():
+            return None
+
+        impnomci = self.uds.get_value("impnomci", int)
+        if self.__normcog == 1 or impnomci == 1:
+            return 1
+
+        return 0
+
+    def _create_fvmci(self) -> Optional[int]:
+        """Creates FVMCI - helper variable for NACCMCII. Only defined
+        in follow-up visits."""
+        if self.uds.is_initial():
+            return None
+
+        mci = self.generate_mci()
+        fvmci = self.__working_derived.get_cross_sectional_value("fvmci", int)
+        ivcstat = self.__working_derived.get_cross_sectional_value("ivcstat", int)
+
+        if mci == 1 and fvmci is None:
+            return 1
+
+        if mci != 1 and fvmci == 1 and ivcstat == 1 and self.__demented == 1:
+            return 2
+
+        return fvmci
+
     """
     The following require NP variables.
     """
@@ -378,29 +472,3 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return 1
 
         return 0
-
-    def _create_naccmcia(self) -> int:
-        """Creates NACCMCIA - MCI domain affected -- attention"""
-        mci_attention = self.uds.group_attributes(
-            ["mciapatt", "mcin1att", "mcin2att"], int)
-
-        if any(x == 1 for x in mci_attention):
-            return 1
-
-        if all(x == 0 for x in mci_attention):
-            return 0
-
-        return 8
-
-    def _create_naccmcie(self) -> int:
-        """Creates NACCMCIE - MCI domain affected -- executive function"""
-        mci_executive = self.uds.group_attributes(
-            ["mciapex", "mcin1ex", "mcin2ex"], int)
-
-        if any(x == 1 for x in mci_executive):
-            return 1
-
-        if all(x == 0 for x in mci_executive):
-            return 0
-
-        return 8

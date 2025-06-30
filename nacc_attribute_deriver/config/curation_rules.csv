@@ -73,6 +73,8 @@ meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
 uds,uds_visitdates,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
 uds,educ,subject.info.working.cross-sectional.educ,update,FALSE
 uds,notdemin,subject.info.working.cross-sectional.notdemin,update,FALSE
+uds,ivcstat,subject.info.working.cross-sectional.ivcstat,update,FALSE
+uds,fvmci,subject.info.working.cross-sectional.fvmci,update,FALSE
 uds,naccage,file.info.derived.naccage,update,FALSE
 uds,naccage,subject.info.derived.longitudinal.naccage,list,TRUE
 uds,naccageb,subject.info.derived.cross-sectional.naccageb,update,FALSE
@@ -184,10 +186,17 @@ uds,naccalzd,file.info.derived.naccalzd,update,FALSE
 uds,naccalzd,subject.info.derived.longitudinal.naccalzd,list,TRUE
 uds,naccmcia,file.info.derived.naccmcia,update,FALSE
 uds,naccmcia,subject.info.derived.longitudinal.naccmcia,list,TRUE
+uds,naccmcie,file.info.derived.naccmcie,update,FALSE
+uds,naccmcie,subject.info.derived.longitudinal.naccmcie,list,TRUE
+uds,naccmcil,file.info.derived.naccmcil,update,FALSE
+uds,naccmcil,subject.info.derived.longitudinal.naccmcil,list,TRUE
+uds,naccmciv,file.info.derived.naccmciv,update,FALSE
+uds,naccmciv,subject.info.derived.longitudinal.naccmciv,list,TRUE
 uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,update,FALSE
 uds,naccidem,subject.info.derived.cross-sectional.naccidem,update,FALSE
 uds,naccadmu,subject.info.derived.cross-sectional.naccadmu,update,FALSE
 uds,naccftdm,subject.info.derived.cross-sectional.naccftdm,update,FALSE
+uds,naccmcii,subject.info.derived.cross-sectional.naccmcii,update,FALSE
 uds,naccdage,subject.info.derived.cross-sectional.naccdage,update,FALSE
 uds,naccdied,subject.info.derived.cross-sectional.naccdied,update,FALSE
 uds,naccautp,subject.info.derived.cross-sectional.naccautp,update,FALSE
