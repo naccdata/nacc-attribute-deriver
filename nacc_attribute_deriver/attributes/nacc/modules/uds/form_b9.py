@@ -7,11 +7,14 @@ Derived variables from form B9: Clinician Judgement of Symptoms.
 Form B9 is required and expected to have been filled out.
 """
 
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import ValidationError
 
-from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
+from nacc_attribute_deriver.attributes.base.namespace import (
+    SubjectDerivedNamespace,
+    WorkingDerivedNamespace,
+)
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -25,21 +28,22 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__working_derived = WorkingDerivedNamespace(table=table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         # if b9chg == 1 was selected in version 1.2 of UDS (no meaningful changes),
         # indicates NACC has brought forward data from previous visit
         self.__b9_changes = self.uds.get_value("b9chg", int) in [1, 3]
 
-    def grab_prev(self, field: str) -> Optional[int]:
+    def grab_prev(self,
+                  field: str,
+                  derived: Union[SubjectDerivedNamespace, WorkingDerivedNamespace]) -> Optional[int]:
         """Grabs the previous recorded field - assumes longitudinal field, which
         is a list of DateTaggedValues. The value itself should be an integer.
 
         Args:
             field: The field to grab the previous longitudinal records for
         """
-        prev_records = self.__working_derived.get_longitudinal_value(
-            field, list, default=[]
-        )
+        prev_records = derived.get_longitudinal_value(field, list, default=[])
         prev_record = None
 
         # by order of curation rules, we should only add this form's values
@@ -67,18 +71,38 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         except (TypeError, ValueError):
             return None
 
+    def harmonize_befrst(self) -> int:
+        """Updates BEFRST for NACCBEHF harmonization.
+
+        Returns
+            updated values BEFRST
+        """
+        befrst = self.uds.get_value("befrst", int)
+
+        if self.formver < 3:
+            if befrst == 8:
+                return 10
+            if self.formver == 2 and befrst == 9:
+                return 8
+
+        return befrst if befrst is not None else 88
+
     def _create_naccbehf(self) -> int:
         """Create NACCBEHF, indicate the predominant symptom that was first
         recognized as a decline in the subject's behavior.
 
-        the p-vars (p_decclin, p_befrst, p_befpred)
+        Depends on previous vars (p_decclin, p_befrst, p_befpred)
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal with carryover from previous forms (e.g. not
+        the same for every visit.)
         """
-        befrst = self.uds.get_value("befrst", int)  # v1, v2
+        befrst = self.harmonize_befrst()
         befpred = self.uds.get_value("befpred", int)  # v3+
         naccbehf = befpred if befpred is not None else befrst
 
-        p_decclin = self.grab_prev("decclin")
-        p_befrst = self.grab_prev("befrst")
+        p_decclin = self.grab_prev("decclin", self.__working_derived)
+        p_befrst = self.grab_prev("befrst", self.__working_derived)
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccbehf = 0
@@ -89,18 +113,25 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 naccbehf = p_befrst
 
         if self.formver >= 3:
-            p_befpred = self.grab_prev("befpred")
             if befpred == 0:
+                p_befpred = self.grab_prev("befpred", self.__working_derived)
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
                 elif p_befpred == 0:
                     naccbehf = 99
 
+            if naccbehf == 88:
+                naccbehf = 0
+
         return naccbehf if naccbehf is not None else 99
 
     def _create_naccbefx(self) -> Optional[str]:
         """Create NACCBEFX, specification of other predominant symptom that was
-        first recognized as a decline in the subject's behavior."""
+        first recognized as a decline in the subject's behavior.
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal,
+        """
         if self._create_naccbehf() != 10:
             return None
 
@@ -111,20 +142,45 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
     def _create_nacccgfx(self) -> Optional[str]:
         """Creates NACCCGFX, specification for other predominant symptom first
-        recognized as a decline in the subject's cognition."""
+        recognized as a decline in the subject's cognition.
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal.
+        """
         cogfprex = self.uds.get_value("cogfprex", str)
         cogfrstx = self.uds.get_value("cogfrstx", str)
 
         return cogfprex if cogfprex is not None else cogfrstx
 
+    def harmonize_cogfrst(self) -> int:
+        """Updates COGFRST for NACCCOGF harmonization.
+
+        Returns
+            updated values for COGFRST
+        """
+        cogfrst = self.uds.get_value("cogfrst", int)
+
+        if self.formver < 3:
+            if cogfrst > 1 and cogfrst < 6:
+                return cogfrst + 1
+            elif cogfrst == 6:
+                return 8
+
+        return cogfrst if cogfrst is not None else 88
+
     def _create_nacccogf(self) -> int:
         """Creates NACCCOGF, Indicate the predominant symptom that was first
-        recognized as a decline in the subject's cognition."""
-        cogfrst = self.uds.get_value("cogfrst", int)
+        recognized as a decline in the subject's cognition.
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal with carryover from previous forms (e.g. not
+        the same for every visit.)
+        """
+        cogfrst = self.harmonize_cogfrst()
         cogfpred = self.uds.get_value("cogfpred", int)
-        p_decclin = self.grab_prev("decclin")
-        p_cogfrst = self.grab_prev("cogfrst")
-        p_cogfpred = self.grab_prev("cogfpred")
+        p_decclin = self.grab_prev("decclin", self.__working_derived)
+        p_cogfrst = self.grab_prev("cogfrst", self.__working_derived)
+        p_cogfpred = self.grab_prev("cogfpred", self.__working_derived)
 
         nacccogf = 99
 
@@ -154,8 +210,8 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         mofrst = self.uds.get_value("mofrst", int)
         naccmotf = mofrst if mofrst and mofrst not in [0, 88] else None
 
-        p_decclin = self.grab_prev("decclin")
-        p_mofrst = self.grab_prev("mofrst")
+        p_decclin = self.grab_prev("decclin", self.__working_derived)
+        p_mofrst = self.grab_prev("mofrst", self.__working_derived)
 
         if mofrst == 88 or (self.__b9_changes and p_decclin == 0 and naccmotf is None):
             naccmotf = 0

@@ -3,6 +3,7 @@
 Form B6 may not have been filled out.
 """
 
+import math
 from typing import Optional
 
 from .uds_attribute_collection import UDSAttributeCollection
@@ -63,6 +64,8 @@ class UDSFormB6Attribute(UDSAttributeCollection):
         # (total score of completed / # of completed) * (# unanswered)
         if unanswered > 0:
             prorated = (completed_score / num_completed) * (unanswered)
-            return round(completed_score + prorated)
+
+            # this ensures 0.5 rounds up, not down
+            return int(math.floor(completed_score + prorated + 0.5))
 
         return completed_score
