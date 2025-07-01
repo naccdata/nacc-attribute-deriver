@@ -368,11 +368,10 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return 0
 
         notdemin = self.__working_derived.get_cross_sectional_value("notdemin", int)
-
         if notdemin == 1 and self.__demented == 1:
             return 1
 
-        return 0
+        return naccidem
 
     def _create_naccmcii(self) -> int:
         """Creates NACCMCII - Incident MCI during USD follow-up
