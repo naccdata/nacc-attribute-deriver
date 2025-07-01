@@ -32,12 +32,16 @@ def table() -> SymbolTable:
         "subject": {
             "info": {
                 "working": {
-                    "longitudinal": {
-                        "decclin": [{"date": "2024-12-01", "value": 0}],
-                        "befrst": [
-                            {"date": "2024-01-01", "value": 88},
-                            {"date": "2025-01-01", "value": 0},
-                        ],
+                    # "longitudinal": {
+                    #     "decclin": [{"date": "2024-12-01", "value": 0}],
+                    #     "befrst": [
+                    #         {"date": "2024-01-01", "value": 88},
+                    #         {"date": "2025-01-01", "value": 0},
+                    #     ],
+                    "cross-sectional": {
+                        "decclin": 0,
+                        "befrst": 0,
+                        "mofrst": 3
                     }
                 }
             }
@@ -48,20 +52,20 @@ def table() -> SymbolTable:
 
 
 class TestUDSFormB9Attribute:
-    def test_grab_prev(self, table):
-        """Test the grab_prev method.
+    # def test_grab_prev(self, table):
+    #     """Test the grab_prev method.
 
-        Need to get around name mangling just for this test.
-        """
-        attr = UDSFormB9Attribute(table)
-        assert attr.grab_prev("decclin", attr._UDSFormB9Attribute__working_derived) == 0
+    #     Need to get around name mangling just for this test.
+    #     """
+    #     attr = UDSFormB9Attribute(table)
+    #     assert attr.grab_prev("decclin", attr._UDSFormB9Attribute__working_derived) == 0
 
-        # this should ignore the second record since it has the
-        # same visitdate as the current record
-        assert attr.grab_prev("befrst", attr._UDSFormB9Attribute__working_derived) == 88
+    #     # this should ignore the second record since it has the
+    #     # same visitdate as the current record
+    #     assert attr.grab_prev("befrst", attr._UDSFormB9Attribute__working_derived) == 88
 
-        # no previous record
-        assert attr.grab_prev("cogfrst", attr._UDSFormB9Attribute__working_derived) is None
+    #     # no previous record
+    #     assert attr.grab_prev("cogfrst", attr._UDSFormB9Attribute__working_derived) is None
 
     def test_create_naccbehf(self, table, working_derived_prefix):
         """Tests create NACCBEHF."""
@@ -72,14 +76,14 @@ class TestUDSFormB9Attribute:
         set_attribute(
             table,
             working_derived_prefix,
-            "longitudinal.befpred",
+            "cross-sectional.befpred",
             [{"date": "2024-01-01", "value": "3"}],
         )
         assert attr._create_naccbehf() == 3
         set_attribute(
             table,
             working_derived_prefix,
-            "longitudinal.befpred",
+            "cross-sectional.befpred",
             [{"date": "2024-01-01", "value": "0"}],
         )
         assert attr._create_naccbehf() == 99
@@ -98,3 +102,15 @@ class TestUDSFormB9Attribute:
         # should be same for v3
         set_attribute(table, form_prefix, 'formver', 3.0)
         assert attr._create_naccbehf() == 0
+
+    def test_create_naccmotf(self, table, form_prefix):
+        """Tests creating NACCMOTF."""
+        attr = UDSFormB9Attribute(table)
+        assert attr._create_naccmotf() == 0
+
+        set_attribute(table, form_prefix, 'b9chg', 0)
+        attr = UDSFormB9Attribute(table)
+        assert attr._create_naccmotf() == 99
+
+        set_attribute(table, form_prefix, 'mofrst', 0)
+        assert attr._create_naccmotf() == 3

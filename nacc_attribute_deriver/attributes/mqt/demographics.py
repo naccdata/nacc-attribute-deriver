@@ -16,6 +16,7 @@ from nacc_attribute_deriver.attributes.base.uds_namespace import (
 )
 from nacc_attribute_deriver.schema.errors import (
     InvalidFieldError,
+    MissingRequiredError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -108,7 +109,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
     def _create_uds_race(self) -> str:
         """UDS race."""
         naccnihr = self.__subject_derived.get_cross_sectional_value("naccnihr", int)
-        mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)
+        mapped_naccnihr = self.RACE_MAPPING.get(naccnihr)  # type: ignore
 
         if not mapped_naccnihr:
             raise InvalidFieldError(f"Invalid/unknown naccnihr code: {naccnihr}")
@@ -117,14 +118,18 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
 
     def _create_age_at_death(self) -> int:
         """Age at death, mapped from NACCDAGE."""
-        return self.__subject_derived.get_cross_sectional_value("naccdage", int)
+        naccdage = self.__subject_derived.get_cross_sectional_value("naccdage", int)
+        if not naccdage:
+            raise MissingRequiredError(["cross-sectional.naccdage"])
+
+        return naccdage
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> str:
         """Creates subject.info.demographics.uds.vital-status.latest."""
         naccdied = self.__subject_derived.get_cross_sectional_value("naccdied", int)
-        mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)
+        mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)  # type: ignore
 
         if not mapped_naccdied:
             raise InvalidFieldError(f"Invalid/unknown naccdied code: {naccdied}")

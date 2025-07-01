@@ -53,6 +53,9 @@ class SCANMRIQCAttributeCollection(AttributeCollection):
         Counts the unique session dates.
         """
         dates = self.__working_derived.get_cross_sectional_value("scan-mri-dates", list)
+        if not dates:
+            return 0
+
         return len(dates)
 
     def _create_scan_mri_year_count(self) -> int:
@@ -64,6 +67,9 @@ class SCANMRIQCAttributeCollection(AttributeCollection):
         counts the distinct years.
         """
         dates = self.__working_derived.get_cross_sectional_value("scan-mri-dates", list)
+        if not dates:
+            return 0
+
         return len(get_unique_years(dates))
 
 
@@ -152,11 +158,17 @@ class SCANPETQCAttributeCollection(AttributeCollection):
         Counts the unique session dates.
         """
         dates = self.__working_derived.get_cross_sectional_value("scan-pet-dates", list)
+        if not dates:
+            return 0
+
         return len(dates)
 
     def _create_scan_pet_year_count(self) -> int:
         """Years of SCAN PET scans available."""
         dates = self.__working_derived.get_cross_sectional_value("scan-pet-dates", list)
+        if not dates:
+            return 0
+
         return len(get_unique_years(dates))
 
 

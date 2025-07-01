@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+from pydantic import ValidationError
 from typing import (
     Any,
     Iterable,
@@ -12,6 +13,7 @@ from typing import (
 )
 
 from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
+from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
@@ -268,30 +270,108 @@ class SubjectDerivedNamespace(BaseNamespace):
 
     def get_cross_sectional_value(
         self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
-    ) -> Any:
+    ) -> Optional[T]:
         """Returns a cross-sectional value.
 
         Args:
-          key: the attribute name
-          default: the default value
+            attribute: The field to grab cross-sectional value for
+            attr_type: Attribute type
+            default: default value
         Returns:
           the value for the attribute in the table
         """
         return self.get_value(f"cross-sectional.{attribute}", attr_type, default)
 
-    def get_longitudinal_value(
+    def get_cross_sectional_dated_value(
         self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
-    ) -> Any:
-        """Returns a longitudinal value.
+    ) -> Optional[T]:
+        """Returns the value of a cross-sectional dated value.
 
         Args:
-          key: the attribute name
-          default: the default value
+            attribute: The field to grab cross-sectional value for
+            attr_type: Attribute type
+            default: default value
+        Returns:
+          the value for the dated attribute in the table
+        """
+        dated_value = self.get_cross_sectional_value(attribute, dict)
+        if not dated_value:
+            return None
+
+        try:
+            value = DateTaggedValue(**dated_value)
+        except ValidationError as e:
+            raise InvalidFieldError(
+                f"Cannot cast cross-sectional value for {attribute} to DateTaggedValue: {e}"
+            ) from e
+
+        try:
+            return attr_type(value.value)  # type: ignore
+        except TypeError as e:
+            raise InvalidFieldError(
+                f"{self.prefix}.cross-sectional.{attribute}.value must be of type {attr_type}"
+            ) from e
+
+    def get_longitudinal_value(self, attribute: str, attr_type: Type[T]) -> Optional[List[DateTaggedValue]]:
+        """Returns a longitudinal value. Will be a list of DatedTaggedValues.
+        This does not support default values.
+
+        Args:
+            attribute: The field to grab longitudinal values for
+            attr_type: Attribute type
         Returns:
           the value for the attribute in the table
         """
-        return self.get_value(f"longitudinal.{attribute}", attr_type, default)
+        records = self.get_value(f"longitudinal.{attribute}", list)
+        if not records:
+            return None
 
+        # cast to DateTaggedValues
+        for i, record in enumerate(records):
+            try:
+                records[i] = DateTaggedValue(**record)
+            except ValidationError as e:
+                raise InvalidFieldError(
+                    f"Cannot cast longitudinal value for {attribute} to DateTaggedValue: {e}"
+                ) from e
+
+            try:
+                records[i].value = attr_type(records[i].value)  # type: ignore
+            except TypeError as e:
+                raise InvalidFieldError(
+                    f"{self.prefix}.longitudinal.{attribute} must be of type {attr_type}"
+                ) from e
+
+        return records
+
+    def get_prev_value(self, attribute: str, attr_type: Type[T]) -> Optional[T]:
+        """Gets the previous recorded value - pulls from longitudinal records.
+
+        Args:
+            attribute: The field to grab the previous longitudinal records for
+            attr_type: Attribute type
+        """
+        records = self.get_longitudinal_value(attribute, attr_type)
+        if records is None:
+            return None
+
+        prev_record = None
+
+        # sanity check make sure we are not grabbing this form's values;
+        # e.g. break for loop as soon as we get the most recent record
+        # that isn't this form's
+        for record in reversed(records):
+            if record.date != self.get_date():
+                prev_record = record
+                break
+
+        # even for non-initial visits sometimes we simply don't
+        # have the previous visit in Flywheel
+        if not prev_record:
+            return None
+
+        # should have already been casted to correct type
+        return prev_record.value
 
 class WorkingDerivedNamespace(SubjectDerivedNamespace):
     """Similar to SubjectDerivedNamespace but specifically for
