@@ -46,6 +46,8 @@ np,np_death_date,subject.info.working.cross-sectional.np-death-date,update,FALSE
 np,npchrom,subject.info.working.cross-sectional.npchrom,update,FALSE
 np,nppdxp,subject.info.working.cross-sectional.nppdxp,update,FALSE
 np,nppdxq,subject.info.working.cross-sectional.nppdxq,update,FALSE
+cls,naccengl,subject.info.derived.cross-sectional.naccengl,update,FALSE
+cls,naccspnl,subject.info.derived.cross-sectional.naccspnl,update,FALSE
 scan_mri_sbm,scan_volume_analysis_indicator,subject.info.imaging.mri.scan.t1.brain-volume,max,FALSE
 scan_mri_sbm,scan_flair_wmh_indicator,subject.info.imaging.mri.scan.flair.wmh,max,FALSE
 scan_mri_sbm,mri_scan_analysis_types,subject.info.imaging.mri.scan.analysis-types,set,FALSE

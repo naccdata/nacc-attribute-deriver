@@ -19,7 +19,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * C1/C2
         * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
     * D1 **except** NACCMCII (D1)
-        * **NACCMCII is still not working properly, on hold for now**\
+        * **NACCMCII is still not working properly, on hold for now**
 * Adds CLS derived variables
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
