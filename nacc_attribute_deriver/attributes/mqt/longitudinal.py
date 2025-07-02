@@ -3,6 +3,8 @@
 Assumes NACC-derived variables are already set
 """
 
+from typing import Any, List
+
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     WorkingDerivedNamespace,
@@ -19,16 +21,20 @@ class LongitudinalAttributeCollection(AttributeCollection):
             table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
 
-    def _create_total_uds_visits(self) -> int:
-        """Total number of UDS visits."""
-        visitdates = self.__working_derived.get_cross_sectional_value(
+    def get_visitdates(self) -> List[Any]:
+        """Get UDS visits."""
+        visitdates: list[Any] | None = self.__working_derived.get_cross_sectional_value(
             "uds-visitdates", list
         )
-        return len(visitdates)
+        if not visitdates:
+            return []
+
+        return visitdates
+
+    def _create_total_uds_visits(self) -> int:
+        """Total number of UDS visits."""
+        return len(self.get_visitdates())
 
     def _create_years_of_uds(self) -> int:
         """Creates subject.info.longitudinal-data.uds.year-count."""
-        visitdates = self.__working_derived.get_cross_sectional_value(
-            "uds-visitdates", list
-        )
-        return len(get_unique_years(visitdates))
+        return len(get_unique_years(self.get_visitdates()))

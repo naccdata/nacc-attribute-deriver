@@ -28,7 +28,6 @@ class UDSAttributeCollection(AttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        """By default, a form is expected to have been submitted."""
         return True
 
     def get_date(self) -> datetime.date:

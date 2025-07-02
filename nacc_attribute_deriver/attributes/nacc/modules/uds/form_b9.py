@@ -5,14 +5,18 @@ branches derived from SAS. Eventually want to clean up.
 Derived variables from form B9: Clinician Judgement of Symptoms.
 
 Form B9 is required and expected to have been filled out.
+
+There is a lot of carrying over of previous values and recoding in the original
+SAS, resulting in pretty confusing logic, which may not be super clear here
+either.
 """
 
-from typing import List, Optional
-from pydantic import ValidationError
+from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
-from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
+from nacc_attribute_deriver.attributes.base.namespace import (
+    SubjectDerivedNamespace,
+    WorkingDerivedNamespace,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .uds_attribute_collection import UDSAttributeCollection
@@ -24,80 +28,90 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__working_derived = WorkingDerivedNamespace(table=table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         # if b9chg == 1 was selected in version 1.2 of UDS (no meaningful changes),
         # indicates NACC has brought forward data from previous visit
         self.__b9_changes = self.uds.get_value("b9chg", int) in [1, 3]
+        self.__decclin = self.uds.get_value("decclin", int)
 
-    def grab_prev(self, field: str) -> Optional[int]:
-        """Grabs the previous recorded field - assumes longitudinal field, which
-        is a list of DateTaggedValues. The value itself should be an integer.
+    def harmonize_befrst(self) -> Optional[int]:
+        """Updates BEFRST for NACCBEHF harmonization.
 
-        Args:
-            field: The field to grab the previous longitudinal records for
+        Returns     updated value for BEFRST
         """
-        prev_records = self.__working_derived.get_longitudinal_value(field, list, default=[])
-        prev_record = None
+        befrst = self.uds.get_value("befrst", int)
 
-        # by order of curation rules, we should only add this form's values
-        # after deriving variables, but just as a sanity check make sure we are
-        # not grabbing this form's values; e.g. break for loop as soon as we
-        # get the most recent record that isn't this form's
-        for record in reversed(prev_records):
-            try:
-                prev_record = DateTaggedValue(**record)
-            except ValidationError as e:
-                raise AttributeDeriverError(
-                    f"Cannot cast longitudinal value to DateTaggedValue: {e}"
-                ) from e
+        if self.formver < 3:
+            if befrst == 8:
+                return 10
+            if self.formver == 2 and befrst == 9:
+                return 8
 
-            if prev_record.date != self.get_date():
-                break
+        return befrst
 
-        # even for non-initial visits sometimes we simply don't
-        # have the previous visit in Flywheel
-        if not prev_record:
-            return None
-
-        try:
-            return int(prev_record.value)
-        except (TypeError, ValueError):
-            return None
-
-    def _create_naccbehf(self) -> int:
+    def _create_naccbehf(self) -> int:  # noqa: C901
         """Create NACCBEHF, indicate the predominant symptom that was first
         recognized as a decline in the subject's behavior.
 
-        the p-vars (p_decclin, p_befrst, p_befpred)
+        Depends on previous vars (p_decclin, p_befrst, p_befpred)
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal with carryover from previous forms (e.g. not
+        the same for every visit.)
         """
-        befrst = self.uds.get_value("befrst", int)  # v1, v2
+        befrst = self.harmonize_befrst()
         befpred = self.uds.get_value("befpred", int)  # v3+
         naccbehf = befpred if befpred is not None else befrst
 
-        p_decclin = self.grab_prev("decclin")
-        p_befrst = self.grab_prev("befrst")
+        """
+        None can mean one of the following:
+            1. For all versions, this may indicate a gate variable (e.g.
+                DECCLIN in V2 and earlier or DECCLBE in V3+) was 0
+                for no decline in subject behavior. If so, we return 0 (no decline)
+                In general this means we always return 0 in V3, since otherwise
+                they should explicitly set befpred to 0 to grab previous value
+            2. For V2 and earlier, if the gate variable is none or 1, then
+                that means we need to grab the value from the previous form,
+                so we do not return early (continue function)
+        """
+        if naccbehf is None:
+            if self.formver >= 3:
+                return 0
+            elif self.__decclin == 0:
+                return 0
+
+        p_decclin = self.__working_derived.get_prev_value("decclin", int)
+        p_befrst = self.__working_derived.get_prev_value("befrst", int)
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccbehf = 0
         elif self.__b9_changes and p_decclin == 1:
             if p_befrst == 88:
                 naccbehf = 0
-            if p_befrst is not None:
+            elif p_befrst is not None:
                 naccbehf = p_befrst
 
         if self.formver >= 3:
-            p_befpred = self.grab_prev("befpred")
             if befpred == 0:
+                p_befpred = self.__working_derived.get_prev_value("befpred", int)
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
                 elif p_befpred == 0:
                     naccbehf = 99
 
+            if naccbehf == 88:
+                naccbehf = 0
+
         return naccbehf if naccbehf is not None else 99
 
     def _create_naccbefx(self) -> Optional[str]:
         """Create NACCBEFX, specification of other predominant symptom that was
-        first recognized as a decline in the subject's behavior."""
+        first recognized as a decline in the subject's behavior.
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal,
+        """
         if self._create_naccbehf() != 10:
             return None
 
@@ -108,37 +122,70 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
     def _create_nacccgfx(self) -> Optional[str]:
         """Creates NACCCGFX, specification for other predominant symptom first
-        recognized as a decline in the subject's cognition."""
+        recognized as a decline in the subject's cognition.
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal.
+        """
         cogfprex = self.uds.get_value("cogfprex", str)
         cogfrstx = self.uds.get_value("cogfrstx", str)
 
         return cogfprex if cogfprex is not None else cogfrstx
 
-    def _create_nacccogf(self) -> int:
-        """Creates NACCCOGF, Indicate the predominant symptom that was first
-        recognized as a decline in the subject's cognition."""
+    def harmonize_cogfrst(self) -> Optional[int]:
+        """Updates COGFRST for NACCCOGF harmonization.
+
+        Returns     updated value for COGFRST
+        """
         cogfrst = self.uds.get_value("cogfrst", int)
+
+        if self.formver < 3:
+            if cogfrst is not None and cogfrst > 1 and cogfrst < 6:
+                return cogfrst + 1
+            elif cogfrst == 6:
+                return 8
+
+        return cogfrst
+
+    def _create_nacccogf(self) -> int:  # noqa: C901
+        """Creates NACCCOGF, Indicate the predominant symptom that was first
+        recognized as a decline in the subject's cognition.
+
+        TODO: RDD lists this as cross-sectional, but it seems more like
+        its longitudinal with carryover from previous forms (e.g. not
+        the same for every visit.)
+        """
+        cogfrst = self.harmonize_cogfrst()
         cogfpred = self.uds.get_value("cogfpred", int)
-        p_decclin = self.grab_prev("decclin")
-        p_cogfrst = self.grab_prev("cogfrst")
-        p_cogfpred = self.grab_prev("cogfpred")
+        p_decclin = self.__working_derived.get_prev_value("decclin", int)
+        p_cogfrst = self.__working_derived.get_prev_value("cogfrst", int)
+        p_cogfpred = self.__working_derived.get_prev_value("cogfpred", int)
+        nacccogf = None
 
-        nacccogf = 99
+        # see note in _create_naccbehf; same situation
+        if cogfrst is None and cogfpred is None:
+            if self.formver >= 3:
+                return 0
+            elif self.__decclin == 0:
+                return 0
 
+        # V2 and earlier
         if cogfrst == 88 or (self.__b9_changes and p_decclin == 0):
             nacccogf = 0
-        elif cogfrst == 88 or (
-            self.__b9_changes and p_decclin == 1 and p_cogfrst == 88
-        ):
+        elif self.__b9_changes and p_decclin == 1 and p_cogfrst == 88:
             nacccogf = 0
         elif self.__b9_changes and p_decclin == 1 and p_cogfrst is not None:
             nacccogf = p_cogfrst
         elif cogfrst is not None and cogfrst > 0 and cogfrst < 9:
             nacccogf = cogfrst
-        elif cogfpred and cogfpred > 0 and cogfpred < 9:
+
+        # V3+
+        elif cogfpred is not None and cogfpred > 0 and cogfpred < 9:
             nacccogf = cogfpred
-        elif cogfpred == 0 and p_cogfpred is not None:
+        elif cogfpred == 0 and p_cogfpred is not None and p_cogfpred != 0:
             nacccogf = p_cogfpred
+        else:
+            nacccogf = 99
 
         if self.formver >= 3 and nacccogf == 88:
             nacccogf = 0
@@ -149,22 +196,28 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         """Creates NACCMOTF, Indicate the predominant symptom that was first
         recognized as a decline in the subject's motor function."""
         mofrst = self.uds.get_value("mofrst", int)
-        naccmotf = mofrst if mofrst and mofrst not in [0, 88] else None
 
-        p_decclin = self.grab_prev("decclin")
-        p_mofrst = self.grab_prev("mofrst")
+        # see note in _create_naccbehf; same situation
+        if mofrst is None:
+            if self.formver >= 3:
+                return 0
+            elif self.__decclin == 0:
+                return 0
 
-        if mofrst == 88 or (self.__b9_changes and p_decclin == 0 and naccmotf is None):
+        naccmotf = None
+        p_decclin = self.__working_derived.get_prev_value("decclin", int)
+        p_mofrst = self.__working_derived.get_prev_value("mofrst", int)
+
+        if mofrst and mofrst not in [0, 88]:
+            naccmotf = mofrst
+        elif mofrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccmotf = 0
-        elif (
-            self.__b9_changes and p_decclin == 1 and p_mofrst == 88 and naccmotf is None
-        ):
+        elif self.__b9_changes and p_decclin == 1 and p_mofrst == 88:
             naccmotf = 0
         elif self.__b9_changes and p_decclin == 1 and p_mofrst is not None:
             naccmotf = p_mofrst
 
-        # SAS code had rmofrst - likely typo?
-        elif self.formver >= 3 and p_mofrst == 0 and naccmotf is None:
+        elif self.formver >= 3 and mofrst == 0:
             naccmotf = p_mofrst
 
         if self.formver >= 3 and naccmotf == 88:
@@ -173,30 +226,49 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         return naccmotf if naccmotf is not None else 99
 
     #########################################
-    # Carryover form variables              #
-    # These must be curated AFTER the above #
+    # Carryover form variables
+    # These should be curated AFTER the above
+    # We do check dates though so it shouldn't matter too much
     #########################################
 
-    def _create_decclin(self) -> Optional[int]:
-        """Carries over DECCLIN (V1, V2)."""
-        return self.uds.get_value("decclin", int)
+    def determine_carryover(self, attribute: str) -> Optional[int]:
+        """In many followup visits, 0 == assessed at previous visit.
 
-    def _create_befrst(self) -> Optional[int]:
-        """Carries over BEFRST (V1, V2)."""
-        return self.uds.get_value("befrst", int)
+        Need to pull in that case.
+        """
+        raw_value = self.uds.get_value(attribute, int)
 
-    def _create_cogfrst(self) -> Optional[int]:
-        """Carries over COGFRST (V1, V2)."""
-        return self.uds.get_value("cogfrst", int)
+        # see note in _create_naccbehf; same situation
+        if not self.uds.is_initial():  # noqa: SIM102
+            if raw_value == 0 or (
+                raw_value is None and self.formver < 3 and self.__decclin is None
+            ):
+                prev_value = self.__working_derived.get_prev_value(attribute, int)
+                if prev_value is not None:
+                    return prev_value
+
+        return raw_value
 
     def _create_mofrst(self) -> Optional[int]:
-        """Carries over MOFRST (V1, V2)."""
-        return self.uds.get_value("mofrst", int)
+        """Carries over MOFRST (V3+ and V1, V2)."""
+        return self.determine_carryover("mofrst")
 
     def _create_befpred(self) -> Optional[int]:
         """Carries over BEFPRED (V3+)."""
-        return self.uds.get_value("befpred", int)
+        return self.determine_carryover("befpred")
 
     def _create_cogfpred(self) -> Optional[int]:
         """Carries over COGFPRED (V3+)."""
-        return self.uds.get_value("cogfpred", int)
+        return self.determine_carryover("cogfpred")
+
+    def _create_decclin(self) -> Optional[int]:
+        """Carries over DECCLIN (V1, V2)."""
+        return self.determine_carryover("decclin")
+
+    def _create_befrst(self) -> Optional[int]:
+        """Carries over BEFRST (V1, V2)."""
+        return self.determine_carryover("befrst")
+
+    def _create_cogfrst(self) -> Optional[int]:
+        """Carries over COGFRST (V1, V2)."""
+        return self.determine_carryover("cogfrst")

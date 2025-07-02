@@ -29,6 +29,7 @@ def table() -> SymbolTable:
                         "packet": "it",
                         "birthmo": 1,
                         "birthyr": 1950,
+                        "probad": 1,
                     }
                 }
             }
@@ -132,3 +133,24 @@ class TestUDSFormD1Attribute:
         set_attribute(table, form_prefix, "formver", 3)
         attr = UDSFormD1Attribute(table)
         assert attr._create_nacclbdp() == 3
+
+    def test_naccppme(self, table, form_prefix):
+        """Tests NACCPPME."""
+        attr = UDSFormD1Attribute(table)
+        set_attribute(table, form_prefix, "semdemag", 1)
+        assert attr._create_naccppme() == 3
+
+        # this part relies on NACCPPA
+        set_attribute(table, form_prefix, "semdemag", 0)
+        set_attribute(table, form_prefix, "impnomci", 1)
+        assert attr._create_naccppa() == 8
+        assert attr._create_naccppme() == 7
+
+        # this causes nodx = 1, so with impnomci = 1, naccppme = 6
+        set_attribute(table, form_prefix, "probad", 0)
+        assert attr._create_naccppme() == 6
+
+        # v3+ should return None
+        set_attribute(table, form_prefix, "formver", 3.0)
+        attr = UDSFormD1Attribute(table)
+        assert attr._create_naccppme() is None

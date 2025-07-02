@@ -2,21 +2,23 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## Working
+## Working (1.5.0.dev)
 
 * Adds rest of NP variables
-* Adds UDS A1, A2, A3, A4, and A5 derived variables **except** NACCFAM (A3) and and MEDS V1 (A4)
+* Adds UDS A1, A2, A3, A4, and A5 derived variables
     * Accounts for some forms being optional
     * For A4, adds MEDS scope
+    * **NACCFAM (A3) and and MEDS V1 (A4) are still not working properly, on hold for now**
 * Adds UDS B1, B6, B8, and B9 derived variables
 * Adds UDS C1/C2 variables
     * `_create_uds_education_level` gets moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form
+* Adds rest of UDS D1 variables **except** NACCMCII (D1)
+    * **NACCMCII is still not working properly, on hold for now**
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
-    * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s
-* Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
-    * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s
+    * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
+* Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
 
 ## 1.4.1
 
