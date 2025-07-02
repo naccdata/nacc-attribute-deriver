@@ -7,17 +7,17 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds rest of NP derived variables
 * Adds rest of UDS derived variables:
     * Form header
-        * Some MQT variables are the same as these, so MQT refactored to use the NACC derived ones
         * Here some NACC derived variables compute the same thing but apply to a different operation, so curation rule may point to a different derived variable's function
             * NACVNUM - uses NACCAVST
             * NACCFDAYS - uses NACCDAYS
+        * MQT's `longitudinal._create_total_uds_visits` removed and curation rule updated to use NACCAVST directly
     * A1, A2, A3, A4, and A5
         * Accounts for some forms being optional
         * For A4, adds MEDS scope
         * **NACCFAM (A3) and and MEDS V1 (A4) are still not working properly, on hold for now**
     * B1, B6, B8, and B9
     * C1/C2
-        * `_create_uds_education_level` gets moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form
+        * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
     * D1 **except** NACCMCII (D1)
         * **NACCMCII is still not working properly, on hold for now**
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
