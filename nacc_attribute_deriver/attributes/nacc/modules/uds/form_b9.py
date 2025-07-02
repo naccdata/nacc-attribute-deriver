@@ -27,7 +27,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__working_derived = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingDerivedNamespace(table=table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         # if b9chg == 1 was selected in version 1.2 of UDS (no meaningful changes),
@@ -81,8 +81,8 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             elif self.__decclin == 0:
                 return 0
 
-        p_decclin = self.__working_derived.get_prev_value("decclin", int)
-        p_befrst = self.__working_derived.get_prev_value("befrst", int)
+        p_decclin = self.__working.get_prev_value("decclin", int)
+        p_befrst = self.__working.get_prev_value("befrst", int)
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccbehf = 0
@@ -94,7 +94,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         if self.formver >= 3:
             if befpred == 0:
-                p_befpred = self.__working_derived.get_prev_value("befpred", int)
+                p_befpred = self.__working.get_prev_value("befpred", int)
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
                 elif p_befpred == 0:
@@ -157,9 +157,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         """
         cogfrst = self.harmonize_cogfrst()
         cogfpred = self.uds.get_value("cogfpred", int)
-        p_decclin = self.__working_derived.get_prev_value("decclin", int)
-        p_cogfrst = self.__working_derived.get_prev_value("cogfrst", int)
-        p_cogfpred = self.__working_derived.get_prev_value("cogfpred", int)
+        p_decclin = self.__working.get_prev_value("decclin", int)
+        p_cogfrst = self.__working.get_prev_value("cogfrst", int)
+        p_cogfpred = self.__working.get_prev_value("cogfpred", int)
         nacccogf = None
 
         # see note in _create_naccbehf; same situation
@@ -205,8 +205,8 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 return 0
 
         naccmotf = None
-        p_decclin = self.__working_derived.get_prev_value("decclin", int)
-        p_mofrst = self.__working_derived.get_prev_value("mofrst", int)
+        p_decclin = self.__working.get_prev_value("decclin", int)
+        p_mofrst = self.__working.get_prev_value("mofrst", int)
 
         if mofrst and mofrst not in [0, 88]:
             naccmotf = mofrst
@@ -243,7 +243,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             if raw_value == 0 or (
                 raw_value is None and self.formver < 3 and self.__decclin is None
             ):
-                prev_value = self.__working_derived.get_prev_value(attribute, int)
+                prev_value = self.__working.get_prev_value(attribute, int)
                 if prev_value is not None:
                     return prev_value
 

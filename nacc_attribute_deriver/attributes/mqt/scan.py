@@ -38,7 +38,7 @@ class SCANMRIQCAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__mri_qc = SCANMRINamespace(table, scope=SCANMRIScope.MRI_QC)
-        self.__working_derived = WorkingDerivedNamespace(
+        self.__working = WorkingDerivedNamespace(
             table=table, required=frozenset(["cross-sectional.scan-mri-dates"])
         )
 
@@ -52,7 +52,7 @@ class SCANMRIQCAttributeCollection(AttributeCollection):
 
         Counts the unique session dates.
         """
-        dates = self.__working_derived.get_cross_sectional_value("scan-mri-dates", list)
+        dates = self.__working.get_cross_sectional_value("scan-mri-dates", list)
         if not dates:
             return 0
 
@@ -66,7 +66,7 @@ class SCANMRIQCAttributeCollection(AttributeCollection):
         a participant has SCAN data in. This create method then just
         counts the distinct years.
         """
-        dates = self.__working_derived.get_cross_sectional_value("scan-mri-dates", list)
+        dates = self.__working.get_cross_sectional_value("scan-mri-dates", list)
         if not dates:
             return 0
 
@@ -127,7 +127,7 @@ class SCANPETQCAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__pet_qc = SCANPETNamespace(table, scope=SCANPETScope.PET_QC)
-        self.__working_derived = WorkingDerivedNamespace(
+        self.__working = WorkingDerivedNamespace(
             table=table, required=frozenset(["cross-sectional.scan-pet-dates"])
         )
 
@@ -157,7 +157,7 @@ class SCANPETQCAttributeCollection(AttributeCollection):
 
         Counts the unique session dates.
         """
-        dates = self.__working_derived.get_cross_sectional_value("scan-pet-dates", list)
+        dates = self.__working.get_cross_sectional_value("scan-pet-dates", list)
         if not dates:
             return 0
 
@@ -165,7 +165,7 @@ class SCANPETQCAttributeCollection(AttributeCollection):
 
     def _create_scan_pet_year_count(self) -> int:
         """Years of SCAN PET scans available."""
-        dates = self.__working_derived.get_cross_sectional_value("scan-pet-dates", list)
+        dates = self.__working.get_cross_sectional_value("scan-pet-dates", list)
         if not dates:
             return 0
 

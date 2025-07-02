@@ -17,23 +17,19 @@ class LongitudinalAttributeCollection(AttributeCollection):
     """Class to collect longitudinal attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__working_derived = WorkingDerivedNamespace(
+        self.__working = WorkingDerivedNamespace(
             table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
 
     def get_visitdates(self) -> List[Any]:
         """Get UDS visits."""
-        visitdates: list[Any] | None = self.__working_derived.get_cross_sectional_value(
+        visitdates: list[Any] | None = self.__working.get_cross_sectional_value(
             "uds-visitdates", list
         )
         if not visitdates:
             return []
 
         return visitdates
-
-    def _create_total_uds_visits(self) -> int:
-        """Total number of UDS visits."""
-        return len(self.get_visitdates())
 
     def _create_years_of_uds(self) -> int:
         """Creates subject.info.longitudinal-data.uds.year-count."""

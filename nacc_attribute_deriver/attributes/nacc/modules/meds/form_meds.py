@@ -50,11 +50,11 @@ class MEDSFormAttributeCollection(AttributeCollection):
         if not self.__formdate:
             raise AttributeDeriverError("Cannot determine MEDS form date")
 
-        self.__working_derived = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingDerivedNamespace(table=table)
 
     def _create_drugs_list(self) -> Dict[str, List[str]]:
         """Returns list of drugs for this visit, adding to overall mapping."""
-        all_drugs = self.__working_derived.get_cross_sectional_value("drugs-list", dict)
+        all_drugs = self.__working.get_cross_sectional_value("drugs-list", dict)
         if all_drugs is None:
             all_drugs = {}
 

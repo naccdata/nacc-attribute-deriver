@@ -38,7 +38,7 @@ class NCRADAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
         self.__apoe = RawNamespace(table, required=frozenset(["a1", "a2"]))
-        self.__working_derived = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingDerivedNamespace(table=table)
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
@@ -52,9 +52,7 @@ class NCRADAttributeCollection(AttributeCollection):
         a2 = self.__apoe.get_required("a2", str)
 
         apoe = self.APOE_ENCODINGS.get((a1.upper(), a2.upper()), 9)
-        old_apoe = self.__working_derived.get_cross_sectional_value(
-            "historic-apoe", int
-        )
+        old_apoe = self.__working.get_cross_sectional_value("historic-apoe", int)
 
         if old_apoe is not None and apoe != old_apoe:
             return 9

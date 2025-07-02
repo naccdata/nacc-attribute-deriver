@@ -34,7 +34,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table, uds_required=frozenset(["normcog"]))
         self.__subject_derived = SubjectDerivedNamespace(table=table)
-        self.__working_derived = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingDerivedNamespace(table=table)
         self.__normcog = self.uds.get_required("normcog", int)
         self.__demented = self.uds.get_value("demented", int)
 
@@ -374,7 +374,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
             return 0
 
-        notdemin = self.__working_derived.get_cross_sectional_value("notdemin", int)
+        notdemin = self.__working.get_cross_sectional_value("notdemin", int)
         if notdemin == 1 and self.__demented == 1:
             return 1
 
@@ -504,7 +504,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return 0
 
         naccmcii = self.__subject_derived.get_cross_sectional_value("naccmcii", int)
-        fvmci = self.__working_derived.get_cross_sectional_value("fvmci", int)
+        fvmci = self.__working.get_cross_sectional_value("fvmci", int)
 
         # TODO: SAS logic and RDD seemed in line but the results were
         # not consistent with the QAF, so the following code was adjusted
@@ -543,8 +543,8 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return None
 
         mci = self.generate_mci()
-        fvmci = self.__working_derived.get_cross_sectional_value("fvmci", int)
-        ivcstat = self.__working_derived.get_cross_sectional_value("ivcstat", int)
+        fvmci = self.__working.get_cross_sectional_value("fvmci", int)
+        ivcstat = self.__working.get_cross_sectional_value("ivcstat", int)
 
         if mci == 1 and fvmci is None:
             return 1
@@ -569,8 +569,8 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return 1
 
         admut = self.uds.get_value("admut", int)
-        npchrom = self.__working_derived.get_cross_sectional_value("npchrom", int)
-        nppdxp = self.__working_derived.get_cross_sectional_value("nppdxp", int)
+        npchrom = self.__working.get_cross_sectional_value("npchrom", int)
+        nppdxp = self.__working.get_cross_sectional_value("nppdxp", int)
 
         if admut == 1 or npchrom in [1, 2, 3] or nppdxp == 1:
             return 1
@@ -588,8 +588,8 @@ class UDSFormD1Attribute(UDSAttributeCollection):
             return 1
 
         ftldmut = self.uds.get_value("ftldmut", int)
-        npchrom = self.__working_derived.get_cross_sectional_value("npchrom", int)
-        nppdxq = self.__working_derived.get_cross_sectional_value("nppdxq", int)
+        npchrom = self.__working.get_cross_sectional_value("npchrom", int)
+        nppdxq = self.__working.get_cross_sectional_value("nppdxq", int)
 
         if ftldmut == 1 or npchrom == 4 or nppdxq == 1:
             return 1
