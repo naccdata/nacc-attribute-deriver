@@ -10,8 +10,13 @@ from nacc_attribute_deriver.utils.date import create_death_date
 
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__milestone = FormNamespace(table=table)
+        self.__milestone = FormNamespace(table=table, required=frozenset(["module"]))
         self.__deceased = self.__milestone.get_value("deceased", int)
+
+        module = self.__milestone.get_required("module", str)
+        if module.upper() != "MLST":
+            msg = f"Current file is not a MLST form: found {module}"
+            raise InvalidFieldError(msg)
 
     def _create_milestone_death_date(self) -> Optional[date]:
         """Create milestone death date."""

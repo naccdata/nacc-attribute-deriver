@@ -1,3 +1,5 @@
+"""Handles the MDS form."""
+
 from datetime import date
 from typing import Optional
 
@@ -10,9 +12,16 @@ from nacc_attribute_deriver.utils.date import create_death_date
 
 class MDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
-        self.__mds = FormNamespace(table=table, required=frozenset(["vitalst"]))
+        self.__mds = FormNamespace(
+            table=table, required=frozenset(["vitalst", "module"])
+        )
 
         self.__vitalst = self.__mds.get_required("vitalst", int)
+
+        module = self.__mds.get_required("module", str)
+        if module.upper() != "MDS":
+            msg = f"Current file is not a MDS form: found {module}"
+            raise InvalidFieldError(msg)
 
     def _create_mds_death_date(self) -> Optional[date]:
         """MDS death date; can be unknown."""

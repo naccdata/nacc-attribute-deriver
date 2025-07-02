@@ -7,7 +7,10 @@ from nacc_attribute_deriver.attributes.attribute_collection import AttributeColl
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -17,6 +20,11 @@ class UDSAttributeCollection(AttributeCollection):
     ) -> None:
         self.__uds = UDSNamespace(table, required=uds_required)
         self.__formver = self.uds.normalized_formver()
+
+        module = self.__uds.get_required("module", str)
+        if module.upper() != "UDS":
+            msg = f"Current file is not a UDS form: found {module}"
+            raise InvalidFieldError(msg)
 
     @property
     def uds(self) -> UDSNamespace:
