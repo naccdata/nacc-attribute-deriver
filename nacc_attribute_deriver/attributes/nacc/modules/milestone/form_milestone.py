@@ -1,3 +1,5 @@
+"""Handles the MILESTONE form."""
+
 from datetime import date
 from typing import Optional
 
@@ -48,3 +50,19 @@ class MilestoneAttributeCollection(AttributeCollection):
     def _create_milestone_deceased(self) -> Optional[int]:
         """Milestone DECEASED."""
         return self.__deceased
+
+    def _create_milestone_discontinued(self) -> bool:
+        """Determine if subject is discontinued.
+
+        This is a cross-sectional variable that could potentially be
+        overrwritten by a subject rejoining the ADC at a later milestone
+        form.
+        """
+        if self.__milestone.get_value("rejoin", int) == 1:
+            return False
+
+        return self.__milestone.get_value("discont", int) == 1
+
+    def _create_milestone_protocol(self) -> Optional[int]:
+        """Return the mielstone protocol."""
+        return self.__milestone.get_value("protocol", int)

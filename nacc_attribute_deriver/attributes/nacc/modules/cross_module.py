@@ -5,6 +5,7 @@ from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
+    SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
@@ -33,6 +34,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self.__working = WorkingDerivedNamespace(
             table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
@@ -210,3 +212,44 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 9999
 
         return 8888
+
+    def _create_naccactv(self) -> int:
+        """Creates NACCACTV - Follow-up status at the Alzheimer's
+        Disease Center (ADC)
+
+        Codes:
+            0: If subject receives no followup contact (dead, discontinued,
+                or enrolled as initial visit only)
+            1: If subject is under annual followup and expected to make more
+                Includes discontinued subjects who have since rejoined
+            2: Minimal contact with ADC but still enrolled
+        """
+        # if dead, return 0
+        if self._create_naccdied() == 1:
+            return 0
+
+        # if milestone marked subject as discontinued, return 0
+        # set by form_milestone._create_milestone_discontinued
+        if self.__working.get_cross_sectional_value("milestone-discontinued", int) == 1:
+            return 0
+
+        # if UDS A1 prespart == 1 (initial evaluation only), return 0
+        if self.__working.get_cross_sectional_value("prespart", int) == 1:
+            return 0
+
+        # 5 used for affiliates in SAS/R code
+        if self.__subject_derived.get_cross_sectional_value("affiliate", bool):
+            return 5
+
+        # check milestone protocol
+        protocol = self.__working.get_cross_sectional_value("milestone-protocol", int)
+
+        # if protocol == 1 or 3, annual followup expected
+        if protocol in [1, 3]:
+            return 1
+        # protocol == 2 is minimal contact
+        if protocol == 2:
+            return 2
+
+        # RDD does not mention a 99 but in SAS/R code as a default
+        return 99

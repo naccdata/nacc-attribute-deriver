@@ -11,6 +11,8 @@ mds,mds_vitalst,subject.info.working.cross-sectional.mds-vital-status,update,FAL
 milestone,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,FALSE
 milestone,milestone_death_month,subject.info.working.cross-sectional.milestone-death-month,update,FALSE
 milestone,milestone_deceased,subject.info.working.cross-sectional.milestone-deceased,update,FALSE
+milestone,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued,update,FALSE
+milestone,milestone_protocol,subject.info.working.cross-sectional.milestone-protocol,update,FALSE
 niagads_availability,ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE
 niagads_availability,ngdsexome,subject.info.derived.cross-sectional.ngdsexome,update,FALSE
 niagads_availability,ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
@@ -75,6 +77,7 @@ meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
 uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
 uds,educ,subject.info.working.cross-sectional.educ,update,FALSE
+uds,prespart,subject.info.working.cross-sectional.prespart,update,FALSE
 uds,notdemin,subject.info.working.cross-sectional.notdemin,update,FALSE
 uds,ivcstat,subject.info.working.cross-sectional.ivcstat,update,FALSE
 uds,fvmci,subject.info.working.cross-sectional.fvmci,update,FALSE
@@ -259,3 +262,4 @@ uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
 uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
 uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
 uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE
+uds,naccactv,subject.info.derived.cross-sectional.naccactv,update,FALSE
