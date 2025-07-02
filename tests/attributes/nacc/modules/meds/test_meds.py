@@ -91,7 +91,7 @@ def empty_table() -> SymbolTable:
     return SymbolTable(data)
 
 
-class TestMEDSForm:
+class TestMEDSFormAttributeCollection:
     def test_create_drugs_list(self, table):
         meds = MEDSFormAttributeCollection(table)
         assert meds._create_drugs_list() == {
