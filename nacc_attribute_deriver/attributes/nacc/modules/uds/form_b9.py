@@ -95,7 +95,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         elif self.__b9_changes and p_decclin == 1:
             if p_befrst == 88:
                 naccbehf = 0
-            if p_befrst is not None:
+            elif p_befrst is not None:
                 naccbehf = p_befrst
 
         if self.formver >= 3:
@@ -177,11 +177,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 return 0
 
         # V2 and earlier
-        if cogfrst == 88 or (self.__b9_changes and p_decclin == 0):
+        if cogfrst == 88 or(self.__b9_changes and p_decclin == 0):
             nacccogf = 0
-        elif cogfrst == 88 or (
-            self.__b9_changes and p_decclin == 1 and p_cogfrst == 88
-        ):
+        elif self.__b9_changes and p_decclin == 1 and p_cogfrst == 88:
             nacccogf = 0
         elif self.__b9_changes and p_decclin == 1 and p_cogfrst is not None:
             nacccogf = p_cogfrst
