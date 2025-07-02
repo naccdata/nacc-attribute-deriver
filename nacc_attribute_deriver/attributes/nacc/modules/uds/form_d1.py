@@ -1,4 +1,11 @@
-"""Derived variables from form D1: Clinician Diagnosis."""
+"""Derived variables from form D1: Clinician Diagnosis.
+
+The original SAS code has a lot of recode logic that basically
+bulk-handles recoding variables (usually to handle null values).
+It is very unintuitive so that was effectively ignored in this rewrite,
+and their function was "redone" per-variable based on the RDD
+description and regression testing.
+"""
 
 from typing import List, Optional
 
@@ -353,7 +360,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         return 0
 
-    def _create_naccidem(self) -> int:
+    def _create_naccidem(self) -> Optional[int]:
         """Creates NACCIDEM - Incident dementia during UDS follow-up"""
         naccidem = self.__subject_derived.get_cross_sectional_value("naccidem", int)
         if naccidem == 1:
@@ -371,27 +378,8 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         if notdemin == 1 and self.__demented == 1:
             return 1
 
+        # in general should be set, but sometimes we don't receive an initial visit
         return naccidem
-
-    def _create_naccmcii(self) -> int:
-        """Creates NACCMCII - Incident MCI during USD follow-up
-
-        Requires working variables FVMCI.
-        """
-        if self.uds.is_initial():
-            if self.__demented == 1 or self.generate_mci() == 1:
-                return 8
-            return 0
-
-        naccmcii = self.__subject_derived.get_cross_sectional_value("naccmcii", int)
-        fvmci = self.__working_derived.get_cross_sectional_value("fvmci", int)
-
-        if fvmci == 1 and naccmcii != 8:
-            return 1
-        if fvmci == 2:
-            return 8
-
-        return 0 if naccmcii is None else naccmcii
 
     def _create_naccppag(self) -> Optional[int]:
         """Creates NACCPPAG - Dementia syndrome -- Primary progressive aphasia (PPA)
@@ -461,12 +449,24 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         return 8
 
     def determine_mci_domain_affected(self, mci_domain: List[str]) -> int:
-        """Determines if the given MCI domain is affected.
+        """Determines if the given MCI domain is affected. Expects exactly 3 variables, where
+            1. parant variable is MCIAPLUS
+            2. parant variable is MCINON1
+            3. parant variable is MCINON2
 
         Args:
             mci_domain: List of strings specifying vars for the MCI domain
         """
+        assert len(mci_domain) == 3, "Expected 3 variables for MCI domain"
         mci_vars = self.uds.group_attributes(mci_domain, int)
+
+        # may need to cast nulls to 0s depending on a parent varaible
+        # same order as mci_domain
+        if self.generate_mci() == 1:
+            for i, parent in enumerate(["mciaplus", "mcinon1", "mcinon2"]):
+                if self.uds.get_value(parent, int) == 0 and mci_vars[i] is None:
+                    mci_vars[i] = 0
+
         if any(x == 1 for x in mci_vars):
             return 1
 
@@ -490,6 +490,32 @@ class UDSFormD1Attribute(UDSAttributeCollection):
     def _create_naccmciv(self) -> int:
         """Creates NACCMCIV - MCI domain affected -- visuospatial"""
         return self.determine_mci_domain_affected(["mciapvis", "mcin1vis", "mcin2vis"])
+
+    def _create_naccmcii(self) -> int:
+        """Creates NACCMCII - Incident MCI during USD follow-up
+
+        Requires working variables FVMCI.
+        """
+        if self.uds.is_initial():
+            if self.__demented == 1 or self.generate_mci() == 1:
+                return 8
+            return 0
+
+        naccmcii = self.__subject_derived.get_cross_sectional_value("naccmcii", int)
+        fvmci = self.__working_derived.get_cross_sectional_value("fvmci", int)
+
+        # TODO: SAS logic and RDD seemed in line but the results were
+        # not consistent with the QAF, so the following code was adjusted
+        # to match it based on regression testing
+        # This is mainly a concern of when NACCMCII is 8 - by SAS/RDD
+        # it seems 8 should always override, but that didn't seem to be
+        # the case when tested against the QAF
+        if fvmci == 1:
+            return 1
+        if fvmci == 2:
+            return 8
+
+        return 0 if (naccmcii is None or naccmcii == 8) else naccmcii
 
     """
     The following are working variables (non-NACC derived variables but used

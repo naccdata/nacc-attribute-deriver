@@ -203,7 +203,7 @@ uds,naccppag,file.info.derived.naccppag,update,FALSE
 uds,naccppag,subject.info.derived.longitudinal.naccppag,list,TRUE
 uds,naccppme,file.info.derived.naccppme,update,FALSE
 uds,naccppme,subject.info.derived.longitudinal.naccppme,list,TRUE
-uds,nacctmci,file.info.derived.naccppme,update,FALSE
+uds,nacctmci,file.info.derived.nacctmci,update,FALSE
 uds,nacctmci,subject.info.derived.longitudinal.nacctmci,list,TRUE
 uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,update,FALSE
 uds,naccidem,subject.info.derived.cross-sectional.naccidem,update,FALSE
@@ -244,10 +244,9 @@ uds,naccint,subject.info.derived.cross-sectional.naccint,update,FALSE
 uds,naccmod,subject.info.derived.cross-sectional.naccmod,update,FALSE
 uds,naccyod,subject.info.derived.cross-sectional.naccyod,update,FALSE
 uds,affiliate,subject.info.derived.affiliate,update,FALSE
-uds,decclin,subject.info.working.cross-sectional.decclin.initial,initial,TRUE
-uds,befrst,subject.info.working.cross-sectional.befrst.initial,initial,TRUE
-uds,cogfrst,subject.info.working.cross-sectional.cogfrst.initial,initial,TRUE
-uds,mofrst,subject.info.working.cross-sectional.mofrst.initial,initial,TRUE
+uds,decclin,subject.info.working.longitudinal.decclin,list,TRUE
+uds,befrst,subject.info.working.longitudinal.befrst,list,TRUE
+uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
 uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
-uds,befpred,subject.info.working.cross-sectional.befpred.initial,initial,TRUE
-uds,cogfpred,subject.info.working.cross-sectional.cogfpred.initial,initial,TRUE
+uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
+uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE

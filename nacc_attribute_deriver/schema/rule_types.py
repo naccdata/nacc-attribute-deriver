@@ -21,7 +21,7 @@ class NoAssignment:
 class DateTaggedValue(BaseModel, Generic[T]):
     """Model for a date-tagged attribute value."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     date: datetime.date
     value: T

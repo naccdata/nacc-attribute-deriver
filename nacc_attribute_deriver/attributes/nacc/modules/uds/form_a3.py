@@ -135,7 +135,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if self.uds.get_value("fadmut", int) in [1, 2, 3, 8]:
             return 1
 
-        return self.__subject_derived.get_cross_sectional_value(
+        return self.__subject_derived.get_cross_sectional_value(  # type: ignore
             "naccfadm", int, default=0
         )
 
@@ -182,7 +182,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         ):
             return 1
 
-        return self.__subject_derived.get_cross_sectional_value(
+        return self.__subject_derived.get_cross_sectional_value(  # type: ignore
             "naccfftd", int, default=0
         )
 

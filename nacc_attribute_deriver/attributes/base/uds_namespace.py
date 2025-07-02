@@ -43,13 +43,11 @@ class UDSNamespace(FormNamespace):
         raw_formver = self.get_required("formver", float)
 
         try:
-            formver = int(raw_formver)
+            return int(raw_formver)
         except (ValueError, TypeError) as e:
             raise InvalidFieldError(
                 f"Cannot determine normalized formver: {raw_formver}"
             ) from e
-
-        return formver
 
     def generate_uds_dob(self) -> date:
         """Creates UDS DOB, which is used to calculate ages."""

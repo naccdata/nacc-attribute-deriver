@@ -294,15 +294,15 @@ class SubjectDerivedNamespace(BaseNamespace):
         Returns:
           the value for the dated attribute in the table
         """
-        dated_value = self.get_cross_sectional_value(attribute, dict)
-        if not dated_value:
+        raw_value = self.get_cross_sectional_value(attribute, dict)
+        if not raw_value:
             return None
 
         try:
-            value = DateTaggedValue(**dated_value)
+            value = DateTaggedValue(**raw_value)
         except ValidationError as e:
             raise InvalidFieldError(
-                f"Cannot cast cross-sectional value for {attribute} to DateTaggedValue: {e}"
+                f"Cannot cast cross-sectional value for {attribute} to DateTaggedValue from {raw_value}: {e}"
             ) from e
 
         try:
