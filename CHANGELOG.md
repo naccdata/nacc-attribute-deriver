@@ -4,16 +4,22 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## Working (1.5.0.dev)
 
-* Adds rest of NP variables
-* Adds UDS A1, A2, A3, A4, and A5 derived variables
-    * Accounts for some forms being optional
-    * For A4, adds MEDS scope
-    * **NACCFAM (A3) and and MEDS V1 (A4) are still not working properly, on hold for now**
-* Adds UDS B1, B6, B8, and B9 derived variables
-* Adds UDS C1/C2 variables
-    * `_create_uds_education_level` gets moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form
-* Adds rest of UDS D1 variables **except** NACCMCII (D1)
-    * **NACCMCII is still not working properly, on hold for now**
+* Adds rest of NP derived variables
+* Adds rest of UDS derived variables:
+    * Form header
+        * Here some NACC derived variables compute the same thing but apply to a different operation, so curation rule may point to a different derived variable's function
+            * NACVNUM - uses NACCAVST
+            * NACCFDAYS - uses NACCDAYS
+        * MQT's `longitudinal._create_total_uds_visits` removed and curation rule updated to use NACCAVST directly
+    * A1, A2, A3, A4, and A5
+        * Accounts for some forms being optional
+        * For A4, adds MEDS scope
+        * **NACCFAM (A3) and and MEDS V1 (A4) are still not working properly, on hold for now**
+    * B1, B6, B8, and B9
+    * C1/C2
+        * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
+    * D1 **except** NACCMCII (D1)
+        * **NACCMCII is still not working properly, on hold for now**
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated

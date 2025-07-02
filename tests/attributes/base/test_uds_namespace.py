@@ -58,6 +58,17 @@ class TestUDSNamespace:
         set_attribute(table, form_prefix, "packet", "F")
         assert not namespace.is_initial()
 
+    def test_is_in_person(self, table, form_prefix):
+        """Tests is_in_person."""
+        namespace = UDSNamespace(table)
+        assert namespace.is_in_person()
+
+        set_attribute(table, form_prefix, "packet", "F")
+        assert namespace.is_in_person()
+
+        set_attribute(table, form_prefix, "packet", "IT")
+        assert not namespace.is_in_person()
+
     def test_normalize_formver(self, table, form_prefix):
         """Tests normalize_formver."""
         # starts as non-followup

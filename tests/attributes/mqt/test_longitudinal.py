@@ -47,11 +47,6 @@ def table() -> SymbolTable:
 
 
 class TestLongitudinalAttributeCollection:
-    def test_create_total_uds_visits(self, table, form_prefix):
-        """Tests _create_total_uds_visits."""
-        attr = LongitudinalAttributeCollection(table)
-        assert attr._create_total_uds_visits() == 6
-
     def test_create_years_of_uds(self, table):
         """Tests _create_years_of_uds, should only count unique years."""
         attr = LongitudinalAttributeCollection(table)

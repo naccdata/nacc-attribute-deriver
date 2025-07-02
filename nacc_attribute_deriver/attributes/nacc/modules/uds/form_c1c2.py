@@ -22,7 +22,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__working_derived = WorkingDerivedNamespace(
+        self.__working = WorkingDerivedNamespace(
             table=table, required=frozenset(["cross-sectional.educ"])
         )
         self.__frmdatec1 = self.uds.get_value("frmdatec1", str)
@@ -93,7 +93,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
         if precise_formver == 3 and packet != "IT":
             mocatots = self.uds.get_value("mocatots", int)
-            educ = self.__working_derived.get_cross_sectional_value("educ", int)
+            educ = self.__working.get_cross_sectional_value("educ", int)
             if mocatots is None or mocatots == 88:
                 return 88
             if educ is None or educ == 99:
@@ -119,7 +119,7 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
         if precise_formver == 3.2 or (precise_formver == 3 and packet == "IT"):
             mocbtots = self.uds.get_value("mocbtots", int)
             mocacomp = self.uds.get_value("mocacomp", int)
-            educ = self.__working_derived.get_cross_sectional_value("educ", int)
+            educ = self.__working.get_cross_sectional_value("educ", int)
             if mocbtots is None or mocbtots == 88 or mocacomp == 0:
                 return 88
             if educ is None or educ == 99:
