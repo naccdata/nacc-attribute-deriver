@@ -1,10 +1,10 @@
 """Derived variables from form D1: Clinician Diagnosis.
 
-The original SAS code has a lot of recode logic that basically
-bulk-handles recoding variables (usually to handle null values).
-It is very unintuitive so that was effectively ignored in this rewrite,
-and their function was "redone" per-variable based on the RDD
-description and regression testing.
+The original SAS code has a lot of recode logic that basically bulk-
+handles recoding variables (usually to handle null values). It is very
+unintuitive so that was effectively ignored in this rewrite, and their
+function was "redone" per-variable based on the RDD description and
+regression testing.
 """
 
 from typing import List, Optional
@@ -449,7 +449,9 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         return 8
 
     def determine_mci_domain_affected(self, mci_domain: List[str]) -> int:
-        """Determines if the given MCI domain is affected. Expects exactly 3 variables, where
+        """Determines if the given MCI domain is affected.
+
+        Expects exactly 3 variables, where
             1. parant variable is MCIAPLUS
             2. parant variable is MCINON1
             3. parant variable is MCINON2

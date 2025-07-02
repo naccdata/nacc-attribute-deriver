@@ -29,30 +29,23 @@ class TestBaseNamespace:
 class TestSubjectDerivedNamespace:
     def test_get_longitudinal_value(self):
         """Test getting a longitudinal value."""
-        table = SymbolTable({
-            "subject": {
-                "info": {
-                    "derived": {
-                        "longitudinal": {
-                            "var": [
-                                {
-                                    "date": "2021-01-01",
-                                    "value": 1
-                                },
-                                {
-                                    "date": "2022-01-01",
-                                    "value": "2"
-                                },
-                                {
-                                    "date": "2023-01-01",
-                                    "value": 3
-                                }
-                            ]
+        table = SymbolTable(
+            {
+                "subject": {
+                    "info": {
+                        "derived": {
+                            "longitudinal": {
+                                "var": [
+                                    {"date": "2021-01-01", "value": 1},
+                                    {"date": "2022-01-01", "value": "2"},
+                                    {"date": "2023-01-01", "value": 3},
+                                ]
+                            }
                         }
                     }
                 }
             }
-        })
+        )
 
         namespace = SubjectDerivedNamespace(table=table)
         result = namespace.get_longitudinal_value("var", int)
@@ -66,21 +59,20 @@ class TestSubjectDerivedNamespace:
 
     def test_get_cross_sectional_value(self):
         """Test getting a cross sectional value."""
-        table = SymbolTable({
-            "subject": {
-                "info": {
-                    "derived": {
-                        "cross-sectional": {
-                            "var": 5,
-                            "dated-var": {
-                                "date": "2025-01-01",
-                                "value": "8"
+        table = SymbolTable(
+            {
+                "subject": {
+                    "info": {
+                        "derived": {
+                            "cross-sectional": {
+                                "var": 5,
+                                "dated-var": {"date": "2025-01-01", "value": "8"},
                             }
                         }
                     }
                 }
             }
-        })
+        )
 
         namespace = SubjectDerivedNamespace(table=table)
         assert namespace.get_cross_sectional_value("var", int) == 5

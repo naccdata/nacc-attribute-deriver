@@ -11,16 +11,12 @@ SAS, resulting in pretty confusing logic, which may not be super clear here
 either.
 """
 
-from typing import Optional, Union
-
-from pydantic import ValidationError
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import (
     SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
-from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .uds_attribute_collection import UDSAttributeCollection
@@ -42,8 +38,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def harmonize_befrst(self) -> Optional[int]:
         """Updates BEFRST for NACCBEHF harmonization.
 
-        Returns
-            updated value for BEFRST
+        Returns     updated value for BEFRST
         """
         befrst = self.uds.get_value("befrst", int)
 
@@ -53,10 +48,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             if self.formver == 2 and befrst == 9:
                 return 8
 
-
         return befrst
 
-    def _create_naccbehf(self) -> int:
+    def _create_naccbehf(self) -> int:  # noqa: C901
         """Create NACCBEHF, indicate the predominant symptom that was first
         recognized as a decline in the subject's behavior.
 
@@ -100,7 +94,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         if self.formver >= 3:
             if befpred == 0:
-                p_befpred = self.__working_derived.get_prev_value('befpred', int)
+                p_befpred = self.__working_derived.get_prev_value("befpred", int)
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
                 elif p_befpred == 0:
@@ -141,8 +135,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def harmonize_cogfrst(self) -> Optional[int]:
         """Updates COGFRST for NACCCOGF harmonization.
 
-        Returns
-            updated value for COGFRST
+        Returns     updated value for COGFRST
         """
         cogfrst = self.uds.get_value("cogfrst", int)
 
@@ -154,7 +147,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         return cogfrst
 
-    def _create_nacccogf(self) -> int:
+    def _create_nacccogf(self) -> int:  # noqa: C901
         """Creates NACCCOGF, Indicate the predominant symptom that was first
         recognized as a decline in the subject's cognition.
 
@@ -177,7 +170,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 return 0
 
         # V2 and earlier
-        if cogfrst == 88 or(self.__b9_changes and p_decclin == 0):
+        if cogfrst == 88 or (self.__b9_changes and p_decclin == 0):
             nacccogf = 0
         elif self.__b9_changes and p_decclin == 1 and p_cogfrst == 88:
             nacccogf = 0
@@ -239,15 +232,17 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     #########################################
 
     def determine_carryover(self, attribute: str) -> Optional[int]:
-        """In many followup visits, 0 == assessed at previous
-        visit. Need to pull in that case.
+        """In many followup visits, 0 == assessed at previous visit.
+
+        Need to pull in that case.
         """
         raw_value = self.uds.get_value(attribute, int)
 
         # see note in _create_naccbehf; same situation
-        if not self.uds.is_initial():
-            if (raw_value == 0 or
-                raw_value is None and self.formver < 3 and self.__decclin is None):
+        if not self.uds.is_initial():  # noqa: SIM102
+            if raw_value == 0 or (
+                raw_value is None and self.formver < 3 and self.__decclin is None
+            ):
                 prev_value = self.__working_derived.get_prev_value(attribute, int)
                 if prev_value is not None:
                     return prev_value

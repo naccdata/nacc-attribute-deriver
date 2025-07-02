@@ -2,7 +2,6 @@
 
 import datetime
 import logging
-from pydantic import ValidationError
 from typing import (
     Any,
     Iterable,
@@ -11,6 +10,8 @@ from typing import (
     Type,
     TypeVar,
 )
+
+from pydantic import ValidationError
 
 from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
@@ -302,17 +303,21 @@ class SubjectDerivedNamespace(BaseNamespace):
             value = DateTaggedValue(**raw_value)
         except ValidationError as e:
             raise InvalidFieldError(
-                f"Cannot cast cross-sectional value for {attribute} to DateTaggedValue from {raw_value}: {e}"
+                f"Cannot cast cross-sectional value for {attribute} to "
+                + f"DateTaggedValue from {raw_value}: {e}"
             ) from e
 
         try:
             return attr_type(value.value)  # type: ignore
         except TypeError as e:
             raise InvalidFieldError(
-                f"{self.prefix}.cross-sectional.{attribute}.value must be of type {attr_type}"
+                f"{self.prefix}.cross-sectional.{attribute}.value must be of "
+                + f"type {attr_type}"
             ) from e
 
-    def get_longitudinal_value(self, attribute: str, attr_type: Type[T]) -> Optional[List[DateTaggedValue]]:
+    def get_longitudinal_value(
+        self, attribute: str, attr_type: Type[T]
+    ) -> Optional[List[DateTaggedValue]]:
         """Returns a longitudinal value. Will be a list of DatedTaggedValues.
         This does not support default values.
 
@@ -332,14 +337,16 @@ class SubjectDerivedNamespace(BaseNamespace):
                 records[i] = DateTaggedValue(**record)
             except ValidationError as e:
                 raise InvalidFieldError(
-                    f"Cannot cast longitudinal value for {attribute} to DateTaggedValue: {e}"
+                    f"Cannot cast longitudinal value for {attribute} to "
+                    + f"DateTaggedValue: {e}"
                 ) from e
 
             try:
                 records[i].value = attr_type(records[i].value)  # type: ignore
             except TypeError as e:
                 raise InvalidFieldError(
-                    f"{self.prefix}.longitudinal.{attribute} must be of type {attr_type}"
+                    f"{self.prefix}.longitudinal.{attribute} must be of "
+                    + f"type {attr_type}"
                 ) from e
 
         return records
@@ -372,6 +379,7 @@ class SubjectDerivedNamespace(BaseNamespace):
 
         # should have already been casted to correct type
         return prev_record.value
+
 
 class WorkingDerivedNamespace(SubjectDerivedNamespace):
     """Similar to SubjectDerivedNamespace but specifically for
