@@ -1,27 +1,26 @@
 """Handles the MILESTONE form."""
 
 from datetime import date
-from typing import Literal, Optional
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     FormNamespace,
+    SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.errors import (
-    AttributeDeriverError,
     InvalidFieldError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
-
-DateParts = Literal["day", "month", "year"]
 
 
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__milestone = FormNamespace(table=table, required=frozenset(["module"]))
         self.__working = WorkingDerivedNamespace(table=table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         self.__deceased = self.__milestone.get_value("deceased", int)
 
@@ -77,48 +76,65 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Return the mielstone protocol."""
         return self.__milestone.get_value("protocol", int)
 
-    def get_discontinued_date_part(self, mode: DateParts) -> int:
-        """Get subject discontinued date part (day, month, or year).
+    def get_discontinued_date_part(self, attribute: str) -> int:
+        """Get subject discontinued date part.
 
         If active or rejoined, return 88 instead.
         """
+        default = 88 if attribute != "discyr" else 8888
+
         if self.__milestone.get_value("rejoin", int) == 1:
-            return 88
+            return default
 
         if self.__milestone.get_value("discont", int) == 1:
-            disc_date = self.__milestone.get_date()
-            if not disc_date:
-                raise AttributeDeriverError("visitdate not found for milestone form")
+            result = self.__milestone.get_value(attribute, int)
+            if result is not None:
+                return result
 
-            if mode == "day":
-                return disc_date.day
-            if mode == "month":
-                return disc_date.month
+        # check if already set
+        existing_value = self.__subject_derived.get_cross_sectional_value(
+            attribute, int
+        )
+        if existing_value is not None:
+            return existing_value
 
-            return disc_date.year
-
-        return 88
+        return default
 
     def _create_naccdsdy(self) -> int:
         """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
-        return self.get_discontinued_date_part("day")
+        return self.get_discontinued_date_part("discday")
 
     def _create_naccdsmo(self) -> int:
         """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
-        return self.get_discontinued_date_part("month")
+        return self.get_discontinued_date_part("discmo")
 
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
-        return self.get_discontinued_date_part("year")
+        return self.get_discontinued_date_part("discyr")
 
-    def _create_naccnrdy(self) -> Optional[int]:
+    def get_nursing_home_date_part(self, attribute: str) -> int:
+        """Get subject moved to nursing home date part."""
+        default = 88 if attribute != "nurseyr" else 8888
+        if self.__milestone.get_value("renurse", int) != 1:
+            return default
+
+        result = self.__milestone.get_value(attribute, int)
+        if result is not None:
+            return result
+
+        return default
+
+    def _create_naccnrdy(self) -> int:
         """Creates NACCNRDY - Day permanently moved to nursing home."""
-        return self.__milestone.get_value("nursedy", int)
+        return self.get_nursing_home_date_part("nursedy")
 
-    def _create_naccnrmo(self) -> Optional[int]:
+    def _create_naccnrmo(self) -> int:
         """Creates NACCNRMO - Month permanently moved to nursing home."""
-        return self.__milestone.get_value("nursemo", int)
+        return self.get_nursing_home_date_part("nursemo")
 
-    def _create_naccnryr(self) -> Optional[int]:
+    def _create_naccnryr(self) -> int:
         """Creates NACCNRYR - Year permanently moved to nursing home."""
-        return self.__milestone.get_value("nurseyr", int)
+        result = self.get_nursing_home_date_part("nurseyr")
+
+        # in this case we do set a minimum of 2002 per RDD
+        return max(2002, result)

@@ -106,7 +106,7 @@ class SymbolTable(MutableMapping[str, Any]):
             if isinstance(table, dict) and k in table:
                 table = table[k]
             else:
-                raise KeyError(key)
+                return default
 
         last_key = key_parts[-1]
         if isinstance(table, dict) and last_key in table:

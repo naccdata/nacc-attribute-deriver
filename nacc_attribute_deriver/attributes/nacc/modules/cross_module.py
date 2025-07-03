@@ -213,7 +213,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         return 8888
 
-    def _create_naccactv(self) -> int:
+    def _create_naccactv(self) -> Optional[int]:
         """Creates NACCACTV - Follow-up status at the Alzheimer's
         Disease Center (ADC)
 
@@ -251,21 +251,23 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if protocol == 2:
             return 2
 
-        # RDD does not mention a 99 but in SAS/R code as a default
-        return 99
+        return None
 
-    def _create_naccnovs(self) -> int:
+    def _create_naccnovs(self) -> Optional[int]:
         """Creates NACCNOVS - No longer followed annually in person or by
         telephone. Effectively checks the same things as NACCACTV.
         """
+        # check if enrolled for initial evaluation only
+        if self.__working.get_cross_sectional_value("prespart", int) == 1:
+            return 8
+
         naccactv = self._create_naccactv()
         if naccactv == 1:
             return 0
         if naccactv in [0, 2]:
             return 1
 
-        # 5 or 99 (affiliate or unknown)
-        return naccactv
+        return None
 
     def _create_naccnurp(self) -> int:
         """Creates NACCNURP - Permanently moved to a nursing home.

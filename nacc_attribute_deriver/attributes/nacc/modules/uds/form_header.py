@@ -103,7 +103,9 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
                 "Cannot calculate days between current and initial visit"
             )
 
-        return min(num_days, 5000)
+        # TODO: RDD says max is 5000 but QAF doesn't seem to limit it
+        # return min(num_days, 5000)
+        return num_days
 
     def _create_naccnvst(self) -> int:
         """Creates NACCNVST - Total number of in-person UDS visits made."""

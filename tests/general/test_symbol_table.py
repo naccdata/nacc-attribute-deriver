@@ -54,7 +54,9 @@ class TestSymbolTable:
         )
 
         assert table.pop("b") == 1
+        assert table.pop("z") is None
         assert table.pop("nested.d.e") == 3
         assert table.pop("nested.g") == {"h": 5}
+        assert table.pop("nested.key.not.in.dict", "my_default") == "my_default"
 
         assert table.to_dict() == {"a": 0, "c": 2, "nested": {"d": {}, "f": 4}}
