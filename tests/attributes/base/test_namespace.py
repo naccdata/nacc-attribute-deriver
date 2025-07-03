@@ -1,3 +1,6 @@
+"""Tests base namespaces."""
+
+from datetime import date
 from nacc_attribute_deriver.attributes.base.namespace import (
     BaseNamespace,
     SubjectDerivedNamespace,
@@ -76,4 +79,7 @@ class TestSubjectDerivedNamespace:
 
         namespace = SubjectDerivedNamespace(table=table)
         assert namespace.get_cross_sectional_value("var", int) == 5
-        assert namespace.get_cross_sectional_dated_value("dated-var", int) == 8
+        assert namespace.get_cross_sectional_dated_value("dated-var", int).date == date(
+            2025, 1, 1
+        )
+        assert namespace.get_cross_sectional_dated_value("dated-var", int).value == 8

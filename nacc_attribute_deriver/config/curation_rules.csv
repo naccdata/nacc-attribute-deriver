@@ -12,8 +12,9 @@ mds,mds_vitalst,subject.info.working.cross-sectional.mds-vital-status,update,FAL
 milestone,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,FALSE
 milestone,milestone_death_month,subject.info.working.cross-sectional.milestone-death-month,update,FALSE
 milestone,milestone_deceased,subject.info.working.cross-sectional.milestone-deceased,update,FALSE
-milestone,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued,update,FALSE
+milestone,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued.latest,latest,TRUE
 milestone,milestone_protocol,subject.info.working.cross-sectional.milestone-protocol,update,FALSE
+milestone,milestone_renurse,subject.info.working.longitudinal.milestone-renurse,list,TRUE
 milestone,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
 milestone,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
 milestone,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE

@@ -89,15 +89,14 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         # while technically shouldn't happen, we do appear to have some
         # weird cases where there is not an initial packet in the system
         # return None in that case
-        raw_initial = self.__working.get_cross_sectional_dated_value(
+        initial_visitdate = self.__working.get_cross_sectional_dated_value(
             "initial-uds-visit", str
         )
-        initial_visitdate = datetime_from_form_date(raw_initial)
         if not initial_visitdate:
             return None
 
         current_visitdate = self.get_current_visitdate()
-        num_days = calculate_days(initial_visitdate.date(), current_visitdate)
+        num_days = calculate_days(initial_visitdate.date, current_visitdate)
         if num_days is None:
             raise AttributeDeriverError(
                 "Cannot calculate days between current and initial visit"

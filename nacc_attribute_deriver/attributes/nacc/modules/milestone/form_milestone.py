@@ -10,6 +10,7 @@ from nacc_attribute_deriver.attributes.base.namespace import (
     WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
     InvalidFieldError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -76,7 +77,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Return the mielstone protocol."""
         return self.__milestone.get_value("protocol", int)
 
-    def get_discontinued_date_part(self, attribute: str) -> int:
+    def get_discontinued_date_part(self, attribute: str, frmdate: str) -> int:
         """Get subject discontinued date part.
 
         If active or rejoined, return 88 instead.
@@ -91,6 +92,12 @@ class MilestoneAttributeCollection(AttributeCollection):
             if result is not None:
                 return result
 
+        # if minimal contact, return the form's date
+        if self.__milestone.get_value("protocol", int) == 2:
+            result = self.__milestone.get_value(frmdate, int)
+            if result is not None:
+                return result
+
         # check if already set
         existing_value = self.__subject_derived.get_cross_sectional_value(
             attribute, int
@@ -102,21 +109,28 @@ class MilestoneAttributeCollection(AttributeCollection):
 
     def _create_naccdsdy(self) -> int:
         """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
-        return self.get_discontinued_date_part("discday")
+        return self.get_discontinued_date_part("discday", "visitday")
 
     def _create_naccdsmo(self) -> int:
         """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
-        return self.get_discontinued_date_part("discmo")
+        return self.get_discontinued_date_part("discmo", "visitmo")
 
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
-        return self.get_discontinued_date_part("discyr")
+        result = self.get_discontinued_date_part("discyr", "visityr")
+
+        # in this case we do set a minimum of 2005 per RDD
+        return max(2005, result)
 
     def get_nursing_home_date_part(self, attribute: str) -> int:
         """Get subject moved to nursing home date part."""
         default = 88 if attribute != "nurseyr" else 8888
-        if self.__milestone.get_value("renurse", int) != 1:
-            return default
+
+        # TODO - there are some forms where renurse is not
+        # defined but the attribute is - technically not supposed
+        # to happen but for sake of consistency don't check for now?
+        # if self.__milestone.get_value("renurse", int) != 1:
+        #     return default
 
         result = self.__milestone.get_value(attribute, int)
         if result is not None:
@@ -138,3 +152,20 @@ class MilestoneAttributeCollection(AttributeCollection):
 
         # in this case we do set a minimum of 2002 per RDD
         return max(2002, result)
+
+    def _create_milestone_renurse(self) -> int:
+        """Carryover RENURSE, needs to be longitudinally dated to compute
+        NACCNURP.
+
+        Use -4 for Nones so this is forcefully carried over.
+        """
+        result = self.__milestone.get_value("renurse", int)
+        return result if result is not None else -4
+
+    def get_date(self) -> date:
+        """Get the MLST date - needed to let RENURSE be dated."""
+        visitdate = self.__milestone.get_date()
+        if not visitdate:
+            raise AttributeDeriverError("Cannot determine visitdate for MLST visit")
+
+        return visitdate

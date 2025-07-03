@@ -11,6 +11,9 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
@@ -222,16 +225,29 @@ class CrossModuleAttributeCollection(AttributeCollection):
                 or enrolled as initial visit only)
             1: If subject is under annual followup and expected to make more
                 Includes discontinued subjects who have since rejoined
+                - This seems to also include subject who have not explicitly
+                    been stated to have rejoined (via MLST form) BUT have
+                    UDS visits after the date of the discontinued MLST form
             2: Minimal contact with ADC but still enrolled
         """
         # if dead, return 0
         if self._create_naccdied() == 1:
             return 0
 
-        # if milestone marked subject as discontinued, return 0
-        # set by form_milestone._create_milestone_discontinued
-        if self.__working.get_cross_sectional_value("milestone-discontinued", int) == 1:
-            return 0
+        # if milestone marked subject as discontinued, and is the latest form,
+        # return 0. if there were UDS visits after discontinuation was marked,
+        # return 1
+        mlst_discontinued = self.__working.get_cross_sectional_dated_value(
+            "milestone-discontinued.latest", int
+        )
+        if mlst_discontinued and mlst_discontinued.value == 1:
+            uds_date = self.__uds.get_date()
+            if not uds_date:
+                raise AttributeDeriverError("Cannot determine UDS Date for NACCACTV")
+
+            if uds_date < mlst_discontinued.date:
+                return 0
+            return 1
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
         if self.__working.get_cross_sectional_value("prespart", int) == 1:
@@ -273,20 +289,42 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """Creates NACCNURP - Permanently moved to a nursing home.
 
         Looks at both Milestone and Form A1.
+
+        TODO: it seems if MLST came _after_ a UDS visit where
+        residenc == 4, and MLST does not set the nursing home fields
+        (blank, likely due to discontinued or deceased), then the old
+        system sets this to 0.
+
+        If MLST did explicitly put RENURSE to 0 (null) it should override.
+        But not sure about the discontinued case? But matching QAF for now.
         """
         # residenc can be updated per UDS form so grab directly here
         residenc = self.__uds.get_value("residenc", int)
 
-        # if Milestone reported subject permenantly to a nursing home,
-        # nurseyr is not None
-        nurseyr = self.__subject_derived.get_cross_sectional_value("nurseyr", int)
+        # get most recent MLST value of renurse
+        renurse_record = self.__working.get_prev("milestone-renurse", int)
 
-        # we also need to account subject moving out of a nursing home
-        # in a subsequent visit, so check this before the milestone
-        if residenc in [1, 2, 3]:
+        # no MLST, so base off of UDS
+        if not renurse_record:
+            return 1 if residenc == 4 else 0
+
+        # check if the two correspond
+        if residenc == 4 and renurse_record.value == 1:
+            return 1
+        if residenc != 4 and renurse_record.value != 1:
             return 0
 
-        if residenc == 4 or nurseyr is not None:
-            return 1
+        # if they conflict, need to base off of which form came later
+        uds_date = self.__uds.get_date()
+        if not uds_date:
+            raise AttributeDeriverError("Cannot determine UDS date for NACCNURP")
+
+        # MLST came later, use MLST RENURSE value
+        if uds_date < renurse_record.date:
+            return 1 if renurse_record.value == 1 else 0
+
+        # UDS came later, use UDS RESIDENC value
+        if renurse_record.date < uds_date:
+            return 1 if residenc == 4 else 0
 
         return 0

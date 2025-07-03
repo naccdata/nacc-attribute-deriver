@@ -4,6 +4,7 @@ import datetime
 import logging
 from typing import (
     Any,
+    Dict,
     Iterable,
     List,
     Optional,
@@ -269,6 +270,31 @@ class SubjectDerivedNamespace(BaseNamespace):
             date_attribute=date_attribute,
         )
 
+    def cast_to_dated_tagged_value(
+        self, attribute: str, raw_value: Dict[str, Any], attr_type: Type[T]
+    ) -> DateTaggedValue:
+        """Cast given value to DateTaggedValue."""
+        if not isinstance(raw_value, dict):
+            raise InvalidFieldError("Cannot cast non-dict to DateTaggedValue")
+
+        try:
+            value = DateTaggedValue(**raw_value)
+        except ValidationError as e:
+            raise InvalidFieldError(
+                f"Cannot cast cross-sectional value for {attribute} to "
+                + f"DateTaggedValue from {raw_value}: {e}"
+            ) from e
+
+        try:
+            if value.value is not None:
+                value.value = attr_type(value.value)  # type: ignore
+        except TypeError as e:
+            raise InvalidFieldError(
+                f"{attribute}.value must be of type {attr_type}"
+            ) from e
+
+        return value
+
     def get_cross_sectional_value(
         self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
     ) -> Optional[T]:
@@ -284,8 +310,8 @@ class SubjectDerivedNamespace(BaseNamespace):
         return self.get_value(f"cross-sectional.{attribute}", attr_type, default)
 
     def get_cross_sectional_dated_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
-    ) -> Optional[T]:
+        self, attribute: str, attr_type: Type[T]
+    ) -> Optional[DateTaggedValue]:
         """Returns the value of a cross-sectional dated value.
 
         Args:
@@ -299,21 +325,7 @@ class SubjectDerivedNamespace(BaseNamespace):
         if not raw_value:
             return None
 
-        try:
-            value = DateTaggedValue(**raw_value)
-        except ValidationError as e:
-            raise InvalidFieldError(
-                f"Cannot cast cross-sectional value for {attribute} to "
-                + f"DateTaggedValue from {raw_value}: {e}"
-            ) from e
-
-        try:
-            return attr_type(value.value)  # type: ignore
-        except TypeError as e:
-            raise InvalidFieldError(
-                f"{self.prefix}.cross-sectional.{attribute}.value must be of "
-                + f"type {attr_type}"
-            ) from e
+        return self.cast_to_dated_tagged_value(attribute, raw_value, attr_type)
 
     def get_longitudinal_value(
         self, attribute: str, attr_type: Type[T]
@@ -333,26 +345,12 @@ class SubjectDerivedNamespace(BaseNamespace):
 
         # cast to DateTaggedValues
         for i, record in enumerate(records):
-            try:
-                records[i] = DateTaggedValue(**record)
-            except ValidationError as e:
-                raise InvalidFieldError(
-                    f"Cannot cast longitudinal value for {attribute} to "
-                    + f"DateTaggedValue: {e}"
-                ) from e
-
-            try:
-                records[i].value = attr_type(records[i].value)  # type: ignore
-            except TypeError as e:
-                raise InvalidFieldError(
-                    f"{self.prefix}.longitudinal.{attribute} must be of "
-                    + f"type {attr_type}"
-                ) from e
+            records[i] = self.cast_to_dated_tagged_value(attribute, record, attr_type)
 
         return records
 
-    def get_prev_value(self, attribute: str, attr_type: Type[T]) -> Optional[T]:
-        """Gets the previous recorded value - pulls from longitudinal records.
+    def get_prev(self, attribute: str, attr_type: Type[T]) -> Optional[DateTaggedValue]:
+        """Gets the previous record - pulls from longitudinal records.
 
         Args:
             attribute: The field to grab the previous longitudinal records for
@@ -377,8 +375,12 @@ class SubjectDerivedNamespace(BaseNamespace):
         if not prev_record:
             return None
 
-        # should have already been casted to correct type
-        return prev_record.value
+        return prev_record
+
+    def get_prev_value(self, attribute: str, attr_type: Type[T]) -> Optional[T]:
+        """Get prev value, if we don't necessarily care about date."""
+        prev_record = self.get_prev(attribute, attr_type)
+        return None if prev_record is None else prev_record.value
 
 
 class WorkingDerivedNamespace(SubjectDerivedNamespace):
