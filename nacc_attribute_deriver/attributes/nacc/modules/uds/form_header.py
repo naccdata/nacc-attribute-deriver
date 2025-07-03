@@ -115,3 +115,21 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
             return total + 1
 
         return total
+
+    def _create_uds_naccmdss(self) -> int:
+        """Creates NACCMDSS - Subject's status in the Minimal Data Set
+        (MDS) and Uniform Data Set (UDS)
+
+        This is more cross-form, but we are setting it additively.
+        """
+        status = self.__subject_derived.get_cross_sectional_value("naccmdss", int)
+
+        # already known to be in UDS and/or MDS
+        if status in [1, 3]:
+            return status
+
+        # MDS flagged, so update to 1
+        if status == 2:
+            return 1
+
+        return 3

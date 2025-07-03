@@ -5,6 +5,7 @@ historic_apoe,historic_apoe,subject.info.working.cross-sectional.historic-apoe,u
 apoe,naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
 apoe,naccapoe,subject.info.genetics.apoe,update,FALSE
 apoe,naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
+mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
 mds,mds_death_month,subject.info.working.cross-sectional.mds-death-month,update,FALSE
 mds,mds_vitalst,subject.info.working.cross-sectional.mds-vital-status,update,FALSE
@@ -13,6 +14,9 @@ milestone,milestone_death_month,subject.info.working.cross-sectional.milestone-d
 milestone,milestone_deceased,subject.info.working.cross-sectional.milestone-deceased,update,FALSE
 milestone,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued,update,FALSE
 milestone,milestone_protocol,subject.info.working.cross-sectional.milestone-protocol,update,FALSE
+milestone,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
+milestone,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
+milestone,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE
 niagads_availability,ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE
 niagads_availability,ngdsexome,subject.info.derived.cross-sectional.ngdsexome,update,FALSE
 niagads_availability,ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
@@ -74,6 +78,7 @@ scan_pet_qc,scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,FAL
 scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
+mds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
 uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
 uds,educ,subject.info.working.cross-sectional.educ,update,FALSE

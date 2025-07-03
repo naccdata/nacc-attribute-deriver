@@ -1,11 +1,17 @@
 """Handles the MILESTONE form."""
 
 from datetime import date
-from typing import Optional
+from typing import Literal, Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
+from nacc_attribute_deriver.attributes.base.namespace import (
+    FormNamespace,
+    WorkingDerivedNamespace,
+)
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 
@@ -13,6 +19,8 @@ from nacc_attribute_deriver.utils.date import create_death_date
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__milestone = FormNamespace(table=table, required=frozenset(["module"]))
+        self.__working = WorkingDerivedNamespace(table=table)
+
         self.__deceased = self.__milestone.get_value("deceased", int)
 
         module = self.__milestone.get_required("module", str)
@@ -66,3 +74,37 @@ class MilestoneAttributeCollection(AttributeCollection):
     def _create_milestone_protocol(self) -> Optional[int]:
         """Return the mielstone protocol."""
         return self.__milestone.get_value("protocol", int)
+
+    def get_discontinued_date_part(self, mode: Literal["day", "month", "year"]) -> int:
+        """Get subject discontinued date part (day, month, or year).
+
+        If active or rejoined, return 88 instead.
+        """
+        if self.__milestone.get_value("rejoin", int) == 1:
+            return 88
+
+        if self.__milestone.get_value("discont", int) == 1:
+            disc_date = self.__milestone.get_date()
+            if not disc_date:
+                raise AttributeDeriverError("visitdate not found for milestone form")
+
+            if mode == "day":
+                return disc_date.day
+            if mode == "month":
+                return disc_date.month
+
+            return disc_date.year
+
+        return 88
+
+    def _create_naccdsdy(self) -> int:
+        """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
+        return self.get_discontinued_date_part("day")
+
+    def _create_naccdsmo(self) -> int:
+        """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
+        return self.get_discontinued_date_part("month")
+
+    def _create_naccdsyr(self) -> int:
+        """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
+        return self.get_discontinued_date_part("year")
