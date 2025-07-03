@@ -17,6 +17,10 @@ milestone,milestone_protocol,subject.info.working.cross-sectional.milestone-prot
 milestone,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
 milestone,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
 milestone,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE
+milestone,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
+milestone,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
+milestone,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE
+milestone,naccnurp,subject.info.derived.cross-sectional.naccnurp,update,FALSE
 niagads_availability,ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE
 niagads_availability,ngdsexome,subject.info.derived.cross-sectional.ngdsexome,update,FALSE
 niagads_availability,ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
@@ -261,6 +265,7 @@ uds,naccint,subject.info.derived.cross-sectional.naccint,update,FALSE
 uds,naccmod,subject.info.derived.cross-sectional.naccmod,update,FALSE
 uds,naccyod,subject.info.derived.cross-sectional.naccyod,update,FALSE
 uds,affiliate,subject.info.derived.affiliate,update,FALSE
+uds,naccpaff,subject.info.derived.cross-sectional.naccpaff,update,FALSE
 uds,decclin,subject.info.working.longitudinal.decclin,list,TRUE
 uds,befrst,subject.info.working.longitudinal.befrst,list,TRUE
 uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
@@ -268,3 +273,4 @@ uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
 uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
 uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE
 uds,naccactv,subject.info.derived.cross-sectional.naccactv,update,FALSE
+uds,naccnovs,subject.info.derived.cross-sectional.naccnovs,update,FALSE

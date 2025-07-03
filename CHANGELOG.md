@@ -21,6 +21,7 @@ Documentation of release versions of `nacc-attribute-deriver`
         * **NACCMCII is still not working properly, on hold for now**
 * Adds CLS derived variables
 * Adds MILESTONE derived variables
+    * Many of these are cross-form, particularly with UDS A1
 * Adds rest of NP derived variables
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions

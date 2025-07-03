@@ -253,3 +253,38 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # RDD does not mention a 99 but in SAS/R code as a default
         return 99
+
+    def _create_naccnovs(self) -> int:
+        """Creates NACCNOVS - No longer followed annually in person or by
+        telephone. Effectively checks the same things as NACCACTV.
+        """
+        naccactv = self._create_naccactv()
+        if naccactv == 1:
+            return 0
+        if naccactv in [0, 2]:
+            return 1
+
+        # 5 or 99 (affiliate or unknown)
+        return naccactv
+
+    def _create_naccnurp(self) -> int:
+        """Creates NACCNURP - Permanently moved to a nursing home.
+
+        Looks at both Milestone and Form A1.
+        """
+        # residenc can be updated per UDS form so grab directly here
+        residenc = self.__uds.get_value("residenc", int)
+
+        # if Milestone reported subject permenantly to a nursing home,
+        # nurseyr is not None
+        nurseyr = self.__subject_derived.get_cross_sectional_value("nurseyr", int)
+
+        # we also need to account subject moving out of a nursing home
+        # in a subsequent visit, so check this before the milestone
+        if residenc in [1, 2, 3]:
+            return 0
+
+        if residenc == 4 or nurseyr is not None:
+            return 1
+
+        return 0

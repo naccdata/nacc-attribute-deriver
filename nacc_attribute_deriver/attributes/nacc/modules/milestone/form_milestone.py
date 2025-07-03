@@ -15,6 +15,8 @@ from nacc_attribute_deriver.schema.errors import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
 
+DateParts = Literal["day", "month", "year"]
+
 
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
@@ -75,7 +77,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Return the mielstone protocol."""
         return self.__milestone.get_value("protocol", int)
 
-    def get_discontinued_date_part(self, mode: Literal["day", "month", "year"]) -> int:
+    def get_discontinued_date_part(self, mode: DateParts) -> int:
         """Get subject discontinued date part (day, month, or year).
 
         If active or rejoined, return 88 instead.
@@ -108,3 +110,15 @@ class MilestoneAttributeCollection(AttributeCollection):
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
         return self.get_discontinued_date_part("year")
+
+    def _create_naccnrdy(self) -> Optional[int]:
+        """Creates NACCNRDY - Day permanently moved to nursing home."""
+        return self.__milestone.get_value("nursedy", int)
+
+    def _create_naccnrmo(self) -> Optional[int]:
+        """Creates NACCNRMO - Month permanently moved to nursing home."""
+        return self.__milestone.get_value("nursemo", int)
+
+    def _create_naccnryr(self) -> Optional[int]:
+        """Creates NACCNRYR - Year permanently moved to nursing home."""
+        return self.__milestone.get_value("nurseyr", int)
