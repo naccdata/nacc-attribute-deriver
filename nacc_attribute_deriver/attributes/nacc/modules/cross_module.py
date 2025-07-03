@@ -314,7 +314,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         of what UDS says.
         """
         # if no MLST form, always 0
-        if not self.__working.get_cross_sectional_value("milestone-exists", bool):
+        if not self.__working.get_cross_sectional_value("milestone-visitdates", list):
             return 0
 
         # residenc can be updated per UDS form so grab directly here

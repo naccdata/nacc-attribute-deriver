@@ -9,7 +9,7 @@ mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
 mds,mds_death_month,subject.info.working.cross-sectional.mds-death-month,update,FALSE
 mds,mds_vitalst,subject.info.working.cross-sectional.mds-vital-status,update,FALSE
-milestone,milestone_exists,subject.info.working.cross-sectional.milestone-exists,update,TRUE
+milestone,milestone_visitdates,subject.info.working.cross-sectional.milestone-visitdates,set,FALSE
 milestone,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,FALSE
 milestone,milestone_death_month,subject.info.working.cross-sectional.milestone-death-month,update,FALSE
 milestone,milestone_deceased,subject.info.working.cross-sectional.milestone-deceased,update,FALSE

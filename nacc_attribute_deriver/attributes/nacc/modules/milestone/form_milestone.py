@@ -30,10 +30,18 @@ class MilestoneAttributeCollection(AttributeCollection):
             msg = f"Current file is not a MLST form: found {module}"
             raise InvalidFieldError(msg)
 
-    def _create_milestone_exists(self) -> bool:
+    def get_date(self) -> date:
+        """Get the MLST date - needed to let RENURSE be dated."""
+        visitdate = self.__milestone.get_date()
+        if not visitdate:
+            raise AttributeDeriverError("Cannot determine visitdate for MLST visit")
+
+        return visitdate
+
+    def _create_milestone_visitdates(self) -> str:
         """UDS needs to know if MLST exists - if this is called,
-        always True."""
-        return True
+        return visitdate."""
+        return str(self.get_date())
 
     def _create_milestone_death_date(self) -> Optional[date]:
         """Create milestone death date."""
@@ -191,11 +199,3 @@ class MilestoneAttributeCollection(AttributeCollection):
                 renurse = 1
 
         return renurse if renurse is not None else -4
-
-    def get_date(self) -> date:
-        """Get the MLST date - needed to let RENURSE be dated."""
-        visitdate = self.__milestone.get_date()
-        if not visitdate:
-            raise AttributeDeriverError("Cannot determine visitdate for MLST visit")
-
-        return visitdate
