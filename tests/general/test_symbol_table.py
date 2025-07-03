@@ -47,3 +47,14 @@ class TestSymbolTable:
         table = SymbolTable({"a": 0})
         assert table.get("a") is not None
         assert table.get("a") == 0
+
+    def test_pop(self):
+        table = SymbolTable(
+            {"a": 0, "b": 1, "c": 2, "nested": {"d": {"e": 3}, "f": 4, "g": {"h": 5}}}
+        )
+
+        assert table.pop("b") == 1
+        assert table.pop("nested.d.e") == 3
+        assert table.pop("nested.g") == {"h": 5}
+
+        assert table.to_dict() == {"a": 0, "c": 2, "nested": {"d": {}, "f": 4}}
