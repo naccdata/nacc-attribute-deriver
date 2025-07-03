@@ -9,15 +9,16 @@ mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
 mds,mds_death_month,subject.info.working.cross-sectional.mds-death-month,update,FALSE
 mds,mds_vitalst,subject.info.working.cross-sectional.mds-vital-status,update,FALSE
+milestone,milestone_exists,subject.info.working.cross-sectional.milestone-exists,update,TRUE
 milestone,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,FALSE
 milestone,milestone_death_month,subject.info.working.cross-sectional.milestone-death-month,update,FALSE
 milestone,milestone_deceased,subject.info.working.cross-sectional.milestone-deceased,update,FALSE
 milestone,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued.latest,latest,TRUE
+milestone,milestone_discday,subject.info.working.cross-sectional.milestone-discday.latest,latest,TRUE
+milestone,milestone_discmo,subject.info.working.cross-sectional.milestone-discmo.latest,latest,TRUE
+milestone,milestone_discyr,subject.info.working.cross-sectional.milestone-discyr.latest,latest,TRUE
 milestone,milestone_protocol,subject.info.working.cross-sectional.milestone-protocol,update,FALSE
 milestone,milestone_renurse,subject.info.working.longitudinal.milestone-renurse,list,TRUE
-milestone,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
-milestone,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
-milestone,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE
 milestone,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
 milestone,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
 milestone,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE
@@ -276,3 +277,6 @@ uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
 uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE
 uds,naccactv,subject.info.derived.cross-sectional.naccactv,update,FALSE
 uds,naccnovs,subject.info.derived.cross-sectional.naccnovs,update,FALSE
+uds,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
+uds,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
+uds,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE

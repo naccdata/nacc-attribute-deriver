@@ -30,6 +30,11 @@ class MilestoneAttributeCollection(AttributeCollection):
             msg = f"Current file is not a MLST form: found {module}"
             raise InvalidFieldError(msg)
 
+    def _create_milestone_exists(self) -> bool:
+        """UDS needs to know if MLST exists - if this is called,
+        always True."""
+        return True
+
     def _create_milestone_death_date(self) -> Optional[date]:
         """Create milestone death date."""
         if self.__deceased != 1:
@@ -107,16 +112,31 @@ class MilestoneAttributeCollection(AttributeCollection):
 
         return default
 
-    def _create_naccdsdy(self) -> int:
-        """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
+    def _create_milestone_discday(self) -> int:
+        """Carry over DISCDAY - Day of discontinuation from annual follow-up.
+
+        Used for NACCDSDY, but can potentially be overwritten by a later
+        UDS visit - see
+            cross_module._create_naccdsdy
+        """
         return self.get_discontinued_date_part("discday", "visitday")
 
-    def _create_naccdsmo(self) -> int:
-        """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
+    def _create_milestone_discmo(self) -> int:
+        """Carry over DISCMO - Month of discontinuation from annual follow-up.
+
+        Used for NACCDSMO, but can potentially be overwritten by a later
+        UDS visit - see
+            cross_module._create_naccdsmo
+        """
         return self.get_discontinued_date_part("discmo", "visitmo")
 
-    def _create_naccdsyr(self) -> int:
-        """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
+    def _create_milestone_discyr(self) -> int:
+        """Carry over DISCYR - Year of discontinuation from annual follow-up.
+
+        Used for NACCDSYR, but can potentially be overwritten by a later
+        UDS visit - see
+            cross_module._create_naccdsyr
+        """
         result = self.get_discontinued_date_part("discyr", "visityr")
 
         # in this case we do set a minimum of 2005 per RDD
@@ -126,9 +146,8 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Get subject moved to nursing home date part."""
         default = 88 if attribute != "nurseyr" else 8888
 
-        # TODO - there are some forms where renurse is not
-        # defined but the attribute is - technically not supposed
-        # to happen but for sake of consistency don't check for now?
+        # TODO - seems renurse not defined in MLST V1? so for
+        # now don't explicitly check for it
         # if self.__milestone.get_value("renurse", int) != 1:
         #     return default
 
@@ -159,8 +178,19 @@ class MilestoneAttributeCollection(AttributeCollection):
 
         Use -4 for Nones so this is forcefully carried over.
         """
-        result = self.__milestone.get_value("renurse", int)
-        return result if result is not None else -4
+        renurse = self.__milestone.get_value("renurse", int)
+        # if V1, RENURSE is not necessarily defined,
+        # so define it by looking at NURSEDY, NURSEMO, NURSEYR
+        if renurse is None:
+            nurse_vars = [
+                self._create_naccnrdy(),
+                self._create_naccnrmo(),
+                self._create_naccnryr(),
+            ]
+            if all(x is not None and x not in [88, 8888] for x in nurse_vars):
+                renurse = 1
+
+        return renurse if renurse is not None else -4
 
     def get_date(self) -> date:
         """Get the MLST date - needed to let RENURSE be dated."""

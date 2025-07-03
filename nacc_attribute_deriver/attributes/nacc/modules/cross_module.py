@@ -216,6 +216,21 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         return 8888
 
+    def uds_after_mlst_form(self, mlst_date: date) -> bool:
+        """Compares UDS and MLST dates.
+
+        Returns:
+        True: If UDS > MLST
+        False: If MLST <= UDS
+        """
+        uds_date = self.__uds.get_date()
+        if not uds_date:
+            raise AttributeDeriverError(
+                "Cannot determine UDS date to compare to MLST form"
+            )
+
+        return uds_date > mlst_date
+
     def _create_naccactv(self) -> Optional[int]:
         """Creates NACCACTV - Follow-up status at the Alzheimer's
         Disease Center (ADC)
@@ -241,13 +256,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
             "milestone-discontinued.latest", int
         )
         if mlst_discontinued and mlst_discontinued.value == 1:
-            uds_date = self.__uds.get_date()
-            if not uds_date:
-                raise AttributeDeriverError("Cannot determine UDS Date for NACCACTV")
+            if self.uds_after_mlst_form(mlst_discontinued.date):
+                return 1
 
-            if uds_date < mlst_discontinued.date:
-                return 0
-            return 1
+            return 0
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
         if self.__working.get_cross_sectional_value("prespart", int) == 1:
@@ -297,7 +309,14 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         If MLST did explicitly put RENURSE to 0 (null) it should override.
         But not sure about the discontinued case? But matching QAF for now.
+
+        ALSO - if there is no MLST form, it seems the value is 0 regardless
+        of what UDS says.
         """
+        # if no MLST form, always 0
+        if not self.__working.get_cross_sectional_value("milestone-exists", bool):
+            return 0
+
         # residenc can be updated per UDS form so grab directly here
         residenc = self.__uds.get_value("residenc", int)
 
@@ -315,16 +334,34 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 0
 
         # if they conflict, need to base off of which form came later
-        uds_date = self.__uds.get_date()
-        if not uds_date:
-            raise AttributeDeriverError("Cannot determine UDS date for NACCNURP")
-
-        # MLST came later, use MLST RENURSE value
-        if uds_date < renurse_record.date:
-            return 1 if renurse_record.value == 1 else 0
-
         # UDS came later, use UDS RESIDENC value
-        if renurse_record.date < uds_date:
+        if self.uds_after_mlst_form(renurse_record.date):
             return 1 if residenc == 4 else 0
 
-        return 0
+        # MLST came later, use MLST RENURSE value
+        return 1 if renurse_record.value == 1 else 0
+
+    def determine_discontinued_date(self, attribute: str, default: int) -> int:
+        """Determine the discontinued date part.
+
+        If UDS form came AFTER MLST, return the default (even if MLST
+        said discontinued.
+        TODO: again uncertain about that behavior - should clarify.
+        """
+        disc_date = self.__working.get_cross_sectional_dated_value(attribute, int)
+        if disc_date is None or self.uds_after_mlst_form(disc_date.date):
+            return default
+
+        return disc_date.value
+
+    def _create_naccdsdy(self) -> int:
+        """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
+        return self.determine_discontinued_date("milestone-discday.latest", 88)
+
+    def _create_naccdsmo(self) -> int:
+        """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
+        return self.determine_discontinued_date("milestone-discmo.latest", 88)
+
+    def _create_naccdsyr(self) -> int:
+        """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
+        return self.determine_discontinued_date("milestone-discyr.latest", 8888)
