@@ -231,10 +231,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         return uds_date > mlst_date
 
-    def check_active_status(self) -> int:
-        """This is used for both NACCACTV and NACCNOVS, but is mainly based on
-        NACCACTV logic. NACCNOVS will look at the results and return different
-        codes as it essentially describing the opposite.
+    def _create_naccactv(self) -> int:
+        """Creates NACCACTV - Follow-up status at the Alzheimer's
+        Disease Center (ADC)
 
         Codes:
             0: If subject receives no followup contact (dead, discontinued,
@@ -266,7 +265,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
         if self.__uds.get_value("prespart", int) == 1:
-            return 8
+            return 0
 
         # 5 used for affiliates in SAS/R code
         if self.__subject_derived.get_cross_sectional_value("affiliate", bool):
@@ -288,28 +287,22 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # visits but then continued to have followup visits
         return 1
 
-    def _create_naccactv(self) -> int:
-        """Creates NACCACTV - Follow-up status at the Alzheimer's
-        Disease Center (ADC)
-        """
-        status = self.check_active_status()
-        if status == 8:
-            return 0
-
-        return status
-
     def _create_naccnovs(self) -> int:
         """Creates NACCNOVS - No longer followed annually in person or by
-        telephone
+        telephone. This is ultimately just checking the same things
+        NACCACTV is and reinterprets results.
         """
-        naccactv = self.check_active_status()
+        # initial evaluation only always returns 8
+        if self.__uds.get_value("prespart", int) == 1:
+            return 8
+
+        naccactv = self._create_naccactv()
         if naccactv == 1:
             return 0
         if naccactv in [0, 2]:
             return 1
 
-        # only other cases are initial visit only (8) or is affiliate (5)
-        # which we return as-is
+        # only other case is affiliate (5) which we return as-is
         return naccactv
 
     def _create_naccnurp(self) -> int:
