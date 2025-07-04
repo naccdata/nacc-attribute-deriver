@@ -88,7 +88,8 @@ class TestUDSHeaderAttributeCollection:
         attr = UDSHeaderAttributeCollection(table)
 
         # actually 16,462 but maxes out at 5000
-        assert attr._create_naccdays() == 5000
+        # assert attr._create_naccdays() == 5000
+        assert attr._create_naccdays() == 16462
 
         # set it closer
         set_attribute(

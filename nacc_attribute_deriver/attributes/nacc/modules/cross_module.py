@@ -5,10 +5,14 @@ from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
+    SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.attributes.base.uds_namespace import (
     UDSNamespace,
+)
+from nacc_attribute_deriver.schema.errors import (
+    AttributeDeriverError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
@@ -33,6 +37,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self.__working = WorkingDerivedNamespace(
             table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
@@ -210,3 +215,168 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 9999
 
         return 8888
+
+    def uds_after_mlst_form(self, mlst_date: date) -> bool:
+        """Compares UDS and MLST dates.
+
+        Returns:
+            True: If UDS > MLST
+            False: If MLST <= UDS
+        """
+        uds_date = self.__uds.get_date()
+        if not uds_date:
+            raise AttributeDeriverError(
+                "Cannot determine UDS date to compare to MLST form"
+            )
+
+        return uds_date > mlst_date
+
+    def check_active_status(self) -> int:
+        """This is used for both NACCACTV and NACCNOVS, but is mainly based on
+        NACCACTV logic. NACCNOVS will look at the results and return different
+        codes as it essentially describing the opposite.
+
+        Codes:
+            0: If subject receives no followup contact (dead, discontinued,
+                or enrolled as initial visit only)
+                8: Returns 8 specifically if enrolled as initial visit only.
+                    NACCACTVS casts this back to 0, NACCNOVS returns it as 8
+            1: If subject is under annual followup and expected to make more
+                Includes discontinued subjects who have since rejoined
+                - This seems to also include subject who have not explicitly
+                    been stated to have rejoined (via MLST form) BUT have
+                    UDS visits after the date of the discontinued MLST form
+            2: Minimal contact with ADC but still enrolled
+        """
+        # if dead, return 0
+        if self._create_naccdied() == 1:
+            return 0
+
+        # if milestone marked subject as discontinued, and is the latest form,
+        # return 0. if there were UDS visits after discontinuation was marked,
+        # return 1
+        mlst_discontinued = self.__working.get_cross_sectional_dated_value(
+            "milestone-discontinued.latest", int
+        )
+        if mlst_discontinued and mlst_discontinued.value == 1:
+            if self.uds_after_mlst_form(mlst_discontinued.date):
+                return 1
+
+            return 0
+
+        # if UDS A1 prespart == 1 (initial evaluation only), return 0
+        if self.__uds.get_value("prespart", int) == 1:
+            return 8
+
+        # 5 used for affiliates in SAS/R code
+        if self.__subject_derived.get_cross_sectional_value("affiliate", bool):
+            return 5
+
+        # check milestone protocol
+        protocol = self.__working.get_cross_sectional_value("milestone-protocol", int)
+
+        # if protocol == 1 or 3, annual followup expected
+        if protocol in [1, 3]:
+            return 1
+        # protocol == 2 is minimal contact
+        if protocol == 2:
+            return 2
+
+        # protocol == 1 or 3, or just using 1 by default since this is an UDS
+        # visit and we didn't hit any of the above non-active conditions
+        # This also handles the case where they had prespart == 1 at initial
+        # visits but then continued to have followup visits
+        return 1
+
+    def _create_naccactv(self) -> int:
+        """Creates NACCACTV - Follow-up status at the Alzheimer's
+        Disease Center (ADC)
+        """
+        status = self.check_active_status()
+        if status == 8:
+            return 0
+
+        return status
+
+    def _create_naccnovs(self) -> int:
+        """Creates NACCNOVS - No longer followed annually in person or by
+        telephone
+        """
+        naccactv = self.check_active_status()
+        if naccactv == 1:
+            return 0
+        if naccactv in [0, 2]:
+            return 1
+
+        # only other cases are initial visit only (8) or is affiliate (5)
+        # which we return as-is
+        return naccactv
+
+    def _create_naccnurp(self) -> int:
+        """Creates NACCNURP - Permanently moved to a nursing home.
+
+        Looks at both Milestone and Form A1.
+
+        TODO: it seems if MLST came _after_ a UDS visit where
+        residenc == 4, and MLST does not set the nursing home fields
+        (blank, likely due to discontinued or deceased), then the old
+        system sets this to 0.
+
+        If MLST did explicitly put RENURSE to 0 (null) it should override.
+        But not sure about the discontinued case? But matching QAF for now.
+
+        ALSO - if there is no MLST form, it seems the value is 0 regardless
+        of what UDS says.
+        """
+        # if no MLST form, always 0
+        if not self.__working.get_cross_sectional_value("milestone-visitdates", list):
+            return 0
+
+        # residenc can be updated per UDS form so grab directly here
+        residenc = self.__uds.get_value("residenc", int)
+
+        # get most recent MLST value of renurse
+        renurse_record = self.__working.get_prev("milestone-renurse", int)
+
+        # no MLST, so base off of UDS
+        if not renurse_record:
+            return 1 if residenc == 4 else 0
+
+        # check if the two correspond
+        if residenc == 4 and renurse_record.value == 1:
+            return 1
+        if residenc != 4 and renurse_record.value != 1:
+            return 0
+
+        # if they conflict, need to base off of which form came later
+        # UDS came later, use UDS RESIDENC value
+        if self.uds_after_mlst_form(renurse_record.date):
+            return 1 if residenc == 4 else 0
+
+        # MLST came later, use MLST RENURSE value
+        return 1 if renurse_record.value == 1 else 0
+
+    def determine_discontinued_date(self, attribute: str, default: int) -> int:
+        """Determine the discontinued date part.
+
+        If UDS form came AFTER MLST, return the default (even if MLST
+        said discontinued.
+        TODO: again uncertain about that behavior - should clarify.
+        """
+        disc_date = self.__working.get_cross_sectional_dated_value(attribute, int)
+        if disc_date is None or self.uds_after_mlst_form(disc_date.date):
+            return default
+
+        return disc_date.value
+
+    def _create_naccdsdy(self) -> int:
+        """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
+        return self.determine_discontinued_date("milestone-discday.latest", 88)
+
+    def _create_naccdsmo(self) -> int:
+        """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
+        return self.determine_discontinued_date("milestone-discmo.latest", 88)
+
+    def _create_naccdsyr(self) -> int:
+        """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
+        return self.determine_discontinued_date("milestone-discyr.latest", 8888)

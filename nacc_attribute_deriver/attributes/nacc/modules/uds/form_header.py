@@ -89,21 +89,22 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         # while technically shouldn't happen, we do appear to have some
         # weird cases where there is not an initial packet in the system
         # return None in that case
-        raw_initial = self.__working.get_cross_sectional_dated_value(
+        initial_visitdate = self.__working.get_cross_sectional_dated_value(
             "initial-uds-visit", str
         )
-        initial_visitdate = datetime_from_form_date(raw_initial)
         if not initial_visitdate:
             return None
 
         current_visitdate = self.get_current_visitdate()
-        num_days = calculate_days(initial_visitdate.date(), current_visitdate)
+        num_days = calculate_days(initial_visitdate.date, current_visitdate)
         if num_days is None:
             raise AttributeDeriverError(
                 "Cannot calculate days between current and initial visit"
             )
 
-        return min(num_days, 5000)
+        # TODO: RDD says max is 5000 but QAF doesn't seem to limit it
+        # return min(num_days, 5000)
+        return num_days
 
     def _create_naccnvst(self) -> int:
         """Creates NACCNVST - Total number of in-person UDS visits made."""
@@ -115,3 +116,21 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
             return total + 1
 
         return total
+
+    def _create_uds_naccmdss(self) -> int:
+        """Creates NACCMDSS - Subject's status in the Minimal Data Set
+        (MDS) and Uniform Data Set (UDS)
+
+        This is more cross-form, but we are setting it additively.
+        """
+        status = self.__subject_derived.get_cross_sectional_value("naccmdss", int)
+
+        # already known to be in UDS and/or MDS
+        if status in [1, 3]:
+            return status
+
+        # MDS flagged, so update to 1
+        if status == 2:
+            return 1
+
+        return 3

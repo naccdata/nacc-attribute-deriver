@@ -129,7 +129,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         or sourcenw == 2 (non-ADC).
         """
         # check if affiliate status already determined
-        # TODO - right now treating like cross-sectional, but should this change
+        # TODO - right now once affiliate always affilaite, but should this change
         # to non-affiliate if a later form defines it as such?
         affiliate = self.__subject_derived.get_value("affiliate", bool)
         if affiliate:
@@ -141,6 +141,25 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
         return source == 4 or sourcenw == 2
 
+    def _create_naccpaff(self) -> int:
+        """Creates NACCPAFF - Previously affiliated subject.
+
+        Always set as long as being an affiliate is ever true.
+        """
+        naccpaff = self.__subject_derived.get_cross_sectional_value("naccpaff", int)
+        if naccpaff == 1:
+            return 1
+
+        return 1 if self._create_affiliate() else 0
+
     def _create_educ(self) -> Optional[int]:
         """UDS education level."""
         return self.uds.get_value("educ", int)
+
+    # def _create_prespart(self) -> Optional[int]:
+    #     """Presumed participation.
+
+    #     Used for NACCACTV. Usually only provided at first visit so need
+    #     to carry over as a working variable
+    #     """
+    #     return self.uds.get_value("prespart", int)

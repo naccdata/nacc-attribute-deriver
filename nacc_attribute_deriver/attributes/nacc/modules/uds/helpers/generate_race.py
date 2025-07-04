@@ -294,8 +294,6 @@ def generate_race(  # noqa: C901
         return 99
 
     # remove whitespace and lowercase all
-    # TODO: not sure if the SAS code was extremely case-sensitive
-    #   e.g. some capitalizations in RACEX and others in RACESECX
     racex = racex.replace(" ", "").lower() if racex else racex
     racesecx = racesecx.replace(" ", "").lower() if racesecx else racesecx
     raceterx = raceterx.replace(" ", "").lower() if raceterx else raceterx

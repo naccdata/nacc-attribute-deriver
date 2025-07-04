@@ -4,7 +4,6 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## Working (1.5.0.dev)
 
-* Adds rest of NP derived variables
 * Adds rest of UDS derived variables:
     * Form header
         * Here some NACC derived variables compute the same thing but apply to a different operation, so curation rule may point to a different derived variable's function
@@ -21,11 +20,15 @@ Documentation of release versions of `nacc-attribute-deriver`
     * D1 **except** NACCMCII (D1)
         * **NACCMCII is still not working properly, on hold for now**
 * Adds CLS derived variables
+* Adds MILESTONE derived variables
+    * Many of these are cross-form, particularly with UDS A1
+* Adds rest of NP derived variables
 * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
 * Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
+* Defines `pop` for `SymbolTable` (this is done more for optimization the attribute-curator gear)
 
 ## 1.4.1
 

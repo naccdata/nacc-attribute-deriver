@@ -2,9 +2,10 @@
 
 From a5structrdd.sas.
 
-TODO: these variables are heavily involved in a recode4g macro; it
-is not entirely clear to me what this is doing, do regression test and
-investigate.
+These variables are heavily involved in a recode4g macro; it
+is not entirely clear to me what this is doing, but despite not
+aftievly translating that these seem to pass the regression
+tests okay.
 """
 
 from typing import Optional
