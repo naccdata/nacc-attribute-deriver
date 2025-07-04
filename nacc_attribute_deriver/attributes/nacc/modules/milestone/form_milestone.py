@@ -1,4 +1,11 @@
-"""Handles the MILESTONE form."""
+"""Handles the MILESTONE form.
+
+Most of the NACC derived variable that use MILESTONE data are actually
+cross-form and also need to be compared to UDS values. As such, most of
+the _create functions here are meant to carry over values to later be
+evaluated under the UDS scope under `CrossModuleAttributeCollection` in
+`cross_module.py`
+"""
 
 from datetime import date
 from typing import Optional
@@ -187,8 +194,8 @@ class MilestoneAttributeCollection(AttributeCollection):
         Use -4 for Nones so this is forcefully carried over.
         """
         renurse = self.__milestone.get_value("renurse", int)
-        # if V1, RENURSE is not necessarily defined,
-        # so define it by looking at NURSEDY, NURSEMO, NURSEYR
+        # if V1, RENURSE does not seem to be set/defined,
+        # so manually set it by looking at NURSEDY, NURSEMO, NURSEYR
         if renurse is None:
             nurse_vars = [
                 self._create_naccnrdy(),

@@ -87,7 +87,6 @@ uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
 uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
 uds,educ,subject.info.working.cross-sectional.educ,update,FALSE
-uds,prespart,subject.info.working.cross-sectional.prespart,update,FALSE
 uds,notdemin,subject.info.working.cross-sectional.notdemin,update,FALSE
 uds,ivcstat,subject.info.working.cross-sectional.ivcstat,update,FALSE
 uds,fvmci,subject.info.working.cross-sectional.fvmci,update,FALSE

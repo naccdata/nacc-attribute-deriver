@@ -156,10 +156,10 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         """UDS education level."""
         return self.uds.get_value("educ", int)
 
-    def _create_prespart(self) -> Optional[int]:
-        """Presumed participation.
+    # def _create_prespart(self) -> Optional[int]:
+    #     """Presumed participation.
 
-        Used for NACCACTV. Usually only provided at first visit so need
-        to carry over as a working variable
-        """
-        return self.uds.get_value("prespart", int)
+    #     Used for NACCACTV. Usually only provided at first visit so need
+    #     to carry over as a working variable
+    #     """
+    #     return self.uds.get_value("prespart", int)

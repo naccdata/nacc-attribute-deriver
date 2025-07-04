@@ -220,8 +220,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """Compares UDS and MLST dates.
 
         Returns:
-        True: If UDS > MLST
-        False: If MLST <= UDS
+            True: If UDS > MLST
+            False: If MLST <= UDS
         """
         uds_date = self.__uds.get_date()
         if not uds_date:
@@ -231,13 +231,16 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         return uds_date > mlst_date
 
-    def _create_naccactv(self) -> Optional[int]:
-        """Creates NACCACTV - Follow-up status at the Alzheimer's
-        Disease Center (ADC)
+    def check_active_status(self) -> int:
+        """This is used for both NACCACTV and NACCNOVS, but is mainly based on
+        NACCACTV logic. NACCNOVS will look at the results and return different
+        codes as it essentially describing the opposite.
 
         Codes:
             0: If subject receives no followup contact (dead, discontinued,
                 or enrolled as initial visit only)
+                8: Returns 8 specifically if enrolled as initial visit only.
+                    NACCACTVS casts this back to 0, NACCNOVS returns it as 8
             1: If subject is under annual followup and expected to make more
                 Includes discontinued subjects who have since rejoined
                 - This seems to also include subject who have not explicitly
@@ -262,8 +265,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 0
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
-        if self.__working.get_cross_sectional_value("prespart", int) == 1:
-            return 0
+        if self.__uds.get_value("prespart", int) == 1:
+            return 8
 
         # 5 used for affiliates in SAS/R code
         if self.__subject_derived.get_cross_sectional_value("affiliate", bool):
@@ -279,23 +282,35 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if protocol == 2:
             return 2
 
-        return None
+        # protocol == 1 or 3, or just using 1 by default since this is an UDS
+        # visit and we didn't hit any of the above non-active conditions
+        # This also handles the case where they had prespart == 1 at initial
+        # visits but then continued to have followup visits
+        return 1
 
-    def _create_naccnovs(self) -> Optional[int]:
-        """Creates NACCNOVS - No longer followed annually in person or by
-        telephone. Effectively checks the same things as NACCACTV.
+    def _create_naccactv(self) -> int:
+        """Creates NACCACTV - Follow-up status at the Alzheimer's
+        Disease Center (ADC)
         """
-        # check if enrolled for initial evaluation only
-        if self.__working.get_cross_sectional_value("prespart", int) == 1:
-            return 8
+        status = self.check_active_status()
+        if status == 8:
+            return 0
 
-        naccactv = self._create_naccactv()
+        return status
+
+    def _create_naccnovs(self) -> int:
+        """Creates NACCNOVS - No longer followed annually in person or by
+        telephone
+        """
+        naccactv = self.check_active_status()
         if naccactv == 1:
             return 0
         if naccactv in [0, 2]:
             return 1
 
-        return None
+        # only other cases are initial visit only (8) or is affiliate (5)
+        # which we return as-is
+        return naccactv
 
     def _create_naccnurp(self) -> int:
         """Creates NACCNURP - Permanently moved to a nursing home.
