@@ -165,7 +165,6 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         if self._create_nacclbde() == 0:
             return 7
 
-        # return self.uds.check_default("nacclbdp", None)
         # TODO: raising error instead of returning None
         # I think in theory it seems it shouldn't ever get here
         # and nacclbdp should always be set to something

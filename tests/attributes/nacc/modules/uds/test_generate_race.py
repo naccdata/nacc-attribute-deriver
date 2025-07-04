@@ -32,9 +32,6 @@ class TestGenerateRace:
         assert generate_race(50, "African American", None, None, None, None) == 2
         assert generate_race(50, "NATIVE AMERICAN", None, None, None, None) == 3
 
-        # TODO: check what SAS/R code returns for this
-        # won't return 4
-        # assert generate_race(50, "Samoan", None, None, None, None) == 4
         # this version will return 4 (must be racesecx)
         assert generate_race(50, None, None, "Samoan", None, None) == 4
 

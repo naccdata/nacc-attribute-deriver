@@ -161,11 +161,6 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Get subject moved to nursing home date part."""
         default = 88 if attribute != "nurseyr" else 8888
 
-        # TODO - seems renurse not defined in MLST V1? so for
-        # now don't explicitly check for it
-        # if self.__milestone.get_value("renurse", int) != 1:
-        #     return default
-
         result = self.__milestone.get_value(attribute, int)
         if result is not None:
             return result
@@ -194,6 +189,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         Use -4 for Nones so this is forcefully carried over.
         """
         renurse = self.__milestone.get_value("renurse", int)
+
         # if V1, RENURSE does not seem to be set/defined,
         # so manually set it by looking at NURSEDY, NURSEMO, NURSEYR
         if renurse is None:

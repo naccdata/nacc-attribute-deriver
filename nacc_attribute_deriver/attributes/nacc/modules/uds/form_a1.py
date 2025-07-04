@@ -129,7 +129,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         or sourcenw == 2 (non-ADC).
         """
         # check if affiliate status already determined
-        # TODO - right now treating like cross-sectional, but should this change
+        # TODO - right now once affiliate always affilaite, but should this change
         # to non-affiliate if a later form defines it as such?
         affiliate = self.__subject_derived.get_value("affiliate", bool)
         if affiliate:
