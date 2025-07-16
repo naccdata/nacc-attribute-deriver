@@ -316,6 +316,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if fothmuso == 9 and (self.uds.is_initial() or known_value == 9):
             return 9
 
+        # if fothmuso is None, also return 9 or the known value
+        if fothmuso is None:
+            return 9 if known_value is None else known_value
+
         return None
 
     def _create_naccomsx(self) -> Optional[str]:
