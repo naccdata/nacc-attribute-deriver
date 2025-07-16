@@ -208,9 +208,10 @@ class FamilyHandler:
         if self.has_cognitive_impairment():
             return 1
 
-        # if no data to evaluate, return Unknown (9)
+        # if no data to evaluate, return 0 (no cognitive impairment)
         if not self.has_data():
-            return 9
+            #return 9
+            return 0
 
         if self.is_parent():
             if self.__formver >= 3:

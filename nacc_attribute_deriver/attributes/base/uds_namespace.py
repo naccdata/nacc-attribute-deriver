@@ -32,12 +32,12 @@ class UDSNamespace(FormNamespace):
     def is_initial(self) -> bool:
         """Returns whether or not this is an initial packet."""
         packet = self.get_required("packet", str)
-        return packet.startswith("I")
+        return packet.upper().startswith("I")
 
     def is_in_person(self) -> bool:
         """Returns whethher or not this is an in-person visit."""
         packet = self.get_required("packet", str)
-        return packet in ["I", "F"]
+        return packet and packet.upper() in ["I", "F"]
 
     def normalized_formver(self) -> int:
         """Returns the normalized form version.

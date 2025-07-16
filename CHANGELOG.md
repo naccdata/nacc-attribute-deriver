@@ -17,8 +17,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * B1, B6, B8, and B9
     * C1/C2
         * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
-    * D1 **except** NACCMCII (D1)
-        * **NACCMCII is still not working properly, on hold for now**
+    * D1
 * Adds CLS derived variables
 * Adds MILESTONE derived variables
     * Many of these are cross-form, particularly with UDS A1
@@ -29,6 +28,8 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
 * Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
 * Defines `pop` for `SymbolTable` (this is done more for optimization the attribute-curator gear)
+* Makes minor optimization tweaks
+* Fixes `ngdsexome` typo to `ngdsexom`
 
 ## 1.4.1
 

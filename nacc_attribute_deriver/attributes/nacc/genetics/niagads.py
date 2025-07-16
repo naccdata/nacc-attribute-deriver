@@ -40,7 +40,7 @@ class NIAGADSAttributeCollection(AttributeCollection):
         """NIAGADS GWAS investigator availability."""
         return self._evaluate_investigator("niagads_gwas")
 
-    def _create_ngdsexome(self) -> int:
+    def _create_ngdsexom(self) -> int:
         """NIAGADS ExomeChip investigator availability."""
         return self._evaluate_investigator("niagads_exomechip")
 

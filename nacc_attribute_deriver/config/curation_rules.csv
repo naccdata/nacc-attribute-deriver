@@ -23,7 +23,7 @@ milestone,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
 milestone,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
 milestone,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE
 niagads_availability,ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE
-niagads_availability,ngdsexome,subject.info.derived.cross-sectional.ngdsexome,update,FALSE
+niagads_availability,ngdsexom,subject.info.derived.cross-sectional.ngdsexom,update,FALSE
 niagads_availability,ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
 niagads_availability,ngdswes,subject.info.derived.cross-sectional.ngdswes,update,FALSE
 np,naccamy,subject.info.derived.cross-sectional.naccamy,update,FALSE
@@ -115,6 +115,7 @@ uds,naccamsx,subject.info.derived.cross-sectional.naccamsx,update,FALSE
 uds,naccdad,subject.info.derived.cross-sectional.naccdad,update,FALSE
 uds,naccfadm,subject.info.derived.cross-sectional.naccfadm,max,FALSE
 uds,naccfam,subject.info.derived.cross-sectional.naccfam,update,FALSE
+uds,naccfam,subject.info.derived.longitudinal.naccfam,list,TRUE
 uds,naccfftd,subject.info.derived.cross-sectional.naccfftd,max,FALSE
 uds,naccfm,subject.info.derived.cross-sectional.naccfm,update,FALSE
 uds,naccfms,subject.info.derived.cross-sectional.naccfms,update,FALSE
