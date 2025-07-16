@@ -29,7 +29,7 @@ niagads_availability,ngdswes,subject.info.derived.cross-sectional.ngdswes,update
 niagads_availability,ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,update,FALSE
 niagads_availability,ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
 niagads_availability,ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
-niagads_availability,ncdsweac,subject.info.derived.cross-sectional.ncdsweac,update,FALSE
+niagads_availability,ngdsweac,subject.info.derived.cross-sectional.ngdsweac,update,FALSE
 np,naccamy,subject.info.derived.cross-sectional.naccamy,update,FALSE
 np,naccarte,subject.info.derived.cross-sectional.naccarte,update,FALSE
 np,naccavas,subject.info.derived.cross-sectional.naccavas,update,FALSE
