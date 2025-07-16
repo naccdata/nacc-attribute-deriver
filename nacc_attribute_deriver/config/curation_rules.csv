@@ -26,6 +26,10 @@ niagads_availability,ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,upda
 niagads_availability,ngdsexom,subject.info.derived.cross-sectional.ngdsexom,update,FALSE
 niagads_availability,ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
 niagads_availability,ngdswes,subject.info.derived.cross-sectional.ngdswes,update,FALSE
+niagads_availability,ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,update,FALSE
+niagads_availability,ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
+niagads_availability,ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
+niagads_availability,ncdsweac,subject.info.derived.cross-sectional.ncdsweac,update,FALSE
 np,naccamy,subject.info.derived.cross-sectional.naccamy,update,FALSE
 np,naccarte,subject.info.derived.cross-sectional.naccarte,update,FALSE
 np,naccavas,subject.info.derived.cross-sectional.naccavas,update,FALSE
