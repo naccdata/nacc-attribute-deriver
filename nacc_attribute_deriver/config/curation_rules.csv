@@ -287,3 +287,11 @@ uds,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE
 uds,uds_naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
 uds,uds_naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
 uds,uds_naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE
+uds,uds_ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE
+uds,uds_ngdsexom,subject.info.derived.cross-sectional.ngdsexom,update,FALSE
+uds,uds_ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
+uds,uds_ngdswes,subject.info.derived.cross-sectional.ngdswes,update,FALSE
+uds,uds_ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,update,FALSE
+uds,uds_ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
+uds,uds_ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
+uds,uds_ngdsweac,subject.info.derived.cross-sectional.ngdsweac,update,FALSE
