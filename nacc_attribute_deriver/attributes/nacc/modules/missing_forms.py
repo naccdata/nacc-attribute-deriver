@@ -18,7 +18,7 @@ class MissingFormAttributes(AttributeCollection):
 
     def handle_missing(self, attribute: str, default: int) -> Optional[int]:
         """Handle missing values."""
-        if not self.__derived.get_cross_sectional_value(attribute, int):
+        if not self.__derived.get_cross_sectional_value(attribute, str):
             return default
 
         return None
