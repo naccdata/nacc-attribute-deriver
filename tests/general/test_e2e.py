@@ -32,6 +32,8 @@ def test_uds_form():
                             "primlang": 1,
                             "educ": 1,
                             "probad": 1,
+                            "naccid": "NACC123456",
+                            "adcid": 0,
                         }
                     }
                 }

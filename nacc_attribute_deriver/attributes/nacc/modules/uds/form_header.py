@@ -134,3 +134,7 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
             return 1
 
         return 3
+
+    def _create_naccid(self) -> str:
+        """Creates NACCID."""
+        return self.uds.get_required("naccid", str)

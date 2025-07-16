@@ -232,3 +232,22 @@ class FamilyHandler:
                 return 9
 
         return 0
+
+    def check_neur_is_8(self) -> bool:
+        """TODO: This method was added to match SAS behavior but I do not think
+        it's correct/makes sense, hence making it its own method for easy
+        removal in the future. 
+
+        But in V3, it seems if all first-degree members are coded as
+        XNEUR == 8 (N/A, no neurological problem or psychiatric condition)
+        then NACCFAM = 9 (Unknown), instead of 0 (No). So keep track of if
+        everything is 8.
+        """
+        if self.is_parent():
+            return self._neur() == 8
+
+        for i in range(1, self.get_bound() + 1):
+            if self._neur(i) != 8:
+                return False
+
+        return True

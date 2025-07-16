@@ -10,6 +10,7 @@ Documentation of release versions of `nacc-attribute-deriver`
             * NACVNUM - uses NACCAVST
             * NACCFDAYS - uses NACCDAYS
         * MQT's `longitudinal._create_total_uds_visits` removed and curation rule updated to use NACCAVST directly
+        * Also adds NACCID
     * A1, A2, A3, A4, and A5
         * Accounts for some forms being optional
         * For A4, adds MEDS scope

@@ -16,7 +16,8 @@ class UDSNamespace(FormNamespace):
         if required is None:
             required = frozenset()
 
-        default_required = ["module", "packet", "formver", "birthmo", "birthyr"]
+        default_required = ["module", "packet", "formver", "birthmo", "birthyr",
+                            "naccid", "adcid"]
         super().__init__(
             table=table,
             required=required.union(default_required),

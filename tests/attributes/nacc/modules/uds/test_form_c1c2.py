@@ -23,6 +23,8 @@ def table() -> SymbolTable:
                         "module": "UDS",
                         "packet": "I",
                         "formver": "3.0",
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                         # realistically only one of C2/C2 is filled out,
                         # but define both for testing
                         "frmdatec1": "2025-01-01",

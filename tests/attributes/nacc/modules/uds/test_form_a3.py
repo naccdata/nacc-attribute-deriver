@@ -29,6 +29,8 @@ def table() -> SymbolTable:
                         "fothmut": 0,
                         "sibs": 0,
                         "kids": 0,
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                     }
                 }
             }

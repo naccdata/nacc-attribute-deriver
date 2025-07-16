@@ -25,6 +25,8 @@ def table() -> SymbolTable:
                         "birthyr": 1990,
                         "packet": "F",
                         "formver": "3.0",
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                     }
                 }
             }

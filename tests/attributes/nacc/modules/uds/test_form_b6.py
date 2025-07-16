@@ -41,6 +41,8 @@ class TestUDSFormB6Attribute:
                                 "hopeless": 0,
                                 "better": 9,
                                 "b6sub": 1,
+                                "naccid": "NACC123456",
+                                "adcid": 0,
                             }
                         }
                     }

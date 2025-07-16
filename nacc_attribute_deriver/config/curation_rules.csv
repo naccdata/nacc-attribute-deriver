@@ -83,6 +83,7 @@ scan_pet_qc,scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,FAL
 scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
+uds,naccid,subject.info.derived.cross-sectional.naccid,update,FALSE
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
 uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
@@ -115,7 +116,6 @@ uds,naccamsx,subject.info.derived.cross-sectional.naccamsx,update,FALSE
 uds,naccdad,subject.info.derived.cross-sectional.naccdad,update,FALSE
 uds,naccfadm,subject.info.derived.cross-sectional.naccfadm,max,FALSE
 uds,naccfam,subject.info.derived.cross-sectional.naccfam,update,FALSE
-uds,naccfam,subject.info.derived.longitudinal.naccfam,list,TRUE
 uds,naccfftd,subject.info.derived.cross-sectional.naccfftd,max,FALSE
 uds,naccfm,subject.info.derived.cross-sectional.naccfm,update,FALSE
 uds,naccfms,subject.info.derived.cross-sectional.naccfms,update,FALSE
