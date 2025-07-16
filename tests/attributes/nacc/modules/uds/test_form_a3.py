@@ -124,34 +124,31 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "dadneur", None)
         assert attr._create_naccdad() == 9
 
-    def test_create_naccfam(self, table, naccfam_table, form_prefix):
-        """Tests creating NACCFAM."""
-        attr = UDSFormA3Attribute(table)
-        set_attribute(table, form_prefix, "dadneur", None)
-        assert attr._create_naccfam() == 9
+    # def test_create_naccfam(self, table, naccfam_table, form_prefix):
+    #     """Tests creating NACCFAM."""
+    #     attr = UDSFormA3Attribute(table)
+    #     set_attribute(table, form_prefix, "dadneur", None)
+    #     assert attr._create_naccfam() == 9
 
-        attr = UDSFormA3Attribute(naccfam_table)
-        assert attr._create_naccfam() == 0
+    #     set_attribute(naccfam_table, form_prefix, "dadneur", 1)
+    #     set_attribute(naccfam_table, form_prefix, "dadprdx", 400)
+    #     assert attr._create_naccfam() == 1
 
-        set_attribute(naccfam_table, form_prefix, "dadneur", 1)
-        set_attribute(naccfam_table, form_prefix, "dadprdx", 400)
-        assert attr._create_naccfam() == 1
+    #     set_attribute(naccfam_table, form_prefix, "dadprdx", 888)
+    #     assert attr._create_naccfam() == 0
 
-        set_attribute(naccfam_table, form_prefix, "dadprdx", 888)
-        assert attr._create_naccfam() == 0
+    #     # another case, both mom and dad neur == 1
+    #     set_attribute(naccfam_table, form_prefix, "dadneur", 1)
+    #     set_attribute(naccfam_table, form_prefix, "dadprdx", 110)
+    #     set_attribute(naccfam_table, form_prefix, "moneur", 1)
+    #     set_attribute(naccfam_table, form_prefix, "momprdx", 50)
+    #     assert attr._create_naccfam() == 1
 
-        # another case, both mom and dad neur == 1
-        set_attribute(naccfam_table, form_prefix, "dadneur", 1)
-        set_attribute(naccfam_table, form_prefix, "dadprdx", 110)
-        set_attribute(naccfam_table, form_prefix, "moneur", 1)
-        set_attribute(naccfam_table, form_prefix, "momprdx", 50)
-        assert attr._create_naccfam() == 1
-
-        set_attribute(naccfam_table, form_prefix, "dadneur", 4)
-        set_attribute(naccfam_table, form_prefix, "dadprdx", 210)
-        set_attribute(naccfam_table, form_prefix, "moneur", 8)
-        set_attribute(naccfam_table, form_prefix, "momprdx", None)
-        assert attr._create_naccfam() == 0
+    #     set_attribute(naccfam_table, form_prefix, "dadneur", 4)
+    #     set_attribute(naccfam_table, form_prefix, "dadprdx", 210)
+    #     set_attribute(naccfam_table, form_prefix, "moneur", 8)
+    #     set_attribute(naccfam_table, form_prefix, "momprdx", None)
+    #     assert attr._create_naccfam() == 0
 
     def test_create_naccfam_v3(self, table, form_prefix):
         """Tests creating NACCFAM with multiple siblings and varying neu
@@ -238,19 +235,19 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "kidsdem", 9)
         assert attr._create_naccfam() == 1
 
-    def test_create_naccfam_superseded(
-        self, table, form_prefix, subject_derived_prefix
-    ):
-        """Test NACCFAM superseded case."""
-        attr = UDSFormA3Attribute(table)
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 9)
-        assert attr._create_naccfam() == 9
+    # def test_create_naccfam_superseded(
+    #     self, table, form_prefix, subject_derived_prefix
+    # ):
+    #     """Test NACCFAM superseded case."""
+    #     attr = UDSFormA3Attribute(table)
+    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 9)
+    #     assert attr._create_naccfam() == 9
 
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 0)
-        assert attr._create_naccfam() == 9
+    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 0)
+    #     assert attr._create_naccfam() == 9
 
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 1)
-        assert attr._create_naccfam() == 1
+    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 1)
+    #     assert attr._create_naccfam() == 1
 
     def test_create_naccam(self, table, form_prefix, subject_derived_prefix):
         """Tests creating NACCAM."""

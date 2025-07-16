@@ -27,8 +27,8 @@ class NIAGADSAttributeCollection(AttributeCollection):
         )
 
     def _evaluate_investigator_status(self, attribute: str) -> int:
-        """Evaluate investigator status. If 0, return 0, otherwise it's
-        assumed to be an investigator ID (e.g. NG00000) and return 1.
+        """Evaluate investigator status. If 0, return 0, otherwise it's assumed
+        to be an investigator ID (e.g. NG00000) and return 1.
 
         Args:
             attribute: name of attribute
@@ -53,7 +53,7 @@ class NIAGADSAttributeCollection(AttributeCollection):
         return self._evaluate_investigator_status("niagads_wes")
 
     def _evaluate_accession(self, attribute: str) -> str:
-        """Evaluate accession number. Returns 88 if missing
+        """Evaluate accession number. Returns 88 if missing.
 
         Args:
             attribute: name of attribute

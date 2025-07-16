@@ -174,7 +174,7 @@ def test_niagads_investigator():
         "ngdsgwac": "NG00000",
         "ngdsexac": "NG00000, NG00001",
         "ngdswgac": "88",
-        "ncdsweac": "88"
+        "ncdsweac": "88",
     }
 
 

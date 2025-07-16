@@ -30,7 +30,9 @@ class AttributeDeriver:
         """
         self.__rule_map = self.__load_rules()
         # collect all attributes beforehand so they're easily hashable
-        self.__instance_collections = AttributeCollectionRegistry.get_attribute_methods()
+        self.__instance_collections = (
+            AttributeCollectionRegistry.get_attribute_methods()
+        )
 
     def __load_rules(self) -> Dict[str, List[CurationRule]]:
         """Load rules from the given path. All forms called through curate will
