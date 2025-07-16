@@ -22,6 +22,8 @@ def table() -> Dict[str, Any]:
                         "packet": "I",
                         "formver": "3.0",
                         "anymeds": 1,
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                     }
                 }
             }

@@ -21,6 +21,8 @@ def table() -> SymbolTable:
                         "module": "UDS",
                         "packet": "I",
                         "formver": "3.0",
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                     }
                 },
                 "np": {

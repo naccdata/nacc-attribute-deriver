@@ -156,6 +156,14 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if all(not member.has_data() for member in self.__family):
             return known_value
 
+        # if V3 and all 8, return 9
+        # TODO - I really don't think this is the correct behavior;
+        # see comments under check_neur_is_8
+        # if self.formver >= 3:
+        #     all_8s = [member.check_neur_is_8() for member in self.__family]
+        #     if all(all_8s):
+        #         return 9
+
         # get cognitive status for each family member
         family_status = [
             member.cognitive_impairment_status() for member in self.__family

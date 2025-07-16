@@ -23,9 +23,13 @@ milestone,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
 milestone,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
 milestone,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE
 niagads_availability,ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE
-niagads_availability,ngdsexome,subject.info.derived.cross-sectional.ngdsexome,update,FALSE
+niagads_availability,ngdsexom,subject.info.derived.cross-sectional.ngdsexom,update,FALSE
 niagads_availability,ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
 niagads_availability,ngdswes,subject.info.derived.cross-sectional.ngdswes,update,FALSE
+niagads_availability,ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,update,FALSE
+niagads_availability,ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
+niagads_availability,ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
+niagads_availability,ncdsweac,subject.info.derived.cross-sectional.ncdsweac,update,FALSE
 np,naccamy,subject.info.derived.cross-sectional.naccamy,update,FALSE
 np,naccarte,subject.info.derived.cross-sectional.naccarte,update,FALSE
 np,naccavas,subject.info.derived.cross-sectional.naccavas,update,FALSE
@@ -83,6 +87,7 @@ scan_pet_qc,scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,FAL
 scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
+uds,naccid,subject.info.derived.cross-sectional.naccid,update,FALSE
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
 uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE

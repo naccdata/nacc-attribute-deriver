@@ -10,6 +10,7 @@ Documentation of release versions of `nacc-attribute-deriver`
             * NACVNUM - uses NACCAVST
             * NACCFDAYS - uses NACCDAYS
         * MQT's `longitudinal._create_total_uds_visits` removed and curation rule updated to use NACCAVST directly
+        * Also adds NACCID
     * A1, A2, A3, A4, and A5
         * Accounts for some forms being optional
         * For A4, adds MEDS scope
@@ -17,18 +18,21 @@ Documentation of release versions of `nacc-attribute-deriver`
     * B1, B6, B8, and B9
     * C1/C2
         * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
-    * D1 **except** NACCMCII (D1)
-        * **NACCMCII is still not working properly, on hold for now**
+    * D1
 * Adds CLS derived variables
 * Adds MILESTONE derived variables
     * Many of these are cross-form, particularly with UDS A1
 * Adds rest of NP derived variables
-* Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
+* Adds/fixes genetics derived variables
+    * Adds NIAGADS accesion number derived variables
+    * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
+    * Fixes `ngdsexome` typo to `ngdsexom`
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
 * Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
 * Defines `pop` for `SymbolTable` (this is done more for optimization the attribute-curator gear)
+* Makes minor optimization tweaks
 
 ## 1.4.1
 

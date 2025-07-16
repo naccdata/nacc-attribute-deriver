@@ -16,7 +16,15 @@ class UDSNamespace(FormNamespace):
         if required is None:
             required = frozenset()
 
-        default_required = ["module", "packet", "formver", "birthmo", "birthyr"]
+        default_required = [
+            "module",
+            "packet",
+            "formver",
+            "birthmo",
+            "birthyr",
+            "naccid",
+            "adcid",
+        ]
         super().__init__(
             table=table,
             required=required.union(default_required),
@@ -32,12 +40,12 @@ class UDSNamespace(FormNamespace):
     def is_initial(self) -> bool:
         """Returns whether or not this is an initial packet."""
         packet = self.get_required("packet", str)
-        return packet.startswith("I")
+        return packet.upper().startswith("I")
 
     def is_in_person(self) -> bool:
         """Returns whethher or not this is an in-person visit."""
         packet = self.get_required("packet", str)
-        return packet in ["I", "F"]
+        return packet is not None and packet.upper() in ["I", "F"]
 
     def normalized_formver(self) -> int:
         """Returns the normalized form version.

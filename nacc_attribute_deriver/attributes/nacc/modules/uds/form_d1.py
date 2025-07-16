@@ -497,26 +497,15 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         Requires working variables FVMCI.
         """
-        if self.uds.is_initial():
-            if self.__demented == 1 or self.generate_mci() == 1:
-                return 8
-            return 0
-
         naccmcii = self.__subject_derived.get_cross_sectional_value("naccmcii", int)
         fvmci = self.__working.get_cross_sectional_value("fvmci", int)
 
-        # TODO: SAS logic and RDD seemed in line but the results were
-        # not consistent with the QAF, so the following code was adjusted
-        # to match it based on regression testing
-        # This is mainly a concern of when NACCMCII is 8 - by SAS/RDD
-        # it seems 8 should always override, but that didn't seem to be
-        # the case when tested against the QAF
-        if fvmci == 1:
+        if fvmci == 1 and naccmcii != 8:
             return 1
         if fvmci == 2:
             return 8
 
-        return 0 if (naccmcii is None or naccmcii == 8) else naccmcii
+        return 0 if naccmcii is None else naccmcii
 
     """
     The following are working variables (non-NACC derived variables but used
@@ -548,7 +537,7 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         if mci == 1 and fvmci is None:
             return 1
 
-        if mci != 1 and fvmci == 1 and ivcstat == 1 and self.__demented == 1:
+        if mci != 1 and fvmci != 1 and ivcstat == 1 and self.__demented == 1:
             return 2
 
         return fvmci

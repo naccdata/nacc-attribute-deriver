@@ -36,6 +36,8 @@ def table() -> SymbolTable:
                         "birthmo": 1,
                         "packet": "I",
                         "formver": "3.0",
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                         # rest of fields will be None
                     }
                 },

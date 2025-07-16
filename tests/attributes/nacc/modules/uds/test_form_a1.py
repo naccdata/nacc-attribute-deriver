@@ -24,6 +24,8 @@ def table() -> SymbolTable:
                         "packet": "I",
                         "formver": "3.0",
                         "educ": "3",
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                     }
                 }
             }

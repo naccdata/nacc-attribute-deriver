@@ -32,6 +32,8 @@ def test_uds_form():
                             "primlang": 1,
                             "educ": 1,
                             "probad": 1,
+                            "naccid": "NACC123456",
+                            "adcid": 0,
                         }
                     }
                 }
@@ -165,10 +167,14 @@ def test_niagads_investigator():
 
     assert "file.info.derived" not in form
     assert form["subject.info.derived.cross-sectional"] == {
-        "ngdsexome": 1,
+        "ngdsexom": 1,
         "ngdsgwas": 1,
         "ngdswes": 0,
         "ngdswgs": 0,
+        "ngdsgwac": "NG00000",
+        "ngdsexac": "NG00000, NG00001",
+        "ngdswgac": "88",
+        "ncdsweac": "88",
     }
 
 

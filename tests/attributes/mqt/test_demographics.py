@@ -25,6 +25,8 @@ def table() -> SymbolTable:
                         "birthmo": 1,
                         "birthyr": 1950,
                         "formver": 3.0,
+                        "naccid": "NACC123456",
+                        "adcid": 0,
                     }
                 }
             }

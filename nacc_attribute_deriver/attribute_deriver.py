@@ -29,6 +29,10 @@ class AttributeDeriver:
                 rules to execute.
         """
         self.__rule_map = self.__load_rules()
+        # collect all attributes beforehand so they're easily hashable
+        self.__instance_collections = (
+            AttributeCollectionRegistry.get_attribute_methods()
+        )
 
     def __load_rules(self) -> Dict[str, List[CurationRule]]:
         """Load rules from the given path. All forms called through curate will
@@ -83,17 +87,13 @@ class AttributeDeriver:
             table: symbol table with subject and file data to curate
             scope: The curation scope
         """
-
-        # collect all attributes beforehand so they're easily hashable
-        instance_collections = AttributeCollectionRegistry.get_attribute_methods()
-
         # derive the variables, if no rules for this scope, return
         rules = self.__rule_map.get(scope)
         if not rules:
             return
 
         for rule in rules:
-            method = instance_collections.get(rule.function, None)
+            method = self.__instance_collections.get(rule.function, None)
             if not method:
                 raise AttributeDeriverError(
                     f"Unknown attribute function: {rule.function}"
