@@ -5,17 +5,15 @@ value is something other than -4/None.
 """
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from .uds_attribute_collection import UDSAttributeCollection
 
-
-class MissingFormAttributes(UDSAttributeCollection):
+class MissingFormAttributes(AttributeCollection):
     """Class to handle derived variables dependent on optional/missing forms."""
 
     def __init__(self, table: SymbolTable):
-        super().__init__(table)
         self.__derived = SubjectDerivedNamespace(table=table)
 
     def _create_uds_naccnrdy(self) -> Optional[int]:
