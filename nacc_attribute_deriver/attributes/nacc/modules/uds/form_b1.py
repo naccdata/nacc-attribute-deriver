@@ -11,10 +11,6 @@ from .uds_attribute_collection import UDSAttributeCollection
 class UDSFormB1Attribute(UDSAttributeCollection):
     """Class to collect UDS B1 attributes."""
 
-    @property
-    def submitted(self) -> bool:
-        return self.uds.get_value("b1sub", int) == 1
-
     def get_height(self) -> Optional[float]:
         """Get height; may need to add decimal.
 
@@ -39,11 +35,10 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return weight
 
-    def _create_naccbmi(self) -> Optional[float]:
-        """Creates NACCBMI (body max index)."""
-        if not self.submitted:
-            return None
-
+    def _create_naccbmi(self) -> float:
+        """Creates NACCBMI (body max index). Provides
+        default value of 888.8 even if B1 not submitted.
+        """
         height = self.get_height()
         weight = self.get_weight()
 

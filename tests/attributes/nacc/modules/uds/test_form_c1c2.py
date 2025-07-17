@@ -114,3 +114,18 @@ class TestUDSFormC1C2Attribute:
         # mocacomp == 0
         set_attribute(table, form_prefix, "mocacomp", 0)
         assert attr._create_naccmocb() == 88
+
+    def test_create_naccmocb_case1(self, table):
+        """Case from regression tests."""
+        table['file.info.forms.json'].update({
+            "mocbtots": 21,
+            "mocacomp": 1,
+            "formver": 3.2,
+            "frmdatec1": None,
+            "frmdatec2": "2020-07-15"
+        })
+        table['subject.info.working.cross-sectional'].update({
+            'educ': 18
+        })
+        attr = UDSFormC1C2Attribute(table)
+        assert attr._create_naccmocb() == 21

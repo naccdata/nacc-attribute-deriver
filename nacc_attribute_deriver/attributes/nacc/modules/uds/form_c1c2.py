@@ -65,9 +65,6 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
         if self.__frmdatec2 is None:
             return None
 
-        # 2021-10-25
-        # 2022-03-22
-
         return self.__calculate_interval_from_a1(self.__frmdatec2)
 
     def _create_naccmmse(self) -> Optional[int]:

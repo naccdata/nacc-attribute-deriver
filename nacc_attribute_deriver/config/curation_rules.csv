@@ -199,6 +199,8 @@ uds,naccmmse,file.info.derived.naccmmse,update,FALSE
 uds,naccmmse,subject.info.derived.longitudinal.naccmmse,list,TRUE
 uds,naccmoca,file.info.derived.naccmoca,update,FALSE
 uds,naccmoca,subject.info.derived.longitudinal.naccmoca,list,TRUE
+uds,naccmocb,file.info.derived.naccmocb,update,FALSE
+uds,naccmocb,subject.info.derived.longitudinal.naccmocb,list,TRUE
 uds,naccalzp,file.info.derived.naccalzp,update,FALSE
 uds,naccalzp,subject.info.derived.longitudinal.naccalzp,list,TRUE
 uds,nacclbde,file.info.derived.nacclbde,update,FALSE
