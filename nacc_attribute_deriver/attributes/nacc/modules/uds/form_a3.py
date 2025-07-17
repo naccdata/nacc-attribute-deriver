@@ -91,6 +91,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if fadmuso == 9 and (self.uds.is_initial() or known_value == 9):
             return 9
 
+        # if fadmuso is None, also return 9 or the known value
+        if fadmuso is None:
+            return 9 if known_value is None else known_value
+
         return None
 
     def _create_naccamsx(self) -> Optional[str]:
