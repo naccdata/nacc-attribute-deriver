@@ -262,7 +262,6 @@ uds,uds_sex,subject.info.demographics.uds.sex.latest,latest,TRUE
 uds,uds_race,subject.info.demographics.uds.race.latest,latest,TRUE
 uds,uds_primary_language,subject.info.demographics.uds.primary-language.latest,latest,TRUE
 uds,educ,subject.info.demographics.uds.education-level.latest,latest,TRUE
-uds,age_at_death,subject.info.demographics.uds.age-at-death,update,FALSE
 uds,vital_status,subject.info.demographics.uds.vital-status.latest,latest,TRUE
 uds,np_available,subject.info.demographics.uds.np-available,max,FALSE
 uds,naccavst,subject.info.longitudinal-data.uds.count,max,FALSE

@@ -37,7 +37,6 @@ def table() -> SymbolTable:
                     "np_death_age": 80,
                     "cross-sectional": {
                         "naccnihr": 1,
-                        "naccdage": 80,
                         "naccdied": 1,
                     },
                 }
@@ -91,11 +90,6 @@ class TestDerivedDemographicsAttributeCollection:
         for k, v in DerivedDemographicsAttributeCollection.RACE_MAPPING.items():
             table["subject.info.derived.cross-sectional.naccnihr"] = k
             assert attr._create_uds_race() == v
-
-    def test_create_age_at_death(self, table):
-        """Tests _create_age_at_death."""
-        attr = DerivedDemographicsAttributeCollection(table)
-        assert attr._create_age_at_death() == 80
 
     def test_create_vital_status(self, table):
         """Tests _create_vital_status."""
