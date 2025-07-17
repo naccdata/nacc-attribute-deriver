@@ -66,3 +66,11 @@ class MissingFormAttributes(AttributeCollection):
     def _create_uds_ngdsweac(self) -> str:
         """Handles NGDSWEAC (from NIAGADS)."""
         return self.handle_missing("ngdsweac", 88)
+
+    def _create_uds_naccapoe(self) -> int:
+        """Handles NACCAPOE (from NCRAD)."""
+        return self.handle_missing("naccapoe", 9)
+
+    def _create_uds_naccne4s(self) -> int:
+        """Handles NACCNE4S (from NCRAD)."""
+        return self.handle_missing("naccne4s", 9)

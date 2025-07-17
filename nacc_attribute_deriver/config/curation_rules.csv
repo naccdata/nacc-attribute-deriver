@@ -294,3 +294,5 @@ uds,uds_ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,update,FALSE
 uds,uds_ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
 uds,uds_ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
 uds,uds_ngdsweac,subject.info.derived.cross-sectional.ngdsweac,update,FALSE
+uds,uds_naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
+uds,uds_naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
