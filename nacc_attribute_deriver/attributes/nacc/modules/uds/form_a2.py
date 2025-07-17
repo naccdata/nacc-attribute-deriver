@@ -27,14 +27,15 @@ class UDSFormA2Attribute(UDSAttributeCollection):
     def _create_naccninr(self) -> Optional[int]:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
         co-participant)."""
+        # grab prev if available
+        prev_naccninr = self.__subject_derived.get_prev_value(
+            "naccninr", int)
+
         if not self.submitted:
-            return None
+            return prev_naccninr
 
         newinf = self.uds.get_value("newinf", int)
         if not self.uds.is_initial() and newinf != 1:
-            # grab prev if available
-            prev_naccninr = self.__subject_derived.get_prev_value(
-                "naccninr", int)
             return prev_naccninr
 
         result = generate_race(
