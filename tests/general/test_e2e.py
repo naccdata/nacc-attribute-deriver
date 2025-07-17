@@ -131,7 +131,6 @@ def test_ncrad_apoe():
         "naccapoe": 5,
         "naccne4s": 1,
     }
-    assert form["subject.info.genetics"] == {"apoe": 5}
 
 
 def test_niagads_investigator():

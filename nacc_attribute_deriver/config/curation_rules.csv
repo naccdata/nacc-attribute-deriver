@@ -1,9 +1,8 @@
 scope,function,location,operation,dated
 historic_apoe,historic_apoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
-historic_apoe,historic_apoe,subject.info.genetics.apoe,update,FALSE
 historic_apoe,historic_apoe,subject.info.working.cross-sectional.historic-apoe,update,FALSE
+historic_apoe,historic_naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 apoe,naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
-apoe,naccapoe,subject.info.genetics.apoe,update,FALSE
 apoe,naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
