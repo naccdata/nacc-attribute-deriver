@@ -30,6 +30,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
+* Refactors testing to use a `base_uds_table` fixture
 * Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
 * Defines `pop` for `SymbolTable` (this is done more for optimization the attribute-curator gear)
 * Makes minor optimization tweaks

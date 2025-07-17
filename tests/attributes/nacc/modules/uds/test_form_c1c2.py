@@ -10,38 +10,26 @@ from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
-    """Create dummy data and return it in a SymbolTable."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                        # realistically only one of C2/C2 is filled out,
-                        # but define both for testing
-                        "frmdatec1": "2025-01-01",
-                        "frmdatec2": "2020-12-31",
-                        "frmdatea1": "2025-02-15",
-                        "mmse": 95,
-                        "mocatots": 29,
-                        "mocbtots": "15",
-                        "mocacomp": 1,
-                    }
-                }
-            }
-        },
-        "subject": {"info": {"working": {"cross-sectional": {"educ": "3"}}}},
-    }
+def table(uds_table) -> SymbolTable:
+    """Create dummy data and return it in a SymbolTable.
 
-    return SymbolTable(data)
+    Realistically only one of C2/C2 is filled out,
+    but define both for testing
+    """
+    uds_table['file.info.forms.json'].update({
+        "frmdatec1": "2025-01-01",
+        "frmdatec2": "2020-12-31",
+        "frmdatea1": "2025-02-15",
+        "mmse": 95,
+        "mocatots": 29,
+        "mocbtots": "15",
+        "mocacomp": 1,
+    })
+    uds_table.update({
+        "subject": {"info": {"working": {"cross-sectional": {"educ": "3"}}}},
+    })
+
+    return uds_table
 
 
 class TestUDSFormC1C2Attribute:

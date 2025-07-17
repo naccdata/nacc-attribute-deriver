@@ -9,26 +9,11 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table() -> Dict[str, Any]:
-    return {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "anymeds": 1,
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                    }
-                }
-            }
-        },
-    }
+def table(uds_table) -> Dict[str, Any]:
+    uds_table['file.info.forms.json'].update({
+        "anymeds": 1,
+    })
+    return uds_table
 
 
 @pytest.fixture(scope="function")

@@ -8,55 +8,37 @@ from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-def test_uds_form():
+def test_uds_form(uds_table):
     """UDS is more of a runnable sanity check."""
-    uds_table = SymbolTable()
-    deriver = AttributeDeriver()
-
-    uds_table.update(
-        {
-            "file": {
-                "info": {
-                    "forms": {
-                        "json": {
-                            "visitdate": "2025-01-01",
-                            "module": "uds",
-                            "packet": "I",
-                            "birthyr": "2024",
-                            "birthmo": "12",
-                            "formver": 3.0,
-                            "normcog": 0,
-                            "impnomci": 1,
-                            "cdrglob": 1,
-                            "sex": "1",
-                            "primlang": 1,
-                            "educ": 1,
-                            "probad": 1,
-                            "naccid": "NACC123456",
-                            "adcid": 0,
-                        }
+    uds_table['file.info.forms.json'].update({
+        "normcog": 0,
+        "impnomci": 1,
+        "cdrglob": 1,
+        "sex": "1",
+        "primlang": 1,
+        "educ": 1,
+        "probad": 1,
+    })
+    uds_table.update({
+        "subject": {
+            "info": {
+                "derived": {
+                    "cross-sectional": {
+                        "naccnihr": 1,
+                        "naccdage": 1,
+                        "naccdied": 1,
+                    },
+                },
+                "working": {
+                    "cross-sectional": {
+                        "uds-visitdates": ["2025-01-01"],
                     }
-                }
-            },
-            "subject": {
-                "info": {
-                    "derived": {
-                        "cross-sectional": {
-                            "naccnihr": 1,
-                            "naccdage": 1,
-                            "naccdied": 1,
-                        },
-                    },
-                    "working": {
-                        "cross-sectional": {
-                            "uds-visitdates": ["2025-01-01"],
-                        }
-                    },
-                }
-            },
-        }
-    )
+                },
+            }
+        },
+    })
 
+    deriver = AttributeDeriver()
     deriver.curate(uds_table, "uds")
 
 

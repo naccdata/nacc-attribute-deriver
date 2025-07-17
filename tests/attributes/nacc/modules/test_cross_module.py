@@ -8,35 +8,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                    }
-                },
-                "np": {
-                    "npdage": 83,
-                },
-                "milestone": {
-                    "deceased": "1",
-                    "deathyr": "2050",
-                    "deathmo": "2",
-                    "deathdy": "2",
-                },
-                "mds": {"vitalst": 2, "deathyr": 2030, "deathmo": 1, "deathday": 1},
-            }
-        },
+    uds_table.update({
         "subject": {
             "info": {
                 "working": {
@@ -59,9 +33,9 @@ def table() -> SymbolTable:
                 }
             }
         },
-    }
+    })
 
-    return SymbolTable(data)
+    return uds_table
 
 
 class TestCrossModuleAttribute:

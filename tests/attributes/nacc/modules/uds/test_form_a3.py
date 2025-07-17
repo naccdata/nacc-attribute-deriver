@@ -10,68 +10,36 @@ from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in a SymbolTable."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "a3sub": 1,
-                        "fadmut": 3,
-                        "fadmuso": 2,
-                        "fothmut": 0,
-                        "sibs": 0,
-                        "kids": 0,
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                    }
-                }
-            }
-        }
-    }
-
-    return SymbolTable(data)
+    uds_table['file.info.forms.json'].update({
+        "a3sub": 1,
+        "fadmut": 3,
+        "fadmuso": 2,
+        "fothmut": 0,
+        "sibs": 0,
+        "kids": 0,
+    })
+    return uds_table
 
 
 @pytest.fixture(scope="function")
-def naccfam_table() -> SymbolTable:
+def naccfam_table(uds_table) -> SymbolTable:
     """Create dummy data and return it in a SymbolTable."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "a3sub": 1,
-                        "dadneur": 4,
-                        "dadprdx": 210,
-                        "momneur": 8,
-                        "sib1neu": 8,
-                        "sib2neu": 8,
-                        "sib3neu": 8,
-                        "kid1neu": 8,
-                        "kid2neu": 8,
-                        "sibs": 3,
-                        "kids": 2,
-                    }
-                }
-            }
-        }
-    }
-
-    return SymbolTable(data)
+    uds_table['file.info.forms.json'].update({
+        "a3sub": 1,
+        "dadneur": 4,
+        "dadprdx": 210,
+        "momneur": 8,
+        "sib1neu": 8,
+        "sib2neu": 8,
+        "sib3neu": 8,
+        "kid1neu": 8,
+        "kid2neu": 8,
+        "sibs": 3,
+        "kids": 2,
+    })
+    return uds_table
 
 
 class TestUDSFormA3Attribute:

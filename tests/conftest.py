@@ -43,8 +43,8 @@ def working_derived_prefix():
     return "subject.info.working."
 
 @fixture(scope="function")
-def base_uds_table():
-    return {
+def uds_table():
+    return SymbolTable({
         "file": {
             "info": {
                 "forms": {
@@ -61,4 +61,4 @@ def base_uds_table():
                 }
             }
         }
-    }
+    })

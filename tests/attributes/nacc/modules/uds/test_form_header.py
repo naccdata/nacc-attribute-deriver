@@ -11,26 +11,14 @@ from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "module": "UDS",
-                        "formdate": "2025-01-01",
-                        "visitdate": "2025-06-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "packet": "F",
-                        "formver": "3.0",
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                    }
-                }
-            }
-        },
+    uds_table['file.info.forms.json'].update({
+        "packet": "F",
+        "formdate": "2025-01-01",
+        "visitdate": "2025-06-01",
+    })
+    uds_table.update({
         "subject": {
             "info": {
                 "derived": {"cross-sectional": {"naccnvst": 4}},
@@ -52,9 +40,9 @@ def table() -> SymbolTable:
                 },
             }
         },
-    }
+    })
 
-    return SymbolTable(data)
+    return uds_table
 
 
 class TestUDSHeaderAttributeCollection:
