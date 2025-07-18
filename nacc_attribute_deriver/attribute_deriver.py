@@ -12,10 +12,15 @@ from typing import Dict, List
 from pydantic import ValidationError
 
 from nacc_attribute_deriver.attributes.base.namespace import DateTaggedValue
+from nacc_attribute_deriver.schema.operation import OperationError
 
 from . import config
 from .attributes.attribute_collection import AttributeCollectionRegistry
-from .schema.errors import AttributeDeriverError
+from .schema.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+    MissingRequiredError,
+)
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
 from .utils.scope import ScopeLiterals
@@ -100,13 +105,20 @@ class AttributeDeriver:
                     f"Unknown attribute function: {rule.function}"
                 )
 
-            value = method.apply(table)
+            try:
+                value = method.apply(table)
+            except (InvalidFieldError, MissingRequiredError, ValueError) as error:
+                raise AttributeDeriverError(error)
+
             if value is None:
                 continue
             if isinstance(value, DateTaggedValue) and value.value is None:  # type: ignore
                 continue
 
             for assignment in rule.assignments:
-                assignment.operation.evaluate(
-                    table=table, value=value, attribute=assignment.attribute
-                )
+                try:
+                    assignment.operation.evaluate(
+                        table=table, value=value, attribute=assignment.attribute
+                    )
+                except OperationError as error:
+                    raise AttributeDeriverError(error)
