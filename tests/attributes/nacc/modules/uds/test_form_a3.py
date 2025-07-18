@@ -249,11 +249,11 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "fadmuso", 9)
         assert attr._create_naccams() == 9
         set_attribute(table, form_prefix, "fadmuso", None)
-        assert attr._create_naccams() is None
+        assert attr._create_naccams() == 9
 
         # test superseded cases
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccams", 9)
-        assert attr._create_naccams() is None
+        assert attr._create_naccams() == 9
         set_attribute(table, form_prefix, "fadmuso", 9)
         assert attr._create_naccams() == 9
 

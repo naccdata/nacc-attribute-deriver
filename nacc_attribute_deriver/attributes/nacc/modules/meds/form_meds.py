@@ -20,10 +20,6 @@ from nacc_attribute_deriver.schema.errors import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from .prefix_tree import PrefixTree
-
-ALPHA_NUMERIC = re.compile(r"[^a-zA-Z0-9]")
-
 
 class MEDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
@@ -66,8 +62,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
         # in V1, each prescription medication is specified by variables
         # PMA - PMT, need to extract
         if self.__formver == 1:
-            # all_drugs[self.__formdate] = self.__load_from_udsmeds_table()
-            all_drugs[self.__formdate] = []
+            all_drugs[self.__formdate] = self.__load_from_normalized_drugs_list()
         else:
             drugs_str = self.__meds.get_value("drugs_list", str)
             all_drugs[self.__formdate] = sorted(
@@ -76,54 +71,41 @@ class MEDSFormAttributeCollection(AttributeCollection):
 
         return all_drugs
 
-    def __load_from_udsmeds_table(self) -> List[str]:
+    def __load_from_normalized_drugs_list(self) -> List[str]:
         """V1.
 
-        In this version all the drugs were written in. Need to use
-        UDSMEDS CSV (combination of UDSMEDS table from Oracle DB +
-        drugs.sas which translated typos/alternative spellings) and map
-        each possible drug variable to its ID.
+        In this version all the drugs were written in. Uses normalized_drug_ids.csv,
+        which was manually generated with the following steps:
+            1. Use Claude AI to "spellcheck" all misspelled/abbreviated entries
+            2. Lookup the drug in UDSMEDS, which is a NACC-specific database
+                of brand/drug names and map to the listed drug ID
+                - drug ID seems to be NACC-specific, e.g. not related to RxCUI or similar
+                - not all drugs matched - not sure how they were handled in SAS code
+                - UDSMEDS does have name clashes - just used first one found
+            3. Manually map any stragglers as needed - mostly focused on those
+                that caused failures in regression testing, but ideally need
+                a good way to map all of them properly. ~1.9k unmatched
         """
-        udsmeds_table_file = resources.files(config).joinpath("UDSMEDS_combined.csv")
-        udsmeds: Dict[str, str] = {}
-        prefix_tree = PrefixTree()  # prefix tree for searching
+        normalized_drugs_file = resources.files(config).joinpath("normalized_drug_ids.csv")
+        drugs_db: Dict[str, str] = {}
 
-        with udsmeds_table_file.open("r") as fh:
+        with normalized_drugs_file.open("r") as fh:
             reader = csv.DictReader(fh)
-
             # map every possible name to its drug ID
-            # TODO: unfortunately UDSMEDS does have name clashes. for now,
-            # just keep the first one and ignore the others
             for row in reader:
-                drug_id = row["drug_id"]
-                for field in ["brand_name", "drug_name", "alternative_name"]:
-                    name = row[field]
+                drug_name = row['normalized_drug']
+                drug_id = row['drug_id']
 
-                    # CSV is already lowercased/stripped, but also
-                    # remove all non-alphanumeric characters
-                    name = ALPHA_NUMERIC.sub("", name) if name else None
-                    if not name or name in udsmeds:
-                        continue
-                    udsmeds[name] = drug_id
-                    prefix_tree.insert(name, drug_id)
+                drugs_db[drug_name] = drug_id if drug_id != 'NO_DRUG_ID' else drug_name
 
-        # now look at every drug name in drugs_list; if we cannot
-        # find a drug_id, put name in anyways so count is accurate
+        # now look at every drug name in MEDS drugs_list; if not in
+        # drugs_db, use drug_name
         drugs_list = []
         for i in range(ord("a"), ord("t") + 1):
             drug_name = self.__meds.get_value(f"pm{chr(i)}", str)
             if not drug_name:
                 continue
 
-            # first try exact match
-            drug_name = drug_name.strip().lower()
-            condensed_drug_name = ALPHA_NUMERIC.sub("", drug_name)
-            drug_id = udsmeds.get(condensed_drug_name)
-
-            # next try a prefix lookup
-            if not drug_id:
-                drug_id = prefix_tree.get_closest_match(condensed_drug_name)
-
-            drugs_list.append(drug_name if drug_id is None else drug_id)
+            drugs_list.append(drugs_db.get(drug_name, drug_name))
 
         return sorted(drugs_list)
