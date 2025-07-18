@@ -316,8 +316,11 @@ def test_meds():
         "subject": {
             "info": {
                 "working": {
-                    "cross-sectional": {
-                        "drugs-list": {"2000-01-01": ["d00004", "d00170"]}
+                    "longitudinal": {
+                        "drugs-list": [{
+                            "date": "2000-01-01",
+                            "value": ["d00004", "d00170"]
+                        }]
                     }
                 }
             }

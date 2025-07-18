@@ -337,7 +337,7 @@ class SubjectDerivedNamespace(BaseNamespace):
             attribute: The field to grab longitudinal values for
             attr_type: Attribute type
         Returns:
-          the value for the attribute in the table
+          the list of DateTaggedValues for the attribute in the table
         """
         records = self.get_value(f"longitudinal.{attribute}", list)
         if not records:
@@ -349,12 +349,36 @@ class SubjectDerivedNamespace(BaseNamespace):
 
         return records
 
+    def get_corresponding_longitudinal_value(
+        self, target_date: str, attribute: str, attr_type: Type[T]
+    ) -> Optional[T]:
+        """Returns the longitudinal value corresponding to the given date.
+        This does not support default values.
+
+        Args:
+            attribute: The field to grab longitudinal values for
+            attr_type: Attribute type
+        Returns:
+          the value for the attribute in the table
+        """
+        records = self.get_longitudinal_value(attribute, attr_type)
+        if not records:
+            return None
+
+        for record in reversed(records):
+            if str(record.date) == target_date:
+                return record.value
+
+        return None
+
     def get_prev(self, attribute: str, attr_type: Type[T]) -> Optional[DateTaggedValue]:
         """Gets the previous record - pulls from longitudinal records.
 
         Args:
-            attribute: The field to grab the previous longitudinal records for
+            attribute: The field to grab the previous longitudinal record for
             attr_type: Attribute type
+        Returns:
+            The previous DateTaggedValue
         """
         records = self.get_longitudinal_value(attribute, attr_type)
         if records is None:
@@ -378,7 +402,14 @@ class SubjectDerivedNamespace(BaseNamespace):
         return prev_record
 
     def get_prev_value(self, attribute: str, attr_type: Type[T]) -> Optional[T]:
-        """Get prev value, if we don't necessarily care about date."""
+        """Get prev value, if we don't necessarily care about date.
+
+        Args:
+            attribute: The field to grab the previous longitudinal record for
+            attr_type: Attribute type
+        Returns:
+            The previous value
+        """
         prev_record = self.get_prev(attribute, attr_type)
         return None if prev_record is None else prev_record.value
 

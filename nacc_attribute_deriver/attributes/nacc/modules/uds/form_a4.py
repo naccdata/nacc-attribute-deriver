@@ -34,21 +34,20 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
         subject.info.derived.drugs_list.<visitdate>."""
-        all_meds = self.__working.get_cross_sectional_value("drugs-list", dict)
-        if all_meds is None:
-            all_meds = {}
-
         form_date = self.uds.get_value("frmdatea4", str)
         if not form_date:  # try visitdate
             form_date = self.uds.get_value("visitdate", str)
 
-        if form_date not in all_meds:
+        drugs = self.__working.get_corresponding_longitudinal_value(
+            form_date, "drugs-list", list)
+
+        if drugs is None:
             raise AttributeDeriverError(
                 "Cannot find corresponding MEDS drugs list for "
                 + f"form date {form_date}"
             )
-
-        return [x.replace(" ", "").lower() for x in all_meds[form_date]]
+        
+        return [x.strip().lower() for x in drugs]
 
     def _create_naccamd(self) -> Optional[int]:
         """Creates NACCAMD - Total number of medications reported at

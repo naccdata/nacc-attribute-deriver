@@ -31,10 +31,9 @@ class UDSFormA2Attribute(UDSAttributeCollection):
         prev_naccninr = self.__subject_derived.get_prev_value(
             "naccninr", int)
 
-        if not self.uds.is_initial():
-            newinf = self.uds.get_value("newinf", int)
-            if newinf != 1 or not self.submitted:
-                return prev_naccninr
+        newinf = self.uds.get_value("newinf", int)
+        if newinf != 1 or not self.submitted:
+            return prev_naccninr
 
         result = generate_race(
             race=self.uds.get_value("inrace", int),
