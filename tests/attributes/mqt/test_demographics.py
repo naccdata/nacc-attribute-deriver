@@ -13,25 +13,29 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     # needed for DemographicsAttributeCollection
-    uds_table['file.info.forms.json'].update({
-        "sex": "1",
-        "primlang": "2",
-    })
+    uds_table["file.info.forms.json"].update(
+        {
+            "sex": "1",
+            "primlang": "2",
+        }
+    )
 
     # needed for DerivedDemographicsAttributeCollection
-    uds_table.update({
-        "subject": {
-            "info": {
-                "derived": {
-                    "np_death_age": 80,
-                    "cross-sectional": {
-                        "naccnihr": 1,
-                        "naccdied": 1,
-                    },
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "derived": {
+                        "np_death_age": 80,
+                        "cross-sectional": {
+                            "naccnihr": 1,
+                            "naccdied": 1,
+                        },
+                    }
                 }
-            }
-        },
-    })
+            },
+        }
+    )
 
     return uds_table
 

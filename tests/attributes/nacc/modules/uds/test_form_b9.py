@@ -10,9 +10,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 @pytest.fixture(scope="function")
 def base_table(uds_table) -> SymbolTable:
     """Create dummy base table."""
-    uds_table['file.info.forms.json'].update({
-        "packet": "F"
-    })
+    uds_table["file.info.forms.json"].update({"packet": "F"})
 
     return uds_table
 

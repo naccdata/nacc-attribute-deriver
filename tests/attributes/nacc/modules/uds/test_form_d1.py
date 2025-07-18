@@ -17,11 +17,13 @@ def table(uds_table) -> SymbolTable:
     In this case most will want to manually set fields so only leave
     bare minimum in.
     """
-    uds_table['file.info.forms.json'].update({
-        "probad": 1,
-        "normcog": 1,
-        "formver": 2,
-    })
+    uds_table["file.info.forms.json"].update(
+        {
+            "probad": 1,
+            "normcog": 1,
+            "formver": 2,
+        }
+    )
 
     return uds_table
 

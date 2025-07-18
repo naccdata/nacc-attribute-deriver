@@ -38,15 +38,19 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         if not form_date:  # try visitdate
             form_date = self.uds.get_value("visitdate", str)
 
+        if not form_date:
+            raise AttributeDeriverError("Cannot determine A4 form date")
+
         drugs = self.__working.get_corresponding_longitudinal_value(
-            form_date, "drugs-list", list)
+            form_date, "drugs-list", list
+        )
 
         if drugs is None:
             raise AttributeDeriverError(
                 "Cannot find corresponding MEDS drugs list for "
                 + f"form date {form_date}"
             )
-        
+
         return [x.strip().lower() for x in drugs]
 
     def _create_naccamd(self) -> Optional[int]:

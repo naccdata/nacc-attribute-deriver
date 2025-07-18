@@ -10,30 +10,32 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 @pytest.fixture(scope="function")
 def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    uds_table.update({
-        "subject": {
-            "info": {
-                "working": {
-                    "cross-sectional": {
-                        "mds-vital-status": 2,
-                        "np-death-age": 83,
-                        "np-death-date": "2029-06-06",
-                        "mds-death-date": "2030-01-01",
-                        "milestone-deceased": 1,
-                        "milestone-death-date": "2050-02-02",
-                        "uds-visitdates": [
-                            "1980-05-06",
-                            "1980-10-10",
-                            "2023-12-12",
-                            "2024-01-01",
-                            "2024-02-02",
-                            "2025-03-03",
-                        ],
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "working": {
+                        "cross-sectional": {
+                            "mds-vital-status": 2,
+                            "np-death-age": 83,
+                            "np-death-date": "2029-06-06",
+                            "mds-death-date": "2030-01-01",
+                            "milestone-deceased": 1,
+                            "milestone-death-date": "2050-02-02",
+                            "uds-visitdates": [
+                                "1980-05-06",
+                                "1980-10-10",
+                                "2023-12-12",
+                                "2024-01-01",
+                                "2024-02-02",
+                                "2025-03-03",
+                            ],
+                        }
                     }
                 }
-            }
-        },
-    })
+            },
+        }
+    )
 
     return uds_table
 

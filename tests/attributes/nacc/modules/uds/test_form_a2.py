@@ -10,24 +10,21 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 @pytest.fixture(scope="function")
 def table(uds_table) -> SymbolTable:
     """Create dummy base table."""
-    uds_table.update({
-        "subject": {
-            "info": {
-                "derived": {
-                    "longitudinal": {
-                        "naccninr": [
-                            {
-                                "date": "2026-05-28",
-                                "value": 1
-                            }
-                        ]
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "derived": {
+                        "longitudinal": {
+                            "naccninr": [{"date": "2026-05-28", "value": 1}]
+                        }
                     }
                 }
             }
         }
-    })
+    )
     uds_table["file.info.forms.json.packet"] = "T"
-    uds_table['file.info.forms.json.newinf'] = "0"
+    uds_table["file.info.forms.json.newinf"] = "0"
     return uds_table
 
 
@@ -37,6 +34,6 @@ class TestUDSFormA2Attribute:
         attr = UDSFormA2Attribute(table)
         assert attr._create_naccninr() == 1
 
-        table['file.info.forms.json.a2sub'] = 1
-        table['file.info.forms.json.newinf'] = 1
+        table["file.info.forms.json.a2sub"] = 1
+        table["file.info.forms.json.newinf"] = 1
         assert attr._create_naccninr() == 99

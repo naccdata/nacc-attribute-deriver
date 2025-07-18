@@ -352,8 +352,8 @@ class SubjectDerivedNamespace(BaseNamespace):
     def get_corresponding_longitudinal_value(
         self, target_date: str, attribute: str, attr_type: Type[T]
     ) -> Optional[T]:
-        """Returns the longitudinal value corresponding to the given date.
-        This does not support default values.
+        """Returns the longitudinal value corresponding to the given date. This
+        does not support default values.
 
         Args:
             attribute: The field to grab longitudinal values for

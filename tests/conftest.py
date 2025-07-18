@@ -42,23 +42,26 @@ def subject_derived_prefix():
 def working_derived_prefix():
     return "subject.info.working."
 
+
 @fixture(scope="function")
 def uds_table():
-    return SymbolTable({
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "naccid": "NACC123456",
-                        "adcid": 0,
+    return SymbolTable(
+        {
+            "file": {
+                "info": {
+                    "forms": {
+                        "json": {
+                            "visitdate": "2025-01-01",
+                            "birthmo": 3,
+                            "birthyr": 1990,
+                            "module": "UDS",
+                            "packet": "I",
+                            "formver": "3.0",
+                            "naccid": "NACC123456",
+                            "adcid": 0,
+                        }
                     }
                 }
             }
         }
-    })
+    )

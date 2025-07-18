@@ -13,21 +13,25 @@ from tests.conftest import set_attribute
 def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in a SymbolTable.
 
-    Realistically only one of C2/C2 is filled out,
-    but define both for testing
+    Realistically only one of C2/C2 is filled out, but define both for
+    testing
     """
-    uds_table['file.info.forms.json'].update({
-        "frmdatec1": "2025-01-01",
-        "frmdatec2": "2020-12-31",
-        "frmdatea1": "2025-02-15",
-        "mmse": 95,
-        "mocatots": 29,
-        "mocbtots": "15",
-        "mocacomp": 1,
-    })
-    uds_table.update({
-        "subject": {"info": {"working": {"cross-sectional": {"educ": "3"}}}},
-    })
+    uds_table["file.info.forms.json"].update(
+        {
+            "frmdatec1": "2025-01-01",
+            "frmdatec2": "2020-12-31",
+            "frmdatea1": "2025-02-15",
+            "mmse": 95,
+            "mocatots": 29,
+            "mocbtots": "15",
+            "mocacomp": 1,
+        }
+    )
+    uds_table.update(
+        {
+            "subject": {"info": {"working": {"cross-sectional": {"educ": "3"}}}},
+        }
+    )
 
     return uds_table
 
@@ -117,15 +121,15 @@ class TestUDSFormC1C2Attribute:
 
     def test_create_naccmocb_case1(self, table):
         """Case from regression tests."""
-        table['file.info.forms.json'].update({
-            "mocbtots": 21,
-            "mocacomp": 1,
-            "formver": 3.2,
-            "frmdatec1": None,
-            "frmdatec2": "2020-07-15"
-        })
-        table['subject.info.working.cross-sectional'].update({
-            'educ': 18
-        })
+        table["file.info.forms.json"].update(
+            {
+                "mocbtots": 21,
+                "mocacomp": 1,
+                "formver": 3.2,
+                "frmdatec1": None,
+                "frmdatec2": "2020-07-15",
+            }
+        )
+        table["subject.info.working.cross-sectional"].update({"educ": 18})
         attr = UDSFormC1C2Attribute(table)
         assert attr._create_naccmocb() == 21

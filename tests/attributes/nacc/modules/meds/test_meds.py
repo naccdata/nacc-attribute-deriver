@@ -4,10 +4,7 @@ import pytest
 from nacc_attribute_deriver.attributes.nacc.modules.meds.form_meds import (
     MEDSFormAttributeCollection,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
-
-from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
@@ -76,8 +73,20 @@ def empty_table() -> SymbolTable:
 class TestMEDSFormAttributeCollection:
     def test_create_drugs_list(self, table):
         meds = MEDSFormAttributeCollection(table)
-        assert meds._create_drugs_list() == ["d00004", "d00170", "d00269", "d00321", "d00732"]
+        assert meds._create_drugs_list() == [
+            "d00004",
+            "d00170",
+            "d00269",
+            "d00321",
+            "d00732",
+        ]
 
     def test_create_drugs_list_v1(self, v1_table):
         meds = MEDSFormAttributeCollection(v1_table)
-        assert meds._create_drugs_list() == ["d00003", "d00004", "d00253", "d00253", "unknown drug"]
+        assert meds._create_drugs_list() == [
+            "d00003",
+            "d00004",
+            "d00253",
+            "d00253",
+            "unknown drug",
+        ]

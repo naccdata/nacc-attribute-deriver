@@ -12,20 +12,24 @@ from tests.conftest import set_attribute
 @pytest.fixture(scope="function")
 def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in a SymbolTable."""
-    uds_table['file.info.forms.json'].update({
-        "educ": "3",
-    })
-    uds_table.update({
-        "subject": {
-            "info": {
-                "derived": {
-                    "cross-sectional": {
-                        "naccnihr": 2,
+    uds_table["file.info.forms.json"].update(
+        {
+            "educ": "3",
+        }
+    )
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "derived": {
+                        "cross-sectional": {
+                            "naccnihr": 2,
+                        }
                     }
                 }
-            }
-        },
-    })
+            },
+        }
+    )
     return uds_table
 
 

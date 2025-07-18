@@ -16,7 +16,6 @@ from nacc_attribute_deriver.attributes.base.uds_namespace import (
 )
 from nacc_attribute_deriver.schema.errors import (
     InvalidFieldError,
-    MissingRequiredError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 

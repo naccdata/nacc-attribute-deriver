@@ -9,37 +9,41 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 @pytest.fixture(scope="function")
 def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    uds_table['file.info.forms.json'].update({
-        "normcog": 0,
-        "msaif": 1,
-        "pspif": 2,
-        "cortif": 2,
-        "ftldmoif": 2,
-        "ftldnosif": 3,
-        "ftdif": 3,
-        "ppaphif": 3,
-        "cvdif": 2,
-        "vascif": 3,
-        "vascpsif": 3,
-        "strokeif": 3,
-        "amndem": 0,
-        "pca": 0,
-        "namndem": None,
-        "cdrglob": 0.5,
-    })
-    uds_table['file.info'].update({
-        "derived": {
-            "naccalzp": 7,
-            "nacclbde": 8,
-            "nacclbdp": 8,
-            "naccppa": 8,
-            "naccbvft": 8,
-            "nacclbds": 1,
-            "naccnorm": 0,
-            "naccetpr": 99,
-            "naccudsd": 1,
-        },
-    })
+    uds_table["file.info.forms.json"].update(
+        {
+            "normcog": 0,
+            "msaif": 1,
+            "pspif": 2,
+            "cortif": 2,
+            "ftldmoif": 2,
+            "ftldnosif": 3,
+            "ftdif": 3,
+            "ppaphif": 3,
+            "cvdif": 2,
+            "vascif": 3,
+            "vascpsif": 3,
+            "strokeif": 3,
+            "amndem": 0,
+            "pca": 0,
+            "namndem": None,
+            "cdrglob": 0.5,
+        }
+    )
+    uds_table["file.info"].update(
+        {
+            "derived": {
+                "naccalzp": 7,
+                "nacclbde": 8,
+                "nacclbdp": 8,
+                "naccppa": 8,
+                "naccbvft": 8,
+                "nacclbds": 1,
+                "naccnorm": 0,
+                "naccetpr": 99,
+                "naccudsd": 1,
+            },
+        }
+    )
 
     return uds_table
 

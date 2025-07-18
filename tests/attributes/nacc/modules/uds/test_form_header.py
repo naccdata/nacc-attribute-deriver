@@ -13,34 +13,38 @@ from tests.conftest import set_attribute
 @pytest.fixture(scope="function")
 def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    uds_table['file.info.forms.json'].update({
-        "packet": "F",
-        "formdate": "2025-01-01",
-        "visitdate": "2025-06-01",
-    })
-    uds_table.update({
-        "subject": {
-            "info": {
-                "derived": {"cross-sectional": {"naccnvst": 4}},
-                "working": {
-                    "cross-sectional": {
-                        "uds-visitdates": [
-                            "1980-05-06",
-                            "1980-10-10",
-                            "2023-12-12",
-                            "2024-01-01",
-                            "2024-02-02",
-                            "2025-03-03",
-                        ],
-                        "initial-uds-visit": {
-                            "date": "1980-05-06",
-                            "value": "1980-05-06",
-                        },
-                    }
-                },
-            }
-        },
-    })
+    uds_table["file.info.forms.json"].update(
+        {
+            "packet": "F",
+            "formdate": "2025-01-01",
+            "visitdate": "2025-06-01",
+        }
+    )
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "derived": {"cross-sectional": {"naccnvst": 4}},
+                    "working": {
+                        "cross-sectional": {
+                            "uds-visitdates": [
+                                "1980-05-06",
+                                "1980-10-10",
+                                "2023-12-12",
+                                "2024-01-01",
+                                "2024-02-02",
+                                "2025-03-03",
+                            ],
+                            "initial-uds-visit": {
+                                "date": "1980-05-06",
+                                "value": "1980-05-06",
+                            },
+                        }
+                    },
+                }
+            },
+        }
+    )
 
     return uds_table
 

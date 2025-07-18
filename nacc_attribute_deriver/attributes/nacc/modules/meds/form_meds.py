@@ -3,9 +3,8 @@
 This is mainly used to inform UDS A4 NACC derived variables.
 """
 
-import datetime
 import csv
-import re
+import datetime
 from importlib import resources
 from typing import Dict, List
 
@@ -22,9 +21,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
-def load_normalized_drugs_list():
-    """Load the normalized drugs list. Done globally so it's only done once
-    per execution.
+def load_normalized_drugs_list() -> Dict[str, str]:
+    """Load the normalized drugs list. Done globally so it's only done once per
+    execution.
 
     In UDS V1 all the drugs were written in. Uses normalized_drug_ids.csv,
     which was manually generated with the following steps:
@@ -39,12 +38,11 @@ def load_normalized_drugs_list():
             that caused failures in regression testing, but ideally need
             a good way to map all of them properly. ~1.9k unmatched
 
-    TODO: I'm not sure normalized_drug_ids.csv is actually comprehensive - there are far more
-    entries in UDSMEDS. Since this is only relevant to V1, trying to load the smallest
-    subset, but if regression tests still fail a bunch probably best to also include
-    the UDSMEDS csv.
+    TODO: I'm not sure normalized_drug_ids.csv is actually comprehensive - there are far
+    more entries in UDSMEDS. Since this is only relevant to V1, trying to load the
+    smallest subset, but if regression tests still fail a bunch probably best to also
+    include the UDSMEDS csv.
     """
-
     normalized_drugs_file = resources.files(config).joinpath("normalized_drug_ids.csv")
     drugs: Dict[str, str] = {}
 
@@ -52,13 +50,11 @@ def load_normalized_drugs_list():
         reader = csv.DictReader(fh)
         # map every possible name (both raw and normalized) to its drug ID
         for row in reader:
-            raw_name = row['raw_drug']
-            drug_name = row['normalized_drug']
-            drug_id = row['drug_id']
+            drug_id = row["drug_id"]
 
-            for field in ['raw_drug', 'normalized_drug']:
+            for field in ["raw_drug", "normalized_drug"]:
                 name = row[field].strip().lower()
-                drugs[name] = drug_id if drug_id != 'NO_DRUG_ID' else name
+                drugs[name] = drug_id if drug_id != "NO_DRUG_ID" else name
 
     return drugs
 
@@ -84,16 +80,17 @@ class MEDSFormAttributeCollection(AttributeCollection):
         self.__formver = self.__meds.get_value("formver", float)
 
     def get_date(self) -> datetime.date:
-        """Get MEDS date; depends on version """
+        """Get MEDS date; depends on version."""
         date_attribute = (
             "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
         )
         formdate = self.__meds.get_value(date_attribute, str)
+        date = datetime_from_form_date(formdate)
 
-        if not formdate:
+        if not date:
             raise AttributeDeriverError("Cannot determine MEDS form date")
 
-        return datetime_from_form_date(formdate)
+        return date
 
     def _create_drugs_list(self) -> List[str]:
         """Returns list of drugs for this visit."""

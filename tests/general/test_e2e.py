@@ -10,33 +10,37 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 def test_uds_form(uds_table):
     """UDS is more of a runnable sanity check."""
-    uds_table['file.info.forms.json'].update({
-        "normcog": 0,
-        "impnomci": 1,
-        "cdrglob": 1,
-        "sex": "1",
-        "primlang": 1,
-        "educ": 1,
-        "probad": 1,
-    })
-    uds_table.update({
-        "subject": {
-            "info": {
-                "derived": {
-                    "cross-sectional": {
-                        "naccnihr": 1,
-                        "naccdage": 1,
-                        "naccdied": 1,
+    uds_table["file.info.forms.json"].update(
+        {
+            "normcog": 0,
+            "impnomci": 1,
+            "cdrglob": 1,
+            "sex": "1",
+            "primlang": 1,
+            "educ": 1,
+            "probad": 1,
+        }
+    )
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "derived": {
+                        "cross-sectional": {
+                            "naccnihr": 1,
+                            "naccdage": 1,
+                            "naccdied": 1,
+                        },
                     },
-                },
-                "working": {
-                    "cross-sectional": {
-                        "uds-visitdates": ["2025-01-01"],
-                    }
-                },
-            }
-        },
-    })
+                    "working": {
+                        "cross-sectional": {
+                            "uds-visitdates": ["2025-01-01"],
+                        }
+                    },
+                }
+            },
+        }
+    )
 
     deriver = AttributeDeriver()
     deriver.curate(uds_table, "uds")
@@ -317,10 +321,9 @@ def test_meds():
             "info": {
                 "working": {
                     "longitudinal": {
-                        "drugs-list": [{
-                            "date": "2000-01-01",
-                            "value": ["d00004", "d00170"]
-                        }]
+                        "drugs-list": [
+                            {"date": "2000-01-01", "value": ["d00004", "d00170"]}
+                        ]
                     }
                 }
             }
