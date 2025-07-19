@@ -62,7 +62,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         return len(self.__meds)
 
-    def check_drugs(self, target_codes: List[str]) -> Optional[int]:
+    def check_drugs(self, target_codes: List[str]) -> int:
         """Check if any of the 40 write-in drugs match the target codes.
 
         Args:
@@ -71,7 +71,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             1 if there is a match, 0 otherwise
         """
         if not self.submitted or not self.__meds:
-            return None
+            return 0
 
         return 1 if any(x in target_codes for x in self.__meds) else 0
 
