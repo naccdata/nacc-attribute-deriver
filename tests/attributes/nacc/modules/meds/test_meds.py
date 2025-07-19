@@ -90,3 +90,30 @@ class TestMEDSFormAttributeCollection:
             "d00253",
             "unknown drug",
         ]
+
+    def test_create_drugs_list_v1_case2(self, v1_table):
+        """This is how it usually actually appears in the form,
+        with the large spacing."""
+        v1_table['file.info.forms.json'].update({
+            "pma": "                        Zoloft",
+            "pmb": "                        Toprol",
+            "pmc": "                         Actos",
+            "pmd": "                   Pravastatin",
+            "pme": "                    Lisinopril",
+            "pmf": "                         Zetia",
+            "pmg": "                     Metformin",
+            "pmh": "                       namenda"
+        })
+
+        meds = MEDSFormAttributeCollection(v1_table)
+        assert meds._create_drugs_list() == [
+            "d00134",
+            "d00253",
+            "d00348",
+            "d00732",
+            "d00880",
+            "d03807",
+            "d04442",
+            "d04824",
+            "d04899"
+        ]

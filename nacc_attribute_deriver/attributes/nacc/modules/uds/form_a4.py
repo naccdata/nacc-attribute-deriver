@@ -58,7 +58,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         each visit.
         """
         if not self.submitted or self.__meds is None:
-            return None
+            return 0
 
         return len(self.__meds)
 
@@ -70,6 +70,10 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         Returns:
             1 if there is a match, 0 otherwise
         """
+        a4sub = self.uds.get_value("a4sub", int)
+        if self._create_naccamd() < 1 and a4sub == 0:
+            return -4
+
         if not self.submitted or not self.__meds:
             return 0
 

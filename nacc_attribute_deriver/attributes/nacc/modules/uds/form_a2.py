@@ -34,7 +34,7 @@ class UDSFormA2Attribute(UDSAttributeCollection):
             return prev_naccninr
 
         newinf = self.uds.get_value("newinf", int)
-        if not self.is_initial() and newinf != 1:
+        if not self.uds.is_initial() and newinf != 1:
             return prev_naccninr
 
         result = generate_race(

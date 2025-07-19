@@ -54,7 +54,8 @@ def load_normalized_drugs_list() -> Dict[str, str]:
 
             for field in ["raw_drug", "normalized_drug"]:
                 name = row[field].strip().lower()
-                drugs[name] = drug_id if drug_id != "NO_DRUG_ID" else name
+                if name not in drugs or drugs[name] is None:
+                    drugs[name] = drug_id if drug_id != "NO_DRUG_ID" else None
 
     return drugs
 
@@ -114,6 +115,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 continue
 
             drug_name = drug_name.strip().lower()
-            drugs_list.append(NORMALIZED_DRUGS.get(drug_name, drug_name))
+            drug_id = NORMALIZED_DRUGS.get(drug_name, drug_name)
+            drugs_list.append(drug_id if drug_id is not None else drug_name)
 
         return sorted(drugs_list)
