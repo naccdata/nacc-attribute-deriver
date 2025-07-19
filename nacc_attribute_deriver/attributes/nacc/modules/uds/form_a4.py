@@ -53,7 +53,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         return [x.strip().lower() for x in drugs]
 
-    def _create_naccamd(self) -> Optional[int]:
+    def _create_naccamd(self) -> int:
         """Creates NACCAMD - Total number of medications reported at
         each visit.
         """

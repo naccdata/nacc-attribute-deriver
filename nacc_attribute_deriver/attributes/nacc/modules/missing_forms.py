@@ -73,3 +73,11 @@ class MissingFormAttributes(AttributeCollection):
     def _create_uds_naccne4s(self) -> Optional[int]:
         """Handles NACCNE4S (from NCRAD)."""
         return self.handle_missing("naccne4s", 9)
+
+    def _create_uds_naccftd(self) -> Optional[int]:
+        """Handles NACCFTD (from FTLD)."""
+        return self.handle_missing("naccftd", 0)
+
+    def _create_uds_nacclbdm(self) -> Optional[int]:
+        """Handles NACCLBDM (from LBD)."""
+        return self.handle_missing("nacclbdm", 0)

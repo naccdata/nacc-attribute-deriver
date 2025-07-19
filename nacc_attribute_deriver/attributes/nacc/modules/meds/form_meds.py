@@ -21,7 +21,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
 
-def load_normalized_drugs_list() -> Dict[str, str]:
+def load_normalized_drugs_list() -> Dict[str, str | None]:
     """Load the normalized drugs list. Done globally so it's only done once per
     execution.
 
@@ -44,7 +44,7 @@ def load_normalized_drugs_list() -> Dict[str, str]:
     include the UDSMEDS csv.
     """
     normalized_drugs_file = resources.files(config).joinpath("normalized_drug_ids.csv")
-    drugs: Dict[str, str] = {}
+    drugs: Dict[str, str | None] = {}
 
     with normalized_drugs_file.open("r") as fh:
         reader = csv.DictReader(fh)

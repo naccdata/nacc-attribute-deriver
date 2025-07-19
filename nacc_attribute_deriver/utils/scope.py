@@ -16,6 +16,8 @@ class FormScope(Scope):
     NP = "np"
     MEDS = "meds"
     UDS = "uds"
+    FTLD = "ftld"
+    LBD = "lbd"
 
 
 class GeneticsScope(Scope):
@@ -48,6 +50,8 @@ ScopeLiterals = Literal[
     FormScope.NP,
     FormScope.MEDS,
     FormScope.UDS,
+    FormScope.FTLD,
+    FormScope.LBD,
     GeneticsScope.APOE,
     GeneticsScope.HISTORIC_APOE,
     GeneticsScope.NIAGADS_AVAILABILITY,

@@ -329,3 +329,94 @@ def test_meds():
             }
         },
     }
+
+
+def test_cls():
+    """Test against minimal CLS data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {
+        "visitdate": "2025-01-01",
+        "module": "CLS",
+        "formver": 3.0,
+        "aspkengl": 5,
+        "areaengl": 2,
+        "awriengl": 4,
+        "aundengl": 1,
+        "aspkspan": 1,
+        "areaspan": 4,
+        "awrispan": 7,
+        "aundspan": 3,
+    }
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "cls")
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "visitdate": "2025-01-01",
+                        "module": "CLS",
+                        "formver": 3.0,
+                        "aspkengl": 5,
+                        "areaengl": 2,
+                        "awriengl": 4,
+                        "aundengl": 1,
+                        "aspkspan": 1,
+                        "areaspan": 4,
+                        "awrispan": 7,
+                        "aundspan": 3,
+                    }
+                }
+            }
+        },
+        "subject": {
+            "info": {"derived": {"cross-sectional": {"naccengl": 3.0, "naccspnl": 3.8}}}
+        },
+    }
+
+
+def test_ftld():
+    """Test against minimal FTLD data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {"module": "FTLD", "visitdate": "2025-01-01"}
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "ftld")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "FTLD",
+                        "visitdate": "2025-01-01",
+                    }
+                }
+            }
+        },
+        "subject": {"info": {"derived": {"cross-sectional": {"naccftd": 1}}}},
+    }
+
+
+def test_lbd():
+    """Test against minimal LBD data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {"module": "LBD", "visitdate": "2025-01-01"}
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "lbd")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "LBD",
+                        "visitdate": "2025-01-01",
+                    }
+                }
+            }
+        },
+        "subject": {"info": {"derived": {"cross-sectional": {"nacclbdm": 1}}}},
+    }
