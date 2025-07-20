@@ -83,13 +83,14 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if fadmuso in [1, 2, 3, 8]:
             return fadmuso
 
-        if fadmuso is None:
-            return None
-
         # for NACCAMS to be 9, it must be 9 at ALL visits, return None otherwise
         known_value = self.__subject_derived.get_cross_sectional_value("naccams", int)
         if fadmuso == 9 and (self.uds.is_initial() or known_value == 9):
             return 9
+
+        # if fadmuso is None, also return 9 or the known value
+        if fadmuso is None:
+            return 9 if known_value is None else known_value
 
         return None
 
@@ -234,6 +235,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if fftdmusu == 9 and (self.uds.is_initial() or known_value == 9):
             return 9
 
+        # if fftdmusu is None, also return 9 or the known value
+        if fftdmusu is None:
+            return 9 if known_value is None else known_value
+
         return None
 
     def _create_naccfmsx(self) -> Optional[str]:
@@ -315,6 +320,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         known_value = self.__subject_derived.get_cross_sectional_value("naccoms", int)
         if fothmuso == 9 and (self.uds.is_initial() or known_value == 9):
             return 9
+
+        # if fothmuso is None, also return 9 or the known value
+        if fothmuso is None:
+            return 9 if known_value is None else known_value
 
         return None
 

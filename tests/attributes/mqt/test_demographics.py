@@ -10,42 +10,34 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {  # needed for DemographicsAttributeCollection
-                        "sex": "1",
-                        "primlang": "2",
-                        "visitdate": "2025-01-01",
-                        "module": "uds",
-                        "packet": "I",
-                        "birthmo": 1,
-                        "birthyr": 1950,
-                        "formver": 3.0,
-                        "naccid": "NACC123456",
-                        "adcid": 0,
+    # needed for DemographicsAttributeCollection
+    uds_table["file.info.forms.json"].update(
+        {
+            "sex": "1",
+            "primlang": "2",
+        }
+    )
+
+    # needed for DerivedDemographicsAttributeCollection
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "derived": {
+                        "np_death_age": 80,
+                        "cross-sectional": {
+                            "naccnihr": 1,
+                            "naccdied": 1,
+                        },
                     }
                 }
-            }
-        },
-        "subject": {  # needed for DerivedDemographicsAttributeCollection
-            "info": {
-                "derived": {
-                    "np_death_age": 80,
-                    "cross-sectional": {
-                        "naccnihr": 1,
-                        "naccdage": 80,
-                        "naccdied": 1,
-                    },
-                }
-            }
-        },
-    }
+            },
+        }
+    )
 
-    return SymbolTable(data)
+    return uds_table
 
 
 class TestDemographicsAttributeCollection:
@@ -91,11 +83,6 @@ class TestDerivedDemographicsAttributeCollection:
         for k, v in DerivedDemographicsAttributeCollection.RACE_MAPPING.items():
             table["subject.info.derived.cross-sectional.naccnihr"] = k
             assert attr._create_uds_race() == v
-
-    def test_create_age_at_death(self, table):
-        """Tests _create_age_at_death."""
-        attr = DerivedDemographicsAttributeCollection(table)
-        assert attr._create_age_at_death() == 80
 
     def test_create_vital_status(self, table):
         """Tests _create_vital_status."""

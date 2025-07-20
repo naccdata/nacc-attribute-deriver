@@ -79,3 +79,15 @@ class TestHistoricalNCRADAttributeCollection:
             with pytest.raises(MissingRequiredError):
                 set_attribute(table, raw_prefix, "apoe", invalid)
                 HistoricalNCRADAttributeCollection(table)
+
+    def test_create_historic_naccne4s(self, table, raw_prefix):
+        attr = HistoricalNCRADAttributeCollection(table)
+        assert attr._create_historic_naccne4s() == 0
+
+        set_attribute(table, raw_prefix, "apoe", 4)
+        set_attribute(table, raw_prefix, "apoenp", None)
+        assert attr._create_historic_naccne4s() == 2
+
+        for i in [2, 5]:
+            set_attribute(table, raw_prefix, "apoe", i)
+            assert attr._create_historic_naccne4s() == 1

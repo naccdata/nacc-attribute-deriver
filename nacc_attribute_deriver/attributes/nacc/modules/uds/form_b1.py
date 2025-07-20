@@ -41,7 +41,11 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
     def _create_naccbmi(self) -> Optional[float]:
         """Creates NACCBMI (body max index)."""
+        # seems QAF before expects 888.8 if not
+        # submitted on initial visit, -4/None otherwise
         if not self.submitted:
+            if self.uds.is_initial():
+                return 888.8
             return None
 
         height = self.get_height()

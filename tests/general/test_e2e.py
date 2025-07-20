@@ -8,36 +8,21 @@ from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-def test_uds_form():
+def test_uds_form(uds_table):
     """UDS is more of a runnable sanity check."""
-    uds_table = SymbolTable()
-    deriver = AttributeDeriver()
-
+    uds_table["file.info.forms.json"].update(
+        {
+            "normcog": 0,
+            "impnomci": 1,
+            "cdrglob": 1,
+            "sex": "1",
+            "primlang": 1,
+            "educ": 1,
+            "probad": 1,
+        }
+    )
     uds_table.update(
         {
-            "file": {
-                "info": {
-                    "forms": {
-                        "json": {
-                            "visitdate": "2025-01-01",
-                            "module": "uds",
-                            "packet": "I",
-                            "birthyr": "2024",
-                            "birthmo": "12",
-                            "formver": 3.0,
-                            "normcog": 0,
-                            "impnomci": 1,
-                            "cdrglob": 1,
-                            "sex": "1",
-                            "primlang": 1,
-                            "educ": 1,
-                            "probad": 1,
-                            "naccid": "NACC123456",
-                            "adcid": 0,
-                        }
-                    }
-                }
-            },
             "subject": {
                 "info": {
                     "derived": {
@@ -57,6 +42,7 @@ def test_uds_form():
         }
     )
 
+    deriver = AttributeDeriver()
     deriver.curate(uds_table, "uds")
 
 
@@ -149,7 +135,6 @@ def test_ncrad_apoe():
         "naccapoe": 5,
         "naccne4s": 1,
     }
-    assert form["subject.info.genetics"] == {"apoe": 5}
 
 
 def test_niagads_investigator():
@@ -174,7 +159,7 @@ def test_niagads_investigator():
         "ngdsgwac": "NG00000",
         "ngdsexac": "NG00000, NG00001",
         "ngdswgac": "88",
-        "ncdsweac": "88",
+        "ngdsweac": "88",
     }
 
 
@@ -335,10 +320,103 @@ def test_meds():
         "subject": {
             "info": {
                 "working": {
-                    "cross-sectional": {
-                        "drugs-list": {"2000-01-01": ["d00004", "d00170"]}
+                    "longitudinal": {
+                        "drugs-list": [
+                            {"date": "2000-01-01", "value": ["d00004", "d00170"]}
+                        ]
                     }
                 }
             }
         },
+    }
+
+
+def test_cls():
+    """Test against minimal CLS data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {
+        "visitdate": "2025-01-01",
+        "module": "CLS",
+        "formver": 3.0,
+        "aspkengl": 5,
+        "areaengl": 2,
+        "awriengl": 4,
+        "aundengl": 1,
+        "aspkspan": 1,
+        "areaspan": 4,
+        "awrispan": 7,
+        "aundspan": 3,
+    }
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "cls")
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "visitdate": "2025-01-01",
+                        "module": "CLS",
+                        "formver": 3.0,
+                        "aspkengl": 5,
+                        "areaengl": 2,
+                        "awriengl": 4,
+                        "aundengl": 1,
+                        "aspkspan": 1,
+                        "areaspan": 4,
+                        "awrispan": 7,
+                        "aundspan": 3,
+                    }
+                }
+            }
+        },
+        "subject": {
+            "info": {"derived": {"cross-sectional": {"naccengl": 3.0, "naccspnl": 3.8}}}
+        },
+    }
+
+
+def test_ftld():
+    """Test against minimal FTLD data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {"module": "FTLD", "visitdate": "2025-01-01"}
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "ftld")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "FTLD",
+                        "visitdate": "2025-01-01",
+                    }
+                }
+            }
+        },
+        "subject": {"info": {"derived": {"cross-sectional": {"naccftd": 1}}}},
+    }
+
+
+def test_lbd():
+    """Test against minimal LBD data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {"module": "LBD", "visitdate": "2025-01-01"}
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "lbd")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "LBD",
+                        "visitdate": "2025-01-01",
+                    }
+                }
+            }
+        },
+        "subject": {"info": {"derived": {"cross-sectional": {"nacclbdm": 1}}}},
     }

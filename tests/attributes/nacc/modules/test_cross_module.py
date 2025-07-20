@@ -8,60 +8,36 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                    }
-                },
-                "np": {
-                    "npdage": 83,
-                },
-                "milestone": {
-                    "deceased": "1",
-                    "deathyr": "2050",
-                    "deathmo": "2",
-                    "deathdy": "2",
-                },
-                "mds": {"vitalst": 2, "deathyr": 2030, "deathmo": 1, "deathday": 1},
-            }
-        },
-        "subject": {
-            "info": {
-                "working": {
-                    "cross-sectional": {
-                        "mds-vital-status": 2,
-                        "np-death-age": 83,
-                        "np-death-date": "2029-06-06",
-                        "mds-death-date": "2030-01-01",
-                        "milestone-deceased": 1,
-                        "milestone-death-date": "2050-02-02",
-                        "uds-visitdates": [
-                            "1980-05-06",
-                            "1980-10-10",
-                            "2023-12-12",
-                            "2024-01-01",
-                            "2024-02-02",
-                            "2025-03-03",
-                        ],
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "working": {
+                        "cross-sectional": {
+                            "mds-vital-status": 2,
+                            "np-death-age": 83,
+                            "np-death-date": "2029-06-06",
+                            "mds-death-date": "2030-01-01",
+                            "milestone-deceased": 1,
+                            "milestone-death-date": "2050-02-02",
+                            "uds-visitdates": [
+                                "1980-05-06",
+                                "1980-10-10",
+                                "2023-12-12",
+                                "2024-01-01",
+                                "2024-02-02",
+                                "2025-03-03",
+                            ],
+                        }
                     }
                 }
-            }
-        },
-    }
+            },
+        }
+    )
 
-    return SymbolTable(data)
+    return uds_table
 
 
 class TestCrossModuleAttribute:

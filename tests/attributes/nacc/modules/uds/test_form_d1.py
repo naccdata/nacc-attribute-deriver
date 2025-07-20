@@ -11,34 +11,21 @@ from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in a SymbolTable.
 
     In this case most will want to manually set fields so only leave
     bare minimum in.
     """
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "normcog": 1,
-                        "formver": 2,
-                        "module": "uds",
-                        "packet": "it",
-                        "birthmo": 1,
-                        "birthyr": 1950,
-                        "probad": 1,
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                    }
-                }
-            }
+    uds_table["file.info.forms.json"].update(
+        {
+            "probad": 1,
+            "normcog": 1,
+            "formver": 2,
         }
-    }
+    )
 
-    return SymbolTable(data)
+    return uds_table
 
 
 class TestUDSFormD1Attribute:

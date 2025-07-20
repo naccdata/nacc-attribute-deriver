@@ -9,26 +9,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table() -> Dict[str, Any]:
-    return {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
-                        "anymeds": 1,
-                        "naccid": "NACC123456",
-                        "adcid": 0,
-                    }
-                }
-            }
-        },
-    }
+def table(uds_table) -> Dict[str, Any]:
+    uds_table["file.info.forms.json"].update({"anymeds": 1, "frmdatea4": "2025-01-01"})
+    return uds_table
 
 
 @pytest.fixture(scope="function")
@@ -39,15 +22,18 @@ def table1(table) -> SymbolTable:
             "subject": {
                 "info": {
                     "working": {
-                        "cross-sectional": {
-                            "drugs-list": {
-                                "2025-01-01": [
-                                    "d00131",  # triggers NACCAAAS
-                                    "d00171",  # triggers NACCAANX
-                                    "d00252",  # triggers NACCAC
-                                    "d00006",  # triggers NACCACEI
-                                ]
-                            }
+                        "longitudinal": {
+                            "drugs-list": [
+                                {
+                                    "date": "2025-01-01",
+                                    "value": [
+                                        "d00131",  # triggers NACCAAAS
+                                        "d00171",  # triggers NACCAANX
+                                        "d00252",  # triggers NACCAC
+                                        "d00006",  # triggers NACCACEI
+                                    ],
+                                }
+                            ]
                         }
                     }
                 }
@@ -69,17 +55,20 @@ def table2(table) -> SymbolTable:
             "subject": {
                 "info": {
                     "working": {
-                        "cross-sectional": {
-                            "drugs-list": {
-                                "2025-01-01": [
-                                    "d00132     ",  # triggers NACCVASD
-                                    "     d00175",  # triggers NACCPDMD,
-                                    "D07768",  # triggers NACCNSD
-                                    "d00179",  # triggers NACCDIUR,
-                                    "d03180",  # triggers NACCAPSY
-                                    "unknown drug",  # unknown write-in, possible in V1
-                                ]
-                            }
+                        "longitudinal": {
+                            "drugs-list": [
+                                {
+                                    "date": "2025-01-01",
+                                    "value": [
+                                        "d00132     ",  # triggers NACCVASD
+                                        "     d00175",  # triggers NACCPDMD,
+                                        "D07768",  # triggers NACCNSD
+                                        "d00179",  # triggers NACCDIUR,
+                                        "d03180",  # triggers NACCAPSY
+                                        "unknown drug",  # unknown write-in
+                                    ],
+                                }
+                            ]
                         }
                     }
                 }

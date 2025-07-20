@@ -1,9 +1,8 @@
 scope,function,location,operation,dated
 historic_apoe,historic_apoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
-historic_apoe,historic_apoe,subject.info.genetics.apoe,update,FALSE
 historic_apoe,historic_apoe,subject.info.working.cross-sectional.historic-apoe,update,FALSE
+historic_apoe,historic_naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 apoe,naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
-apoe,naccapoe,subject.info.genetics.apoe,update,FALSE
 apoe,naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
@@ -29,7 +28,7 @@ niagads_availability,ngdswes,subject.info.derived.cross-sectional.ngdswes,update
 niagads_availability,ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,update,FALSE
 niagads_availability,ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
 niagads_availability,ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
-niagads_availability,ncdsweac,subject.info.derived.cross-sectional.ncdsweac,update,FALSE
+niagads_availability,ngdsweac,subject.info.derived.cross-sectional.ngdsweac,update,FALSE
 np,naccamy,subject.info.derived.cross-sectional.naccamy,update,FALSE
 np,naccarte,subject.info.derived.cross-sectional.naccarte,update,FALSE
 np,naccavas,subject.info.derived.cross-sectional.naccavas,update,FALSE
@@ -86,7 +85,9 @@ scan_pet_qc,scan_pet_session_count,subject.info.imaging.pet.scan.count,max,FALSE
 scan_pet_qc,scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,FALSE
 scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
-meds,drugs_list,subject.info.working.cross-sectional.drugs-list,update,FALSE
+meds,drugs_list,subject.info.working.longitudinal.drugs-list,list,TRUE
+ftld,naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
+lbd,nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
 uds,naccid,subject.info.derived.cross-sectional.naccid,update,FALSE
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
@@ -200,6 +201,8 @@ uds,naccmmse,file.info.derived.naccmmse,update,FALSE
 uds,naccmmse,subject.info.derived.longitudinal.naccmmse,list,TRUE
 uds,naccmoca,file.info.derived.naccmoca,update,FALSE
 uds,naccmoca,subject.info.derived.longitudinal.naccmoca,list,TRUE
+uds,naccmocb,file.info.derived.naccmocb,update,FALSE
+uds,naccmocb,subject.info.derived.longitudinal.naccmocb,list,TRUE
 uds,naccalzp,file.info.derived.naccalzp,update,FALSE
 uds,naccalzp,subject.info.derived.longitudinal.naccalzp,list,TRUE
 uds,nacclbde,file.info.derived.nacclbde,update,FALSE
@@ -262,7 +265,6 @@ uds,uds_sex,subject.info.demographics.uds.sex.latest,latest,TRUE
 uds,uds_race,subject.info.demographics.uds.race.latest,latest,TRUE
 uds,uds_primary_language,subject.info.demographics.uds.primary-language.latest,latest,TRUE
 uds,educ,subject.info.demographics.uds.education-level.latest,latest,TRUE
-uds,age_at_death,subject.info.demographics.uds.age-at-death,update,FALSE
 uds,vital_status,subject.info.demographics.uds.vital-status.latest,latest,TRUE
 uds,np_available,subject.info.demographics.uds.np-available,max,FALSE
 uds,naccavst,subject.info.longitudinal-data.uds.count,max,FALSE
@@ -284,3 +286,18 @@ uds,naccnovs,subject.info.derived.cross-sectional.naccnovs,update,FALSE
 uds,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
 uds,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
 uds,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE
+uds,uds_naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
+uds,uds_naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
+uds,uds_naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE
+uds,uds_ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE
+uds,uds_ngdsexom,subject.info.derived.cross-sectional.ngdsexom,update,FALSE
+uds,uds_ngdswgs,subject.info.derived.cross-sectional.ngdswgs,update,FALSE
+uds,uds_ngdswes,subject.info.derived.cross-sectional.ngdswes,update,FALSE
+uds,uds_ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,update,FALSE
+uds,uds_ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
+uds,uds_ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
+uds,uds_ngdsweac,subject.info.derived.cross-sectional.ngdsweac,update,FALSE
+uds,uds_naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
+uds,uds_naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
+uds,uds_naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
+uds,uds_nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE

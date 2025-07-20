@@ -1,4 +1,4 @@
-python_sources(name="lib", dependencies=["./config:rules"])
+python_sources(name="lib", dependencies=["./config:rules", "./config:data"])
 
 python_distribution(
     name="dist",
@@ -7,7 +7,7 @@ python_distribution(
     sdist=True,
     provides=python_artifact(
         name="nacc-attribute-deriver",
-        version="1.5.0.dev5",
+        version="1.5.0.dev21",
         description="Uses rules to derive attribute values from file data",
         author="NACC",
         author_email="nacchelp@uw.edu",

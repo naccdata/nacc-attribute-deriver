@@ -13,16 +13,18 @@ Documentation of release versions of `nacc-attribute-deriver`
         * Also adds NACCID
     * A1, A2, A3, A4, and A5
         * Accounts for some forms being optional
-        * For A4, adds MEDS scope
-        * **NACCFAM (A3) and and MEDS V1 (A4) are still not working properly, on hold for now**
+        * For A4, adds MEDS scope, and `config/normalized_drug_ids.csv` to map V1 write-ins
+        * **NACCFAM (A3), on hold for now**
     * B1, B6, B8, and B9
     * C1/C2
         * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
     * D1
+    * Adds FTLD/LBD scope and variables (just checks existence)
 * Adds CLS derived variables
 * Adds MILESTONE derived variables
     * Many of these are cross-form, particularly with UDS A1
 * Adds rest of NP derived variables
+* Adds `MissingFormAttributes` which sets a default values for certain non-UDS NACC derived variables when the corresponding source file does not exist for that subject
 * Adds/fixes genetics derived variables
     * Adds NIAGADS accesion number derived variables
     * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
@@ -30,9 +32,11 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level and removes redundant `_create` functions
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
+* Refactors testing to use a `base_uds_table` fixture
 * Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
 * Defines `pop` for `SymbolTable` (this is done more for optimization the attribute-curator gear)
 * Makes minor optimization tweaks
+* Removes `age_at_death` rule - MQT ETL pointing at `naccdage` directly instead
 
 ## 1.4.1
 

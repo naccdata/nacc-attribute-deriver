@@ -101,3 +101,18 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
                 )
 
         return apoe if apoe >= 1 and apoe <= 6 else 9
+
+    def _create_historic_naccne4s(self) -> int:
+        """Create NACCNE4s (when provided historically).
+
+        Based on (historic) APOE results.
+        """
+        apoe = self._create_historic_apoe()
+        if apoe in [1, 3, 6]:
+            return 0
+        if apoe in [2, 5]:
+            return 1
+        if apoe == 4:
+            return 2
+
+        return 9

@@ -73,6 +73,6 @@ class NIAGADSAttributeCollection(AttributeCollection):
         """NGDSWGAC - NIAGADS whole genome sequencing accession number."""
         return self._evaluate_accession("niagads_wgs")
 
-    def _create_ncdsweac(self) -> str:
-        """NCDSWEAC - NIAGADS whole exome sequencing accession number."""
+    def _create_ngdsweac(self) -> str:
+        """NGDSWEAC - NIAGADS whole exome sequencing accession number."""
         return self._evaluate_accession("niagads_wes")

@@ -16,7 +16,6 @@ from nacc_attribute_deriver.attributes.base.uds_namespace import (
 )
 from nacc_attribute_deriver.schema.errors import (
     InvalidFieldError,
-    MissingRequiredError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -85,7 +84,7 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(
             table=table,
             required=frozenset(
-                [f"cross-sectional.{x}" for x in ["naccnihr", "naccdage", "naccdied"]]
+                [f"cross-sectional.{x}" for x in ["naccnihr", "naccdied"]]
             ),
         )
 
@@ -115,14 +114,6 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
             raise InvalidFieldError(f"Invalid/unknown naccnihr code: {naccnihr}")
 
         return mapped_naccnihr
-
-    def _create_age_at_death(self) -> int:
-        """Age at death, mapped from NACCDAGE."""
-        naccdage = self.__subject_derived.get_cross_sectional_value("naccdage", int)
-        if not naccdage:
-            raise MissingRequiredError(["cross-sectional.naccdage"])
-
-        return naccdage
 
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 

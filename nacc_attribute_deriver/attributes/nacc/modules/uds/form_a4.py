@@ -22,44 +22,48 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         # need to grab from corresponding MEDS file information
         # keyed by form date under subject.info.derived.drugs_list
-        self.__meds = self.__load_drugs_list() if self.submitted else None
+        #self.__meds = self.__load_drugs_list() if self.submitted else None
+        self.__meds = self.__load_drugs_list()
 
-    @property
-    def submitted(self) -> bool:
-        # TODO: for v4 this will be modea4
-        # SAS code seems to set anymeds explicitly based on a meds table,
-        # but should be fine to use directly
-        return self.uds.get_value("anymeds", int) == 1
+    # @property
+    # def submitted(self) -> bool:
+    #     # TODO: for v4 this will be modea4
+    #     # SAS code seems to set anymeds explicitly based on a meds table,
+    #     # but should be fine to use directly
+    #     return self.uds.get_value("anymeds", int) == 1
 
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
         subject.info.derived.drugs_list.<visitdate>."""
-        all_meds = self.__working.get_cross_sectional_value("drugs-list", dict)
-        if all_meds is None:
-            all_meds = {}
-
         form_date = self.uds.get_value("frmdatea4", str)
         if not form_date:  # try visitdate
             form_date = self.uds.get_value("visitdate", str)
 
-        if form_date not in all_meds:
-            raise AttributeDeriverError(
-                "Cannot find corresponding MEDS drugs list for "
-                + f"form date {form_date}"
-            )
+        if not form_date:
+            raise AttributeDeriverError("Cannot determine A4 form date")
 
-        return [x.replace(" ", "").lower() for x in all_meds[form_date]]
+        drugs = self.__working.get_corresponding_longitudinal_value(
+            form_date, "drugs-list", list
+        )
 
-    def _create_naccamd(self) -> Optional[int]:
+        if drugs is None:
+            return []
+            # raise AttributeDeriverError(
+            #     "Cannot find corresponding MEDS drugs list for "
+            #     + f"form date {form_date}"
+            # )
+
+        return [x.strip().lower() for x in drugs]
+
+    def _create_naccamd(self) -> int:
         """Creates NACCAMD - Total number of medications reported at
         each visit.
         """
-        if not self.submitted or self.__meds is None:
-            return None
-
+        # if not self.submitted or self.__meds is None:
+        #     return 0
         return len(self.__meds)
 
-    def check_drugs(self, target_codes: List[str]) -> Optional[int]:
+    def check_drugs(self, target_codes: List[str]) -> int:
         """Check if any of the 40 write-in drugs match the target codes.
 
         Args:
@@ -67,8 +71,15 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         Returns:
             1 if there is a match, 0 otherwise
         """
-        if not self.submitted or not self.__meds:
-            return None
+        a4sub = self.uds.get_value("a4sub", int)
+        if a4sub == 0:
+            return -4
+
+        # if self._create_naccamd() < 1 and a4sub == 0:
+        #     return -4
+
+        # if not self.submitted or not self.__meds:
+        #     return 0
 
         return 1 if any(x in target_codes for x in self.__meds) else 0
 

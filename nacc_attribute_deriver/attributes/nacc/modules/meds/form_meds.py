@@ -4,7 +4,7 @@ This is mainly used to inform UDS A4 NACC derived variables.
 """
 
 import csv
-import re
+import datetime
 from importlib import resources
 from typing import Dict, List
 
@@ -12,17 +12,56 @@ from nacc_attribute_deriver import config
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import (
     BaseNamespace,
-    WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.errors import (
     AttributeDeriverError,
     InvalidFieldError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.date import datetime_from_form_date
 
-from .prefix_tree import PrefixTree
 
-ALPHA_NUMERIC = re.compile(r"[^a-zA-Z0-9]")
+def load_normalized_drugs_list() -> Dict[str, str | None]:
+    """Load the normalized drugs list. Done globally so it's only done once per
+    execution.
+
+    In UDS V1 all the drugs were written in. Uses normalized_drug_ids.csv,
+    which was manually generated with the following steps:
+        1. Use Claude AI to "spellcheck" all misspelled/abbreviated entries
+            - pulled from drugs.txt file found on server
+        2. Lookup the drug in UDSMEDS, which is a NACC-specific database
+            of brand/drug names and map to the listed drug ID
+            - drug ID seems to be NACC-specific, e.g. not related to RxCUI or similar
+            - not all drugs matched - not sure how they were handled in SAS code
+            - UDSMEDS does have name clashes - just used first one found
+        3. Manually map any stragglers as needed - mostly focused on those
+            that caused failures in regression testing, but ideally need
+            a good way to map all of them properly. ~1.9k unmatched
+
+    TODO: I'm not sure normalized_drug_ids.csv is actually comprehensive - there are far
+    more entries in UDSMEDS. Since this is only relevant to V1, trying to load the
+    smallest subset, but if regression tests still fail a bunch probably best to also
+    include the UDSMEDS csv.
+    """
+    normalized_drugs_file = resources.files(config).joinpath("normalized_drug_ids.csv")
+    drugs: Dict[str, str | None] = {}
+
+    with normalized_drugs_file.open("r") as fh:
+        reader = csv.DictReader(fh)
+        # map every possible name (both raw and normalized) to its drug ID
+        for row in reader:
+            drug_id = row["drug_id"]
+
+            for field in ["raw_drug", "normalized_drug"]:
+                name = row[field].strip().lower()
+                if name not in drugs or drugs[name] is None:
+                    drugs[name] = drug_id if drug_id != "NO_DRUG_ID" else None
+
+    return drugs
+
+
+# load this globally so it's only done once per execution
+NORMALIZED_DRUGS = load_normalized_drugs_list()
 
 
 class MEDSFormAttributeCollection(AttributeCollection):
@@ -39,91 +78,44 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 f"Current file is not a MEDS form: found {module}",
             )
 
-        # TODO: V1 does not have drugs_list and instead lists everything
-        # explicitly - do not see it in pulled SAS code, will need to investigate
         self.__formver = self.__meds.get_value("formver", float)
+
+    def get_date(self) -> datetime.date:
+        """Get MEDS date; depends on version."""
         date_attribute = (
             "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
         )
-        self.__formdate = self.__meds.get_value(date_attribute, str)
+        formdate = self.__meds.get_value(date_attribute, str)
+        date = datetime_from_form_date(formdate)
 
-        if not self.__formdate:
+        if not date:
             raise AttributeDeriverError("Cannot determine MEDS form date")
 
-        self.__working = WorkingDerivedNamespace(table=table)
+        return date
 
-    def _create_drugs_list(self) -> Dict[str, List[str]]:
-        """Returns list of drugs for this visit, adding to overall mapping."""
-        all_drugs = self.__working.get_cross_sectional_value("drugs-list", dict)
-        if all_drugs is None:
-            all_drugs = {}
-
-        if self.__formdate in all_drugs:
-            raise AttributeDeriverError(
-                f"Drugs list for frmdatea4g {self.__formdate} already exists"
-            )
-
+    def _create_drugs_list(self) -> List[str]:
+        """Returns list of drugs for this visit."""
         # in V1, each prescription medication is specified by variables
         # PMA - PMT, need to extract
         if self.__formver == 1:
-            # all_drugs[self.__formdate] = self.__load_from_udsmeds_table()
-            all_drugs[self.__formdate] = []
-        else:
-            drugs_str = self.__meds.get_value("drugs_list", str)
-            all_drugs[self.__formdate] = sorted(
-                [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
-            )
+            return self.__get_v1_drugs()
 
-        return all_drugs
+        drugs_str = self.__meds.get_value("drugs_list", str)
+        return sorted(
+            [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
+        )
 
-    def __load_from_udsmeds_table(self) -> List[str]:
-        """V1.
-
-        In this version all the drugs were written in. Need to use
-        UDSMEDS CSV (combination of UDSMEDS table from Oracle DB +
-        drugs.sas which translated typos/alternative spellings) and map
-        each possible drug variable to its ID.
-        """
-        udsmeds_table_file = resources.files(config).joinpath("UDSMEDS_combined.csv")
-        udsmeds: Dict[str, str] = {}
-        prefix_tree = PrefixTree()  # prefix tree for searching
-
-        with udsmeds_table_file.open("r") as fh:
-            reader = csv.DictReader(fh)
-
-            # map every possible name to its drug ID
-            # TODO: unfortunately UDSMEDS does have name clashes. for now,
-            # just keep the first one and ignore the others
-            for row in reader:
-                drug_id = row["drug_id"]
-                for field in ["brand_name", "drug_name", "alternative_name"]:
-                    name = row[field]
-
-                    # CSV is already lowercased/stripped, but also
-                    # remove all non-alphanumeric characters
-                    name = ALPHA_NUMERIC.sub("", name) if name else None
-                    if not name or name in udsmeds:
-                        continue
-                    udsmeds[name] = drug_id
-                    prefix_tree.insert(name, drug_id)
-
-        # now look at every drug name in drugs_list; if we cannot
-        # find a drug_id, put name in anyways so count is accurate
+    def __get_v1_drugs(self) -> List[str]:
+        """Gets V1 drugs by mapping write-ins to normalized DB."""
+        # if not in drugs_db, use drug_name
         drugs_list = []
         for i in range(ord("a"), ord("t") + 1):
             drug_name = self.__meds.get_value(f"pm{chr(i)}", str)
             if not drug_name:
                 continue
 
-            # first try exact match
             drug_name = drug_name.strip().lower()
-            condensed_drug_name = ALPHA_NUMERIC.sub("", drug_name)
-            drug_id = udsmeds.get(condensed_drug_name)
-
-            # next try a prefix lookup
-            if not drug_id:
-                drug_id = prefix_tree.get_closest_match(condensed_drug_name)
-
-            drugs_list.append(drug_name if drug_id is None else drug_id)
+            drug_id = NORMALIZED_DRUGS.get(drug_name, drug_name)
+            drugs_list.append(drug_id if drug_id is not None else drug_name)
 
         return sorted(drugs_list)
