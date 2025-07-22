@@ -16,8 +16,20 @@ class UDSNamespace(FormNamespace):
         if required is None:
             required = frozenset()
 
-        default_required = ["module", "packet", "formver", "birthmo", "birthyr"]
-        super().__init__(table=table, required=required.union(default_required))
+        default_required = [
+            "module",
+            "packet",
+            "formver",
+            "birthmo",
+            "birthyr",
+            "naccid",
+            "adcid",
+        ]
+        super().__init__(
+            table=table,
+            required=required.union(default_required),
+            date_attribute="visitdate",
+        )
 
         module = self.get_required("module", str)
         if module.upper() != "UDS":
@@ -28,7 +40,12 @@ class UDSNamespace(FormNamespace):
     def is_initial(self) -> bool:
         """Returns whether or not this is an initial packet."""
         packet = self.get_required("packet", str)
-        return packet.startswith("I")
+        return packet.upper().startswith("I")
+
+    def is_in_person(self) -> bool:
+        """Returns whethher or not this is an in-person visit."""
+        packet = self.get_required("packet", str)
+        return packet is not None and packet.upper() in ["I", "F"]
 
     def normalized_formver(self) -> int:
         """Returns the normalized form version.
@@ -39,13 +56,11 @@ class UDSNamespace(FormNamespace):
         raw_formver = self.get_required("formver", float)
 
         try:
-            formver = int(raw_formver)
+            return int(raw_formver)
         except (ValueError, TypeError) as e:
             raise InvalidFieldError(
                 f"Cannot determine normalized formver: {raw_formver}"
             ) from e
-
-        return formver
 
     def generate_uds_dob(self) -> date:
         """Creates UDS DOB, which is used to calculate ages."""

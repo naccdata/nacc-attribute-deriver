@@ -10,35 +10,27 @@ from tests.conftest import set_attribute
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in a SymbolTable."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "visitdate": "2025-01-01",
-                        "birthmo": 3,
-                        "birthyr": 1990,
-                        "module": "UDS",
-                        "packet": "I",
-                        "formver": "3.0",
+    uds_table["file.info.forms.json"].update(
+        {
+            "educ": "3",
+        }
+    )
+    uds_table.update(
+        {
+            "subject": {
+                "info": {
+                    "derived": {
+                        "cross-sectional": {
+                            "naccnihr": 2,
+                        }
                     }
                 }
-            }
-        },
-        "subject": {
-            "info": {
-                "derived": {
-                    "cross-sectional": {
-                        "naccnihr": 2,
-                    }
-                }
-            }
-        },
-    }
-
-    return SymbolTable(data)
+            },
+        }
+    )
+    return uds_table
 
 
 class TestUDSFormA1Attribute:
@@ -95,3 +87,12 @@ class TestUDSFormA1Attribute:
         # set but something else case
         set_attribute(table, form_prefix, "sourcenw", 1)
         assert not attr._create_affiliate()
+
+    def test_create_educ(self, table):
+        """Tests _create_educ."""
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_educ() == 3
+
+        # none case
+        table["file.info.forms.json.educ"] = None
+        assert attr._create_educ() is None

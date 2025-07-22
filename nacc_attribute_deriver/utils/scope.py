@@ -10,10 +10,14 @@ class Scope(str, Enum):
 
 class FormScope(Scope):
     # forms
+    CLS = "cls"
     MDS = "mds"
     MILESTONE = "milestone"
     NP = "np"
+    MEDS = "meds"
     UDS = "uds"
+    FTLD = "ftld"
+    LBD = "lbd"
 
 
 class GeneticsScope(Scope):
@@ -40,10 +44,14 @@ class SCANMRIScope(Scope):
 
 
 ScopeLiterals = Literal[
+    FormScope.CLS,
     FormScope.MDS,
     FormScope.MILESTONE,
     FormScope.NP,
+    FormScope.MEDS,
     FormScope.UDS,
+    FormScope.FTLD,
+    FormScope.LBD,
     GeneticsScope.APOE,
     GeneticsScope.HISTORIC_APOE,
     GeneticsScope.NIAGADS_AVAILABILITY,

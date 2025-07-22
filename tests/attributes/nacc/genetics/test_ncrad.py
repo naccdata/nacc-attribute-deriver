@@ -44,6 +44,23 @@ class TestNCRADAttributeCollection:
         with pytest.raises(MissingRequiredError):
             NCRADAttributeCollection(SymbolTable())
 
+    def test_historical_different(self, table, working_derived_prefix):
+        set_attribute(table, working_derived_prefix, "cross-sectional.historic-apoe", 4)
+        attr = NCRADAttributeCollection(table)
+        assert attr._create_naccapoe() == 9
+
+    def test_create_naccne4s(self, table, raw_prefix):
+        attr = NCRADAttributeCollection(table)
+        assert attr._create_naccne4s() == 0
+        set_attribute(table, raw_prefix, "a1", "e4")
+        assert attr._create_naccne4s() == 1
+        set_attribute(table, raw_prefix, "a2", "e4")
+        assert attr._create_naccne4s() == 2
+
+        set_attribute(table, raw_prefix, "a2", "aa")
+        set_attribute(table, raw_prefix, "a2", "aa")
+        assert attr._create_naccne4s() == 9
+
 
 class TestHistoricalNCRADAttributeCollection:
     def test_create_historic_apoe(self, table, raw_prefix):
@@ -62,3 +79,15 @@ class TestHistoricalNCRADAttributeCollection:
             with pytest.raises(MissingRequiredError):
                 set_attribute(table, raw_prefix, "apoe", invalid)
                 HistoricalNCRADAttributeCollection(table)
+
+    def test_create_historic_naccne4s(self, table, raw_prefix):
+        attr = HistoricalNCRADAttributeCollection(table)
+        assert attr._create_historic_naccne4s() == 0
+
+        set_attribute(table, raw_prefix, "apoe", 4)
+        set_attribute(table, raw_prefix, "apoenp", None)
+        assert attr._create_historic_naccne4s() == 2
+
+        for i in [2, 5]:
+            set_attribute(table, raw_prefix, "apoe", i)
+            assert attr._create_historic_naccne4s() == 1

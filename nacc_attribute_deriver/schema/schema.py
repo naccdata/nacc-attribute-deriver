@@ -20,6 +20,7 @@ class AttributeAssignment(BaseModel):
 
     attribute: str
     operation: Operation
+    dated: bool
 
     @field_validator("operation", mode="before")
     def generate_operation(cls, value: str) -> Operation:
@@ -42,10 +43,6 @@ class CurationRule(BaseModel):
     function: str  # Name of the attribute function
     assignments: List[AttributeAssignment]
 
-    # this is more for human readability, not necessary for any processing
-    type: Optional[str] = None
-    description: Optional[str] = None
-
 
 class RuleFileModel(BaseModel):
     """Model for loading serialized rule definitions."""
@@ -54,8 +51,14 @@ class RuleFileModel(BaseModel):
     function: str
     location: str
     operation: str
-    type: Optional[str]
-    description: Optional[str]
+    dated: bool
+
+    @field_validator("dated", mode="before")
+    def cast_bool(cls, value: Optional[str]) -> bool:
+        if not value:
+            return False
+
+        return value.upper() in ["TRUE", "1"]
 
     @property
     def assignment(self) -> AttributeAssignment:
@@ -63,4 +66,5 @@ class RuleFileModel(BaseModel):
         return AttributeAssignment(
             attribute=self.location,
             operation=self.operation,  # type: ignore
+            dated=self.dated,
         )
