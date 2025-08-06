@@ -77,8 +77,7 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         return len(self.get_visitdates())
 
     def _create_naccdays(self) -> Optional[int]:
-        """Creates NACCDAYS - days from initial visit to most recent visit
-        (max 5000).
+        """Creates NACCDAYS - days from initial visit to most recent visit.
 
         This is also used for NACCFDAYS, just under a different curation
         rule (cross-sectional vs longitudinal).
@@ -102,8 +101,8 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
                 "Cannot calculate days between current and initial visit"
             )
 
-        # TODO: RDD says max is 5000 but QAF doesn't seem to limit it
-        # return min(num_days, 5000)
+        # NOTE: RDD currently notes a limit of 5000, but was never actually
+        # enforced. This limit will be removed from the RDD in the future.
         return num_days
 
     def _create_naccnvst(self) -> int:

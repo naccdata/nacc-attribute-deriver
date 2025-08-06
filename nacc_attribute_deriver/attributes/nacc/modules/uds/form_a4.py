@@ -2,6 +2,10 @@
 just looking at hardcoded strings.
 
 From derivedmeds.sas.
+
+NOTE: Derived variable are only supposed to reflect the last 2 weeks, so
+    variables do NOT get carried over (i.e. if they do not submit a meds form
+    for that visit, the derived variable is -4/None).
 """
 
 from typing import List, Optional
@@ -19,22 +23,20 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__working = WorkingDerivedNamespace(table=table)
-
-        # need to grab from corresponding MEDS file information
-        # keyed by form date under subject.info.derived.drugs_list
-        # self.__meds = self.__load_drugs_list() if self.submitted else None
         self.__meds = self.__load_drugs_list()
 
-    # @property
-    # def submitted(self) -> bool:
-    #     # TODO: for v4 this will be modea4
-    #     # SAS code seems to set anymeds explicitly based on a meds table,
-    #     # but should be fine to use directly
-    #     return self.uds.get_value("anymeds", int) == 1
+    @property
+    def submitted(self) -> bool:
+        # TODO: for v4 this will be modea4
+        # SAS looks at anymeds but a4sub seems to be a better indicator
+        return self.uds.get_value("a4sub", int) == 1
 
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
         subject.info.derived.drugs_list.<visitdate>."""
+        if not self.submitted:
+            return []
+
         form_date = self.uds.get_value("frmdatea4", str)
         if not form_date:  # try visitdate
             form_date = self.uds.get_value("visitdate", str)
@@ -48,10 +50,6 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         if drugs is None:
             return []
-            # raise AttributeDeriverError(
-            #     "Cannot find corresponding MEDS drugs list for "
-            #     + f"form date {form_date}"
-            # )
 
         return [x.strip().lower() for x in drugs]
 
@@ -59,8 +57,9 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCAMD - Total number of medications reported at
         each visit.
         """
-        # if not self.submitted or self.__meds is None:
-        #     return 0
+        if not self.submitted:
+            return -4
+
         return len(self.__meds)
 
     def check_drugs(self, target_codes: List[str]) -> int:
@@ -71,15 +70,11 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         Returns:
             1 if there is a match, 0 otherwise
         """
-        a4sub = self.uds.get_value("a4sub", int)
-        if a4sub == 0:
+        if not self.submitted:
             return -4
 
-        # if self._create_naccamd() < 1 and a4sub == 0:
-        #     return -4
-
-        # if not self.submitted or not self.__meds:
-        #     return 0
+        if not self.__meds:
+            return 0
 
         return 1 if any(x in target_codes for x in self.__meds) else 0
 
