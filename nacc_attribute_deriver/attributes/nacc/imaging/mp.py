@@ -1,4 +1,8 @@
-"""Derived variables from MP form."""
+"""Derived variables from MP form.
+
+TODO: THIS IS PSEUDOCODE. Curation rules need to be added for this
+scope once it is more finalized.
+"""
 
 from typing import Optional
 

@@ -38,6 +38,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Defines `pop` for `SymbolTable` (this is done more for optimization the attribute-curator gear)
 * Makes minor optimization tweaks
 * Removes `age_at_death` rule - MQT ETL pointing at `naccdage` directly instead
+* Adds pseudocode for MP variables - need to finalize once we know how data actually looks
 
 ## 1.4.1
 
