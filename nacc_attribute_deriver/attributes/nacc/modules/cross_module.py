@@ -325,7 +325,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
                 residenc != 4,9 (primary residence is nursing home or unknown)
 
                 This can also become 0 if a subsequent MLST form EXPLICITLY sets
-                RENURSE == 0
+                RENURSE == 0 in a later MLST form
         """
         # get most recent MLST value of renurse
         renurse_record = self.__working.get_cross_sectional_dated_value(
@@ -348,7 +348,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def determine_discontinued_date(self, attribute: str, default: int) -> int:
         """Determine the discontinued date part; compare to UDS/NP.
 
-        If UDS/NP form came AFTER MLST, return the default (even if MLST
+        If UDS form came AFTER MLST, return the default (even if MLST
         said discontinued.
         """
         discyr = self.__working.get_cross_sectional_value("milestone-discyr.latest.value", int)
@@ -356,25 +356,17 @@ class CrossModuleAttributeCollection(AttributeCollection):
         discday = self.__working.get_cross_sectional_value("milestone-discday.latest.value", int)
 
         uds_date = self.__uds.get_date()
-        # np_date = date_from_form_date(
-        #     self.__working.get_cross_sectional_value('np-form-date', str))
 
         if not uds_date:
             raise AttributeDeriverError(
                 "Cannot determine UDS date to compare to MLST form"
             )
 
-        # if either NP/UDS came after MLST (NP more likely), return default
-        #for form_date in [np_date, uds_date]:
-        for form_date in [uds_date]:
-            if not form_date:
-                continue
+        # if UDS came after MLST, return default
+        if date_came_after_sparse(uds_date, discyr, discmo, discday):
+            return default
 
-            if date_came_after_sparse(form_date, discyr, discmo, discday):
-                return default
-
-        # either both forms came before or we cannot determine it exactly;
-        # either way, return whatever MLST set if it exists else default
+        # MLST is the latest; return whatever MLST set
         disc_date = self.__working.get_cross_sectional_value(attribute, int)
         return disc_date if disc_date is not None else default
 

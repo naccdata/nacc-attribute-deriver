@@ -194,15 +194,6 @@ class TestCrossModuleAttribute:
         assert attr._create_naccdsmo() == 88
         assert attr._create_naccdsyr() == 8888
 
-        # # pretend NP came after, should return 8888-88-88
-        # table['file.info.forms.json.visitdate'] = '2025-01-01'
-        # table['subject.info.working.cross-sectional.np-form-date'] = '4000-01-01'
-        # attr = CrossModuleAttributeCollection(table)
-        # assert attr._create_naccdsdy() == 88
-        # assert attr._create_naccdsmo() == 88
-        # assert attr._create_naccdsyr() == 8888
-
-
     def test_determine_discontinued_date_close(self, table):
         """Tests determine_discontinued_date through
         NACCDSDY, NACCDSMO and NACCDSYR when dates are close
