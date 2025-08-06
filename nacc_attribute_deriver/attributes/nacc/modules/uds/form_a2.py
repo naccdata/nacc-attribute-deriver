@@ -24,18 +24,19 @@ class UDSFormA2Attribute(UDSAttributeCollection):
     def submitted(self) -> bool:
         return self.uds.get_value("a2sub", int) == 1
 
-    def _create_naccninr(self) -> Optional[int]:
+    def _create_naccninr(self) -> int:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
-        co-participant)."""
-        # grab prev if available
-        prev_naccninr = self.__subject_derived.get_prev_value("naccninr", int)
+        co-participant).
 
+        NOTE: After discussing with RT, we want to return whatever is on the current
+        form and don't carry forward. If not specified, return -4.
+        """
         if not self.submitted:
-            return prev_naccninr
+            return -4
 
         newinf = self.uds.get_value("newinf", int)
         if not self.uds.is_initial() and newinf != 1:
-            return prev_naccninr
+            return -4
 
         result = generate_race(
             race=self.uds.get_value("inrace", int),
