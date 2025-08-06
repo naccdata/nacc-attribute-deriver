@@ -20,7 +20,7 @@ from typing import (
 from pydantic import ValidationError
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import datetime_from_form_date
+from nacc_attribute_deriver.utils.date import date_from_form_date
 
 from .errors import OperationError
 from .rule_types import DateTaggedValue, NoAssignment, TypeGetter
@@ -243,9 +243,9 @@ class DateOperation(Operation):
                 f"Unknown date operation {self.LABEL} for attribute {attribute}"
             )
 
-        dest_date = datetime_from_form_date(table.get(f"{attribute}.date"))
+        dest_date = date_from_form_date(table.get(f"{attribute}.date"))
 
-        if not dest_date or self.compare(value.date, dest_date.date()):
+        if not dest_date or self.compare(value.date, dest_date):
             table[attribute] = value.model_dump()
 
 

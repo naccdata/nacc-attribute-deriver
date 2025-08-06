@@ -10,7 +10,7 @@ from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
-    datetime_from_form_date,
+    date_from_form_date,
 )
 
 from .helpers.generate_race import generate_race
@@ -28,14 +28,14 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
         compares to form date."""
         dob = self.uds.generate_uds_dob()
-        visitdate = datetime_from_form_date(self.uds.get_required("visitdate", str))
+        visitdate = date_from_form_date(self.uds.get_required("visitdate", str))
 
         if not dob or not visitdate:
             raise AttributeDeriverError(
                 "Missing one of DOB or visitdate to calculate naccage"
             )
 
-        age = calculate_age(dob, visitdate.date())
+        age = calculate_age(dob, visitdate)
         if age is None:
             raise AttributeDeriverError("Unable to calculate naccage")
 
@@ -155,11 +155,3 @@ class UDSFormA1Attribute(UDSAttributeCollection):
     def _create_educ(self) -> Optional[int]:
         """UDS education level."""
         return self.uds.get_value("educ", int)
-
-    # def _create_prespart(self) -> Optional[int]:
-    #     """Presumed participation.
-
-    #     Used for NACCACTV. Usually only provided at first visit so need
-    #     to carry over as a working variable
-    #     """
-    #     return self.uds.get_value("prespart", int)

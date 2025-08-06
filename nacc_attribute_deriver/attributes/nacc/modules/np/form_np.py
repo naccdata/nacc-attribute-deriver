@@ -528,9 +528,13 @@ class NPFormAttributeCollection(AttributeCollection):
         return self._handle_naccwrix("nppdxtx", 3)
 
     def _create_np_death_age(self) -> Optional[int]:
+        """Create NP death age; used to determine a lot of
+        death-related variables."""
         return self.__np.get_value("npdage", int)
 
     def _create_np_death_date(self) -> Optional[date]:
+        """Create NP death date; used to determine a lot of
+        death-related variables."""
         if self.__np.get_value("npdage", int) is None:
             return None
 
@@ -539,6 +543,11 @@ class NPFormAttributeCollection(AttributeCollection):
         day = self.__np.get_value("npdoddy", int)
 
         return create_death_date(year=year, month=month, day=day)
+
+    def _create_np_form_date(self) -> str:
+        """Create NP form date - needed to compare when this was submitted
+        relative to other forms like MLST."""
+        return self.__np.get_required("visitdate", str)
 
     def _create_npchrom(self) -> Optional[int]:
         """Keeps track of NPCHROM - required for NACCADMU, NACCFTDM

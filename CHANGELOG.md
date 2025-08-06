@@ -33,10 +33,12 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
 * Refactors testing to use a `base_uds_table` fixture
+* Replaces `datetime_from_form_date` with just `date_from_form_date` since we don't use time here - removes confusion of converting every time
 * Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
 * Defines `pop` for `SymbolTable` (this is done more for optimization the attribute-curator gear)
 * Makes minor optimization tweaks
 * Removes `age_at_death` rule - MQT ETL pointing at `naccdage` directly instead
+* Adds pseudocode for MP variables - need to finalize once we know how data actually looks
 
 ## 1.4.1
 

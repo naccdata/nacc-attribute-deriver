@@ -17,7 +17,7 @@ from pydantic import ValidationError
 from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import datetime_from_form_date
+from nacc_attribute_deriver.utils.date import date_from_form_date
 
 log = logging.getLogger(__name__)
 
@@ -161,11 +161,7 @@ class BaseNamespace:
         if self.__date_attribute is None:
             return None
 
-        file_date = datetime_from_form_date(self.get_value(self.__date_attribute, str))
-        if not file_date:
-            return None
-
-        return file_date.date()
+        return date_from_form_date(self.get_value(self.__date_attribute, str))
 
     def group_attributes(
         self, attributes: List[str], attr_type: Type[T]

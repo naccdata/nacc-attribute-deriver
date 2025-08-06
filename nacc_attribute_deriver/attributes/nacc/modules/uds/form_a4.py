@@ -22,7 +22,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         # need to grab from corresponding MEDS file information
         # keyed by form date under subject.info.derived.drugs_list
-        #self.__meds = self.__load_drugs_list() if self.submitted else None
+        # self.__meds = self.__load_drugs_list() if self.submitted else None
         self.__meds = self.__load_drugs_list()
 
     # @property

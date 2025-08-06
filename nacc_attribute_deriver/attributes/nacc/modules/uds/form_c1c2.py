@@ -11,7 +11,7 @@ from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_days,
-    datetime_from_form_date,
+    date_from_form_date,
 )
 
 from .uds_attribute_collection import UDSAttributeCollection
@@ -34,8 +34,8 @@ class UDSFormC1C2Attribute(UDSAttributeCollection):
 
     def __calculate_interval_from_a1(self, cmp_date: str) -> Optional[int]:
         """Calculates discrepency between UDS Form A1 and Form C1/C2."""
-        frmdate_a1 = datetime_from_form_date(self.uds.get_value("frmdatea1", str))
-        frmdate_cx = datetime_from_form_date(cmp_date)
+        frmdate_a1 = date_from_form_date(self.uds.get_value("frmdatea1", str))
+        frmdate_cx = date_from_form_date(cmp_date)
 
         if not frmdate_a1 or not frmdate_cx:
             raise AttributeDeriverError(

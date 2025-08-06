@@ -43,6 +43,11 @@ class SCANMRIScope(Scope):
     MRI_SBM = "scan_mri_sbm"
 
 
+class ImagingScope(Scope):
+    # MP scope
+    MIXED_PROTOCOL = 'mp'
+
+
 ScopeLiterals = Literal[
     FormScope.CLS,
     FormScope.MDS,
@@ -63,4 +68,5 @@ ScopeLiterals = Literal[
     SCANPETScope.TAU_PET_NPDKA,
     SCANMRIScope.MRI_QC,
     SCANMRIScope.MRI_SBM,
+    ImagingScope.MIXED_PROTOCOL
 ]

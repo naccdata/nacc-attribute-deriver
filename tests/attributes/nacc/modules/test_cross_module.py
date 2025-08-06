@@ -30,6 +30,24 @@ def table(uds_table) -> SymbolTable:
                                 "2024-02-02",
                                 "2025-03-03",
                             ],
+                            "milestone-discyr": {
+                                "latest": {
+                                    "date": "2050-03-01",
+                                    "value": 2050
+                                }
+                            },
+                            "milestone-discmo": {
+                                "latest": {
+                                    "date": "2050-03-01",
+                                    "value": 3
+                                }
+                            },
+                            "milestone-discday": {
+                                "latest": {
+                                    "date": "2050-03-01",
+                                    "value": 1
+                                }
+                            }
                         }
                     }
                 }
@@ -149,3 +167,58 @@ class TestCrossModuleAttribute:
         table["subject.info.working.cross-sectional.np-death-age"] = None
         table["subject.info.working.cross-sectional.milestone-deceased"] = None
         assert attr._create_naccint() == 888
+
+    def test_determine_discontinued_date(self, table):
+        """Tests determine_discontinued_date through
+        NACCDSDY, NACCDSMO and NACCDSYR
+        """
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsdy() == 1
+        assert attr._create_naccdsmo() == 3
+        assert attr._create_naccdsyr() == 2050
+
+        # pretend UDS came after, should return 8888-88-88
+        table['file.info.forms.json.visitdate'] = '4000-01-01'
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsdy() == 88
+        assert attr._create_naccdsmo() == 88
+        assert attr._create_naccdsyr() == 8888
+
+        # # pretend NP came after, should return 8888-88-88
+        # table['file.info.forms.json.visitdate'] = '2025-01-01'
+        # table['subject.info.working.cross-sectional.np-form-date'] = '4000-01-01'
+        # attr = CrossModuleAttributeCollection(table)
+        # assert attr._create_naccdsdy() == 88
+        # assert attr._create_naccdsmo() == 88
+        # assert attr._create_naccdsyr() == 8888
+
+
+    def test_determine_discontinued_date_close(self, table):
+        """Tests determine_discontinued_date through
+        NACCDSDY, NACCDSMO and NACCDSYR when dates are close
+        """
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsdy() == 1
+        assert attr._create_naccdsmo() == 3
+        assert attr._create_naccdsyr() == 2050
+
+        # pretend UDS came after in the same year, should return 8888-88-88
+        table['file.info.forms.json.visitdate'] = '2050-05-01'
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsdy() == 88
+        assert attr._create_naccdsmo() == 88
+        assert attr._create_naccdsyr() == 8888
+
+        # pretend UDS came the day after, should return 8888-88-88
+        table['file.info.forms.json.visitdate'] = '2050-03-02'
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsdy() == 88
+        assert attr._create_naccdsmo() == 88
+        assert attr._create_naccdsyr() == 8888
+
+        # pretend UDS came the day before, should return 2050-03-01
+        table['file.info.forms.json.visitdate'] = '2050-02-28'
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsdy() == 1
+        assert attr._create_naccdsmo() == 3
+        assert attr._create_naccdsyr() == 2050

@@ -104,15 +104,17 @@ class MilestoneAttributeCollection(AttributeCollection):
         """
         default = 88 if attribute != "discyr" else 8888
 
-        if self.__milestone.get_value("rejoin", int) == 1:
+        if (self.__milestone.get_value("rejoin", int) == 1
+            or self.__milestone.get_value("rejoined", int) == 1):
             return default
 
-        if self.__milestone.get_value("discont", int) == 1:
+        discont = self.__milestone.get_value("discont", int)
+        if discont == 1:
             result = self.__milestone.get_value(attribute, int)
             if result is not None:
                 return result
 
-        # if minimal contact, return the form's date
+        # if not specified but minimal contact, return the form's date
         if self.__milestone.get_value("protocol", int) == 2:
             result = self.__milestone.get_value(frmdate, int)
             if result is not None:
@@ -128,7 +130,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         return default
 
     def _create_milestone_discday(self) -> int:
-        """Carry over DISCDAY - Day of discontinuation from annual follow-up.
+        """Carry over discday - Day of discontinuation from annual follow-up.
 
         Used for NACCDSDY, but can potentially be overwritten by a later
         UDS visit - see
