@@ -10,7 +10,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 @pytest.fixture(scope="function")
 def table(uds_table) -> Dict[str, Any]:
-    uds_table["file.info.forms.json"].update({"anymeds": 1, "frmdatea4": "2025-01-01"})
+    uds_table["file.info.forms.json"].update({"a4sub": 1, "frmdatea4": "2025-01-01"})
     return uds_table
 
 

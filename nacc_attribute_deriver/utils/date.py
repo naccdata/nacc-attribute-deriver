@@ -65,9 +65,9 @@ def date_came_after_sparse(
         return date1 is not None
 
     # if date1 is None, but some sparse part is meaningful (which is true if we
-    # got to this point), return True
+    # got to this point), return False
     if date1 is None:
-        return True
+        return False
 
     # if ALL parts are valid, can check directly with date_came_after
     if all(x not in not_meaningful for x in all_parts):

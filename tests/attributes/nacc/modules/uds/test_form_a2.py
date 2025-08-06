@@ -32,7 +32,8 @@ class TestUDSFormA2Attribute:
     def test_create_naccninr_longitudinally(self, table):
         """Test NACCNINR over longitudinal values."""
         attr = UDSFormA2Attribute(table)
-        assert attr._create_naccninr() == 1
+        # does NOT carry forward
+        assert attr._create_naccninr() == -4
 
         table["file.info.forms.json.a2sub"] = 1
         table["file.info.forms.json.newinf"] = 1

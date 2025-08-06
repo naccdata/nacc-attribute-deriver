@@ -496,13 +496,14 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         Requires working variables FVMCI.
         """
-        # TODO: despite this initial visit logic being in both SAS/RDD, it doesn't
-        # seem to match QAF; removing it entirely makes it match
-        # mci = self.generate_mci()
-        # if self.uds.is_initial():
-        #     if self.__demented == 1 or mci == 1:
-        #         return 8
-        #     return 0
+        # NOTE: despite this initial visit logic being in both SAS/RDD, it doesn't
+        # seem to match QAF, as if it is not considering initial visit. This seems
+        # like an error, and the below should fix it going forward
+        mci = self.generate_mci()
+        if self.uds.is_initial():
+            if self.__demented == 1 or mci == 1:
+                return 8
+            return 0
 
         # assuming followup after this point
         naccmcii = self.__subject_derived.get_cross_sectional_value("naccmcii", int)
