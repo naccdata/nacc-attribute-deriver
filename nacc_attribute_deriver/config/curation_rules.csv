@@ -17,7 +17,7 @@ milestone,milestone_discday,subject.info.working.cross-sectional.milestone-discd
 milestone,milestone_discmo,subject.info.working.cross-sectional.milestone-discmo.latest,latest,TRUE
 milestone,milestone_discyr,subject.info.working.cross-sectional.milestone-discyr.latest,latest,TRUE
 milestone,milestone_protocol,subject.info.working.cross-sectional.milestone-protocol,update,FALSE
-milestone,milestone_renurse,subject.info.working.longitudinal.milestone-renurse,list,TRUE
+milestone,milestone_renurse,subject.info.working.cross-sectional.milestone-renurse,update,TRUE
 milestone,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
 milestone,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
 milestone,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE

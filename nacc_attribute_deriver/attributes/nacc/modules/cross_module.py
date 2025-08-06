@@ -317,44 +317,33 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         Looks at both Milestone and Form A1.
 
-        TODO: it seems if MLST came _after_ a UDS visit where
-        residenc == 4, and MLST does not set the nursing home fields
-        (blank, likely due to discontinued or deceased), then the old
-        system sets this to 0.
+        NOTE: After discussion with RT, this is the agreed-upon behavior:
+            By default always 0
+            Can only change (become 1) through an MLST form indicating PERMANENT move
+            to a nursing home (RENURSE == 1)
+                This can become a 0 if a later UDS has
+                residenc != 4,9 (primary residence is nursing home or unknown)
 
-        If MLST did explicitly put RENURSE to 0 (null) it should override.
-        But not sure about the discontinued case? But matching QAF for now.
-
-        ALSO - if there is no MLST form, it seems the value is 0 regardless
-        of what UDS says.
+                This can also become 0 if a subsequent MLST form EXPLICITLY sets
+                RENURSE == 0
         """
-        # if no MLST form, always 0
-        if not self.__working.get_cross_sectional_value("milestone-visitdates", list):
-            return 0
-
-        # residenc can be updated per UDS form so grab directly here
-        residenc = self.__uds.get_value("residenc", int)
-
         # get most recent MLST value of renurse
-        renurse_record = self.__working.get_prev("milestone-renurse", int)
+        renurse_record = self.__working.get_cross_sectional_dated_value(
+            "milestone-renurse.latest", int)
 
-        # no MLST, so base off of UDS
-        if not renurse_record:
-            return 1 if residenc == 4 else 0
-
-        # check if the two correspond
-        if residenc == 4 and renurse_record.value == 1:
-            return 1
-        if residenc != 4 and renurse_record.value != 1:
+        # if MLST value (RENURSE) is NOT 1, return 0
+        if not renurse_record or renurse_record.value != 1:
             return 0
 
-        # if they conflict, need to base off of which form came later
-        # UDS came later, use UDS RESIDENC value
+        # after this point assume renurse_record.value == 1
+        # if a later UDS visit has residenc != null,4,9 then return 0
         if self.uds_came_after(renurse_record.date):
-            return 1 if residenc == 4 else 0
+            residenc = self.__uds.get_value("residenc", int)
+            if residenc is not None and residenc in [4, 9]:
+                return 0
 
-        # MLST came later, use MLST RENURSE value
-        return 1 if renurse_record.value == 1 else 0
+        # since MLST set RENURSE == 1 and UDS did not override, return 1
+        return 1
 
     def determine_discontinued_date(self, attribute: str, default: int) -> int:
         """Determine the discontinued date part; compare to UDS/NP.

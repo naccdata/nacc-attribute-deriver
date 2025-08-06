@@ -47,7 +47,17 @@ def table(uds_table) -> SymbolTable:
                                     "date": "2050-03-01",
                                     "value": 1
                                 }
-                            }
+                            },
+                            "milestone-renurse": {
+                                "latest": {
+                                    "date": "2025-01-01",
+                                    "value": 1
+                                }
+                            },
+                            "milestone-visitdates": [
+                                "2025-01-01",
+                                "2050-03-01"
+                            ]
                         }
                     }
                 }
@@ -222,3 +232,24 @@ class TestCrossModuleAttribute:
         assert attr._create_naccdsdy() == 1
         assert attr._create_naccdsmo() == 3
         assert attr._create_naccdsyr() == 2050
+
+    def test_create_naccnurp(self, table):
+        """Tests _create_naccnurp."""
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccnurp() == 1
+
+        # if UDS has residenc == 4 or 9 and came later,
+        # set to 0
+        table['file.info.forms.json.visitdate'] = '2025-01-02'
+        for value in [4, 9]:
+            table['file.info.forms.json.residenc'] = value
+            assert attr._create_naccnurp() == 0
+
+        # if MLST explicitly sets to 0, should be 0
+        table['subject.info.working.cross-sectional.milestone-renurse'] = {
+            "latest": {
+                "date": "2026-01-01",
+                "value": 0
+            }
+        }
+        assert attr._create_naccnurp() == 0

@@ -184,11 +184,8 @@ class MilestoneAttributeCollection(AttributeCollection):
         # in this case we do set a minimum of 2002 per RDD
         return max(2002, result)
 
-    def _create_milestone_renurse(self) -> int:
-        """Carryover RENURSE, needs to be longitudinally dated to compute
-        NACCNURP.
-
-        Use -4 for Nones so this is forcefully carried over.
+    def _create_milestone_renurse(self) -> Optional[int]:
+        """Carryover RENURSE, needs to be dated to compute NACCNURP.
         """
         renurse = self.__milestone.get_value("renurse", int)
 
@@ -201,6 +198,6 @@ class MilestoneAttributeCollection(AttributeCollection):
                 self._create_naccnryr(),
             ]
             if all(x is not None and x not in [88, 8888] for x in nurse_vars):
-                renurse = 1
+                return 1
 
-        return renurse if renurse is not None else -4
+        return renurse
