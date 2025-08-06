@@ -11,7 +11,7 @@ from nacc_attribute_deriver.utils.date import (
     date_from_form_date,
 )
 
-from .mp_summary import MP_SUMMARY_VALUES
+from .mp_summary import MP_INVALID_VALUES, MP_SUMMARY_VALUES
 
 
 class MPFormAttributeCollection(AttributeCollection):
@@ -158,10 +158,7 @@ class MPFormAttributeCollection(AttributeCollection):
         """
         value = self.__mp.get_value(attribute, float)
 
-        # TODO: check decimals, SAS just uses > to check
-        if value in [None,
-                     9999.9999, 999.999, 99.999, 9.999,
-                     8888.8888, 888.888, 88.888, 8.888]:
+        if value in MP_INVALID_VALUES:
             return None
 
         return value
@@ -218,8 +215,10 @@ class MPFormAttributeCollection(AttributeCollection):
         return 1
 
     # These three are seemingly just returning a different variable. From derive.sas
-    # TODO: these might instead be uds/cross-sectional variables that look at derived
-    # variables? However these don't seem to be actual variables
+    # TODO: It seems NACCMRI, NACCNAPT, and NACCAPET are variables keeping track of
+    # whether said imaging files exist. Unclear if we actually need to keep track
+    # of these or can just directly derive the corresponding variables. Will know
+    # more once we know how MP files look in FW
 
     def _create_naccmrsa(self) -> int:
         """Create the NACCMRSA variable.

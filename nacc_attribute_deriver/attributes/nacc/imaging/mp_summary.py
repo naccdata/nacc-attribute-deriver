@@ -1,6 +1,19 @@
 """MP summary values; putting in separate file since it's a long list."""
 
-MP_SUMMARY_VALUES = [
+# TODO: from the RDD is appears we can have either 3 or 4 decimal spots
+# from the tens to thousands.
+# hopefully this covers all cases; if not something more programmatic
+# might need to be done here instead
+MP_INVALID_VALUES = {
+    None,
+    9999.9999, 999.9999, 99.9999, 9.9999,
+    9999.999, 999.999, 99.999, 9.999,
+    8888.8888, 888.8888, 88.8888, 8.8888,
+    8888.888, 888.888, 88.888, 8.888
+}
+
+
+MP_SUMMARY_VALUES = {
     "csfvol",
     "grayvol",
     "whitevol",
@@ -153,4 +166,4 @@ MP_SUMMARY_VALUES = [
     "rsupmarm",
     "rtrtem",
     "rtrtemm",
-]
+}
