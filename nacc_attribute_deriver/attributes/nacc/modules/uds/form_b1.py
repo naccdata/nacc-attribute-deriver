@@ -53,6 +53,8 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         if height is not None and weight is not None:
             naccbmi = (weight * 703) / (height * height)
-            return round(naccbmi, 1)
+
+            # + 0.0001 so we ensure exact halves round up, not down
+            return round(naccbmi + 0.0001, 1)
 
         return 888.8

@@ -14,7 +14,7 @@ from nacc_attribute_deriver.schema.errors import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_days,
-    datetime_from_form_date,
+    date_from_form_date,
 )
 
 from .uds_attribute_collection import UDSAttributeCollection
@@ -31,12 +31,12 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
     def get_current_visitdate(self) -> datetime.date:
         """Creates the current visit's date."""
         raw_visitdate = self.uds.get_required("visitdate", str)
-        visitdate = datetime_from_form_date(raw_visitdate)
+        visitdate = date_from_form_date(raw_visitdate)
 
         if not visitdate:
             raise InvalidFieldError(f"Failed to parse visitdate: {raw_visitdate}")
 
-        return visitdate.date()
+        return visitdate
 
     def _create_uds_visitdate(self) -> str:
         """Gets the visitdate - temporary derived variable."""
@@ -62,11 +62,11 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
             visitdates.sort()
 
         # convert strings to dates
-        result = [datetime_from_form_date(x) for x in visitdates]
+        result = [date_from_form_date(x) for x in visitdates]
         if any(x is None for x in result):
             raise InvalidFieldError("Invalid date found in uds-visitdates")
 
-        return [x.date() for x in result]  # type: ignore
+        return result
 
     def _create_naccavst(self) -> int:
         """Creates NACCAVST - total number of all UDS visits.

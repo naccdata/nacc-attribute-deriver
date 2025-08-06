@@ -18,7 +18,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     calculate_months,
-    datetime_from_form_date,
+    date_came_after,
+    date_came_after_sparse,
+    date_from_form_date,
 )
 
 
@@ -51,21 +53,21 @@ class CrossModuleAttributeCollection(AttributeCollection):
             Death date if found, None otherwise
         """
         np_date = self.__working.get_cross_sectional_value("np-death-date", str)
-        death_date = datetime_from_form_date(np_date)
+        death_date = date_from_form_date(np_date)
         if death_date:
-            return death_date.date()
+            return death_date
 
         milestone_date = self.__working.get_cross_sectional_value(
             "milestone-death-date", str
         )
-        death_date = datetime_from_form_date(milestone_date)
+        death_date = date_from_form_date(milestone_date)
         if death_date:
-            return death_date.date()
+            return death_date
 
         mds_date = self.__working.get_cross_sectional_value("mds-death-date", str)
-        death_date = datetime_from_form_date(mds_date)
+        death_date = date_from_form_date(mds_date)
         if death_date:
-            return death_date.date()
+            return death_date
 
         return None
 
@@ -155,11 +157,11 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if not visitdates:
             return 999
 
-        last_visit = datetime_from_form_date(sorted(list(visitdates))[-1])
+        last_visit = date_from_form_date(sorted(list(visitdates))[-1])
         if not last_visit:
             return 999
 
-        result = calculate_months(last_visit.date(), deathdate)
+        result = calculate_months(last_visit, deathdate)
 
         # handle negative
         return 999 if result is None or result < 0 else result
@@ -179,9 +181,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # NP will always have a known month
         np_date = self.__working.get_cross_sectional_value("np-death-date", str)
-        death_date = datetime_from_form_date(np_date)
+        death_date = date_from_form_date(np_date)
         if death_date:
-            return death_date.date().month
+            return death_date.month
 
         # Milestone month may be 99
         milestone_mo = self.__working.get_cross_sectional_value(
@@ -216,12 +218,12 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         return 8888
 
-    def uds_after_mlst_form(self, mlst_date: date) -> bool:
-        """Compares UDS and MLST dates.
+    def uds_came_after(self, target_date: date) -> bool:
+        """Compares UDS and given target dates.
 
         Returns:
-            True: If UDS > MLST
-            False: If MLST <= UDS
+            True: If UDS > target date
+            False: If UDS <= target_date
         """
         uds_date = self.__uds.get_date()
         if not uds_date:
@@ -229,7 +231,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
                 "Cannot determine UDS date to compare to MLST form"
             )
 
-        return uds_date > mlst_date
+        return date_came_after(uds_date, target_date)
 
     def _create_naccactv(self) -> int:
         """Creates NACCACTV - Follow-up status at the Alzheimer's
@@ -258,7 +260,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             "milestone-discontinued.latest", int
         )
         if mlst_discontinued and mlst_discontinued.value == 1:
-            if self.uds_after_mlst_form(mlst_discontinued.date):
+            if self.uds_came_after(mlst_discontinued.date):
                 return 1
 
             return 0
@@ -292,9 +294,14 @@ class CrossModuleAttributeCollection(AttributeCollection):
         telephone. This is ultimately just checking the same things
         NACCACTV is and reinterprets results.
         """
-        # initial evaluation only always returns 8
-        if self.__uds.get_value("prespart", int) == 1:
-            return 8
+        # if UDS is the latest one, check UDS prespart == 1 to return 8,
+        # otherwise purely based on MLST
+        mlsts = self.__working.get_cross_sectional_value("milestone-visitdates", list)
+        if mlsts:
+            most_recent_mlst = date_from_form_date(mlsts[-1])
+            if (self.uds_came_after(most_recent_mlst) and
+                self.__uds.get_value("prespart", int) == 1):
+                return 8
 
         naccactv = self._create_naccactv()
         if naccactv == 1:
@@ -302,7 +309,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if naccactv in [0, 2]:
             return 1
 
-        # only other case is affiliate (5) which we return as-is
+        # only other case is 8 (initial visit only) which we return as-is
         return naccactv
 
     def _create_naccnurp(self) -> int:
@@ -343,33 +350,53 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # if they conflict, need to base off of which form came later
         # UDS came later, use UDS RESIDENC value
-        if self.uds_after_mlst_form(renurse_record.date):
+        if self.uds_came_after(renurse_record.date):
             return 1 if residenc == 4 else 0
 
         # MLST came later, use MLST RENURSE value
         return 1 if renurse_record.value == 1 else 0
 
     def determine_discontinued_date(self, attribute: str, default: int) -> int:
-        """Determine the discontinued date part.
+        """Determine the discontinued date part; compare to UDS/NP.
 
-        If UDS form came AFTER MLST, return the default (even if MLST
+        If UDS/NP form came AFTER MLST, return the default (even if MLST
         said discontinued.
-        TODO: again uncertain about that behavior - should clarify.
         """
-        disc_date = self.__working.get_cross_sectional_dated_value(attribute, int)
-        if disc_date is None or self.uds_after_mlst_form(disc_date.date):
-            return default
+        discyr = self.__working.get_cross_sectional_value("milestone-discyr.latest.value", int)
+        discmo = self.__working.get_cross_sectional_value("milestone-discmo.latest.value", int)
+        discday = self.__working.get_cross_sectional_value("milestone-discday.latest.value", int)
 
-        return disc_date.value
+        uds_date = self.__uds.get_date()
+        # np_date = date_from_form_date(
+        #     self.__working.get_cross_sectional_value('np-form-date', str))
+
+        if not uds_date:
+            raise AttributeDeriverError(
+                "Cannot determine UDS date to compare to MLST form"
+            )
+
+        # if either NP/UDS came after MLST (NP more likely), return default
+        #for form_date in [np_date, uds_date]:
+        for form_date in [uds_date]:
+            if not form_date:
+                continue
+
+            if date_came_after_sparse(form_date, discyr, discmo, discday):
+                return default
+
+        # either both forms came before or we cannot determine it exactly;
+        # either way, return whatever MLST set if it exists else default
+        disc_date = self.__working.get_cross_sectional_value(attribute, int)
+        return disc_date if disc_date is not None else default
 
     def _create_naccdsdy(self) -> int:
         """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discday.latest", 88)
+        return self.determine_discontinued_date("milestone-discday.latest.value", 88)
 
     def _create_naccdsmo(self) -> int:
         """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discmo.latest", 88)
+        return self.determine_discontinued_date("milestone-discmo.latest.value", 88)
 
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discyr.latest", 8888)
+        return self.determine_discontinued_date("milestone-discyr.latest.value", 8888)

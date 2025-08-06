@@ -18,7 +18,7 @@ from nacc_attribute_deriver.schema.errors import (
     InvalidFieldError,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import datetime_from_form_date
+from nacc_attribute_deriver.utils.date import date_from_form_date
 
 
 def load_normalized_drugs_list() -> Dict[str, str | None]:
@@ -86,7 +86,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
             "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
         )
         formdate = self.__meds.get_value(date_attribute, str)
-        date = datetime_from_form_date(formdate)
+        date = date_from_form_date(formdate)
 
         if not date:
             raise AttributeDeriverError("Cannot determine MEDS form date")

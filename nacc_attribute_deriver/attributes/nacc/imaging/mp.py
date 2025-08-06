@@ -8,7 +8,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_days,
     calculate_months,
-    datetime_from_form_date,
+    date_from_form_date,
 )
 
 from .mp_summary import MP_SUMMARY_VALUES
@@ -106,8 +106,8 @@ class MPFormAttributeCollection(AttributeCollection):
         Days between MRI session and closest UDS visit
         """
         # TODO: don't know if dates are in the expected format
-        mridate = datetime_from_form_date(self.__mp.get_value("mridate", str))
-        visitdate = datetime_from_form_date(self.__mp.get_value("visitdate", str))
+        mridate = date_from_form_date(self.__mp.get_value("mridate", str))
+        visitdate = date_from_form_date(self.__mp.get_value("visitdate", str))
         days = calculate_days(mridate, visitdate)
 
         return days if days is not None else 8888
@@ -118,8 +118,8 @@ class MPFormAttributeCollection(AttributeCollection):
         Subject age at time of MRI
         """
         # TODO: don't know if dates are in the expected format
-        birthdate = datetime_from_form_date(self.__mp.get_value("birthdate", str))
-        tmridate = datetime_from_form_date(self.__mp.get_value("tmridate", str))
+        birthdate = date_from_form_date(self.__mp.get_value("birthdate", str))
+        tmridate = date_from_form_date(self.__mp.get_value("tmridate", str))
         months = calculate_months(birthdate, tmridate)
 
         return months if months is not None else 888
@@ -130,8 +130,8 @@ class MPFormAttributeCollection(AttributeCollection):
         Subject age at time of amyloid PET scan
         """
         # TODO: don't know if dates are in the expected format
-        birthdate = datetime_from_form_date(self.__mp.get_value("birthdate", str))
-        tpetdate = datetime_from_form_date(self.__mp.get_value("tpetdate", str))
+        birthdate = date_from_form_date(self.__mp.get_value("birthdate", str))
+        tpetdate = date_from_form_date(self.__mp.get_value("tpetdate", str))
         months = calculate_months(birthdate, tpetdate)
 
         # TODO no specified default; use 888 for now like NACCMRIA
@@ -143,8 +143,8 @@ class MPFormAttributeCollection(AttributeCollection):
         Days between amyloid PET scan and closest UDS visit
         """
         # TODO: don't know if dates are in the expected format
-        apetdate = datetime_from_form_date(self.__mp.get_value("apetdate", str))
-        visitdate = datetime_from_form_date(self.__mp.get_value("visitdate", str))
+        apetdate = date_from_form_date(self.__mp.get_value("apetdate", str))
+        visitdate = date_from_form_date(self.__mp.get_value("visitdate", str))
         days = calculate_days(apetdate, visitdate)
 
         return days if days is not None else 8
@@ -157,7 +157,11 @@ class MPFormAttributeCollection(AttributeCollection):
             attribute: Name of attribute to grab; expected to be float
         """
         value = self.__mp.get_value(attribute, float)
-        if value in [None, 9999.9999, 8888.8888, 888.888, 88.888, 8.888]:
+
+        # TODO: check decimals, SAS just uses > to check
+        if value in [None,
+                     9999.9999, 999.999, 99.999, 9.999,
+                     8888.8888, 888.888, 88.888, 8.888]:
             return None
 
         return value

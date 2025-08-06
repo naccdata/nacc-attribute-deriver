@@ -430,9 +430,8 @@ class UDSFormD1Attribute(UDSAttributeCollection):
         if impnomci != 1 and mci != 1 and self.__demented != 1:
             return 8
 
-        # TODO: SAS sets default to -9, but -9 is not valid per RDD. not sure
-        # if it's translated to -4 or something else elsewhere
-        return -9
+        # SAS returns -9; likely changes to -4 at some point
+        return None
 
     def _create_nacctmci(self) -> int:
         """Creates NACCTMCI - Mild cognitive impairment (MCI) type"""
@@ -497,6 +496,15 @@ class UDSFormD1Attribute(UDSAttributeCollection):
 
         Requires working variables FVMCI.
         """
+        # TODO: despite this initial visit logic being in both SAS/RDD, it doesn't
+        # seem to match QAF; removing it entirely makes it match
+        # mci = self.generate_mci()
+        # if self.uds.is_initial():
+        #     if self.__demented == 1 or mci == 1:
+        #         return 8
+        #     return 0
+
+        # assuming followup after this point
         naccmcii = self.__subject_derived.get_cross_sectional_value("naccmcii", int)
         fvmci = self.__working.get_cross_sectional_value("fvmci", int)
 
