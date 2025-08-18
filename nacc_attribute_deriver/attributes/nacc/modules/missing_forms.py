@@ -17,9 +17,12 @@ class MissingFormAttributes(AttributeCollection):
 
     def handle_missing(self, attribute: str, default: int) -> Optional[int]:
         """Handle missing values."""
-        if not self.__derived.get_cross_sectional_value(attribute, str):
+        value = self.__derived.get_cross_sectional_value(attribute, str)
+        if value is None:
             return default
 
+        # we could return the value itself, that also works, but in this
+        # context returning None means "don't replace what's already there"
         return None
 
     def _create_uds_naccnrdy(self) -> Optional[int]:
