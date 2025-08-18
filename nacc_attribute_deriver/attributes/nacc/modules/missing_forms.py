@@ -21,8 +21,10 @@ class MissingFormAttributes(AttributeCollection):
         if value is None:
             return default
 
-        # we could return the value itself, that also works, but in this
+        # the reason we don't return the value itself is because in this
         # context returning None means "don't replace what's already there"
+        # whereas returning the value would say "replace what's there with
+        # itself" and could potentially cause ordering/date issues
         return None
 
     def _create_uds_naccnrdy(self) -> Optional[int]:
