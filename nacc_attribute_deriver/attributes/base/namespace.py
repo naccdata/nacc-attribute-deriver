@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 
 T = TypeVar("T")
+INVALID_TEXT = ["", ".", "`", "--", "-"]
 
 
 class DateTaggedValue(BaseModel, Generic[T]):
@@ -135,8 +136,8 @@ class BaseNamespace:
         # strip whitespace
         if isinstance(value, str):
             value = value.strip()
-            # treat empty string as None
-            if value == "":
+            # treat empty/invalid strings as None
+            if value in INVALID_TEXT:
                 return None
 
         try:
