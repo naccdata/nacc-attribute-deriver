@@ -95,3 +95,21 @@ class SymbolTable(MutableMapping[str, Any]):
 
     def to_dict(self) -> MutableMapping[str, Any]:
         return self.__table
+
+    def pop(self, key: str, default: Any = None) -> Any:
+        """Implement the pop method."""
+        # we know it's there, need to manually pop
+        table = self.__table
+        key_parts = key.split(self.__separator)
+
+        for k in key_parts[:-1]:
+            if isinstance(table, dict) and k in table:
+                table = table[k]
+            else:
+                return default
+
+        last_key = key_parts[-1]
+        if isinstance(table, dict) and last_key in table:
+            return table.pop(last_key)
+
+        return default

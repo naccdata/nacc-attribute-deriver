@@ -2,6 +2,13 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.4.2
+
+* Allows attribute deriver to expose curation rules by scope
+* Account for all kinds of invalid string text
+* Defines `pop` for SymbolTable (done more for optimization the attribute-curator gear)
+* Fixes `ngdsexome` typo to `ngdsexom`
+
 ## 1.4.1
 
 * Adds ability to derive type returned by a curation rule with tool to create table of rule types.

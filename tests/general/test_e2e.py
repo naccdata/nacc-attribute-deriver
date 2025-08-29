@@ -108,7 +108,7 @@ def test_niagads_investigator():
 
     assert "file.info.derived" not in form
     assert form["subject.info.derived.cross-sectional"] == {
-        "ngdsexome": 1,
+        "ngdsexom": 1,
         "ngdsgwas": 1,
         "ngdswes": 0,
         "ngdswgs": 0,
