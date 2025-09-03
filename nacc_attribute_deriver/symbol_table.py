@@ -24,7 +24,7 @@ class SymbolTable(MutableMapping[str, Any]):
         while key_list:
             sub_key = key_list.popleft()
             obj = table.get(sub_key, None)
-            if not obj:
+            if obj is None:
                 if not key_list:
                     table[sub_key] = value
                     return
