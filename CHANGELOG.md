@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 1.4.3
+
+* Fix mutability bug caused by empty nested tables
+
 ## 1.4.2
 
 * Allows attribute deriver to expose curation rules by scope
