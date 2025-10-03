@@ -1,8 +1,13 @@
+"""Handles the MDS form."""
+
 from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
+from nacc_attribute_deriver.attributes.base.namespace import (
+    FormNamespace,
+    SubjectDerivedNamespace,
+)
 from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
@@ -10,9 +15,17 @@ from nacc_attribute_deriver.utils.date import create_death_date
 
 class MDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
-        self.__mds = FormNamespace(table=table, required=frozenset(["vitalst"]))
+        self.__mds = FormNamespace(
+            table=table, required=frozenset(["vitalst", "module"])
+        )
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         self.__vitalst = self.__mds.get_required("vitalst", int)
+
+        module = self.__mds.get_required("module", str)
+        if module.upper() != "MDS":
+            msg = f"Current file is not a MDS form: found {module}"
+            raise InvalidFieldError(msg)
 
     def _create_mds_death_date(self) -> Optional[date]:
         """MDS death date; can be unknown."""
@@ -43,3 +56,21 @@ class MDSFormAttributeCollection(AttributeCollection):
     def _create_mds_vitalst(self) -> int:
         """MDS VITALST."""
         return self.__vitalst
+
+    def _create_mds_naccmdss(self) -> int:
+        """Creates NACCMDSS - Subject's status in the Minimal Data Set
+        (MDS) and Uniform Data Set (UDS)
+
+        This is more cross-form, but we are setting it additively.
+        """
+        status = self.__subject_derived.get_cross_sectional_value("naccmdss", int)
+
+        # already known to be in MDS and/or UDS
+        if status in [1, 2]:
+            return status
+
+        # UDS flagged, so update to 1
+        if status == 3:
+            return 1
+
+        return 2

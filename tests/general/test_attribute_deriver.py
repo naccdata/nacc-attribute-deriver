@@ -34,25 +34,26 @@ class TestAttributeDeriver:
         assert attr.get_curation_rules("invalid") is None
 
         # mds case - each rule maps to an unique attribute
-        assert self.__extract_attributes(attr.get_curation_rules("mds"), 3) == {
-            "subject.info.derived.mds_death_date",
-            "subject.info.derived.mds_death_month",
-            "subject.info.derived.mds_vital_status",
+        assert self.__extract_attributes(attr.get_curation_rules("mds"), 4) == {
+            "subject.info.derived.cross-sectional.naccmdss",
+            "subject.info.working.cross-sectional.mds-death-date",
+            "subject.info.working.cross-sectional.mds-death-month",
+            "subject.info.working.cross-sectional.mds-vital-status",
         }
 
     def test_get_curation_rules_apoe(self):
-        """APOE namespaces; both have a single rule that maps to the same 2
-        attributes."""
+        """APOE/NCRAD namespaces."""
         attr = AttributeDeriver()
 
         assert self.__extract_attributes(attr.get_curation_rules("apoe"), 2) == {
             "subject.info.derived.cross-sectional.naccapoe",
-            "subject.info.genetics.apoe",
+            "subject.info.derived.cross-sectional.naccne4s",
         }
 
         assert self.__extract_attributes(
-            attr.get_curation_rules("historic_apoe"), 2
+            attr.get_curation_rules("historic_apoe"), 3
         ) == {
             "subject.info.derived.cross-sectional.naccapoe",
-            "subject.info.genetics.apoe",
+            "subject.info.working.cross-sectional.historic-apoe",
+            "subject.info.derived.cross-sectional.naccne4s",
         }

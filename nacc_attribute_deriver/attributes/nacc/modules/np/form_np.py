@@ -27,7 +27,7 @@ class NPFormAttributeCollection(AttributeCollection):
             msg = f"Current file is not an NP form: found {module}"
             raise InvalidFieldError(msg)
 
-        self.formver: int = self.__np.get_required("formver", int)
+        self.formver = self.__np.get_required("formver", int)
         self.mapper = NPMapper(self.__np)
         self.form_evaluator = NPFormWideEvaluator(self.__np, self.mapper)
 
@@ -49,6 +49,27 @@ class NPFormAttributeCollection(AttributeCollection):
             )
 
         return naccamy if naccamy is not None else 9
+
+    def _create_naccarte(self) -> int:
+        """Create the NACCARTE variable.
+
+        Arteriolosclerosis
+        """
+        nparter = self.__np.get_value("nparter", int)
+        naccarte = None
+
+        if self.formver in [10, 11]:
+            naccarte = nparter
+        elif self.formver in [7, 8, 9]:
+            naccarte = self.mapper.map_sub1(nparter)
+        elif self.formver == 1:
+            naccarte = (
+                self.mapper.map_sub1(nparter)
+                if nparter
+                else self.mapper.map_vasc(naccarte)
+            )
+
+        return naccarte if naccarte is not None else 9
 
     def _create_naccavas(self) -> int:
         """Create the NACCAVAS variable.
@@ -81,6 +102,42 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccavas if naccavas is not None else 9
 
+    def _create_naccbnkf(self) -> Optional[int]:
+        """Create the NACCBNKF variable.
+
+        Banked frozen brain. Not in v1-7.
+        """
+        if self.formver < 8:
+            return None
+
+        if self.formver in [10, 11]:
+            return self.__np.get_value("npbnka", int)
+
+        npbrfrzn = self.__np.get_value("npbrfrzn", int)
+        return self.mapper.banked_v9(npbrfrzn)
+
+    def _create_naccbraa(self) -> int:
+        """Create the NACCBRAA variable.
+
+        Braak stage for neurofibrillary degeneration (B score)
+        """
+        npbraak = self.__np.get_value("npbraak", int)
+        naccbraa = npbraak
+
+        if self.formver in [10, 11]:
+            pass
+        elif self.formver in [7, 8, 9]:
+            if npbraak == 7:
+                naccbraa = 0
+        elif self.formver == 1:
+            if npbraak:
+                if npbraak == 7:
+                    naccbraa = 0
+            else:
+                naccbraa = self.mapper.map_gross(naccbraa)
+
+        return naccbraa if naccbraa is not None else 9
+
     def _create_naccbrnn(self) -> int:
         """Create the NACCBRNN variable.
 
@@ -88,20 +145,17 @@ class NPFormAttributeCollection(AttributeCollection):
         """
         return self.form_evaluator.determine_naccbrnn()
 
-    def _create_nacccbd(self) -> int:
+    def _create_nacccbd(self) -> Optional[int]:
         """Create the NACCCBD variable.
 
         FTLD-tau subtype — corticobasal degeneration (CBD)
-
-        TODO: QAF does have this as -4 in some cases, but RDD does not say
-        it can be -4 - probably best to keep as 9 but flagging
         """
         npcort = self.__np.get_value("npcort", int)
         npftdtau = self.__np.get_value("npftdtau", int)
         nacc_cbd = None
 
         if self.formver in [10, 11]:
-            nacc_cbd = self.mapper.map_v10(npcort, npftdtau)
+            return self.mapper.map_v10(npcort, npftdtau)
         elif self.formver in [7, 8, 9]:
             nacc_cbd = self.mapper.map_v9(npcort)
         elif self.formver == 1:
@@ -110,6 +164,20 @@ class NPFormAttributeCollection(AttributeCollection):
             )
 
         return nacc_cbd if nacc_cbd is not None else 9
+
+    def _create_nacccsfp(self) -> Optional[int]:
+        """Creates the NACCCSFP variable.
+
+        Banks postmorten CSF. Not in v1-7.
+        """
+        if self.formver < 8:
+            return None
+
+        if self.formver in [10, 11]:
+            return self.__np.get_value("npbnke", int)
+
+        npcsfant = self.__np.get_value("npcsfant", int)
+        return self.mapper.banked_v9(npcsfant)
 
     def _create_naccdiff(self) -> int:
         """Create the NACCDIFF variable.
@@ -144,8 +212,51 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return np_down
 
-    # This one has a very complicated description in the rdd-np.
-    # This one will definitely need double checking.
+    def _create_naccform(self) -> Optional[int]:
+        """Creates the NACCFORM variable.
+
+        Formalin - or paraformaldehyde-fixed brain. Not in v1-7.
+        """
+        if self.formver < 8:
+            return None
+
+        if self.formver in [10, 11]:
+            return self.__np.get_value("npbnkc", int)
+
+        npbrfrm = self.__np.get_value("npbrfrm", int)
+        return self.mapper.banked_v9(npbrfrm)
+
+    def _create_nacchem(self) -> int:
+        """Create the NACCHEM variable.
+
+        Hemorrhages and microbleeds
+        """
+        nphem = self.__np.get_value("nphem", int)
+        nacchem = None
+
+        if self.formver in [10, 11]:
+            nphemo = self.__np.get_value("nphemo", int)
+            npoldd = self.__np.get_value("npoldd", int)
+
+            if nphemo == 1 or npoldd == 1:
+                nacchem = 1
+            elif nphemo == 0 and npoldd == 0:
+                nacchem = 0
+            elif nphemo == 8 and npoldd == 8:
+                nacchem = 8
+            else:
+                nacchem = 9
+        elif self.formver in [7, 8, 9]:
+            nacchem = nphem
+            nacchem = self.mapper.map_v9(nphem)
+        elif self.formver == 1:
+            nacchem = nphem
+            nacchem = (
+                self.mapper.map_v9(nphem) if nphem else self.mapper.map_vasc(nacchem)
+            )
+
+        return nacchem if nacchem is not None else 9
+
     def _create_naccinf(self) -> int:
         """Create the NACCINF variable.
 
@@ -166,9 +277,55 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return 9  # Fallback value
 
-    # additional cases where it should be blank found in the
-    # description in the PDF of rdd-np
-    def _create_naccnec(self) -> int:
+    def _create_nacclewy(self) -> int:
+        """Create the NACCLEWY variable.
+
+        Lewy body disease
+        """
+        nacclewy = None
+
+        if self.formver in [10, 11]:
+            nplbod = self.__np.get_value("nplbod", int)
+            nacclewy = nplbod
+            if nplbod == 4:
+                nacclewy = 2
+            if nplbod == 5:
+                nacclewy = 4
+        elif self.formver in [7, 8, 9]:
+            nacclewy = self.mapper.map_lewy()
+        elif self.formver == 1:
+            nplewy = self.__np.get_value("nplewy", int)
+            if nplewy:
+                nacclewy = self.mapper.map_lewy()
+            else:
+                nacclewy = nplewy
+                nacclewy = self.mapper.map_gross(nacclewy)
+
+        return nacclewy if nacclewy is not None else 9
+
+    def _create_naccmicr(self) -> int:
+        """Create the NACCMICR variable.
+
+        Microinfarcts
+        """
+        npold = self.__np.get_value("npold", int)
+        npmicro = self.__np.get_value("npmicro", int)
+
+        naccmicr = npold
+        if self.formver in [10, 11]:
+            pass
+        elif self.formver in [7, 8, 9]:
+            naccmicr = self.mapper.map_v9(npmicro)
+        elif self.formver == 1:
+            naccmicr = (
+                self.mapper.map_v9(npmicro)
+                if npmicro
+                else self.mapper.map_vasc(naccmicr)
+            )
+
+        return naccmicr if naccmicr is not None else 9
+
+    def _create_naccnec(self) -> Optional[int]:
         """Create the NACCNEC variable.
 
         Laminar necrosis
@@ -196,6 +353,27 @@ class NPFormAttributeCollection(AttributeCollection):
                 return 9
 
         return 9
+
+    def _create_naccneur(self) -> int:
+        """Create the NACCNEUR variable.
+
+        Density of neocortical neuritic plaques (CERAD score) (C score)
+        """
+        npneur = self.__np.get_value("npneur", int)
+        naccneur = npneur
+
+        if self.formver in [10, 11]:
+            pass
+        elif self.formver in [7, 8, 9]:
+            naccneur = self.mapper.map_sub4(npneur)
+        elif self.formver == 1:
+            naccneur = (
+                self.mapper.map_sub4(npneur)
+                if npneur
+                else self.mapper.map_gross(naccneur)
+            )
+
+        return naccneur if naccneur is not None else 9
 
     def _create_naccothp(self) -> int:
         """Create the NACCOTHP variable.
@@ -227,13 +405,24 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccothp if naccothp is not None else 9
 
-    def _create_naccpick(self) -> int:
+    def _create_naccpara(self) -> Optional[int]:
+        """Creates the NACCPARA variable.
+
+        Paraffin-embedded blocks of brain regions. Not in v1-7.
+        """
+        if self.formver < 8:
+            return None
+
+        if self.formver in [10, 11]:
+            return self.__np.get_value("npbnkd", int)
+
+        npbparf = self.__np.get_value("npbparf", int)
+        return self.mapper.banked_v9(npbparf)
+
+    def _create_naccpick(self) -> Optional[int]:
         """Create the NACCPICK variable.
 
         FTLD-tau subtype — Pick's (PiD).
-
-        TODO: QAF does have this as -4 in some cases, but RDD does not say
-        it can be -4 - probably best to keep as 9 but flagging
         """
         npftdtau = self.__np.get_value("npftdtau", int)
         nppick = self.__np.get_value("nppick", int)
@@ -272,7 +461,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccprio if naccprio is not None else 9
 
-    def _create_naccprog(self) -> int:
+    def _create_naccprog(self) -> Optional[int]:
         """Create the NACCPROG variable.
 
         FTLD-tau subtype — progressive supranuclear palsy (PSP).
@@ -338,153 +527,14 @@ class NPFormAttributeCollection(AttributeCollection):
         """
         return self._handle_naccwrix("nppdxtx", 3)
 
-    def _create_naccbraa(self) -> int:
-        """Create the NACCBRAA variable.
-
-        Braak stage for neurofibrillary degeneration (B score)
-        """
-        npbraak = self.__np.get_value("npbraak", int)
-        naccbraa = npbraak
-
-        if self.formver in [10, 11]:
-            pass
-        elif self.formver in [7, 8, 9]:
-            if npbraak == 7:
-                naccbraa = 0
-        elif self.formver == 1:
-            if npbraak:
-                if npbraak == 7:
-                    naccbraa = 0
-            else:
-                naccbraa = self.mapper.map_gross(naccbraa)
-
-        return naccbraa if naccbraa is not None else 9
-
-    def _create_naccneur(self) -> int:
-        """Create the NACCNEUR variable.
-
-        Density of neocortical neuritic plaques (CERAD score) (C score)
-        """
-        npneur = self.__np.get_value("npneur", int)
-        naccneur = npneur
-
-        if self.formver in [10, 11]:
-            pass
-        elif self.formver in [7, 8, 9]:
-            naccneur = self.mapper.map_sub4(npneur)
-        elif self.formver == 1:
-            naccneur = (
-                self.mapper.map_sub4(npneur)
-                if npneur
-                else self.mapper.map_gross(naccneur)
-            )
-
-        return naccneur if naccneur is not None else 9
-
-    def _create_naccmicr(self) -> int:
-        """Create the NACCMICR variable.
-
-        Microinfarcts
-        """
-        npold = self.__np.get_value("npold", int)
-        npmicro = self.__np.get_value("npmicro", int)
-
-        naccmicr = npold
-        if self.formver in [10, 11]:
-            pass
-        elif self.formver in [7, 8, 9]:
-            naccmicr = self.mapper.map_v9(npmicro)
-        elif self.formver == 1:
-            naccmicr = (
-                self.mapper.map_v9(npmicro)
-                if npmicro
-                else self.mapper.map_vasc(naccmicr)
-            )
-
-        return naccmicr if naccmicr is not None else 9
-
-    def _create_nacchem(self) -> int:
-        """Create the NACCHEM variable.
-
-        Hemorrhages and microbleeds
-        """
-        nphem = self.__np.get_value("nphem", int)
-        nacchem = None
-
-        if self.formver in [10, 11]:
-            nphemo = self.__np.get_value("nphemo", int)
-            npoldd = self.__np.get_value("npoldd", int)
-
-            if nphemo == 1 or npoldd == 1:
-                nacchem = 1
-            elif nphemo == 0 and npoldd == 0:
-                nacchem = 0
-            elif nphemo == 8 and npoldd == 8:
-                nacchem = 8
-            else:
-                nacchem = 9
-        elif self.formver in [7, 8, 9]:
-            nacchem = nphem
-            nacchem = self.mapper.map_v9(nphem)
-        elif self.formver == 1:
-            nacchem = nphem
-            nacchem = (
-                self.mapper.map_v9(nphem) if nphem else self.mapper.map_vasc(nacchem)
-            )
-
-        return nacchem if nacchem is not None else 9
-
-    def _create_naccarte(self) -> int:
-        """Create the NACCARTE variable.
-
-        Arteriolosclerosis
-        """
-        nparter = self.__np.get_value("nparter", int)
-        naccarte = None
-
-        if self.formver in [10, 11]:
-            naccarte = nparter
-        elif self.formver in [7, 8, 9]:
-            naccarte = self.mapper.map_sub1(nparter)
-        elif self.formver == 1:
-            naccarte = (
-                self.mapper.map_sub1(nparter)
-                if nparter
-                else self.mapper.map_vasc(naccarte)
-            )
-
-        return naccarte if naccarte is not None else 9
-
-    def _create_nacclewy(self) -> int:
-        """Create the NACCLEWY variable.
-
-        Lewy body disease
-        """
-        nacclewy = None
-
-        if self.formver in [10, 11]:
-            nplbod = self.__np.get_value("nplbod", int)
-            nacclewy = nplbod
-            if nplbod == 4:
-                nacclewy = 2
-            if nplbod == 5:
-                nacclewy = 4
-        elif self.formver in [7, 8, 9]:
-            nacclewy = self.mapper.map_lewy()
-        elif self.formver == 1:
-            nplewy = self.__np.get_value("nplewy", int)
-            if nplewy:
-                nacclewy = self.mapper.map_lewy()
-            else:
-                nacclewy = nplewy
-                nacclewy = self.mapper.map_gross(nacclewy)
-
-        return nacclewy if nacclewy is not None else 9
-
     def _create_np_death_age(self) -> Optional[int]:
+        """Create NP death age; used to determine a lot of death-related
+        variables."""
         return self.__np.get_value("npdage", int)
 
     def _create_np_death_date(self) -> Optional[date]:
+        """Create NP death date; used to determine a lot of death-related
+        variables."""
         if self.__np.get_value("npdage", int) is None:
             return None
 
@@ -493,3 +543,30 @@ class NPFormAttributeCollection(AttributeCollection):
         day = self.__np.get_value("npdoddy", int)
 
         return create_death_date(year=year, month=month, day=day)
+
+    def _create_np_form_date(self) -> str:
+        """Create NP form date - needed to compare when this was submitted
+        relative to other forms like MLST."""
+        return self.__np.get_required("visitdate", str)
+
+    def _create_npchrom(self) -> Optional[int]:
+        """Keeps track of NPCHROM - required for NACCADMU, NACCFTDM
+        in UDS D1.
+
+        V9 and earlier.
+        """
+        return self.__np.get_value("npchrom", int)
+
+    def _create_nppdxp(self) -> Optional[int]:
+        """Keeps track of NPPDXP - required for NACCADMU in UDS D1.
+
+        V10+
+        """
+        return self.__np.get_value("nppdxp", int)
+
+    def _create_nppdxq(self) -> Optional[int]:
+        """Keeps track of NPPDXQ - required for NACCFTDM in UDS D1.
+
+        V10+
+        """
+        return self.__np.get_value("nppdxq", int)

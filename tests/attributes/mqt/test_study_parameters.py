@@ -8,27 +8,21 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "formver": "4",
-                        "module": "UDS",
-                        "packet": "F",
-                        "birthmo": 1,
-                        "birthyr": 1950,
-                        "visitdate": "2025-01-10",
-                    }
-                }
-            }
-        },
-        "subject": {"info": {"study-parameters": {"uds": {"versions": ["UDSv2"]}}}},
-    }
+    uds_table["file.info.forms.json"].update(
+        {
+            "formver": "4",
+            "packet": "F",
+        }
+    )
+    uds_table.update(
+        {
+            "subject": {"info": {"study-parameters": {"uds": {"versions": ["UDSv2"]}}}},
+        }
+    )
 
-    return SymbolTable(data)
+    return uds_table
 
 
 class TestStudyParametersAttributeCollection:

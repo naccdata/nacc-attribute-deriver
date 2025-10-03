@@ -27,6 +27,7 @@ def np_form_attribute_table() -> SymbolTable:
                         "nphemo": 1,
                         "npoldd": 1,
                         "nplbod": 4,
+                        "npcort": 1,
                         "formver": 1,
                         "module": "NP",
                         "visitdate": "2025-01-10",
@@ -183,3 +184,20 @@ class TestCreateNACCLEWY:
         set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
         np_form_attribute = NPFormAttributeCollection(np_form_attribute_table)
         assert np_form_attribute._create_nacclewy() == 2
+
+
+class TestCreateNACCCBD:
+    def test_create_nacccbd(self, np_form_attribute_table, form_prefix):
+        np_form_attribute = NPFormAttributeCollection(np_form_attribute_table)
+        assert np_form_attribute._create_nacccbd() == 1
+        set_attribute(np_form_attribute_table, form_prefix, "npcort", None)
+        # falls to map_vasc and looks at npgross instead
+        assert np_form_attribute._create_nacccbd() == 0
+
+        set_attribute(np_form_attribute_table, form_prefix, "formver", 10)
+        np_form_attribute = NPFormAttributeCollection(np_form_attribute_table)
+        assert np_form_attribute._create_nacccbd() == 9
+        set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 8)
+        assert np_form_attribute._create_nacccbd() == 8
+        set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 0)
+        assert np_form_attribute._create_nacccbd() is None

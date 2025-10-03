@@ -7,54 +7,45 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table() -> SymbolTable:
+def table(uds_table) -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    data = {
-        "file": {
-            "info": {
-                "forms": {
-                    "json": {
-                        "normcog": 0,
-                        "msaif": 1,
-                        "pspif": 2,
-                        "cortif": 2,
-                        "ftldmoif": 2,
-                        "ftldnosif": 3,
-                        "ftdif": 3,
-                        "ppaphif": 3,
-                        "cvdif": 2,
-                        "vascif": 3,
-                        "vascpsif": 3,
-                        "strokeif": 3,
-                        "amndem": 0,
-                        "pca": 0,
-                        "namndem": None,
-                        "cdrglob": 0.5,
-                        "module": "uds",
-                        "visitdate": "2025-01-10",
-                        "birthyr": 1950,
-                        "birthmo": 1,
-                        "packet": "I",
-                        "formver": "3.0",
-                        # rest of fields will be None
-                    }
-                },
-                "derived": {
-                    "naccalzp": 7,
-                    "nacclbde": 8,
-                    "nacclbdp": 8,
-                    "naccppa": 8,
-                    "naccbvft": 8,
-                    "nacclbds": 1,
-                    "naccnorm": 0,
-                    "naccetpr": 99,
-                    "naccudsd": 1,
-                },
-            }
+    uds_table["file.info.forms.json"].update(
+        {
+            "normcog": 0,
+            "msaif": 1,
+            "pspif": 2,
+            "cortif": 2,
+            "ftldmoif": 2,
+            "ftldnosif": 3,
+            "ftdif": 3,
+            "ppaphif": 3,
+            "cvdif": 2,
+            "vascif": 3,
+            "vascpsif": 3,
+            "strokeif": 3,
+            "amndem": 0,
+            "pca": 0,
+            "namndem": None,
+            "cdrglob": 0.5,
         }
-    }
+    )
+    uds_table["file.info"].update(
+        {
+            "derived": {
+                "naccalzp": 7,
+                "nacclbde": 8,
+                "nacclbdp": 8,
+                "naccppa": 8,
+                "naccbvft": 8,
+                "nacclbds": 1,
+                "naccnorm": 0,
+                "naccetpr": 99,
+                "naccudsd": 1,
+            },
+        }
+    )
 
-    return SymbolTable(data)
+    return uds_table
 
 
 class TestCognitiveAttributeCollection:
@@ -67,12 +58,12 @@ class TestCognitiveAttributeCollection:
             )
 
         attr = CognitiveAttributeCollection(table)
-        assert set(attr._create_contributing_diagnosis().value) == set(expected_values)
+        assert set(attr._create_contributing_diagnosis()) == set(expected_values)
 
     def test_dementia(self, table):
         """Tests _create_dementia."""
         attr = CognitiveAttributeCollection(table)
-        assert attr._create_dementia().value == [
+        assert attr._create_dementia() == [
             CognitiveAttributeCollection.DEMENTIA_MAPPINGS["nacclbds"]
         ]
 
@@ -82,7 +73,7 @@ class TestCognitiveAttributeCollection:
 
         attr = CognitiveAttributeCollection(table)
 
-        assert set(attr._create_dementia().value) == set(
+        assert set(attr._create_dementia()) == set(
             [
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["amndem"],
                 CognitiveAttributeCollection.DEMENTIA_MAPPINGS["pca"],
@@ -94,7 +85,7 @@ class TestCognitiveAttributeCollection:
         """Tests _create_global_cdr, which just comes from CDRGLOB as a
         string."""
         attr = CognitiveAttributeCollection(table)
-        assert attr._create_global_cdr().value == 0.5
+        assert attr._create_global_cdr() == 0.5
 
         table["file.info.forms.json.cdrglob"] = None
         with pytest.raises(MissingRequiredError):

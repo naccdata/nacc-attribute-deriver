@@ -24,15 +24,17 @@ def table() -> SymbolTable:
         },
         "subject": {
             "info": {
-                "derived": {
-                    "uds-visitdates": [
-                        "1980-05-06",
-                        "1980-10-10",
-                        "2023-12-12",
-                        "2024-01-01",
-                        "2024-02-02",
-                        "2025-03-03",
-                    ]
+                "working": {
+                    "cross-sectional": {
+                        "uds-visitdates": [
+                            "1980-05-06",
+                            "1980-10-10",
+                            "2023-12-12",
+                            "2024-01-01",
+                            "2024-02-02",
+                            "2025-03-03",
+                        ]
+                    }
                 },
                 "longitudinal-data": {
                     "uds": {"count": {"latest": {"value": 5, "date": "2025-01-01"}}}
@@ -45,11 +47,6 @@ def table() -> SymbolTable:
 
 
 class TestLongitudinalAttributeCollection:
-    def test_create_total_uds_visits(self, table, form_prefix):
-        """Tests _create_total_uds_visits."""
-        attr = LongitudinalAttributeCollection(table)
-        assert attr._create_total_uds_visits() == 6
-
     def test_create_years_of_uds(self, table):
         """Tests _create_years_of_uds, should only count unique years."""
         attr = LongitudinalAttributeCollection(table)

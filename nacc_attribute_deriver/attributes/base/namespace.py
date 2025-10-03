@@ -4,7 +4,7 @@ import datetime
 import logging
 from typing import (
     Any,
-    Generic,
+    Dict,
     Iterable,
     List,
     Optional,
@@ -12,30 +12,18 @@ from typing import (
     TypeVar,
 )
 
-from pydantic import BaseModel, ConfigDict, field_serializer
+from pydantic import ValidationError
 
 from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
+from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import datetime_from_form_date
+from nacc_attribute_deriver.utils.date import date_from_form_date
 
 log = logging.getLogger(__name__)
 
 
 T = TypeVar("T")
 INVALID_TEXT = ["", ".", "`", "--", "-"]
-
-
-class DateTaggedValue(BaseModel, Generic[T]):
-    """Model for a date-tagged attribute value."""
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    date: Optional[datetime.date]
-    value: T
-
-    @field_serializer("date")
-    def serialize_date_as_str(self, date: Optional[datetime.date]):
-        return str(date)
 
 
 class BaseNamespace:
@@ -136,6 +124,7 @@ class BaseNamespace:
         # strip whitespace
         if isinstance(value, str):
             value = value.strip()
+
             # treat empty/invalid strings as None
             if value in INVALID_TEXT:
                 return None
@@ -158,7 +147,7 @@ class BaseNamespace:
         Returns:
             The attribute value with the given type
         """
-        assert self.is_required(attribute)
+        assert self.is_required(attribute), f"{attribute} must be set as required"
         value = self.get_value(attribute, attr_type)
         if value is None:
             raise InvalidFieldError(f"{self.__symbol(attribute)} cannot be missing")
@@ -174,11 +163,18 @@ class BaseNamespace:
         if self.__date_attribute is None:
             return None
 
-        file_date = datetime_from_form_date(self.get_value(self.__date_attribute, str))
-        if not file_date:
-            return None
+        return date_from_form_date(self.get_value(self.__date_attribute, str))
 
-        return file_date.date()
+    def group_attributes(
+        self, attributes: List[str], attr_type: Type[T]
+    ) -> List[T | None]:
+        """Group attributes into a list. Assumes all are the same type.
+
+        Args:
+            attributes: List of attributes to grab
+            attr_type: Expected attribute type for all attributes in list
+        """
+        return [self.get_value(x, attr_type) for x in attributes]
 
 
 class FormNamespace(BaseNamespace):
@@ -255,6 +251,8 @@ class SubjectInfoNamespace(BaseNamespace):
 
 
 class SubjectDerivedNamespace(BaseNamespace):
+    """For NACC derived cross-sectional and longitudinal variables."""
+
     def __init__(
         self,
         *,
@@ -270,28 +268,165 @@ class SubjectDerivedNamespace(BaseNamespace):
             date_attribute=date_attribute,
         )
 
+    def cast_to_dated_tagged_value(
+        self, attribute: str, raw_value: Dict[str, Any], attr_type: Type[T]
+    ) -> DateTaggedValue:
+        """Cast given value to DateTaggedValue."""
+        if not isinstance(raw_value, dict):
+            raise InvalidFieldError("Cannot cast non-dict to DateTaggedValue")
+
+        try:
+            value = DateTaggedValue(**raw_value)
+        except ValidationError as e:
+            raise InvalidFieldError(
+                f"Cannot cast cross-sectional value for {attribute} to "
+                + f"DateTaggedValue from {raw_value}: {e}"
+            ) from e
+
+        try:
+            if value.value is not None:
+                value.value = attr_type(value.value)  # type: ignore
+        except TypeError as e:
+            raise InvalidFieldError(
+                f"{attribute}.value must be of type {attr_type}"
+            ) from e
+
+        return value
+
     def get_cross_sectional_value(
         self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
-    ) -> Any:
+    ) -> Optional[T]:
         """Returns a cross-sectional value.
 
         Args:
-          key: the attribute name
-          default: the default value
+            attribute: The field to grab cross-sectional value for
+            attr_type: Attribute type
+            default: default value
         Returns:
           the value for the attribute in the table
         """
         return self.get_value(f"cross-sectional.{attribute}", attr_type, default)
 
-    def get_longitudinal_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[Any] = None
-    ) -> Any:
-        """Returns a longitudinal value.
+    def get_cross_sectional_dated_value(
+        self, attribute: str, attr_type: Type[T]
+    ) -> Optional[DateTaggedValue]:
+        """Returns the value of a cross-sectional dated value.
 
         Args:
-          key: the attribute name
-          default: the default value
+            attribute: The field to grab cross-sectional value for
+            attr_type: Attribute type
+            default: default value
+        Returns:
+          the value for the dated attribute in the table
+        """
+        raw_value = self.get_cross_sectional_value(attribute, dict)
+        if not raw_value:
+            return None
+
+        return self.cast_to_dated_tagged_value(attribute, raw_value, attr_type)
+
+    def get_longitudinal_value(
+        self, attribute: str, attr_type: Type[T]
+    ) -> Optional[List[DateTaggedValue]]:
+        """Returns a longitudinal value. Will be a list of DatedTaggedValues.
+        This does not support default values.
+
+        Args:
+            attribute: The field to grab longitudinal values for
+            attr_type: Attribute type
+        Returns:
+          the list of DateTaggedValues for the attribute in the table
+        """
+        records = self.get_value(f"longitudinal.{attribute}", list)
+        if not records:
+            return None
+
+        # cast to DateTaggedValues
+        for i, record in enumerate(records):
+            records[i] = self.cast_to_dated_tagged_value(attribute, record, attr_type)
+
+        return records
+
+    def get_corresponding_longitudinal_value(
+        self, target_date: str, attribute: str, attr_type: Type[T]
+    ) -> Optional[T]:
+        """Returns the longitudinal value corresponding to the given date. This
+        does not support default values.
+
+        Args:
+            attribute: The field to grab longitudinal values for
+            attr_type: Attribute type
         Returns:
           the value for the attribute in the table
         """
-        return self.get_value(f"longitudinal.{attribute}", attr_type, default)
+        records = self.get_longitudinal_value(attribute, attr_type)
+        if not records:
+            return None
+
+        for record in reversed(records):
+            if str(record.date) == target_date:
+                return record.value
+
+        return None
+
+    def get_prev(self, attribute: str, attr_type: Type[T]) -> Optional[DateTaggedValue]:
+        """Gets the previous record - pulls from longitudinal records.
+
+        Args:
+            attribute: The field to grab the previous longitudinal record for
+            attr_type: Attribute type
+        Returns:
+            The previous DateTaggedValue
+        """
+        records = self.get_longitudinal_value(attribute, attr_type)
+        if records is None:
+            return None
+
+        prev_record = None
+
+        # sanity check make sure we are not grabbing this form's values;
+        # e.g. break for loop as soon as we get the most recent record
+        # that isn't this form's
+        for record in reversed(records):
+            if record.date != self.get_date():
+                prev_record = record
+                break
+
+        # even for non-initial visits sometimes we simply don't
+        # have the previous visit in Flywheel
+        if not prev_record:
+            return None
+
+        return prev_record
+
+    def get_prev_value(self, attribute: str, attr_type: Type[T]) -> Optional[T]:
+        """Get prev value, if we don't necessarily care about date.
+
+        Args:
+            attribute: The field to grab the previous longitudinal record for
+            attr_type: Attribute type
+        Returns:
+            The previous value
+        """
+        prev_record = self.get_prev(attribute, attr_type)
+        return None if prev_record is None else prev_record.value
+
+
+class WorkingDerivedNamespace(SubjectDerivedNamespace):
+    """Similar to SubjectDerivedNamespace but specifically for
+    working/temporary variables."""
+
+    def __init__(
+        self,
+        *,
+        table: SymbolTable,
+        attribute_prefix: str = "subject.info.working.",
+        required: frozenset[str] = frozenset(),
+        date_attribute: Optional[str] = None,
+    ) -> None:
+        super().__init__(
+            table=table,
+            attribute_prefix=attribute_prefix,
+            required=required,
+            date_attribute=date_attribute,
+        )

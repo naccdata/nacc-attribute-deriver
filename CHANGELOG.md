@@ -2,6 +2,46 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.0.0 (not yet released)
+
+* Adds rest of UDS derived variables:
+    * Form header
+        * Here some NACC derived variables compute the same thing but apply to a different operation, so curation rule may point to a different derived variable's function
+            * NACVNUM - uses NACCAVST
+            * NACCFDAYS - uses NACCDAYS
+        * Also adds NACCID
+    * A1, A2, A3, A4, and A5
+        * Accounts for some forms being optional
+        * For A4, adds MEDS scope, and `config/normalized_drug_ids.csv` to map V1 write-ins
+        * **NACCFAM (A3), on hold for now**
+    * B1, B6, B8, and B9
+    * C1/C2
+        * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
+    * D1
+    * Adds FTLD/LBD scope and variables (just checks existence)
+* Adds CLS derived variables
+* Adds MILESTONE derived variables
+    * Many of these are cross-form, particularly with UDS A1
+* Adds rest of NP derived variables
+* Adds `MissingFormAttributes` which sets a default values for certain non-UDS NACC derived variables when the corresponding source file does not exist for that subject
+* Adds/fixes genetics derived variables
+    * Adds NIAGADS accession number derived variables
+    * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
+* Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level
+    * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
+* Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
+* Refactors testing to use a `base_uds_table` fixture
+* Replaces `datetime_from_form_date` with just `date_from_form_date` since we don't use time here - removes confusion of converting every time
+* Updates how grabbing longitudinal values is done and and added support for grabbing dated cross-sectional and longitudinal values, related to the above refactors
+* Removes redundant `_create rules`
+    * `cognitive._create_etpr` - use NACCETPR
+    * `cognitive._create_cognitive_status` - use NACCUDSD
+    * `demographics._create_age_at_death` - use NACCDAGE
+    * `demographics._create_uds_age` - use NACCAGE
+    * `longitudinal._create_total_uds_visits` - use NACCAVST
+* Adds pseudocode for MP variables - need to finalize once we know how data actually looks
+* Minor optimization tweaks
+
 ## 1.4.3
 
 * Fix mutability bug caused by empty nested tables

@@ -1,14 +1,19 @@
 """NCRAD-specific derived variables.
 
-Right now these should all come from the imported APOE data under
-<subject>_apoe_availability.json
+For APOE there are both historical (ADC-reported) and NCRAD APOE values.
+From Genetics RDD:
+    In the rare case that the ADC-reported genotype and the genotype reported
+    by ADGC are not the same, the genotype is set to 9 = Missing for that subject.
 """
 
 from types import MappingProxyType
 from typing import Mapping, Tuple
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
+from nacc_attribute_deriver.attributes.base.namespace import (
+    RawNamespace,
+    WorkingDerivedNamespace,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -33,17 +38,41 @@ class NCRADAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
         self.__apoe = RawNamespace(table, required=frozenset(["a1", "a2"]))
+        self.__working = WorkingDerivedNamespace(table=table)
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)
 
         Should come from the actual imported APOE data
-        <subject>_apoe_genotype.json
+        <subject>_apoe_genotype.json. Needs to account for historic
+        data.
         """
+
         a1 = self.__apoe.get_required("a1", str)
         a2 = self.__apoe.get_required("a2", str)
 
-        return self.APOE_ENCODINGS.get((a1.upper(), a2.upper()), 9)
+        apoe = self.APOE_ENCODINGS.get((a1.upper(), a2.upper()), 9)
+        old_apoe = self.__working.get_cross_sectional_value("historic-apoe", int)
+
+        if old_apoe is not None and apoe != old_apoe:
+            return 9
+
+        return apoe
+
+    def _create_naccne4s(self) -> int:
+        """Create NACCNE4s. From derive.sas and derivenew.sas (same code)
+
+        Based on APOE results.
+        """
+        apoe = self._create_naccapoe()
+        if apoe in [1, 3, 6]:
+            return 0
+        if apoe in [2, 5]:
+            return 1
+        if apoe == 4:
+            return 2
+
+        return 9
 
 
 class HistoricalNCRADAttributeCollection(AttributeCollection):
@@ -72,3 +101,18 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
                 )
 
         return apoe if apoe >= 1 and apoe <= 6 else 9
+
+    def _create_historic_naccne4s(self) -> int:
+        """Create NACCNE4s (when provided historically).
+
+        Based on (historic) APOE results.
+        """
+        apoe = self._create_historic_apoe()
+        if apoe in [1, 3, 6]:
+            return 0
+        if apoe in [2, 5]:
+            return 1
+        if apoe == 4:
+            return 2
+
+        return 9
