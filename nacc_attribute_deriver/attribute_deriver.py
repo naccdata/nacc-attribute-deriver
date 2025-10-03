@@ -7,7 +7,7 @@ subject. File must correspond to the curation schema.
 
 import csv
 from importlib import resources
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import ValidationError
 
@@ -124,3 +124,13 @@ class AttributeDeriver:
                 operation.evaluate(
                     table=table, value=value, attribute=assignment.attribute
                 )
+
+    def get_curation_rules(self, scope: ScopeLiterals) -> Optional[List[CurationRule]]:
+        """Grabs all curation rules associated with the given scope.
+
+        Args:
+            scope: the curation scope
+        Returns:
+            The list of CurationRules
+        """
+        return self.__rule_map.get(scope)

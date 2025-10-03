@@ -15,10 +15,13 @@ Documentation of release versions of `nacc-attribute-deriver`
         * Accounts for some forms being optional
         * For A4, adds MEDS scope, and `config/normalized_drug_ids.csv` to map V1 write-ins
         * **NACCFAM (A3), on hold for now**
+        * MQT's `demoographics._create_uds_age` removed and curation rule updated to use NACCAGE directly
     * B1, B6, B8, and B9
     * C1/C2
         * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
     * D1
+        * MQT's `cognitive._create_etpr` removed and curation rule updated to use NACCETPR directly
+        * MQT's `cognitive._create_cognitive_status` removed and curation rule updated to use NACCUDSD directly
     * Adds FTLD/LBD scope and variables (just checks existence)
 * Adds CLS derived variables
 * Adds MILESTONE derived variables
@@ -39,6 +42,17 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Makes minor optimization tweaks
 * Removes `age_at_death` rule - MQT ETL pointing at `naccdage` directly instead
 * Adds pseudocode for MP variables - need to finalize once we know how data actually looks
+
+## 1.4.3
+
+* Fix mutability bug caused by empty nested tables
+
+## 1.4.2
+
+* Allows attribute deriver to expose curation rules by scope
+* Account for all kinds of invalid string text
+* Defines `pop` for SymbolTable (done more for optimization the attribute-curator gear)
+* Fixes `ngdsexome` typo to `ngdsexom`
 
 ## 1.4.1
 

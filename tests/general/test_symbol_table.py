@@ -60,3 +60,39 @@ class TestSymbolTable:
         assert table.pop("nested.key.not.in.dict", "my_default") == "my_default"
 
         assert table.to_dict() == {"a": 0, "c": 2, "nested": {"d": {}, "f": 4}}
+
+    def test_mutability(self):
+        """Test this in the way the Attribute Curation gear uses it.
+
+        Weird bug discovered when starting dict (subject.info) was
+        empty, caused it to not be globally mutated, but was fine if
+        subject.info was NOT empty (happened to be the case for any
+        subjects relevant to MQT which is why it wasn't really noticed
+        before).
+
+        Issue was related to the original empty table being overwritten
+        in __setitem__ when it was nested; handled by changing condition
+        to "if obj is not None" instead of just "if not obj"
+        """
+
+        # if starting dict is empty
+        subject_table = SymbolTable({})
+
+        table = SymbolTable({})
+        table["subject.info"] = subject_table.to_dict()
+        table["file.info"] = {}
+
+        table["subject.info.derived.dummy"] = 10
+
+        assert subject_table.to_dict() == {"derived": {"dummy": 10}}
+
+        # if starting dict is not empty
+        subject_table = SymbolTable({"hello": "world"})
+
+        table = SymbolTable({})
+        table["subject.info"] = subject_table.to_dict()
+        table["file.info"] = {}
+
+        table["subject.info.derived.dummy"] = 10
+
+        assert subject_table.to_dict() == {"hello": "world", "derived": {"dummy": 10}}

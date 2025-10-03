@@ -3,6 +3,7 @@
 from datetime import date
 from nacc_attribute_deriver.attributes.base.namespace import (
     BaseNamespace,
+    INVALID_TEXT,
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
@@ -27,6 +28,15 @@ class TestBaseNamespace:
 
         namespace = BaseNamespace(table=table, attribute_prefix="test.")
         assert namespace.group_attributes(["var1", "var2", "var3"], int) == [1, 2, 3]
+
+    def test_invalid_string(self):
+        """Tests invalid string values return as None."""
+        table = SymbolTable()
+        attr = BaseNamespace(table=table, attribute_prefix="test.")
+
+        for value in INVALID_TEXT:
+            table["test.value"] = value
+            assert attr.get_value("value", int) is None
 
 
 class TestSubjectDerivedNamespace:

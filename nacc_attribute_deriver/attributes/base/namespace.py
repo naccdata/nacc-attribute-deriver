@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 
 
 T = TypeVar("T")
+INVALID_TEXT = ["", ".", "`", "--", "-"]
 
 
 class BaseNamespace:
@@ -123,8 +124,9 @@ class BaseNamespace:
         # strip whitespace
         if isinstance(value, str):
             value = value.strip()
-            # treat empty string or single period as None
-            if value == "" or value == ".":
+
+            # treat empty/invalid strings as None
+            if value in INVALID_TEXT:
                 return None
 
         try:
