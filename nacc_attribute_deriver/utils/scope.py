@@ -45,7 +45,7 @@ class SCANMRIScope(Scope):
 
 class ImagingScope(Scope):
     # MP scope
-    MIXED_PROTOCOL = 'mp'
+    MIXED_PROTOCOL = "mp"
 
 
 ScopeLiterals = Literal[
@@ -68,5 +68,5 @@ ScopeLiterals = Literal[
     SCANPETScope.TAU_PET_NPDKA,
     SCANMRIScope.MRI_QC,
     SCANMRIScope.MRI_SBM,
-    ImagingScope.MIXED_PROTOCOL
+    ImagingScope.MIXED_PROTOCOL,
 ]

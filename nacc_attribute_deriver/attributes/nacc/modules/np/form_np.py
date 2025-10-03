@@ -528,13 +528,13 @@ class NPFormAttributeCollection(AttributeCollection):
         return self._handle_naccwrix("nppdxtx", 3)
 
     def _create_np_death_age(self) -> Optional[int]:
-        """Create NP death age; used to determine a lot of
-        death-related variables."""
+        """Create NP death age; used to determine a lot of death-related
+        variables."""
         return self.__np.get_value("npdage", int)
 
     def _create_np_death_date(self) -> Optional[date]:
-        """Create NP death date; used to determine a lot of
-        death-related variables."""
+        """Create NP death date; used to determine a lot of death-related
+        variables."""
         if self.__np.get_value("npdage", int) is None:
             return None
 

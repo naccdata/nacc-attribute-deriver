@@ -34,9 +34,10 @@ def date_from_form_date(date_string: Optional[str]) -> Optional[date]:
 
 def date_came_after(date1: date | None, date2: date | None) -> bool:
     """Compare relativity of two dates.
-        If date1 came AFTER date2, or date2 is None returns True
-        If date1 came BEFORE date2, or date1 is None returns False
-        If dates are equal/both none, return False
+
+    If date1 came AFTER date2, or date2 is None returns True If date1
+    came BEFORE date2, or date1 is None returns False If dates are
+    equal/both none, return False
     """
     if date1 == date2:
         return False
@@ -45,16 +46,17 @@ def date_came_after(date1: date | None, date2: date | None) -> bool:
 
 
 def date_came_after_sparse(
-        date1: date | None,
-        sparse_year = Optional[int],
-        sparse_month = Optional[int],
-        sparse_day = Optional[int]) -> bool:
-    """Compare relativity of two dates, where date2 is sparse (e.g.
-    some parts can be 99 or None.
-        If date1 came AFTER date2, or date2 is None returns True
-        If date1 came BEFORE date2, or date1 is None returns False
-        If dates are equal/both none, return False
+    date1: date | None,
+    sparse_year=Optional[int],
+    sparse_month=Optional[int],
+    sparse_day=Optional[int],
+) -> bool:
+    """Compare relativity of two dates, where date2 is sparse (e.g. some parts
+    can be 99 or None.
 
+    If date1 came AFTER date2, or date2 is None returns True If date1
+    came BEFORE date2, or date1 is None returns False If dates are
+    equal/both none, return False
     """
     all_parts = [sparse_year, sparse_month, sparse_day]
 
@@ -88,10 +90,8 @@ def date_came_after_sparse(
         # a few days via another form)
         #   - don't check further if month is 99 as well; for the same reason
         #     that it's kind of arbitrary to check the day
-        if (sparse_month is not None and (1 <= sparse_month <= 12)):
-            if date1.month > sparse_month:
-                return True
-            return False
+        if sparse_month is not None and (1 <= sparse_month <= 12):
+            return date1.month > sparse_month
 
     # assume true by default (by date2 not being meaningful enough to decide)
     return True

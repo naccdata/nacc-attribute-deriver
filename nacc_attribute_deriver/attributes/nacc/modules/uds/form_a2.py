@@ -4,8 +4,6 @@ Form A2 is optional, so may not have been submitted. From
 a2structrdd.sas
 """
 
-from typing import Optional
-
 from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 

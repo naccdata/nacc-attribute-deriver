@@ -15,7 +15,7 @@ Documentation of release versions of `nacc-attribute-deriver`
         * Accounts for some forms being optional
         * For A4, adds MEDS scope, and `config/normalized_drug_ids.csv` to map V1 write-ins
         * **NACCFAM (A3), on hold for now**
-        * MQT's `demoographics._create_uds_age` removed and curation rule updated to use NACCAGE directly
+        * MQT's `demographics._create_uds_age` removed and curation rule updated to use NACCAGE directly
     * B1, B6, B8, and B9
     * C1/C2
         * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well

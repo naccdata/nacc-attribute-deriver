@@ -9,11 +9,7 @@ class TestUDSFormB1Attribute:
     def test_create_naccbmi(self, uds_table):
         """Tests NACCBMI."""
         uds_table["file.info.forms.json"].update(
-            {
-                "b1sub": 1,
-                "weight": 165,
-                "height": 60
-            }
+            {"b1sub": 1, "weight": 165, "height": 60}
         )
 
         attr = UDSFormB1Attribute(uds_table)
@@ -21,11 +17,7 @@ class TestUDSFormB1Attribute:
 
         # this tests the half case
         uds_table["file.info.forms.json"].update(
-            {
-                "b1sub": 1,
-                "weight": 180,
-                "height": 60
-            }
+            {"b1sub": 1, "weight": 180, "height": 60}
         )
 
         attr = UDSFormB1Attribute(uds_table)

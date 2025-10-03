@@ -104,8 +104,10 @@ class MilestoneAttributeCollection(AttributeCollection):
         """
         default = 88 if attribute != "discyr" else 8888
 
-        if (self.__milestone.get_value("rejoin", int) == 1
-            or self.__milestone.get_value("rejoined", int) == 1):
+        if (
+            self.__milestone.get_value("rejoin", int) == 1
+            or self.__milestone.get_value("rejoined", int) == 1
+        ):
             return default
 
         discont = self.__milestone.get_value("discont", int)
@@ -185,8 +187,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         return max(2002, result)
 
     def _create_milestone_renurse(self) -> Optional[int]:
-        """Carryover RENURSE, needs to be dated to compute NACCNURP.
-        """
+        """Carryover RENURSE, needs to be dated to compute NACCNURP."""
         renurse = self.__milestone.get_value("renurse", int)
 
         # if V1, RENURSE does not seem to be set/defined,

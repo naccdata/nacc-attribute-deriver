@@ -218,7 +218,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         return 8888
 
-    def uds_came_after(self, target_date: date) -> bool:
+    def uds_came_after(self, target_date: date | None) -> bool:
         """Compares UDS and given target dates.
 
         Returns:
@@ -299,8 +299,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         mlsts = self.__working.get_cross_sectional_value("milestone-visitdates", list)
         if mlsts:
             most_recent_mlst = date_from_form_date(mlsts[-1])
-            if (self.uds_came_after(most_recent_mlst) and
-                self.__uds.get_value("prespart", int) == 1):
+            if (
+                self.uds_came_after(most_recent_mlst)
+                and self.__uds.get_value("prespart", int) == 1
+            ):
                 return 8
 
         naccactv = self._create_naccactv()
@@ -329,7 +331,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """
         # get most recent MLST value of renurse
         renurse_record = self.__working.get_cross_sectional_dated_value(
-            "milestone-renurse.latest", int)
+            "milestone-renurse.latest", int
+        )
 
         # if MLST value (RENURSE) is NOT 1, return 0
         if not renurse_record or renurse_record.value != 1:
@@ -351,9 +354,15 @@ class CrossModuleAttributeCollection(AttributeCollection):
         If UDS form came AFTER MLST, return the default (even if MLST
         said discontinued.
         """
-        discyr = self.__working.get_cross_sectional_value("milestone-discyr.latest.value", int)
-        discmo = self.__working.get_cross_sectional_value("milestone-discmo.latest.value", int)
-        discday = self.__working.get_cross_sectional_value("milestone-discday.latest.value", int)
+        discyr = self.__working.get_cross_sectional_value(
+            "milestone-discyr.latest.value", int
+        )
+        discmo = self.__working.get_cross_sectional_value(
+            "milestone-discmo.latest.value", int
+        )
+        discday = self.__working.get_cross_sectional_value(
+            "milestone-discday.latest.value", int
+        )
 
         uds_date = self.__uds.get_date()
 

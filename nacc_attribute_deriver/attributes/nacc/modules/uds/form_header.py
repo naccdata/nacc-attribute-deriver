@@ -66,7 +66,7 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         if any(x is None for x in result):
             raise InvalidFieldError("Invalid date found in uds-visitdates")
 
-        return result
+        return result  # type: ignore
 
     def _create_naccavst(self) -> int:
         """Creates NACCAVST - total number of all UDS visits.
