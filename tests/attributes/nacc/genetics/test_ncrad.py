@@ -2,8 +2,8 @@
 
 import pytest
 from nacc_attribute_deriver.attributes.nacc.genetics.ncrad import (
-    HistoricalNCRADAttributeCollection,
-    NCRADAttributeCollection,
+    HistoricalNCRADAPOEAttributeCollection,
+    NCRADAPOEAttributeCollection,
 )
 from nacc_attribute_deriver.schema.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -21,36 +21,36 @@ def table() -> SymbolTable:
     return SymbolTable(data)
 
 
-class TestNCRADAttributeCollection:
+class TestNCRADAPOEAttributeCollection:
     def test_create_naccapoe(self, table, raw_prefix):
         """Tests creating NACCAPOE."""
-        attr = NCRADAttributeCollection(table)
+        attr = NCRADAPOEAttributeCollection(table)
         assert attr._create_naccapoe() == 1
 
-        for key, value in NCRADAttributeCollection.APOE_ENCODINGS.items():
+        for key, value in NCRADAPOEAttributeCollection.APOE_ENCODINGS.items():
             set_attribute(table, raw_prefix, "a1", key[0])
             set_attribute(table, raw_prefix, "a2", key[1])
-            attr = NCRADAttributeCollection(table)
+            attr = NCRADAPOEAttributeCollection(table)
 
             assert attr._create_naccapoe() == value
 
     def test_undefined_pairs(self, table, raw_prefix):
         set_attribute(table, raw_prefix, "a1", "e1")
         set_attribute(table, raw_prefix, "a2", "e7")
-        attr = NCRADAttributeCollection(table)
+        attr = NCRADAPOEAttributeCollection(table)
         assert attr._create_naccapoe() == 9
 
     def test_empty_table(self):
         with pytest.raises(MissingRequiredError):
-            NCRADAttributeCollection(SymbolTable())
+            NCRADAPOEAttributeCollection(SymbolTable())
 
     def test_historical_different(self, table, working_derived_prefix):
         set_attribute(table, working_derived_prefix, "cross-sectional.historic-apoe", 4)
-        attr = NCRADAttributeCollection(table)
+        attr = NCRADAPOEAttributeCollection(table)
         assert attr._create_naccapoe() == 9
 
     def test_create_naccne4s(self, table, raw_prefix):
-        attr = NCRADAttributeCollection(table)
+        attr = NCRADAPOEAttributeCollection(table)
         assert attr._create_naccne4s() == 0
         set_attribute(table, raw_prefix, "a1", "e4")
         assert attr._create_naccne4s() == 1
@@ -62,26 +62,26 @@ class TestNCRADAttributeCollection:
         assert attr._create_naccne4s() == 9
 
 
-class TestHistoricalNCRADAttributeCollection:
+class TestHistoricalNCRADAPOEAttributeCollection:
     def test_create_historic_apoe(self, table, raw_prefix):
         """Tests creating historical NACCAPOE."""
-        attr = HistoricalNCRADAttributeCollection(table)
+        attr = HistoricalNCRADAPOEAttributeCollection(table)
         assert attr._create_historic_apoe() == 1
 
         # invalid cases
         set_attribute(table, raw_prefix, "apoenp", None)
         for invalid in [0, 7]:
             set_attribute(table, raw_prefix, "apoe", invalid)
-            attr = HistoricalNCRADAttributeCollection(table)
+            attr = HistoricalNCRADAPOEAttributeCollection(table)
             assert attr._create_historic_apoe() == 9
 
         for invalid in [None, ""]:
             with pytest.raises(MissingRequiredError):
                 set_attribute(table, raw_prefix, "apoe", invalid)
-                HistoricalNCRADAttributeCollection(table)
+                HistoricalNCRADAPOEAttributeCollection(table)
 
     def test_create_historic_naccne4s(self, table, raw_prefix):
-        attr = HistoricalNCRADAttributeCollection(table)
+        attr = HistoricalNCRADAPOEAttributeCollection(table)
         assert attr._create_historic_naccne4s() == 0
 
         set_attribute(table, raw_prefix, "apoe", 4)

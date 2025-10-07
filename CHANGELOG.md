@@ -26,7 +26,8 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds `MissingFormAttributes` which sets a default values for certain non-UDS NACC derived variables when the corresponding source file does not exist for that subject
 * Adds/fixes genetics derived variables
     * Adds NIAGADS accession number derived variables
-    * Adds NACCNE4S and fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
+    * Adds NACCNE4S, NACCNCRD
+    * Fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
