@@ -17,8 +17,8 @@ from nacc_attribute_deriver.attributes.base.namespace import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
-class NCRADAttributeCollection(AttributeCollection):
-    """Class to collect NCRAD attributes."""
+class NCRADAPOEAttributeCollection(AttributeCollection):
+    """Class to collect NCRAD APOE attributes."""
 
     # NCRAD (a1, a2) to NACC encoding
     APOE_ENCODINGS: Mapping[Tuple[str, str], int] = MappingProxyType(
@@ -75,8 +75,8 @@ class NCRADAttributeCollection(AttributeCollection):
         return 9
 
 
-class HistoricalNCRADAttributeCollection(AttributeCollection):
-    """Class to collect historical NCRAD attributes."""
+class HistoricalNCRADAPOEAttributeCollection(AttributeCollection):
+    """Class to collect historical NCRAD APOE attributes."""
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
@@ -116,3 +116,15 @@ class HistoricalNCRADAttributeCollection(AttributeCollection):
             return 2
 
         return 9
+
+
+class NCRADBiosampleAttributeCollection(AttributeCollection):
+    """Class to collect historical NCRAD biosample attributes."""
+
+    def _create_naccncrd(self) -> int:
+        """Create NACCNCRD. From makerddgen.sas.
+
+        See docs/ncrad.md for notes on this variable. Basically if this
+        is called at all, file exists, so set NACCNCRD to 1.
+        """
+        return 1

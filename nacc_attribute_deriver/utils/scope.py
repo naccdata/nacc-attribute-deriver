@@ -25,7 +25,7 @@ class GeneticsScope(Scope):
     APOE = "apoe"
     HISTORIC_APOE = "historic_apoe"
     NIAGADS_AVAILABILITY = "niagads_availability"
-    NCRAD_SAMPLES = "ncrad_samples"
+    NCRAD_BIOSAMPLES = "ncrad_biosamples"
 
 
 class SCANPETScope(Scope):
@@ -60,7 +60,7 @@ ScopeLiterals = Literal[
     GeneticsScope.APOE,
     GeneticsScope.HISTORIC_APOE,
     GeneticsScope.NIAGADS_AVAILABILITY,
-    GeneticsScope.NCRAD_SAMPLES,
+    GeneticsScope.NCRAD_BIOSAMPLES,
     SCANPETScope.PET_QC,
     SCANPETScope.AMYLOID_PET_GAAIN,
     SCANPETScope.AMYLOID_PET_NPDKA,
