@@ -124,7 +124,7 @@ class NCRADBiosampleAttributeCollection(AttributeCollection):
     def _create_naccncrd(self) -> int:
         """Create NACCNCRD. From makerddgen.sas.
 
-        See docs/ncrad.md for notes on this variable. Basically if
-        this is called at all, file exists, so set NACCNCRD to 1.
+        See docs/ncrad.md for notes on this variable. Basically if this
+        is called at all, file exists, so set NACCNCRD to 1.
         """
         return 1
