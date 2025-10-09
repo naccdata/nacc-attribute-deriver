@@ -1,15 +1,34 @@
 """Derives variables using MRI summary data."""
 
+import datetime
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
 from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.date import date_from_form_date
 
 
 class MRISummaryAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
-        self.__mri_summary = RawNamespace(table)
+        self.__mri_summary = RawNamespace(
+            table, required=frozenset(["mriyr", "mrimo", "mridy"])
+        )
+
+    def get_date(self) -> datetime.date:
+        """Need to override since date is in 3 parts for this namespace."""
+        mriyr = self.__mri_summary.get_value("mriyr", int)
+        mrimo = self.__mri_summary.get_value("mrimo", int)
+        mridy = self.__mri_summary.get_value("mridy", int)
+        mridate = date_from_form_date(f"{mriyr:04}-{mrimo:02d}-{mridy:02d}")
+
+        if not mridate:
+            raise AttributeDeriverError(
+                f"Unable to build MRI date from parts: {mriyr}, {mrimo}, {mridy}"
+            )
+
+        return mridate
 
     def _get_valid_float_value(self, attribute: str) -> Optional[float]:
         """Get valid float values; ignores values like 9999.9999 or 8888.8888

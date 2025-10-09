@@ -126,8 +126,3 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
             raise InvalidFieldError(f"Invalid/unknown naccdied code: {naccdied}")
 
         return mapped_naccdied
-
-    def _create_np_available(self) -> bool:
-        """NP available, which is just checking for the existence of
-        np_death_age."""
-        return self.__subject_derived.get_value("np_death_age", str) is not None

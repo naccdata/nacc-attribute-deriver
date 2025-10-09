@@ -39,6 +39,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `cognitive._create_etpr` - use NACCETPR
     * `cognitive._create_cognitive_status` - use NACCUDSD
     * `demographics._create_age_at_death` - use NACCDAGE
+    * `demographics._np_available` - use NACCAUTP (check not 0 or 8)
     * `demographics._create_uds_age` - use NACCAGE
     * `longitudinal._create_total_uds_visits` - use NACCAVST
 * Adds pseudocode for MP variables - need to finalize once we know how data actually looks
