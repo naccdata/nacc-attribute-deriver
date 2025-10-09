@@ -1,5 +1,10 @@
 """Handles when other forms do not exist so their NACC derived variables are
-not "set", but that "unset" value is something other than -4/None."""
+not "set", but that "unset" value is something other than -4/None.
+
+TODO: this should probably be done differently as a post-processing sweep for
+missingness values, instead of curated as separate rules. TBD once we get
+the missingness values aligned.
+"""
 
 from typing import Optional
 
@@ -91,14 +96,14 @@ class MissingFormAttributes(AttributeCollection):
         """Handles NACCLBDM (from LBD)."""
         return self.handle_missing("nacclbdm", 0)
 
-    def _create_uds_naccacsf(self) -> int:
+    def _create_uds_naccacsf(self) -> Optional[int]:
         """Handles NACCACSF (from CSF)."""
         return self.handle_missing("naccacsf", 0)
 
-    def _create_uds_naccpcsf(self) -> int:
+    def _create_uds_naccpcsf(self) -> Optional[int]:
         """Handles NACCPCSF (from CSF)"""
         return self.handle_missing("naccpcsf", 0)
 
-    def _create_uds_nacctcsf(self) -> int:
+    def _create_uds_nacctcsf(self) -> Optional[int]:
         """Handles NACCTCSF (from CSF)"""
         return self.handle_missing("nacctcsf", 0)

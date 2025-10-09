@@ -11,7 +11,7 @@ class Scope(str, Enum):
 class FormScope(Scope):
     # forms
     CLS = "cls"
-    CSF = 'csf'
+    CSF = "csf"
     MDS = "mds"
     MILESTONE = "milestone"
     NP = "np"
@@ -46,7 +46,7 @@ class SCANMRIScope(Scope):
 
 class ImagingScope(Scope):
     # MP scope
-    MIXED_PROTOCOL = "mp"
+    MRI_SUMMARY = "mri_summary"
 
 
 ScopeLiterals = Literal[
@@ -70,5 +70,5 @@ ScopeLiterals = Literal[
     SCANPETScope.TAU_PET_NPDKA,
     SCANMRIScope.MRI_QC,
     SCANMRIScope.MRI_SBM,
-    ImagingScope.MIXED_PROTOCOL,
+    ImagingScope.MRI_SUMMARY,
 ]

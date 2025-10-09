@@ -15,8 +15,6 @@ from nacc_attribute_deriver.utils.date import (
     date_from_form_date,
 )
 
-from .mp_summary import MP_INVALID_VALUES, MP_SUMMARY_VALUES
-
 
 class MPFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
@@ -152,71 +150,6 @@ class MPFormAttributeCollection(AttributeCollection):
         days = calculate_days(apetdate, visitdate)
 
         return days if days is not None else 8
-
-    def _get_valid_float_value(self, attribute: str) -> Optional[float]:
-        """Get valid float values; ignores values like 9999.9999 or 8888.8888
-        and return None instead for those cases.
-
-        Args:
-            attribute: Name of attribute to grab; expected to be float
-        """
-        value = self.__mp.get_value(attribute, float)
-
-        if value in MP_INVALID_VALUES:
-            return None
-
-        return value
-
-    def _create_naccicv(self) -> float:
-        """Create the NACCICV variable.
-
-        Total intercranial volume (cc)
-        """
-        gray = self._get_valid_float_value("grayvol")
-        white = self._get_valid_float_value("whitevol")
-        csf = self._get_valid_float_value("csfvol")
-        wmh = self._get_valid_float_value("wmhvol")
-
-        if all(v is not None for v in [gray, white, csf, wmh]):
-            return round(gray + white + csf + wmh, 3)  # type: ignore
-
-        return 9999.999
-
-    def _create_naccwmvl(self) -> float:
-        """Create the NACCWMVL variable.
-
-        Total white matter volume (cc)
-        """
-        white = self._get_valid_float_value("whitevol")
-        wmh = self._get_valid_float_value("wmhvol")
-
-        if white is not None and wmh is not None:
-            return round(white + wmh, 3)
-
-        return 9999.999
-
-    def _create_naccbrnv(self) -> float:
-        """Create the NACCBRNV variable.
-
-        Total brain volume (cc)
-        """
-        gray = self._get_valid_float_value("grayvol")
-        white = self._get_valid_float_value("whitevol")
-
-        if gray is not None and white is not None:
-            return round(gray + white, 3)
-
-        return 9999.999
-
-    def _create_naccmvol(self) -> int:
-        """Create the NACCMVOL variable.
-
-        Calculated summary data available (y/n)
-        """
-        if all(self._get_valid_float_value(x) for x in MP_SUMMARY_VALUES):
-            return 0
-
-        return 1
 
     # These three are seemingly just returning a different variable. From derive.sas
     # TODO: It seems NACCMRI, NACCNAPT, and NACCAPET are variables keeping track of
