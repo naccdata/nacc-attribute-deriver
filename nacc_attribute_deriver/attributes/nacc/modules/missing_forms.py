@@ -90,3 +90,15 @@ class MissingFormAttributes(AttributeCollection):
     def _create_uds_nacclbdm(self) -> Optional[int]:
         """Handles NACCLBDM (from LBD)."""
         return self.handle_missing("nacclbdm", 0)
+
+    def _create_uds_naccacsf(self) -> int:
+        """Handles NACCACSF (from CSF)."""
+        return self.handle_missing("naccacsf", 0)
+
+    def _create_uds_naccpcsf(self) -> int:
+        """Handles NACCPCSF (from CSF)"""
+        return self.handle_missing("naccpcsf", 0)
+
+    def _create_uds_nacctcsf(self) -> int:
+        """Handles NACCTCSF (from CSF)"""
+        return self.handle_missing("nacctcsf", 0)

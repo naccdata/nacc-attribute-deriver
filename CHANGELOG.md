@@ -28,6 +28,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Adds NIAGADS accession number derived variables
     * Adds NACCNE4S, NACCNCRD
     * Fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
+* Adds CSF derived variables
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case

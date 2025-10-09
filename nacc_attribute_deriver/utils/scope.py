@@ -11,6 +11,7 @@ class Scope(str, Enum):
 class FormScope(Scope):
     # forms
     CLS = "cls"
+    CSF = 'csf'
     MDS = "mds"
     MILESTONE = "milestone"
     NP = "np"
@@ -50,6 +51,7 @@ class ImagingScope(Scope):
 
 ScopeLiterals = Literal[
     FormScope.CLS,
+    FormScope.CSF,
     FormScope.MDS,
     FormScope.MILESTONE,
     FormScope.NP,

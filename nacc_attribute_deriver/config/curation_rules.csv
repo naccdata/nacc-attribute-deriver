@@ -64,6 +64,9 @@ np,nppdxq,subject.info.working.cross-sectional.nppdxq,update,FALSE
 np,np_form_date,subject.info.working.cross-sectional.np-form-date,update,FALSE
 cls,naccengl,subject.info.derived.cross-sectional.naccengl,update,FALSE
 cls,naccspnl,subject.info.derived.cross-sectional.naccspnl,update,FALSE
+csf,naccacsf,subject.info.derived.cross-sectional.naccacsf,update,FALSE
+csf,naccpcsf,subject.info.derived.cross-sectional.naccpcsf,update,FALSE
+csf,nacctcsf,subject.info.derived.cross-sectional.nacctcsf,update,FALSE
 scan_mri_sbm,scan_volume_analysis_indicator,subject.info.imaging.mri.scan.t1.brain-volume,max,FALSE
 scan_mri_sbm,scan_flair_wmh_indicator,subject.info.imaging.mri.scan.flair.wmh,max,FALSE
 scan_mri_sbm,mri_scan_analysis_types,subject.info.imaging.mri.scan.analysis-types,set,FALSE
@@ -304,3 +307,6 @@ uds,uds_naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 uds,uds_naccncrd,subject.info.derived.cross-sectional.naccncrd,update,FALSE
 uds,uds_naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
 uds,uds_nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
+uds,uds_naccacsf,subject.info.derived.cross-sectional.naccacsf,update,FALSE
+uds,uds_naccpcsf,subject.info.derived.cross-sectional.naccpcsf,update,FALSE
+uds,uds_nacctcsf,subject.info.derived.cross-sectional.nacctcsf,update,FALSE
