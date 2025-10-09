@@ -95,12 +95,3 @@ class TestDerivedDemographicsAttributeCollection:
         ) in DerivedDemographicsAttributeCollection.VITAL_STATUS_MAPPINGS.items():
             table["subject.info.derived.cross-sectional.naccdied"] = k
             assert attr._create_vital_status() == v
-
-    def test_create_np_available(self, table):
-        """Tests _create_np_available."""
-        attr = DerivedDemographicsAttributeCollection(table)
-        assert attr._create_np_available()
-
-        # none case
-        table["subject.info.derived.np_death_age"] = None
-        assert not attr._create_np_available()

@@ -28,6 +28,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Adds NIAGADS accession number derived variables
     * Adds NACCNE4S, NACCNCRD
     * Fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
+* Adds CSF derived variables
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
@@ -38,6 +39,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `cognitive._create_etpr` - use NACCETPR
     * `cognitive._create_cognitive_status` - use NACCUDSD
     * `demographics._create_age_at_death` - use NACCDAGE
+    * `demographics._np_available` - use NACCAUTP (check not 0 or 8)
     * `demographics._create_uds_age` - use NACCAGE
     * `longitudinal._create_total_uds_visits` - use NACCAVST
 * Adds pseudocode for MP variables - need to finalize once we know how data actually looks

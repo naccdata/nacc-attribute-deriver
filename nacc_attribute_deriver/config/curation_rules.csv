@@ -64,6 +64,9 @@ np,nppdxq,subject.info.working.cross-sectional.nppdxq,update,FALSE
 np,np_form_date,subject.info.working.cross-sectional.np-form-date,update,FALSE
 cls,naccengl,subject.info.derived.cross-sectional.naccengl,update,FALSE
 cls,naccspnl,subject.info.derived.cross-sectional.naccspnl,update,FALSE
+csf,naccacsf,subject.info.derived.cross-sectional.naccacsf,update,FALSE
+csf,naccpcsf,subject.info.derived.cross-sectional.naccpcsf,update,FALSE
+csf,nacctcsf,subject.info.derived.cross-sectional.nacctcsf,update,FALSE
 scan_mri_sbm,scan_volume_analysis_indicator,subject.info.imaging.mri.scan.t1.brain-volume,max,FALSE
 scan_mri_sbm,scan_flair_wmh_indicator,subject.info.imaging.mri.scan.flair.wmh,max,FALSE
 scan_mri_sbm,mri_scan_analysis_types,subject.info.imaging.mri.scan.analysis-types,set,FALSE
@@ -87,6 +90,14 @@ scan_pet_qc,scan_pet_session_count,subject.info.imaging.pet.scan.count,max,FALSE
 scan_pet_qc,scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,FALSE
 scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
+mri_summary,naccmvol,file.info.derived.naccmvol,update,FALSE
+mri_summary,naccmvol,subject.info.derived.longitudinal.naccmvol,list,TRUE
+mri_summary,naccicv,file.info.derived.naccicv,update,FALSE
+mri_summary,naccicv,subject.info.derived.longitudinal.naccicv,list,TRUE
+mri_summary,naccwmvl,file.info.derived.naccwmvl,update,FALSE
+mri_summary,naccwmvl,subject.info.derived.longitudinal.naccwmvl,list,TRUE
+mri_summary,naccbrnv,file.info.derived.naccbrnv,update,FALSE
+mri_summary,naccbrnv,subject.info.derived.longitudinal.naccbrnv,list,TRUE
 meds,drugs_list,subject.info.working.longitudinal.drugs-list,list,TRUE
 ftld,naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
 lbd,nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
@@ -268,7 +279,6 @@ uds,uds_race,subject.info.demographics.uds.race.latest,latest,TRUE
 uds,uds_primary_language,subject.info.demographics.uds.primary-language.latest,latest,TRUE
 uds,educ,subject.info.demographics.uds.education-level.latest,latest,TRUE
 uds,vital_status,subject.info.demographics.uds.vital-status.latest,latest,TRUE
-uds,np_available,subject.info.demographics.uds.np-available,max,FALSE
 uds,naccavst,subject.info.longitudinal-data.uds.count,max,FALSE
 uds,years_of_uds,subject.info.longitudinal-data.uds.year-count,max,FALSE
 uds,uds_versions_available,subject.info.study-parameters.uds.versions,set,FALSE
@@ -304,3 +314,6 @@ uds,uds_naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 uds,uds_naccncrd,subject.info.derived.cross-sectional.naccncrd,update,FALSE
 uds,uds_naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
 uds,uds_nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
+uds,uds_naccacsf,subject.info.derived.cross-sectional.naccacsf,update,FALSE
+uds,uds_naccpcsf,subject.info.derived.cross-sectional.naccpcsf,update,FALSE
+uds,uds_nacctcsf,subject.info.derived.cross-sectional.nacctcsf,update,FALSE
