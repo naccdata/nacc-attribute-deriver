@@ -1,7 +1,9 @@
 """CSF-specific derived variables."""
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
+    AttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     RawNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

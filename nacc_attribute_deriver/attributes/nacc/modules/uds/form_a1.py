@@ -5,7 +5,12 @@ From derive.sas and a1structrdd.sas
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.collection.uds_attribute_collection import (
+    UDSAttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    SubjectDerivedNamespace,
+)
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
@@ -14,7 +19,6 @@ from nacc_attribute_deriver.utils.date import (
 )
 
 from .helpers.generate_race import generate_race
-from .uds_attribute_collection import UDSAttributeCollection
 
 
 class UDSFormA1Attribute(UDSAttributeCollection):

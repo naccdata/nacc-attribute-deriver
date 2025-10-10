@@ -8,8 +8,12 @@ the missingness values aligned.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
+    AttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    SubjectDerivedNamespace,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

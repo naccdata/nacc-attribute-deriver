@@ -11,7 +11,7 @@ Will need to determine what behavior we want.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
 
