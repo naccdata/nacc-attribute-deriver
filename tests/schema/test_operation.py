@@ -104,6 +104,24 @@ class TestOperation:
             }
         }
 
+        # reset for following tests
+        op.evaluate(table=dated_table, value=5, attribute=location)
+        assert dated_table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
+
+        # again, test on dated value with None and INFORMED_BLANK values
+        value = DateTaggedValue(date=date(2025, 12, 31), value=None)
+        op.evaluate(table=dated_table, value=value, attribute=location)
+        assert dated_table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
+
+        value = DateTaggedValue(date=date(2025, 12, 31), value=INFORMED_BLANK)
+        op.evaluate(table=dated_table, value=value, attribute=location)
+        assert dated_table.to_dict() == {
+            "test": {
+                "date": "2025-01-01",
+                "location": {"date": "2025-12-31", "value": None},
+            }
+        }
+
     def test_list(self, table, location):
         op = ListOperation()
         assert op.LABEL == "list"
