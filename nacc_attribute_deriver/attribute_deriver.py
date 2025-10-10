@@ -168,7 +168,7 @@ class AttributeDeriver(BaseAttributeDeriver):
 
 
 class MissingnessDeriver(BaseAttributeDeriver):
-    def __init__(self, missingness_file: str = 'missingness_rules.csv') -> None:
+    def __init__(self, missingness_file: str = "missingness_rules.csv") -> None:
         super().__init__(missingness_file, "missingness")
 
     def get_curated_value(
@@ -197,7 +197,8 @@ class MissingnessDeriver(BaseAttributeDeriver):
 
         if not method:
             raise AttributeDeriverError(
-                f"Unknown attribute function for scope {scope}: {self.derive_type}_{scope}"
+                f"Unknown attribute function for scope {scope}: "
+                + f"{self.derive_type}_{scope}"
             )
 
         try:
