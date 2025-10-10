@@ -2,7 +2,7 @@
 
 from typing import ClassVar, List, Optional
 
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
+from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
 

@@ -10,11 +10,15 @@ NOTE: Derived variable are only supposed to reflect the last 2 weeks, so
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
+from nacc_attribute_deriver.attributes.collection.uds_attribute_collection import (
+    UDSAttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingDerivedNamespace,
+)
+from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
-
-from .uds_attribute_collection import UDSAttributeCollection
 
 
 class UDSFormA4Attribute(UDSAttributeCollection):
@@ -58,7 +62,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         each visit.
         """
         if not self.submitted:
-            return -4
+            return INFORMED_MISSINGNESS
 
         return len(self.__meds)
 
@@ -71,7 +75,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             1 if there is a match, 0 otherwise
         """
         if not self.submitted:
-            return -4
+            return INFORMED_MISSINGNESS
 
         if not self.__meds:
             return 0

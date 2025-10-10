@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError

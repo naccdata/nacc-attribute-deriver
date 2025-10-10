@@ -9,8 +9,10 @@ From Genetics RDD:
 from types import MappingProxyType
 from typing import Mapping, Tuple
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
+    AttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     RawNamespace,
     WorkingDerivedNamespace,
 )

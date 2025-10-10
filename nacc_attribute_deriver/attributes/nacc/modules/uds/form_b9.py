@@ -13,13 +13,14 @@ either.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.collection.uds_attribute_collection import (
+    UDSAttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-
-from .uds_attribute_collection import UDSAttributeCollection
 
 
 class UDSFormB9Attribute(UDSAttributeCollection):

@@ -1,7 +1,7 @@
 """Tests deriving MQT SCAN variables."""
 
 import pytest
-from nacc_attribute_deriver.attributes.base.scan_namespace import (
+from nacc_attribute_deriver.attributes.namespace.scan_namespace import (
     SCANPETNamespace,
 )
 from nacc_attribute_deriver.attributes.mqt.scan import (

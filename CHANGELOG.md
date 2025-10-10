@@ -4,6 +4,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 2.0.0 (not yet released)
 
+* Adds missingness logic, which requires some repo restructuring/refactoring
 * Adds rest of UDS derived variables:
     * Form header
         * Here some NACC derived variables compute the same thing but apply to a different operation, so curation rule may point to a different derived variable's function

@@ -4,6 +4,7 @@ import pytest
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a2 import (
     UDSFormA2Attribute,
 )
+from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -33,7 +34,7 @@ class TestUDSFormA2Attribute:
         """Test NACCNINR over longitudinal values."""
         attr = UDSFormA2Attribute(table)
         # does NOT carry forward
-        assert attr._create_naccninr() == -4
+        assert attr._create_naccninr() == INFORMED_MISSINGNESS
 
         table["file.info.forms.json.a2sub"] = 1
         table["file.info.forms.json.newinf"] = 1

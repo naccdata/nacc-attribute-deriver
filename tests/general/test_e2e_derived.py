@@ -1,7 +1,7 @@
 """Tests against the full schema end-to-end.
 
 Mainly sanity checks to make sure modules run at all. Does not test UDS
-due to its complexity/length.
+fully due to its complexity/length.
 """
 
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver

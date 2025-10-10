@@ -11,7 +11,7 @@ from typing import List, Union, get_args, get_origin
 from pydantic import BaseModel, ValidationError
 
 from nacc_attribute_deriver import config
-from nacc_attribute_deriver.attributes.attribute_collection import (
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollectionRegistry,
 )
 from nacc_attribute_deriver.schema.operation import DateTaggedValue

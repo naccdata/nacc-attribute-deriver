@@ -6,7 +6,7 @@ Comes from 7 unique files.
 from types import MappingProxyType
 from typing import Dict, List, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import RawNamespace
+from nacc_attribute_deriver.attributes.namespace.namespace import RawNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.scope import SCANMRIScope, SCANPETScope
 

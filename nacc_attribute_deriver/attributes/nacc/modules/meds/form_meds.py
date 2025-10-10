@@ -9,8 +9,10 @@ from importlib import resources
 from typing import Dict, List
 
 from nacc_attribute_deriver import config
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
+    AttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     BaseNamespace,
 )
 from nacc_attribute_deriver.schema.errors import (

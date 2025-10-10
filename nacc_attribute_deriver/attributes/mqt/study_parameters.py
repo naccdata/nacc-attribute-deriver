@@ -6,9 +6,11 @@ Assumes NACC-derived variables are already set
 import re
 from typing import List
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import SubjectInfoNamespace
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
+    AttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import SubjectInfoNamespace
+from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

@@ -1,6 +1,8 @@
 """Tests the base AttributeCollection classes."""
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
+    AttributeCollection,
+)
 
 
 class TestAttributeCollection:
