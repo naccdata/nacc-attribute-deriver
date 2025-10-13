@@ -92,7 +92,9 @@ class TestOperation:
 
         # test setting to INFORMED_BLANK forces the None
         op.evaluate(table=dated_table, value=INFORMED_BLANK, attribute=location)
-        assert dated_table.to_dict() == {"test": {"date": "2025-01-01", "location": None}}
+        assert dated_table.to_dict() == {
+            "test": {"date": "2025-01-01", "location": None}
+        }
 
         # test on dated value - should override previous location
         value = DateTaggedValue(date=date(2025, 12, 31), value=10)

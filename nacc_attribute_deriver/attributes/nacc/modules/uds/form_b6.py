@@ -6,7 +6,7 @@ Form B6 may not have been filled out.
 import math
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute_collection import (
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 

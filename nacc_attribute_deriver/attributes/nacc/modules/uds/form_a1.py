@@ -5,7 +5,7 @@ From derive.sas and a1structrdd.sas
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute_collection import (
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (

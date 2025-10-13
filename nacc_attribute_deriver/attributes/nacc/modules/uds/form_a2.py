@@ -4,7 +4,7 @@ Form A2 is optional, so may not have been submitted. From
 a2structrdd.sas
 """
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute_collection import (
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (

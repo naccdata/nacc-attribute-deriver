@@ -6,7 +6,7 @@ One of form C1 or C2 is expected to have been submitted.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute_collection import (
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
