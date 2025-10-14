@@ -15,7 +15,7 @@ class MixedProtocolNamespace(BaseNamespace):
         self,
         table: SymbolTable,
         attribute_prefix: str = "file.info.header.dicom.",
-        required: frozenset[str] = frozenset(["AcquisitionDate"]),
+        required: frozenset[str] = frozenset(["StudyDate"]),
         date_attribute: Optional[str] = None,
     ) -> None:
         super().__init__(
@@ -35,9 +35,9 @@ class MixedProtocolNamespace(BaseNamespace):
         if "file.info.header" in table and len(table.get("file.info.header", [])) == 1:
             self.__nifti = True
 
-        acq_date = self.get_value("AcquisitionDate", str)
+        acq_date = self.get_value("StudyDate", str)
         if not acq_date:
-            raise AttributeDeriverError("No AcquisitionDate found for image")
+            raise AttributeDeriverError("No StudyDate found for image")
 
         self.__acquisition_date = datetime.strptime(acq_date, "%Y%m%d").date()
 

@@ -42,14 +42,19 @@ class MPAttributeCollection(AttributeCollection):
     def mp(self) -> MixedProtocolNamespace:
         return self.__mp
 
+    @property
+    def working(self) -> WorkingDerivedNamespace:
+        return self.__working
+
     def calculate_age_at_scan(self) -> int:
         """Calculate age at scan from UDS DOB."""
-        uds_dob = self.__working.get_cross_sectional_value("uds-date-of-birth", date)
+        uds_dob = self.__working.get_cross_sectional_value("uds-date-of-birth", str)
 
         if not uds_dob:
             return 888
 
-        age = calculate_age(uds_dob, self.__mp.acquisition_date)
+        age = calculate_age(date_from_form_date(uds_dob),
+                            self.__mp.acquisition_date)
         # only allow 18-120
         return min(max(age, 18), 120) if age is not None else 888
 
@@ -72,7 +77,7 @@ class MPAttributeCollection(AttributeCollection):
         if not last_uds_visit:
             raise AttributeDeriverError("Unable to parse last UDS visitdate")
 
-        return (self.__mp.acquisition_date - last_uds_visit).days
+        return (last_uds_visit - self.__mp.acquisition_date).days
 
     def get_filename(self) -> Optional[str]:
         """File locator variable.
@@ -108,16 +113,32 @@ class MPMRIAttributeCollection(MPAttributeCollection):
 
         DICOM image file available (y/n). True if the current thing
         we're curating is NOT a nifti file (since at the moment we only
-        curate on DICOMs and NIfTIs)
+        curate on DICOMs and NIfTIs). Needs to check if another image
+        in the session has already set this value to 1.
         """
+        # check if we already set it for this session
+        cur_naccdico = self.working.get_corresponding_longitudinal_value(
+            str(self.mp.acquisition_date), 'naccdico', int
+        )
+        if cur_naccdico == 1:
+            return 1
+
         return 1 if not self.mp.is_nifti else 0
 
     def _create_naccnift(self) -> int:
         """Create the NACCNIFT variable.
 
         NIFTI image file available (y/n). True if the current thing
-        we're curating is a nifti file.
+        we're curating is a nifti file. Needs to check if another image
+        in the session has already set this value to 1.
         """
+        # check if we already set it for this session
+        cur_naccnift = self.working.get_corresponding_longitudinal_value(
+            str(self.mp.acquisition_date), 'naccnift', int
+        )
+        if cur_naccnift == 1:
+            return 1
+
         return 1 if self.mp.is_nifti else 0
 
     def _create_naccmria(self) -> int:
