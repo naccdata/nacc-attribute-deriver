@@ -1,191 +1,223 @@
-"""Derived variables from MP form.
+"""Derived variables for MP scans (MRI and PET).
 
-TODO: THIS IS PSEUDOCODE. Curation rules need to be added for this
-scope once it is more finalized.
+NOTE: This curation works a little differently, since
+these derived variables are associated with a session, which
+in turn has several scans/acquisitions. Since we curate by
+acquisition/file, many of these variables may not update
+with any "new" information if a previous image/acquisition
+has already been evaluated, and everything is associated by
+the scan date.
+
+In short, it's pretty inefficient, because we only really
+need to know about the session and not loop over each image
+in the series. There are probably better ways to go about this,
+but for now, this is the quick and dirty way that fits into
+the current framework.
 """
 
+from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.namespace import FormNamespace
+from nacc_attribute_deriver.attributes.base.image_namespace import (
+    MixedProtocolNamespace,
+)
+from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
-    calculate_days,
-    calculate_months,
+    calculate_age,
     date_from_form_date,
 )
 
 
-class MPFormAttributeCollection(AttributeCollection):
+class MPAttributeCollection(AttributeCollection):
+    """Attribute collection for mixed protocol."""
+
     def __init__(self, table: SymbolTable) -> None:
-        """Check that this is an MP form.
+        self.__mp = MixedProtocolNamespace(table=table)
+        self.__working = WorkingDerivedNamespace(table=table)
 
-        TODO: figure out what is a required/expected variable for MP
+    @property
+    def mp(self) -> MixedProtocolNamespace:
+        return self.__mp
+
+    def calculate_age_at_scan(self) -> int:
+        """Calculate age at scan from UDS DOB."""
+        uds_dob = self.__working.get_cross_sectional_value("uds-date-of-birth", date)
+
+        if not uds_dob:
+            return 888
+
+        age = calculate_age(uds_dob, self.__mp.acquisition_date)
+        # only allow 18-120
+        return min(max(age, 18), 120) if age is not None else 888
+
+    def calculate_days_since_last_uds_visit(self) -> int:
+        """Create the NACCMRDY variable.
+
+        Days between session and closest UDS visit. We assume
+        all of UDS has been curated by the time we are looking
+        at imaging data.
+
+        For sessions before the closest visidate, days < 0.
+        For sessions after the closeset visitdate, days > 0.
+        8888 If not applicable/no image available.
         """
-        self.__mp = FormNamespace(table=table)
+        visitdates = self.__working.get_cross_sectional_value("uds-visitdates", list)
+        if not visitdates:
+            return 8888
 
-        # TODO: not sure MP will have a module field
-        # module = self.__mp.get_required("module", str)
-        # if not module or module.upper() != "MP":
-        #     msg = f"Current file is not an MP form: found {module}"
-        #     raise InvalidFieldError(msg)
+        last_uds_visit = date_from_form_date(visitdates[-1])
+        if not last_uds_visit:
+            raise AttributeDeriverError("Unable to parse last UDS visitdate")
 
-    def _create_naccnift(self) -> int:
-        """Create the NACCNIFT variable.
+        return (self.__mp.acquisition_date - last_uds_visit).days
 
-        NIFTI image file available (y/n)
-        """
-        nifti = self.__mp.get_value("nifti", int)
-        return 1 if nifti == 1 else 0
+    def get_filename(self) -> Optional[str]:
+        """File locator variable.
 
-    def _create_naccapnm(self) -> int:
-        """Create the NACCAPNM variable.
-
-        Amyloid PET scan in chronological order
-        """
-        is_first_file = self.__mp.get_value("is_first_file", int)
-        prev_value = self.__mp.get_value("prev_naccapnm", int)
-
-        # TODO - figure out valid "true" values for these
-        if is_first_file is not None and is_first_file:
-            return 1
-        if prev_value is not None:
-            return prev_value + 1
-
-        return 8
-
-    def _create_naccmrfi(self) -> Optional[str]:
-        """Create the NACCMRFI variable.
-
-        File locator variable
-        """
-        filename = self.__mp.get_value("filename", str)
-        if filename and filename.strip():
-            return filename.strip()
-
-        # change default to None since empty string is not useful
-        return None
-
-    def _create_naccaptf(self) -> Optional[str]:
-        """Create the NACCAPTF variable.
-
-        Amyloid PET scan file locator variable
+        TODO: THIS FILENAME IS NOT AVAILABLE IN FW. NEED
+            TO DROP OR THINK OF ALTERNATE SOLUTION.
         """
         filename = self.__mp.get_value("filename", str)
         if filename and filename.strip():
             return filename.strip()
 
-        # Didn't have a default return variable
         return None
+
+    def get_num_sessions(self, sessions_field: str) -> int:
+        """Get total number of sessions.
+
+        sessions_field: Cross-sectional working field to get session
+        dates form; should be mri-sessions or pet-sessions.
+        """
+        sessions = self.__working.get_cross_sectional_value(sessions_field, list)
+        if not sessions:
+            return 88
+
+        # only allow 1-20
+        return min(len(sessions), 20)
+
+
+class MPMRIAttributeCollection(MPAttributeCollection):
+    """Attribute collection for MP MRIs."""
 
     def _create_naccdico(self) -> int:
         """Create the NACCDICO variable.
 
-        DICOM image file available (y/n)
+        DICOM image file available (y/n). True if the current thing
+        we're curating is NOT a nifti file (since at the moment we only
+        curate on DICOMs and NIfTIs)
         """
-        value = self.__mp.get_value("naccdico", int)
-        return value if value is not None else 0
+        return 1 if not self.mp.is_nifti else 0
+
+    def _create_naccnift(self) -> int:
+        """Create the NACCNIFT variable.
+
+        NIFTI image file available (y/n). True if the current thing
+        we're curating is a nifti file.
+        """
+        return 1 if self.mp.is_nifti else 0
+
+    def _create_naccmria(self) -> int:
+        """Create the NACCMRIA variable.
+
+        Subject age at time of MRI. Derives from UDS DOB.
+        """
+        return self.calculate_age_at_scan()
+
+    def _create_naccmrfi(self) -> Optional[str]:
+        """Create the NACCMRFI variable.
+
+        File locator variable.
+
+        TODO: THIS FILENAME IS NOT AVAILABLE IN FW. NEED
+            TO DROP OR THINK OF ALTERNATE SOLUTION.
+        """
+        return self.get_filename()
 
     def _create_naccnmri(self) -> int:
         """Create the NACCNMRI variable.
 
         Total number of MRI sessions
         """
-        value = self.__mp.get_value("naccnmri", int)
-        return value if value is not None else 88
+        return self.get_num_sessions("mri-sessions")
 
     def _create_naccmnum(self) -> int:
         """Create the NACCMNUM variable.
 
-        MRI session in chronological order
+        MRI session in chronological order. This corresponds to how many
+        mri-sessions we have logged at the given point in time, which
+        happens to also be NACCNMRI (but NACCNMRI gets updated with each
+        session to eventually account for the grand total).
         """
-        value = self.__mp.get_value("naccmnum", int)
-        return value if value is not None else 0
+        return self._create_naccnmri()
 
     def _create_naccmrdy(self) -> int:
         """Create the NACCMRDY variable.
 
-        Days between MRI session and closest UDS visit
+        Days between MRI session and closest UDS visit.
         """
-        # TODO: don't know if dates are in the expected format
-        mridate = date_from_form_date(self.__mp.get_value("mridate", str))
-        visitdate = date_from_form_date(self.__mp.get_value("visitdate", str))
-        days = calculate_days(mridate, visitdate)
-
-        return days if days is not None else 8888
-
-    def _create_naccmria(self) -> int:
-        """Create the NACCMRIA variable.
-
-        Subject age at time of MRI
-        """
-        # TODO: don't know if dates are in the expected format
-        birthdate = date_from_form_date(self.__mp.get_value("birthdate", str))
-        tmridate = date_from_form_date(self.__mp.get_value("tmridate", str))
-        months = calculate_months(birthdate, tmridate)
-
-        return months if months is not None else 888
-
-    def _create_naccapta(self) -> Optional[int]:
-        """Create the NACCAPTA variable.
-
-        Subject age at time of amyloid PET scan
-        """
-        # TODO: don't know if dates are in the expected format
-        birthdate = date_from_form_date(self.__mp.get_value("birthdate", str))
-        tpetdate = date_from_form_date(self.__mp.get_value("tpetdate", str))
-        months = calculate_months(birthdate, tpetdate)
-
-        # TODO no specified default; use 888 for now like NACCMRIA
-        return months if months is not None else 888
-
-    def _create_naccaptd(self) -> int:
-        """Create the NACCAPTD variable.
-
-        Days between amyloid PET scan and closest UDS visit
-        """
-        # TODO: don't know if dates are in the expected format
-        apetdate = date_from_form_date(self.__mp.get_value("apetdate", str))
-        visitdate = date_from_form_date(self.__mp.get_value("visitdate", str))
-        days = calculate_days(apetdate, visitdate)
-
-        return days if days is not None else 8
-
-    # These three are seemingly just returning a different variable. From derive.sas
-    # TODO: It seems NACCMRI, NACCNAPT, and NACCAPET are variables keeping track of
-    # whether said imaging files exist. Unclear if we actually need to keep track
-    # of these or can just directly derive the corresponding variables. Will know
-    # more once we know how MP files look in FW
+        return self.calculate_days_since_last_uds_visit()
 
     def _create_naccmrsa(self) -> int:
         """Create the NACCMRSA variable.
 
-        At least one MRI scan available
+        At least one MRI scan available. If this is called at all then
+        that means an MRI exists, so set to 1.
         """
-        naccmri = self.__mp.get_value("naccmri", int)
+        return 1
 
-        if naccmri is None:
-            return 0
-        return naccmri
+
+class MPPETAttributeCollection(MPAttributeCollection):
+    """Attribute collection for MP PETs."""
+
+    def _create_naccapta(self) -> Optional[int]:
+        """Create the NACCAPTA variable.
+
+        Subject age at time of amyloid PET scan. Derives from UDS DOB.
+        """
+        return self.calculate_age_at_scan()
+
+    def _create_naccaptf(self) -> Optional[str]:
+        """Create the NACCAPTF variable.
+
+        Amyloid PET scan file locator variable
+
+        TODO: THIS FILENAME IS NOT AVAILABLE IN FW. NEED
+            TO DROP OR THINK OF ALTERNATE SOLUTION.
+        """
+        return self.get_filename()
 
     def _create_naccnapa(self) -> int:
         """Create the NACCNAPA variable.
 
-        Total number of amyloid PET scans available
+        Total number of amyloid PET scans available.
         """
-        naccnapt = self.__mp.get_value("naccnapt", int)
+        return self.get_num_sessions("pet-sessions")
 
-        if naccnapt == 1:
-            return 1
-        return 0
+    def _create_naccapnm(self) -> int:
+        """Create the NACCAPNM variable.
+
+        PET sessions in chronological order. This corresponds to how
+        many pet-sessions we have logged at the given point in time,
+        which happens to also be NACCNAPA (but NACCNAPA gets updated
+        with each session to eventually account for the grand total).
+        """
+        return self._create_naccnapa()
+
+    def _create_naccaptd(self) -> int:
+        """Create the NACCAPTD variable.
+
+        Days between PET session and closest UDS visit.
+        """
+        return self.calculate_days_since_last_uds_visit()
 
     def _create_naccapsa(self) -> int:
         """Create the NACCAPSA variable.
 
-        At least one amyloid PET scan available (y/n)
+        At least one PET scan available. If this is called at all then
+        that means a PET exists, so set to 1.
         """
-        naccapet = self.__mp.get_value("naccapet", int)
-
-        if naccapet == 1:
-            return 1
-        return 0
+        return 1
