@@ -32,7 +32,7 @@ def nifti_table() -> SymbolTable:
                     'cross-sectional': {
                         'uds-date-of-birth': "1950-05-01",
                         'uds-visitdates': [
-                            '2000-12-01',
+                            '1800-12-01',
                             '2020-06-01'
                         ],
                         'mri-sessions': [
@@ -91,30 +91,31 @@ class TestMPAttributeCollection:
             = None
         assert attr.calculate_age_at_scan() == 888
 
-    def test_calculate_days_since_last_uds_visit(self, dicom_table):
-        """Tetst calculating days since last UDS visit."""
+    def test_calculate_days_from_closest_uds_visit(self, dicom_table):
+        """test calculating days since closest UDS visit."""
         attr = MPAttributeCollection(dicom_table)
 
-        # should be from 2020-06-01, so positive
-        assert attr.calculate_days_since_last_uds_visit() == 5038
+        # using default values should be from 2020-06-01, so negative
+        # since it came before
+        assert attr.calculate_days_from_closest_uds_visit() == -5038
 
-        # from 2000-12-01, so negative
+        # from 2000-12-01, so positive since it came after
         dicom_table['subject.info.working.cross-sectional.uds-visitdates'] = [
             '1900-01-01',
-            '1950-01-01',
-            '2000-12-01'
+            '2000-12-01',
+            '2100-01-01'
         ]
-        assert attr.calculate_days_since_last_uds_visit() == -2084
+        assert attr.calculate_days_from_closest_uds_visit() == 2084
 
         # same, so 0
         dicom_table['subject.info.working.cross-sectional.uds-visitdates'] = [
             '2006-08-16'
         ]
-        assert attr.calculate_days_since_last_uds_visit() == 0
+        assert attr.calculate_days_from_closest_uds_visit() == 0
 
         # test no UDS dates
         dicom_table['subject.info.working.cross-sectional.uds-visitdates'] = None
-        assert attr.calculate_days_since_last_uds_visit() == 8888
+        assert attr.calculate_days_from_closest_uds_visit() == 8888
 
     def test_get_num_sessions(self, dicom_table):
         """Test getting number of sessions."""

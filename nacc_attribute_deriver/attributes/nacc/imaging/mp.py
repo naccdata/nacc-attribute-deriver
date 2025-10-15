@@ -61,7 +61,7 @@ class MPAttributeCollection(AttributeCollection):
         # only allow 18-120
         return min(max(age, 18), 120) if age is not None else 888
 
-    def calculate_days_since_last_uds_visit(self) -> int:
+    def calculate_days_from_closest_uds_visit(self) -> int:
         """Create the NACCMRDY variable.
 
         Days between session and closest UDS visit. We assume
@@ -76,11 +76,20 @@ class MPAttributeCollection(AttributeCollection):
         if not visitdates:
             return 8888
 
-        last_uds_visit = date_from_form_date(visitdates[-1])
-        if not last_uds_visit:
-            raise AttributeDeriverError("Unable to parse last UDS visitdate")
+        # basically return whatever has the smallest absolute value
+        # could probably put in some checks to stop early, but honestly
+        # trivial to just loop through all of them
+        lowest = None
+        for visit_str in visitdates:
+            visit = date_from_form_date(visit_str)
+            if not visit:
+                raise AttributeDeriverError(f"Unable to parse UDS visitdate {visit_str}")
 
-        return (last_uds_visit - self.__mp.study_date).days
+            result = (self.__mp.study_date - visit).days
+            if lowest is None or abs(result) < abs(lowest):
+                lowest = result
+
+        return lowest if lowest is not None else 8888
 
     def get_filename(self) -> Optional[str]:
         """File locator variable.
@@ -188,7 +197,7 @@ class MPMRIAttributeCollection(MPAttributeCollection):
 
         Days between MRI session and closest UDS visit.
         """
-        return self.calculate_days_since_last_uds_visit()
+        return self.calculate_days_from_closest_uds_visit()
 
     def _create_naccmrsa(self) -> int:
         """Create the NACCMRSA variable.
@@ -241,7 +250,7 @@ class MPPETAttributeCollection(MPAttributeCollection):
 
         Days between PET session and closest UDS visit.
         """
-        return self.calculate_days_since_last_uds_visit()
+        return self.calculate_days_from_closest_uds_visit()
 
     def _create_naccapsa(self) -> int:
         """Create the NACCAPSA variable.

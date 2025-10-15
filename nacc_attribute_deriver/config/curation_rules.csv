@@ -91,13 +91,13 @@ scan_pet_qc,scan_pet_year_count,subject.info.imaging.pet.scan.year-count,max,FAL
 scan_pet_qc,scan_pet_amyloid_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 scan_pet_qc,scan_pet_tau_tracers,subject.info.imaging.pet.scan.tracers,set,FALSE
 mri_summary,naccmvol,file.info.derived.naccmvol,update,FALSE
-mri_summary,naccmvol,subject.info.derived.longitudinal.naccmvol,list,TRUE
+mri_summary,naccmvol,subject.info.derived.longitudinal.naccmvol,sorted-list,TRUE
 mri_summary,naccicv,file.info.derived.naccicv,update,FALSE
-mri_summary,naccicv,subject.info.derived.longitudinal.naccicv,list,TRUE
+mri_summary,naccicv,subject.info.derived.longitudinal.naccicv,sorted-list,TRUE
 mri_summary,naccwmvl,file.info.derived.naccwmvl,update,FALSE
-mri_summary,naccwmvl,subject.info.derived.longitudinal.naccwmvl,list,TRUE
+mri_summary,naccwmvl,subject.info.derived.longitudinal.naccwmvl,sorted-list,TRUE
 mri_summary,naccbrnv,file.info.derived.naccbrnv,update,FALSE
-mri_summary,naccbrnv,subject.info.derived.longitudinal.naccbrnv,list,TRUE
+mri_summary,naccbrnv,subject.info.derived.longitudinal.naccbrnv,sorted-list,TRUE
 meds,drugs_list,subject.info.working.longitudinal.drugs-list,list,TRUE
 ftld,naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
 lbd,nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
