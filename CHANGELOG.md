@@ -29,6 +29,8 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Adds NACCNE4S, NACCNCRD
     * Fixes NACCAPOE to account for ADC and ADGC genotypes not being the same
 * Adds CSF derived variables
+* Adds Mixed Protocol (MP) derived variables
+    * Adds `DatedSetOperation` to support dated sets required for these variables (since curating across sessions)
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
@@ -42,7 +44,6 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `demographics._np_available` - use NACCAUTP (check not 0 or 8)
     * `demographics._create_uds_age` - use NACCAGE
     * `longitudinal._create_total_uds_visits` - use NACCAVST
-* Adds pseudocode for MP variables - need to finalize once we know how data actually looks
 * Minor optimization tweaks
 
 ## 1.4.3

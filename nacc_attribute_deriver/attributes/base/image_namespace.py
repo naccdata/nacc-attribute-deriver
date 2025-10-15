@@ -35,21 +35,16 @@ class MixedProtocolNamespace(BaseNamespace):
         if "file.info.header" in table and len(table.get("file.info.header", [])) == 1:
             self.__nifti = True
 
-        acq_date = self.get_value("StudyDate", str)
-        if not acq_date:
+        study_date = self.get_value("StudyDate", str)
+        if not study_date:
             raise AttributeDeriverError("No StudyDate found for image")
 
-        self.__acquisition_date = datetime.strptime(acq_date, "%Y%m%d").date()
+        self.__study_date = datetime.strptime(study_date, "%Y%m%d").date()
 
     @property
     def is_nifti(self) -> bool:
         return self.__nifti
 
     @property
-    def acquisition_date(self) -> date:
-        return self.__acquisition_date
-
-    def _create_image_session(self) -> str:
-        """Create variable to keep track of unique image sessions, based on
-        acquisition date."""
-        return str(self.acquisition_date)
+    def study_date(self) -> date:
+        return self.__study_date

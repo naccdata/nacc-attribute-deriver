@@ -46,6 +46,9 @@ class MPAttributeCollection(AttributeCollection):
     def working(self) -> WorkingDerivedNamespace:
         return self.__working
 
+    def get_date(self) -> Optional[date]:
+        return self.__mp.study_date
+
     def calculate_age_at_scan(self) -> int:
         """Calculate age at scan from UDS DOB."""
         uds_dob = self.__working.get_cross_sectional_value("uds-date-of-birth", str)
@@ -54,7 +57,7 @@ class MPAttributeCollection(AttributeCollection):
             return 888
 
         age = calculate_age(date_from_form_date(uds_dob),
-                            self.__mp.acquisition_date)
+                            self.__mp.study_date)
         # only allow 18-120
         return min(max(age, 18), 120) if age is not None else 888
 
@@ -77,7 +80,7 @@ class MPAttributeCollection(AttributeCollection):
         if not last_uds_visit:
             raise AttributeDeriverError("Unable to parse last UDS visitdate")
 
-        return (last_uds_visit - self.__mp.acquisition_date).days
+        return (last_uds_visit - self.__mp.study_date).days
 
     def get_filename(self) -> Optional[str]:
         """File locator variable.
@@ -104,6 +107,11 @@ class MPAttributeCollection(AttributeCollection):
         # only allow 1-20
         return min(len(sessions), 20)
 
+    def _create_image_session(self) -> str:
+        """Create variable to keep track of unique image sessions, based on
+        study date."""
+        return str(self.__mp.study_date)
+
 
 class MPMRIAttributeCollection(MPAttributeCollection):
     """Attribute collection for MP MRIs."""
@@ -118,7 +126,7 @@ class MPMRIAttributeCollection(MPAttributeCollection):
         """
         # check if we already set it for this session
         cur_naccdico = self.working.get_corresponding_longitudinal_value(
-            str(self.mp.acquisition_date), 'naccdico', int
+            str(self.mp.study_date), 'naccdico', int
         )
         if cur_naccdico == 1:
             return 1
@@ -134,7 +142,7 @@ class MPMRIAttributeCollection(MPAttributeCollection):
         """
         # check if we already set it for this session
         cur_naccnift = self.working.get_corresponding_longitudinal_value(
-            str(self.mp.acquisition_date), 'naccnift', int
+            str(self.mp.study_date), 'naccnift', int
         )
         if cur_naccnift == 1:
             return 1
