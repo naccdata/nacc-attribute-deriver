@@ -196,7 +196,7 @@ class TestOperation:
     def test_dated_set(self, table, location):
         """Test dated sets."""
         op = DatedSetOperation()
-        assert op.LABEL == 'dated-set'
+        assert op.LABEL == "dated-set"
 
         for i in range(3):
             value = DateTaggedValue(date=date(2025, 1, 1), value=i)

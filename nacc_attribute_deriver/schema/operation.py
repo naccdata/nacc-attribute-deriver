@@ -212,9 +212,12 @@ class DatedSetOperation(SetOperation):
     def evaluate(
         self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
     ) -> None:
-        """Adds the value to a dated set, which means it only ever keeps one of each date.
-        If a new value is added for an existing date, the value is updated. Use set with
-        dated values if you want each unique date/value pair to persist.
+        """Adds the value to a dated set, which means it only ever keeps one of
+        each date.
+
+        If a new value is added for an existing date, the value is
+        updated. Use set with dated values if you want each unique
+        date/value pair to persist.
         """
         if not isinstance(value, DateTaggedValue):
             raise OperationError(

@@ -64,6 +64,7 @@ class UDSNamespace(FormNamespace):
 
     def generate_uds_dob(self) -> date:
         """Creates UDS DOB, which is used to calculate ages.
+
         No birth day provided, so default to 1.
         """
         birthmo = self.get_required("birthmo", int)

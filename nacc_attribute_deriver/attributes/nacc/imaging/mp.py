@@ -56,8 +56,7 @@ class MPAttributeCollection(AttributeCollection):
         if not uds_dob:
             return 888
 
-        age = calculate_age(date_from_form_date(uds_dob),
-                            self.__mp.study_date)
+        age = calculate_age(date_from_form_date(uds_dob), self.__mp.study_date)
         # only allow 18-120
         return min(max(age, 18), 120) if age is not None else 888
 
@@ -83,7 +82,9 @@ class MPAttributeCollection(AttributeCollection):
         for visit_str in visitdates:
             visit = date_from_form_date(visit_str)
             if not visit:
-                raise AttributeDeriverError(f"Unable to parse UDS visitdate {visit_str}")
+                raise AttributeDeriverError(
+                    f"Unable to parse UDS visitdate {visit_str}"
+                )
 
             result = (self.__mp.study_date - visit).days
             if lowest is None or abs(result) < abs(lowest):
@@ -130,12 +131,12 @@ class MPMRIAttributeCollection(MPAttributeCollection):
 
         DICOM image file available (y/n). True if the current thing
         we're curating is NOT a nifti file (since at the moment we only
-        curate on DICOMs and NIfTIs). Needs to check if another image
-        in the session has already set this value to 1.
+        curate on DICOMs and NIfTIs). Needs to check if another image in
+        the session has already set this value to 1.
         """
         # check if we already set it for this session
         cur_naccdico = self.working.get_corresponding_longitudinal_value(
-            str(self.mp.study_date), 'naccdico', int
+            str(self.mp.study_date), "naccdico", int
         )
         if cur_naccdico == 1:
             return 1
@@ -151,7 +152,7 @@ class MPMRIAttributeCollection(MPAttributeCollection):
         """
         # check if we already set it for this session
         cur_naccnift = self.working.get_corresponding_longitudinal_value(
-            str(self.mp.study_date), 'naccnift', int
+            str(self.mp.study_date), "naccnift", int
         )
         if cur_naccnift == 1:
             return 1
