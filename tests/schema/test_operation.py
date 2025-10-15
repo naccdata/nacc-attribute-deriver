@@ -4,6 +4,7 @@ import pytest
 from datetime import date
 
 from nacc_attribute_deriver.schema.operation import (
+    DatedSetOperation,
     InitialOperation,
     LatestOperation,
     ListOperation,
@@ -55,8 +56,9 @@ class TestOperation:
                     {
                         "update",
                         "list",
-                        "sortedlist",
+                        "sorted-list",
                         "set",
+                        "dated-set",
                         "initial",
                         "latest",
                         "min",
@@ -71,6 +73,7 @@ class TestOperation:
             ListOperation,
             SortedListOperation,
             SetOperation,
+            DatedSetOperation,
             InitialOperation,
             LatestOperation,
             MinOperation,
@@ -190,10 +193,36 @@ class TestOperation:
             }
         }
 
+    def test_dated_set(self, table, location):
+        """Test dated sets."""
+        op = DatedSetOperation()
+        assert op.LABEL == "dated-set"
+
+        for i in range(3):
+            value = DateTaggedValue(date=date(2025, 1, 1), value=i)
+            op.evaluate(table=table, value=value, attribute=location)
+            assert table.to_dict() == {
+                "test": {
+                    "location": [{"date": "2025-01-01", "value": i}],
+                }
+            }
+
+        # different date
+        value = DateTaggedValue(date=date(2025, 6, 1), value=10)
+        op.evaluate(table=table, value=value, attribute=location)
+        assert table.to_dict() == {
+            "test": {
+                "location": [
+                    {"date": "2025-01-01", "value": 2},
+                    {"date": "2025-06-01", "value": 10},
+                ],
+            }
+        }
+
     def test_sorted_list(self, table, location):
         """Tests the sorted list operation."""
         op = SortedListOperation()
-        assert op.LABEL == "sortedlist"
+        assert op.LABEL == "sorted-list"
         table[location] = [1, 2, 3, 4]
         op.evaluate(table=table, value=2, attribute=location)
 

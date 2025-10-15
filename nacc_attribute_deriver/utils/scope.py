@@ -44,9 +44,12 @@ class SCANMRIScope(Scope):
     MRI_SBM = "scan_mri_sbm"
 
 
-class ImagingScope(Scope):
+class MixedProtocolScope(Scope):
     # MP scope
+    MRI_DICOM = "mri_dicom"
+    MRI_NIFTI = "mri_nifti"
     MRI_SUMMARY = "mri_summary"
+    PET_DICOM = "pet_dicom"
 
 
 ScopeLiterals = Literal[
@@ -70,5 +73,8 @@ ScopeLiterals = Literal[
     SCANPETScope.TAU_PET_NPDKA,
     SCANMRIScope.MRI_QC,
     SCANMRIScope.MRI_SBM,
-    ImagingScope.MRI_SUMMARY,
+    MixedProtocolScope.MRI_DICOM,
+    MixedProtocolScope.MRI_NIFTI,
+    MixedProtocolScope.MRI_SUMMARY,
+    MixedProtocolScope.PET_DICOM,
 ]

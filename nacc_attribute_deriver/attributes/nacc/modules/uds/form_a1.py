@@ -3,6 +3,7 @@
 From derive.sas and a1structrdd.sas
 """
 
+from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
@@ -155,3 +156,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
     def _create_educ(self) -> Optional[int]:
         """UDS education level."""
         return self.uds.get_value("educ", int)
+
+    def _create_uds_date_of_birth(self) -> date:
+        """UDS date of birth."""
+        return self.uds.generate_uds_dob()
