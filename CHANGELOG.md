@@ -27,7 +27,8 @@ Fine-grained changes:
     * D1 - [#55](https://github.com/naccdata/nacc-attribute-deriver/pull/55)
     * Adds FTLD/LBD scope and variables (just checks existence) - [#60](https://github.com/naccdata/nacc-attribute-deriver/pull/60)
 * Adds UDS missingness logic + V4 derived variables
-    * Uses this instead of `MissingFormAttributes`
+    * Sets up a second deriver class that works specifically on missingness values (with its own rules and `_missingness` functions)
+    * Uses this missingness workflow instead of `MissingFormAttributes`
 * Adds CLS derived variables - [#57](https://github.com/naccdata/nacc-attribute-deriver/pull/57)
 * Adds MILESTONE derived variables - [#58](https://github.com/naccdata/nacc-attribute-deriver/pull/58)
     * Many of these are cross-form, particularly with UDS A1

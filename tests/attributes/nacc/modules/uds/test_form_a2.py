@@ -24,14 +24,20 @@ def table(uds_table) -> SymbolTable:
             }
         }
     )
-    uds_table["file.info.forms.json.packet"] = "T"
-    uds_table["file.info.forms.json.newinf"] = "0"
+    uds_table['file.info.forms.json'].update({
+        'packet': 'T',
+        'newinf': '0',
+        'invisits': '3',
+        'incalls': '6',
+        'a2sub': 0
+    })
     return uds_table
 
 
 class TestUDSFormA2Attribute:
     def test_create_naccninr_longitudinally(self, table):
         """Test NACCNINR over longitudinal values."""
+        # V3 and earlier
         attr = UDSFormA2Attribute(table)
         # does NOT carry forward
         assert attr._create_naccninr() == INFORMED_MISSINGNESS
@@ -39,3 +45,35 @@ class TestUDSFormA2Attribute:
         table["file.info.forms.json.a2sub"] = 1
         table["file.info.forms.json.newinf"] = 1
         assert attr._create_naccninr() == 99
+
+        # assert -4 for V4
+        table['file.info.forms.json.formver'] = 4.0
+        attr = UDSFormA2Attribute(table)
+        assert attr._create_naccninr() == INFORMED_MISSINGNESS
+
+    def test_create_naccincntfq(self, table):
+        """Tests NACCINCNTFQ."""
+        # not submitted
+        attr = UDSFormA2Attribute(table)
+        assert attr._create_naccninr() == INFORMED_MISSINGNESS
+
+        # V3 and earlier, min of INVISITS and INCALLS
+        table["file.info.forms.json.a2sub"] = 1
+        attr = UDSFormA2Attribute(table)
+        assert attr._create_naccincntfq() == 3
+        table['file.info.forms.json.incalls'] = 1
+        assert attr._create_naccincntfq() == 1
+
+        # V4
+        table['file.info.forms.json'].update({
+            'formver': '4.0',
+            'inlivwth': '1',
+        })
+        attr = UDSFormA2Attribute(table)
+        assert attr._create_naccincntfq() == 8
+
+        table['file.info.forms.json'].update({
+            'inlivwth': '0',
+            'incntfrq': '6'
+        })
+        assert attr._create_naccincntfq() == 6

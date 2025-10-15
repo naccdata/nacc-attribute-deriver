@@ -39,6 +39,8 @@ uds,inlivwth,file.info.forms.missingness.inlivwth,update,FALSE
 uds,invisits,file.info.forms.missingness.invisits,update,FALSE
 uds,incalls,file.info.forms.missingness.incalls,update,FALSE
 uds,inrely,file.info.forms.missingness.inrely,update,FALSE
+uds,incntmod,file.info.forms.missingness.incntmod,update,FALSE
+uds,incnttim,file.info.forms.missingness.incnttim,update,FALSE
 uds,anymeds,file.info.forms.missingness.anymeds,update,FALSE
 uds,drug1,file.info.forms.missingness.drug1,update,FALSE
 uds,drug2,file.info.forms.missingness.drug2,update,FALSE
