@@ -4,7 +4,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 2.0.0 (not yet released)
 
-Most of these changes are associated with aggregate PRs:
+Most of these changes are associated with the following aggregate PRs:
 
 * [#66](https://github.com/naccdata/nacc-attribute-deriver/pull/66) for derived variables
 * For UDS missingness logic + V4 derived variables
@@ -27,11 +27,11 @@ Fine-grained changes:
     * D1 - [#55](https://github.com/naccdata/nacc-attribute-deriver/pull/55)
     * Adds FTLD/LBD scope and variables (just checks existence) - [#60](https://github.com/naccdata/nacc-attribute-deriver/pull/60)
 * Adds UDS missingness logic + V4 derived variables
+    * Uses this instead of `MissingFormAttributes`
 * Adds CLS derived variables - [#57](https://github.com/naccdata/nacc-attribute-deriver/pull/57)
 * Adds MILESTONE derived variables - [#58](https://github.com/naccdata/nacc-attribute-deriver/pull/58)
     * Many of these are cross-form, particularly with UDS A1
 * Adds rest of NP derived variables - [#46](https://github.com/naccdata/nacc-attribute-deriver/pull/47)
-* Adds `MissingFormAttributes` which sets a default values for certain non-UDS NACC derived variables when the corresponding source file does not exist for that subject
 * Adds/fixes genetics derived variables
     * Adds NIAGADS accession number derived variables - [#59](https://github.com/naccdata/nacc-attribute-deriver/pull/59)
     * Adds NACCNE4S

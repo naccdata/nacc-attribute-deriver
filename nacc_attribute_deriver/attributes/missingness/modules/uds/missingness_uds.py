@@ -19,11 +19,10 @@ class UDSMissingness(UDSAttributeCollection):
     """Class to handle UDS missingness values."""
 
     def handle_v4_missingness(self, field: str) -> Optional[int]:
-        """Handles V4 missingness, which in many cases follows
-        the logic:
+        """Handles V4 missingness, which in many cases follows the logic:
 
-            If FORMVER=4 and VAR is blank, VAR should = 0
-            else if FORMVER < 4, VAR should be -4
+        If FORMVER=4 and VAR is blank, VAR should = 0
+        else if FORMVER < 4, VAR should be -4
         """
         # if value exists, return None so we don't override
         value = self.uds.get_value(field, str)

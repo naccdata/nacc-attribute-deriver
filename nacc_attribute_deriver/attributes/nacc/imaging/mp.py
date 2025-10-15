@@ -18,11 +18,15 @@ the current framework.
 from datetime import date
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.attribute_collection import AttributeCollection
-from nacc_attribute_deriver.attributes.base.image_namespace import (
+from nacc_attribute_deriver.attributes.collection.attribute_collection import (
+    AttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.image_namespace import (
     MixedProtocolNamespace,
 )
-from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingDerivedNamespace,
+)
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
