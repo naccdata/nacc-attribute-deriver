@@ -133,15 +133,11 @@ class MPMRIAttributeCollection(MPAttributeCollection):
         we're curating is NOT a nifti file (since at the moment we only
         curate on DICOMs and NIfTIs). Needs to check if another image in
         the session has already set this value to 1.
-        """
-        # check if we already set it for this session
-        cur_naccdico = self.working.get_corresponding_longitudinal_value(
-            str(self.mp.study_date), "naccdico", int
-        )
-        if cur_naccdico == 1:
-            return 1
 
-        return 1 if not self.mp.is_nifti else 0
+        This should only ever be called in the context of a DICOM image/scope,
+        so always return 1.
+        """
+        return 1
 
     def _create_naccnift(self) -> int:
         """Create the NACCNIFT variable.
@@ -149,15 +145,11 @@ class MPMRIAttributeCollection(MPAttributeCollection):
         NIFTI image file available (y/n). True if the current thing
         we're curating is a nifti file. Needs to check if another image
         in the session has already set this value to 1.
-        """
-        # check if we already set it for this session
-        cur_naccnift = self.working.get_corresponding_longitudinal_value(
-            str(self.mp.study_date), "naccnift", int
-        )
-        if cur_naccnift == 1:
-            return 1
 
-        return 1 if self.mp.is_nifti else 0
+        This should only ever be called in the context of a NIFTI image/scope,
+        so always return 1.
+        """
+        return 1
 
     def _create_naccmria(self) -> int:
         """Create the NACCMRIA variable.

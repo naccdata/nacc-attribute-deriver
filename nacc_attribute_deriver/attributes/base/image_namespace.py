@@ -24,26 +24,11 @@ class MixedProtocolNamespace(BaseNamespace):
             required=required,
             date_attribute=date_attribute,
         )
-        # TODO: this is hacky, but we know an image is a nifti
-        # if the ONLY thing in file.info.header is the dicom dict
-        # we assume dicom first, then nifti, since nifti is
-        # created from the dicom and may not always be created
-        # being able to see the filename would be more appropriate, but
-        # would require some refactoring of how information is passed in,
-        # so just do this for now
-        self.__nifti = False
-        if "file.info.header" in table and len(table.get("file.info.header", [])) == 1:
-            self.__nifti = True
-
         study_date = self.get_value("StudyDate", str)
         if not study_date:
             raise AttributeDeriverError("No StudyDate found for image")
 
         self.__study_date = datetime.strptime(study_date, "%Y%m%d").date()
-
-    @property
-    def is_nifti(self) -> bool:
-        return self.__nifti
 
     @property
     def study_date(self) -> date:

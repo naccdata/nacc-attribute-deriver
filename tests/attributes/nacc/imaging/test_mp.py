@@ -4,7 +4,6 @@ import copy
 import pytest
 from nacc_attribute_deriver.attributes.nacc.imaging.mp import (
     MPAttributeCollection,
-    MPMRIAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -123,45 +122,3 @@ class TestMPAttributeCollection:
         assert attr.get_num_sessions("mri-sessions") == 88
         dicom_table["subject.info.working.cross-sectional.mri-sessions"] = None
         assert attr.get_num_sessions("mri-sessions") == 88
-
-
-class TestMRIMPAttributeCollection:
-    """Test MRI-specific attributes, mainly related to dicoms."""
-
-    def test_create_naccdico(self, dicom_table, nifti_table):
-        """Test create NACCDICO."""
-        # nothing derived yet, so should just check if the
-        # current image is a dicom or not
-        attr = MPMRIAttributeCollection(dicom_table)
-        assert attr._create_naccdico() == 1
-
-        attr = MPMRIAttributeCollection(nifti_table)
-        assert attr._create_naccdico() == 0
-
-        # if already set, should not be set in the nifti case
-        nifti_table["subject.info.working.longitudinal.naccdico"] = [
-            {"date": "2001-03-12", "value": 0},
-            {"date": "2006-08-16", "value": 1},
-        ]
-
-        attr = MPMRIAttributeCollection(nifti_table)
-        assert attr._create_naccdico() == 1
-
-    def test_create_naccnift(self, dicom_table, nifti_table):
-        """Test create NACCNIFT."""
-        # nothing derived yet, so should just check if the
-        # current image is a nifti or not
-        attr = MPMRIAttributeCollection(dicom_table)
-        assert attr._create_naccnift() == 0
-
-        attr = MPMRIAttributeCollection(nifti_table)
-        assert attr._create_naccnift() == 1
-
-        # if already set, should not be set in the dicom case
-        dicom_table["subject.info.working.longitudinal.naccnift"] = [
-            {"date": "2001-03-12", "value": 0},
-            {"date": "2006-08-16", "value": 1},
-        ]
-
-        attr = MPMRIAttributeCollection(dicom_table)
-        assert attr._create_naccnift() == 1
