@@ -172,7 +172,7 @@ class ListOperation(Operation):
 
 
 class SortedListOperation(ListOperation):
-    LABEL = "sortedlist"
+    LABEL = "sorted-list"
 
     def evaluate(
         self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
@@ -209,6 +209,36 @@ class SetOperation(ListOperation):
             ) from e
 
         self.serialize(table=table, attribute=attribute)
+
+
+class DatedSetOperation(SetOperation):
+    LABEL = "dated-set"
+
+    def evaluate(
+        self, *, table: SymbolTable, value: DateTaggedValue[Any] | Any, attribute: str
+    ) -> None:
+        """Adds the value to a dated set, which means it only ever keeps one of
+        each date.
+
+        If a new value is added for an existing date, the value is
+        updated. Use set with dated values if you want each unique
+        date/value pair to persist.
+        """
+        if not isinstance(value, DateTaggedValue):
+            raise OperationError(
+                f"Unable to perform {self.LABEL} operation on attribute "
+                + f"{attribute} without date"
+            )
+
+        # if current date is already in the set, remove it so it can be cleanly added to
+        # the set later
+        cur_set = table.get(attribute, None)
+        if cur_set:
+            table[attribute] = [
+                x for x in cur_set if DateTaggedValue(**x).date != value.date
+            ]
+
+        super().evaluate(table=table, value=value, attribute=attribute)
 
 
 class DateOperation(Operation):
