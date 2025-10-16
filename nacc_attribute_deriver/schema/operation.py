@@ -22,6 +22,7 @@ from pydantic import ValidationError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import date_from_form_date
 
+from .constants import INFORMED_BLANK
 from .errors import OperationError
 from .rule_types import DateTaggedValue, NoAssignment, TypeGetter
 
@@ -98,11 +99,15 @@ class UpdateOperation(Operation):
         """Simply updates the location."""
         if value is None:
             return
+        elif value == INFORMED_BLANK:
+            value = None
         elif isinstance(value, datetime.date):
             value = str(value)
         elif isinstance(value, DateTaggedValue):
             if value.value is None:
                 return
+            elif value.value == INFORMED_BLANK:
+                value.value = None
             value = value.model_dump()
 
         table[attribute] = value
@@ -267,6 +272,8 @@ class DateOperation(Operation):
 
         if value.value is None:  # type: ignore
             return
+        elif value.value == INFORMED_BLANK:
+            value.value = None
 
         if self.LABEL not in ["initial", "latest"]:
             raise OperationError(
@@ -338,6 +345,8 @@ class ComparisonOperation(Operation):
         raw_value = value.value if isinstance(value, DateTaggedValue) else value
         if raw_value is None:
             return
+        elif raw_value == INFORMED_BLANK:
+            raw_value = None
 
         try:
             if not dest_value or self.compare(raw_value, dest_value):

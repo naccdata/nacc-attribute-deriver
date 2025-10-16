@@ -10,7 +10,9 @@ tests okay.
 
 from typing import Optional
 
-from .uds_attribute_collection import UDSAttributeCollection
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+    UDSAttributeCollection,
+)
 
 
 class UDSFormA45ttribute(UDSAttributeCollection):

@@ -5,11 +5,16 @@ Form A3 is optional, so may not have been submitted.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import SubjectDerivedNamespace
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+    UDSAttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    SubjectDerivedNamespace,
+)
+from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .helpers.family_handler import FamilyHandler
-from .uds_attribute_collection import UDSAttributeCollection
 
 
 class UDSFormA3Attribute(UDSAttributeCollection):
@@ -77,7 +82,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.submitted or self.formver < 3:
             return None
         if self._create_naccam() == 0:
-            return -4
+            return INFORMED_MISSINGNESS
 
         fadmuso = self.uds.get_value("fadmuso", int)
         if fadmuso in [1, 2, 3, 8]:
@@ -224,7 +229,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.submitted or self.formver < 3:
             return None
         if self._create_naccfm() == 0:
-            return -4
+            return INFORMED_MISSINGNESS
 
         fftdmusu = self.uds.get_value("fftdmuso", int)
         if fftdmusu in [0, 1, 2, 3, 8]:
@@ -310,7 +315,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.submitted or self.formver < 3:
             return None
         if self._create_naccom() == 0:
-            return -4
+            return INFORMED_MISSINGNESS
 
         fothmuso = self.uds.get_value("fothmuso", int)
         if fothmuso in [0, 1, 2, 3, 8]:

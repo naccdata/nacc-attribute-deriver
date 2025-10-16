@@ -3,7 +3,10 @@
 import datetime
 from typing import Any, List, Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+    UDSAttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
@@ -16,8 +19,6 @@ from nacc_attribute_deriver.utils.date import (
     calculate_days,
     date_from_form_date,
 )
-
-from .uds_attribute_collection import UDSAttributeCollection
 
 
 class UDSHeaderAttributeCollection(UDSAttributeCollection):

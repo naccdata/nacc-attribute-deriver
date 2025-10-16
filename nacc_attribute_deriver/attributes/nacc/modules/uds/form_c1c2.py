@@ -6,15 +6,18 @@ One of form C1 or C2 is expected to have been submitted.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.base.namespace import WorkingDerivedNamespace
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+    UDSAttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingDerivedNamespace,
+)
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_days,
     date_from_form_date,
 )
-
-from .uds_attribute_collection import UDSAttributeCollection
 
 
 class UDSFormC1C2Attribute(UDSAttributeCollection):

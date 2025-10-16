@@ -1,7 +1,7 @@
 """Tests base namespaces."""
 
 from datetime import date
-from nacc_attribute_deriver.attributes.base.namespace import (
+from nacc_attribute_deriver.attributes.namespace.namespace import (
     BaseNamespace,
     INVALID_TEXT,
     SubjectDerivedNamespace,

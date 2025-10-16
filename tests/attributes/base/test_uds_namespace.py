@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 
-from nacc_attribute_deriver.attributes.base.uds_namespace import (
+from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.schema.errors import InvalidFieldError

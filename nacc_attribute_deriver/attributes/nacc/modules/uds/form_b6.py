@@ -6,7 +6,9 @@ Form B6 may not have been filled out.
 import math
 from typing import Optional
 
-from .uds_attribute_collection import UDSAttributeCollection
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+    UDSAttributeCollection,
+)
 
 
 class UDSFormB6Attribute(UDSAttributeCollection):

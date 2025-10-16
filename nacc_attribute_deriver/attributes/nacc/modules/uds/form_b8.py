@@ -5,7 +5,9 @@ Form B8 is required and expected to have been filled out.
 
 from typing import Optional
 
-from .uds_attribute_collection import UDSAttributeCollection
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+    UDSAttributeCollection,
+)
 
 
 class UDSFormB8Attribute(UDSAttributeCollection):

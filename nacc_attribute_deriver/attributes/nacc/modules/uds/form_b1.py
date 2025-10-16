@@ -5,7 +5,9 @@ Form B1 is optional, so may not have been submitted.
 
 from typing import Optional
 
-from .uds_attribute_collection import UDSAttributeCollection
+from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+    UDSAttributeCollection,
+)
 
 
 class UDSFormB1Attribute(UDSAttributeCollection):

@@ -16,6 +16,7 @@ from nacc_attribute_deriver.schema.operation import (
     SortedListOperation,
     UpdateOperation,
 )
+from nacc_attribute_deriver.schema.constants import INFORMED_BLANK
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -88,6 +89,16 @@ class TestOperation:
 
         assert dated_table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
 
+        # test setting to None doesn't do anything
+        op.evaluate(table=dated_table, value=None, attribute=location)
+        assert dated_table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
+
+        # test setting to INFORMED_BLANK forces the None
+        op.evaluate(table=dated_table, value=INFORMED_BLANK, attribute=location)
+        assert dated_table.to_dict() == {
+            "test": {"date": "2025-01-01", "location": None}
+        }
+
         # test on dated value - should override previous location
         value = DateTaggedValue(date=date(2025, 12, 31), value=10)
         op.evaluate(table=dated_table, value=value, attribute=location)
@@ -95,6 +106,24 @@ class TestOperation:
             "test": {
                 "date": "2025-01-01",
                 "location": {"date": "2025-12-31", "value": 10},
+            }
+        }
+
+        # reset for following tests
+        op.evaluate(table=dated_table, value=5, attribute=location)
+        assert dated_table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
+
+        # again, test on dated value with None and INFORMED_BLANK values
+        value = DateTaggedValue(date=date(2025, 12, 31), value=None)
+        op.evaluate(table=dated_table, value=value, attribute=location)
+        assert dated_table.to_dict() == {"test": {"date": "2025-01-01", "location": 5}}
+
+        value = DateTaggedValue(date=date(2025, 12, 31), value=INFORMED_BLANK)
+        op.evaluate(table=dated_table, value=value, attribute=location)
+        assert dated_table.to_dict() == {
+            "test": {
+                "date": "2025-01-01",
+                "location": {"date": "2025-12-31", "value": None},
             }
         }
 
@@ -140,6 +169,20 @@ class TestOperation:
                     {"date": "2025-12-31", "value": 10},
                     {"date": "2025-06-01", "value": 10},
                     {"date": "2025-12-31", "value": 10},
+                ],
+            }
+        }
+
+        # test with None value
+        value = DateTaggedValue(date=date(2020, 12, 31), value=None)
+        op.evaluate(table=table, value=value, attribute=location)
+        assert table.to_dict() == {
+            "test": {
+                "location": [
+                    {"date": "2025-12-31", "value": 10},
+                    {"date": "2025-06-01", "value": 10},
+                    {"date": "2025-12-31", "value": 10},
+                    {"date": "2020-12-31", "value": None},
                 ],
             }
         }

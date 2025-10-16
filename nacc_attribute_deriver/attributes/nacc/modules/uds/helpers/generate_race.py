@@ -4,6 +4,66 @@ participant race)"""
 from types import MappingProxyType
 from typing import Optional
 
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+
+#########
+# UDSv4 #
+#########
+
+
+def generate_race_v4(
+    racewhite: Optional[int] = None,
+    raceblack: Optional[int] = None,
+    raceaian: Optional[int] = None,
+    racenhpi: Optional[int] = None,
+    raceasian: Optional[int] = None,
+    racemena: Optional[int] = None,
+    raceunkn: Optional[int] = None,
+) -> int:
+    """Generates NACCNIHR for V4:
+
+    1: RACEWHITE
+    2: RACEBLACK
+    3: RACEAIAN
+    4: RACENHPI
+    5: RACEASIAN
+    7: RACEMENA
+    6: multiracial
+    99: unknown
+    """
+    all_races = [racewhite, raceblack, raceaian, racenhpi, raceasian, racemena]
+
+    # only one race selected
+    if all_races.count(1) == 1:
+        if racewhite == 1:
+            return 1
+        if raceblack == 1:
+            return 2
+        if raceaian == 1:
+            return 3
+        if racenhpi == 1:
+            return 4
+        if raceasian == 1:
+            return 5
+        if racemena == 1:
+            return 7
+
+    # unknown selected or all other races are blank
+    if raceunkn == 1 or all(x is None for x in all_races):
+        return 99
+
+    # multiple non-unknowns selected
+    if all_races.count(1) > 1:
+        return 6
+
+    # should never hit this case
+    raise AttributeDeriverError("Unable to determine NACCNIHR for V4")
+
+
+#####################
+# UDSv3 and earlier #
+#####################
+
 
 class RaceResponses:
     WHITEX = MappingProxyType(
@@ -271,7 +331,7 @@ def is_multiracial(racex: Optional[str], racesecx: Optional[str]) -> bool:
     return False
 
 
-def generate_race(  # noqa: C901
+def generate_race_v3(  # noqa: C901
     race: Optional[int],
     racex: Optional[str],
     racesec: Optional[int],
