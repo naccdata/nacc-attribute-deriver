@@ -6,10 +6,10 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 Most of these changes are associated with the following aggregate PRs:
 
-* [#66](https://github.com/naccdata/nacc-attribute-deriver/pull/66) for derived variables
-* For UDS missingness logic + V4 derived variables
+* [#66](https://github.com/naccdata/nacc-attribute-deriver/pull/66) for derived variables (refactor + variables)
+* [#69](https://github.com/naccdata/nacc-attribute-deriver/pull/69) for UDS missingness logic (main refactor)
 
-Fine-grained changes:
+### Derived Variable Work
 
 * Adds rest of UDS derived variables:
     * Form header - [#56](https://github.com/naccdata/nacc-attribute-deriver/pull/56)
@@ -26,9 +26,6 @@ Fine-grained changes:
         * MQT's `demographics._create_uds_education_level` moved to `form_a1` and renamed `_create_educ` as it needs to be used for variables in this form as well
     * D1 - [#55](https://github.com/naccdata/nacc-attribute-deriver/pull/55)
     * Adds FTLD/LBD scope and variables (just checks existence) - [#60](https://github.com/naccdata/nacc-attribute-deriver/pull/60)
-* Adds UDS missingness logic + V4 derived variables
-    * Sets up a second deriver class that works specifically on missingness values (with its own rules and `_missingness` functions)
-    * Uses this missingness workflow instead of `MissingFormAttributes`
 * Adds CLS derived variables - [#57](https://github.com/naccdata/nacc-attribute-deriver/pull/57)
 * Adds MILESTONE derived variables - [#58](https://github.com/naccdata/nacc-attribute-deriver/pull/58)
     * Many of these are cross-form, particularly with UDS A1
@@ -55,6 +52,13 @@ Fine-grained changes:
     * `demographics._create_uds_age` - use NACCAGE
     * `longitudinal._create_total_uds_visits` - use NACCAVST
 * Minor optimization tweaks
+
+### Missingness Variable Work
+
+* Adds UDS missingness logic + V4 derived variables - [#69](https://github.com/naccdata/nacc-attribute-deriver/pull/69)
+    * Sets up a second deriver class that works specifically on missingness values (with its own rules and `_missingness` functions)
+    * Uses this missingness workflow instead of `MissingFormAttributes`
+    * A1, A1a, A2
 
 ## 1.4.3
 
