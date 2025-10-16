@@ -16,15 +16,12 @@ class TestUDSFormA2Missingness:
 
         # V4
         # test INLIVWTH is 1
-        uds_table['file.info.forms.json'].update({
-            'formver': 4.0,
-            'inlivwth': 1
-        })
+        uds_table["file.info.forms.json"].update({"formver": 4.0, "inlivwth": 1})
         attr = UDSFormA2Missingness(uds_table)
         assert attr._missingness_incntmod() == 8
         assert attr._missingness_incnttim() == 8
 
         # test INLIVWTH is 0
-        uds_table['file.info.forms.json.inlivwth'] = 0
+        uds_table["file.info.forms.json.inlivwth"] = 0
         assert attr._missingness_incntmod() is None
         assert attr._missingness_incnttim() is None

@@ -8,22 +8,6 @@ from .missingness_uds import UDSMissingness
 
 
 class UDSFormA1aMissingness(UDSMissingness):
-    def handle_v4_missingness(self, field: str) -> Optional[int]:
-        """Handles V4 missingness, which follows the logic:
-
-        If FORMVER=4 and VAR is blank, VAR should = 0
-        else if FORMVER < 4, VAR should be -4
-        """
-        # if value exists, return None so we don't override
-        value = self.uds.get_value(field, str)
-        if value is not None:
-            return None
-
-        if self.formver == 4:
-            return 0
-
-        return INFORMED_MISSINGNESS
-
     def _missingness_expancest(self) -> Optional[int]:
         """Handles missingness for EXPANCEST."""
         return self.handle_v4_missingness("expancest")

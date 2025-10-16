@@ -19,6 +19,7 @@ def test_uds_form(uds_table):
             "primlang": 1,
             "educ": 1,
             "probad": 1,
+            "hispanic": 1,
         }
     )
     uds_table.update(

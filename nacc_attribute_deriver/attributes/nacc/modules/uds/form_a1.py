@@ -19,7 +19,7 @@ from nacc_attribute_deriver.utils.date import (
     date_from_form_date,
 )
 
-from .helpers.generate_race import generate_race
+from .helpers.generate_race import generate_race_v3, generate_race_v4
 
 
 class UDSFormA1Attribute(UDSAttributeCollection):
@@ -70,34 +70,47 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         return livsit if livsit is not None else 9
 
     def _create_naccnihr(self) -> Optional[int]:
-        """Creates NACCNIHR (race) if first form."""
-        if not self.uds.is_initial():
-            return None
+        """Creates NACCNIHR (race).
 
-        result = generate_race(
-            race=self.uds.get_value("race", int),
-            racex=self.uds.get_value("racex", str),
-            racesec=self.uds.get_value("racesec", int),
-            racesecx=self.uds.get_value("racesecx", str),
-            raceter=self.uds.get_value("raceter", int),
-            raceterx=self.uds.get_value("raceterx", str),
-        )
-
-        return result
-
-    def _create_naccreas(self) -> Optional[int]:
-        """Creates NACCREAS - primary reason for coming to ADC.
-
-        Not collected at followup visits.
+        Source variables only provided in IVP.
         """
         if not self.uds.is_initial():
             return None
 
-        reason = self.uds.get_value("reason", int)
-        if reason in [3, 4]:
-            return 7
+        if self.formver < 4:
+            return generate_race_v3(
+                race=self.uds.get_value("race", int),
+                racex=self.uds.get_value("racex", str),
+                racesec=self.uds.get_value("racesec", int),
+                racesecx=self.uds.get_value("racesecx", str),
+                raceter=self.uds.get_value("raceter", int),
+                raceterx=self.uds.get_value("raceterx", str),
+            )
 
-        return reason if reason is not None else 9
+        return generate_race_v4(
+            racewhite=self.uds.get_value("racewhite", int),
+            raceblack=self.uds.get_value("raceblack", int),
+            raceaian=self.uds.get_value("raceaian", int),
+            racenhpi=self.uds.get_value("racenhpi", int),
+            raceasian=self.uds.get_value("raceasian", int),
+            racemena=self.uds.get_value("racemena", int),
+            raceunkn=self.uds.get_value("raceunkn", int),
+        )
+
+    # REMOVE IN V4
+    # def _create_naccreas(self) -> Optional[int]:
+    #     """Creates NACCREAS - primary reason for coming to ADC.
+
+    #     Not collected at followup visits.
+    #     """
+    #     if not self.uds.is_initial():
+    #         return None
+
+    #     reason = self.uds.get_value("reason", int)
+    #     if reason in [3, 4]:
+    #         return 7
+
+    #     return reason if reason is not None else 9
 
     def _create_naccrefr(self) -> Optional[int]:
         """Ceates NACCREFR - principle referral source.
@@ -126,6 +139,136 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             return 9
 
         return refer
+
+    def _create_naccsex(self) -> Optional[int]:
+        """Creates NACCSEX - participant's sex.
+
+        Source variables only provided in IVP.
+        """
+        if not self.uds.is_initial():
+            return None
+
+        if self.formver < 4:
+            sex = self.uds.get_value("sex", int)
+        else:
+            sex = self.uds.get_value("birthsex", int)
+
+        if sex is None:
+            raise AttributeDeriverError(
+                "Unable to derive NACCSEX, missing sex/birthsex"
+            )
+
+        return sex
+
+    def _create_nacclang(self) -> Optional[int]:
+        """Creates NACCLANG - primary language.
+
+        Source variables only provided in IVP.
+        """
+        if not self.uds.is_initial():
+            return None
+
+        if self.formver < 4:
+            # need to do some transformation/mapping
+            # primlang -> nacclang
+            primlang_mappings = {1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 5, 8: 8, 9: 9}
+
+            primlang = self.uds.get_value("primlang", int)
+            if primlang not in primlang:
+                raise AttributeDeriverError(
+                    "Unable to derive NACCLANG (V3 and earlier):"
+                    + f"unsupported primlang value: {primlang}"
+                )
+
+            return primlang_mappings[primlang]
+
+        predomlan = self.uds.get_value("predomlan", int)
+        if predomlan is None:
+            raise AttributeDeriverError(
+                "Unable to derive NACCLANG (V4): missing PREDOMLAN"
+            )
+
+        return predomlan
+
+    def _create_nacclangx(self) -> Optional[str]:
+        """Creates NACCLANGX - Primary language, other - specify.
+
+        Source variables only provided in IVP. Can be blank.
+        """
+        if not self.uds.is_initial():
+            return None
+
+        if self.formver < 4:
+            return self.uds.get_value("primlangx", str)
+
+        return self.uds.get_value("predomlanx", str)
+
+    def _create_nacchisp(self) -> Optional[int]:
+        """Creates NACCHISP - Hispanic/Latino ethnicity
+
+        Source variables only provided in IVP.
+        """
+        if not self.uds.is_initial():
+            return None
+
+        if self.formver < 4:
+            hispanic = self.uds.get_value("hispanic", int)
+            if hispanic is None:
+                raise AttributeDeriverError(
+                    "Unable to derive NACCHISP (V3 and earlier): missing HISPANIC)"
+                )
+            return hispanic
+
+        ethispanic = self.uds.get_value("ethispanic", int)
+        if ethispanic == 1:
+            return 1
+        if not ethispanic:
+            raceunkn = self.uds.get_value("raceunkn", int)
+            if raceunkn is None:
+                return 0
+            if raceunkn == 1:
+                return 9
+
+        raise AttributeDeriverError(
+            "Unable to derive NACCHISP (V4) from ETHISPANIC and RACEUNKN"
+        )
+
+    def _create_naccedulvl(self) -> int:  # noqa: C901
+        """Creates NACCEDULVL - Highest achieved level of education"""
+        if self.formver < 4:
+            educ = self.uds.get_value("educ", int)
+            if educ is None:
+                raise AttributeDeriverError(
+                    "Unable to derive NACCEDULVL (V3 and earlier): " + "missing EDUC"
+                )
+
+            if educ < 12:
+                return 1
+            if educ == 12:
+                return 2
+            if educ > 12 and educ < 16:
+                return 3
+            if educ >= 16 and educ < 18:
+                return 4
+            if educ >= 18 and educ < 20:
+                return 5
+            if educ >= 20 and educ <= 36:
+                return 6
+            if educ == 99:
+                return 9
+
+            raise AttributeDeriverError(
+                "Unable to derive NACCEDULVL (V3 and earlier):"
+                + f"unhandled EDUC value: {educ}"
+            )
+
+        lvleduc = self.uds.get_value("lvleduc", int)
+        if lvleduc is None:
+            raise AttributeDeriverError(
+                "Unable to derive NACCEDULVL (V4): missing LVLEDUC"
+            )
+
+        return lvleduc
 
     def _create_affiliate(self) -> bool:
         """Returns whether or not the participant is an affiliate.
