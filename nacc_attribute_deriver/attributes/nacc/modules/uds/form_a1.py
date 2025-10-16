@@ -174,7 +174,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             primlang_mappings = {1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 5, 8: 8, 9: 9}
 
             primlang = self.uds.get_value("primlang", int)
-            if primlang not in primlang:
+            if primlang not in primlang_mappings:
                 raise AttributeDeriverError(
                     "Unable to derive NACCLANG (V3 and earlier):"
                     + f"unsupported primlang value: {primlang}"
