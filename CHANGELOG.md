@@ -38,6 +38,7 @@ Most of these changes are associated with the following aggregate PRs:
 * Adds CSF derived variables - [#68](https://github.com/naccdata/nacc-attribute-deriver/pull/68)
 * Adds Mixed Protocol (MP) derived variables - [#68](https://github.com/naccdata/nacc-attribute-deriver/pull/68), [#70](https://github.com/naccdata/nacc-attribute-deriver/pull/70)
     * Adds `DatedSetOperation` to support dated sets required for these variables (since curating across sessions)
+    * Handles file locator attributes by appending all images names - [#71](https://github.com/naccdata/nacc-attribute-deriver/pull/71)
 * Refactors how dated values are handled - adds `dated` configuration to curation rules to be handled at curation rule level - [#50](https://github.com/naccdata/nacc-attribute-deriver/pull/50)
     * Updates longtitudinal variables to be stored as list of `DateTaggedValue`s - curation rules updated
 * Refactors working/temporary variables to be written under `subject.info.working`, and updates to use kebab-case
