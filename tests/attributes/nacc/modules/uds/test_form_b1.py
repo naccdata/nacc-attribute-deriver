@@ -5,10 +5,7 @@ import random
 from nacc_attribute_deriver.attributes.nacc.modules.uds.form_b1 import (
     UDSFormB1Attribute,
 )
-from nacc_attribute_deriver.schema.constants import (
-    INFORMED_MISSINGNESS,
-    NOT_ASSESSED_FLOAT,
-)
+from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 
 ALL_FORMVERS = [1.0, 2.0, 3.0, 3.2, 4.0]
 
@@ -79,13 +76,13 @@ class TestUDSFormB1Attribute:
             {"b1sub": 1, "weight": None, "height": 60}
         )
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._create_naccbmi() == NOT_ASSESSED_FLOAT
+        assert attr._create_naccbmi() == 888.8
 
         uds_table["file.info.forms.json"].update(
             {"b1sub": 1, "weight": 180, "height": 88.8}
         )
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._create_naccbmi() == NOT_ASSESSED_FLOAT
+        assert attr._create_naccbmi() == 888.8
 
         # test form not submitted
         uds_table["file.info.forms.json"].update(
@@ -109,25 +106,25 @@ class TestUDSFormB1Attribute:
 
         # test fields are missing
         uds_table["file.info.forms.json.b1sub"] = 1
-        assert attr._compute_average("field1", "field2") == NOT_ASSESSED_FLOAT
+        assert attr._compute_average("field1", "field2") == 888
 
         # test fields are 888
         uds_table["file.info.forms.json"].update({"field1": 1, "field2": 888})
-        assert attr._compute_average("field1", "field2") == NOT_ASSESSED_FLOAT
+        assert attr._compute_average("field1", "field2") == 888
 
         # compute average
-        uds_table["file.info.forms.json"].update({"field1": 78.5, "field2": 52.3})
-        assert attr._compute_average("field1", "field2") == 65.4
+        uds_table["file.info.forms.json"].update({"field1": 78, "field2": 52})
+        assert attr._compute_average("field1", "field2") == 65
 
     def test_handle_v3_blood_pressure(self, uds_table):
         """Test _handle_v3_blood_pressure, which is just for V3."""
         uds_table["file.info.forms.json"].update(
-            {"formver": 3.0, "gate": 777, "field": 123.4}
+            {"formver": 3.0, "gate": 777, "field": 123}
         )
 
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._handle_v3_blood_pressure("gate", "field") == 123.4
+        assert attr._handle_v3_blood_pressure("gate", "field") == 123
 
         # gate is not 777
         uds_table["file.info.forms.json.gate"] = 888
-        assert attr._handle_v3_blood_pressure("gate", "field") == -4.0
+        assert attr._handle_v3_blood_pressure("gate", "field") == -4

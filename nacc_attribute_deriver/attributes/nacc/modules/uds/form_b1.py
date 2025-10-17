@@ -10,7 +10,6 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
 )
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_MISSINGNESS,
-    NOT_ASSESSED_FLOAT,
 )
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 
@@ -64,10 +63,13 @@ class UDSFormB1Attribute(UDSAttributeCollection):
             # + 0.0001 so we ensure exact halves round up, not down
             return round(naccbmi + 0.0001, 1)
 
-        return NOT_ASSESSED_FLOAT
+        return 888.8
 
-    def _compute_average(self, field1: str, field2: str) -> Optional[float]:
-        """Compute the average for the two fields (V4 only)."""
+    def _compute_average(self, field1: str, field2: str) -> Optional[int]:
+        """Compute the average for the two fields (V4 only).
+
+        Rounded to the nearest integer.
+        """
         if self.formver < 4:
             return INFORMED_MISSINGNESS
 
@@ -76,29 +78,29 @@ class UDSFormB1Attribute(UDSAttributeCollection):
                 return INFORMED_MISSINGNESS
             return None
 
-        value1 = self.uds.get_value(field1, float)
-        value2 = self.uds.get_value(field2, float)
+        value1 = self.uds.get_value(field1, int)
+        value2 = self.uds.get_value(field2, int)
 
         if any(x is None or x == 888 for x in [value1, value2]):
-            return NOT_ASSESSED_FLOAT
+            return 888
 
         result = (value1 + value2) / 2  # type: ignore
         # + 0.0001 so we ensure exact halves round up, not down
-        return round(result + 0.0001, 1)
+        return round(result + 0.0001)
 
-    def _create_naccwaist(self) -> Optional[float]:
+    def _create_naccwaist(self) -> Optional[int]:
         """Creates NACCWAIST - Waist circumference (inches),
         average of two measurements
         """
         return self._compute_average("waist1", "waist2")
 
-    def _create_nacchip(self) -> Optional[float]:
+    def _create_nacchip(self) -> Optional[int]:
         """Creates NACCHIP - Hip circumference (inches),
         average of two measurements
         """
         return self._compute_average("hip1", "hip2")
 
-    def _handle_v3_blood_pressure(self, gate: str, field: str) -> float:
+    def _handle_v3_blood_pressure(self, gate: str, field: str) -> int:
         """Handles V3 blood pressure variables, which looks to see if
         supplemental blood pressure information was provided and returns that
         if so.
@@ -113,16 +115,16 @@ class UDSFormB1Attribute(UDSAttributeCollection):
             value of field, if supplemental data provided, else -4
         """
         if self.uds.get_value(gate, int) == 777:
-            value = self.uds.get_value(field, float)
+            value = self.uds.get_value(field, int)
             if value is None:
                 raise AttributeDeriverError(
                     f"Missing expected value {field} when {gate} == 777 for V3"
                 )
             return value
 
-        return float(INFORMED_MISSINGNESS)
+        return INFORMED_MISSINGNESS
 
-    def _create_naccbpsysl(self) -> Optional[float]:
+    def _create_naccbpsysl(self) -> Optional[int]:
         """Creates NACCBPSYSL - Participant blood pressure
         (average of two readings), systolic, left arm
         """
@@ -131,7 +133,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return self._compute_average("bpsysl1", "bpsysl2")
 
-    def _create_naccbpsysr(self) -> Optional[float]:
+    def _create_naccbpsysr(self) -> Optional[int]:
         """Creates NACCBPSYSR - Participant blood pressure
         (average of two readings), systolic, right arm
         """
@@ -140,7 +142,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return self._compute_average("bpsysr1", "bpsysr2")
 
-    def _create_naccbpdial(self) -> Optional[float]:
+    def _create_naccbpdial(self) -> Optional[int]:
         """Creates NACCBPDIAL - Participant blood pressure
         (average of two readings), diastolic, left arm
         """
@@ -149,7 +151,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return self._compute_average("bpdiasl1", "bpdiasl2")
 
-    def _create_naccbpdiar(self) -> Optional[float]:
+    def _create_naccbpdiar(self) -> Optional[int]:
         """Creates NACCBPDIAR - Participant blood pressure
         (average of two readings), diastolic, right arm
         """
