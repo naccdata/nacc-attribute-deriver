@@ -1,9 +1,12 @@
 """Tests base namespaces."""
 
 from datetime import date
+import pytest
+
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     BaseNamespace,
     INVALID_TEXT,
+    PreviousRecordNamespace,
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
@@ -93,3 +96,46 @@ class TestSubjectDerivedNamespace:
             2025, 1, 1
         )
         assert namespace.get_cross_sectional_dated_value("dated-var", int).value == 8
+
+
+@pytest.fixture(scope="function")
+def prev_record() -> SymbolTable:
+    """Create dummy data and return it in a table."""
+    data = {
+        "_prev_record": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "visitdate": "2025-01-01",
+                        "birthmo": "3",
+                        "birthyr": "1990",
+                        "module": "UDS",
+                        "formver": "3.2",
+                        "packet": "I",
+                        "naccid": "NACC123456",
+                        "adcid": 0,
+                    },
+                    "missingness": {
+                        "missingvar": 5
+                    }
+                }
+            }
+        }
+    }
+
+    return SymbolTable(data)
+
+
+class TestPreviousRecordNamespace:
+    def test_get_values(self, prev_record):
+        """Tests getting raw vs missingness form value."""
+        namespace = PreviousRecordNamespace(table=prev_record)
+
+        assert namespace.get_form_value("naccid", str) == "NACC123456"
+        assert namespace.get_form_value("missingvar", int) is None
+
+        assert namespace.get_missingness_value("naccid", str) is None
+        assert namespace.get_missingness_value("missingvar", int) == 5
+
+        assert namespace.get_resolved_value("naccid", str) == "NACC123456"
+        assert namespace.get_resolved_value("missingvar", int) == 5

@@ -226,11 +226,11 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         return naccmotf if naccmotf is not None else 99
 
-    #########################################
-    # Carryover form variables
+    #######################################################################
+    # Carryover form variables - needed for above curation
     # These should be curated AFTER the above
     # We do check dates though so it shouldn't matter too much
-    #########################################
+    #######################################################################
 
     def determine_carryover(self, attribute: str) -> Optional[int]:
         """In many followup visits, 0 == assessed at previous visit.
