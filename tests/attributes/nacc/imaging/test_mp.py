@@ -19,7 +19,7 @@ def nifti_table() -> SymbolTable:
                         "StudyDate": "20060816",
                     }
                 },
-                "filename": "test_image2.dicom.zip  "
+                "filename": "test_image2.dicom.zip  ",
             }
         },
         "subject": {
@@ -36,18 +36,11 @@ def nifti_table() -> SymbolTable:
                 "derived": {
                     "longitudinal": {
                         "naccmrfi": [
-                            {
-                                "date": "2006-08-16",
-                                "value": "  test_image1.dicom.zip"
-                            },
-                            {
-                                "date": "2001-03-12",
-                                "value": "SHOULD NOT BE PICKED UP"
-                            }
-
+                            {"date": "2006-08-16", "value": "  test_image1.dicom.zip"},
+                            {"date": "2001-03-12", "value": "SHOULD NOT BE PICKED UP"},
                         ]
                     }
-                }
+                },
             }
         },
     }
@@ -142,8 +135,10 @@ class TestMPAttributeCollection:
     def test_get_filename(self, dicom_table):
         """Test getting filename."""
         attr = MPAttributeCollection(dicom_table)
-        assert attr.get_filename("naccmrfi") == \
-            "test_image1.dicom.zip,test_image2.dicom.zip"
+        assert (
+            attr.get_filename("naccmrfi")
+            == "test_image1.dicom.zip,test_image2.dicom.zip"
+        )
 
         # test when there is no existing filenames
         assert attr.get_filename("naccaptf") == "test_image2.dicom.zip"

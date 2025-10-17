@@ -115,7 +115,7 @@ class MPAttributeCollection(AttributeCollection):
             str(self.__mp.study_date), attribute, str
         )
         if filenames is not None:
-            return f'{filenames.strip()},{self.__mp.filename}'
+            return f"{filenames.strip()},{self.__mp.filename}"
 
         return self.__mp.filename
 

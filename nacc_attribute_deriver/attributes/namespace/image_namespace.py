@@ -32,10 +32,11 @@ class MixedProtocolNamespace(BaseNamespace):
 
         # For imaging we need to know the corresponding filename. Assumed
         # to be listed under file.info.filename
-        self.__filename = table.get('file.info.filename', None)
+        self.__filename = table.get("file.info.filename", None)
         if not self.__filename:
             raise AttributeDeriverError(
-                "No filename found for image (expected to be under file.info.filename)")
+                "No filename found for image (expected to be under file.info.filename)"
+            )
         self.__filename = self.__filename.strip()
 
     @property
