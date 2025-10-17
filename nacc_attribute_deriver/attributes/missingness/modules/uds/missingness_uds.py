@@ -64,3 +64,7 @@ class UDSMissingness(UDSAttributeCollection):
             return INFORMED_MISSINGNESS
 
         return None
+
+    def generic_missingness(self, field: str) -> Optional[int]:
+        """Generic missingness for internal calls."""
+        return self._missingness_uds(field)
