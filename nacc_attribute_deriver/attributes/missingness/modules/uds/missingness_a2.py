@@ -10,24 +10,13 @@ from .missingness_uds import UDSMissingness
 
 
 class UDSFormA2Missingness(UDSMissingness):
-    def _missingness_incntmod(self) -> Optional[int]:
-        """Handles missingness for INCNTMOD.
 
-        If INLIVWTH=1 then INCNTMOD=8
-        """
-        if self.formver < 4:
-            return INFORMED_MISSINGNESS
+    def _missingness_inlivwth_gate(self) -> Optional[int]:
+        """Handles missingness for fields gated by INLIVWTH:
 
-        inlivwth = self.uds.get_value("inlivwth", int)
-        if inlivwth == 1:
-            return 8
+        If INLIVWTH = 1, then VAR = 8
 
-        return None
-
-    def _missingness_incnttim(self) -> Optional[int]:
-        """Handles missingness for INCNTTIM.
-
-        If INLIVWTH=1 then INCNTTIM=8
+        For INCNTMOD and INCNTTIM
         """
         if self.formver < 4:
             return INFORMED_MISSINGNESS

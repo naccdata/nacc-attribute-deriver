@@ -28,11 +28,11 @@ class TestUDSFormB8Missingness:
         uds_table["file.info.forms.json"].update({"normnrexam": 1, "gaitabn": 1})
         assert attr._missingness_gaitfind() is None
 
-    def test_handle_normnrexam_gate(self, uds_table):
-        """Test _handle_normnrexam_gate."""
+    def test_missingness_normnrexam_gate(self, uds_table):
+        """Test _missingness_normnrexam_gate."""
         # V3 and earlier is just informed missingness
         attr = UDSFormB8Missingness(uds_table)
-        assert attr._handle_normnrexam_gate() == INFORMED_MISSINGNESS
+        assert attr._missingness_normnrexam_gate() == INFORMED_MISSINGNESS
 
         # V4
         uds_table["file.info.forms.json.formver"] = 4.0
@@ -40,10 +40,10 @@ class TestUDSFormB8Missingness:
 
         # if normnrexam == 0, should return 0, otherwise None
         uds_table["file.info.forms.json.normnrexam"] = 0
-        assert attr._handle_normnrexam_gate() == 0
+        assert attr._missingness_normnrexam_gate() == 0
 
         uds_table["file.info.forms.json.normnrexam"] = 1
-        assert attr._handle_normnrexam_gate() is None
+        assert attr._missingness_normnrexam_gate() is None
 
     def test_handle_b8_missingness(self, uds_table):
         """Tests _handle_b8_missingness."""
