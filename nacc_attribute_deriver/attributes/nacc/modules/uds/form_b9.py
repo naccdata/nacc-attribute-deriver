@@ -18,7 +18,13 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
+    PreviousRecordNamespace,
     WorkingDerivedNamespace,
+)
+from nacc_attribute_deriver.schema.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+    PREV_RECORD_CODE,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -30,6 +36,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         super().__init__(table)
         self.__working = WorkingDerivedNamespace(table=table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__prev_record = None
+
+        if not self.uds.is_initial():
+            self.__prev_record = PreviousRecordNamespace(table=table)
 
         # if b9chg == 1 was selected in version 1.2 of UDS (no meaningful changes),
         # indicates NACC has brought forward data from previous visit
@@ -39,7 +49,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def harmonize_befrst(self) -> Optional[int]:
         """Updates BEFRST for NACCBEHF harmonization.
 
-        Returns     updated value for BEFRST
+        Returns updated value for BEFRST
         """
         befrst = self.uds.get_value("befrst", int)
 
@@ -51,6 +61,19 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         return befrst
 
+    def _create_nacccogage(self) -> int:
+        """Creates NACCCOGAGE - Age that participant's cognitive impairment began."""
+        target_var = 'decage' if self.formver < 4 else 'cogage'
+
+        value = self.uds.get_value(target_var, int)
+        if value == PREV_RECORD_CODE:
+            value = self.__prev_record.get_resolved_value(target_var, int)
+
+        if value is None:
+            return INFORMED_MISSINGNESS
+
+        return value
+
     def _create_naccbehf(self) -> int:  # noqa: C901
         """Create NACCBEHF, indicate the predominant symptom that was first
         recognized as a decline in the subject's behavior.
@@ -61,6 +84,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         its longitudinal with carryover from previous forms (e.g. not
         the same for every visit.)
         """
+        # not defined in V4
+        if self.formver == 4:
+            return INFORMED_MISSINGNESS
+
         befrst = self.harmonize_befrst()
         befpred = self.uds.get_value("befpred", int)  # v3+
         naccbehf = befpred if befpred is not None else befrst
@@ -113,6 +140,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         TODO: RDD lists this as cross-sectional, but it seems more like
         its longitudinal,
         """
+        # not defined in V4
+        if self.formver == 4:
+            return INFORMED_BLANK
+
         if self._create_naccbehf() != 10:
             return None
 
@@ -128,6 +159,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         TODO: RDD lists this as cross-sectional, but it seems more like
         its longitudinal.
         """
+        # not defined in V4
+        if self.formver == 4:
+            return INFORMED_BLANK
+
         cogfprex = self.uds.get_value("cogfprex", str)
         cogfrstx = self.uds.get_value("cogfrstx", str)
 
@@ -136,7 +171,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def harmonize_cogfrst(self) -> Optional[int]:
         """Updates COGFRST for NACCCOGF harmonization.
 
-        Returns     updated value for COGFRST
+        Returns updated value for COGFRST
         """
         cogfrst = self.uds.get_value("cogfrst", int)
 
@@ -156,6 +191,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         its longitudinal with carryover from previous forms (e.g. not
         the same for every visit.)
         """
+        # not defined in V4
+        if self.formver == 4:
+            return INFORMED_MISSINGNESS
+
         cogfrst = self.harmonize_cogfrst()
         cogfpred = self.uds.get_value("cogfpred", int)
         p_decclin = self.__working.get_prev_value("decclin", int)
@@ -196,6 +235,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def _create_naccmotf(self) -> int:
         """Creates NACCMOTF, Indicate the predominant symptom that was first
         recognized as a decline in the subject's motor function."""
+        # not defined in V4
+        if self.formver == 4:
+            return INFORMED_BLANK
+
         mofrst = self.uds.get_value("mofrst", int)
 
         # see note in _create_naccbehf; same situation

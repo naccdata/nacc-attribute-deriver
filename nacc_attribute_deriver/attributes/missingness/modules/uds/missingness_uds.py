@@ -14,6 +14,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
+    PREV_RECORD_CODE
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -87,7 +88,7 @@ class UDSMissingness(UDSAttributeCollection):
 
         return self.generic_blank(field)
 
-    def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
+    def handle_prev_visit(self, field: str, prev_code: int = PREV_RECORD_CODE) -> Optional[int]:
         """Handle when the value is provided by the previous visit.
 
         If VAR == PREV_CODE, VAR must be equal to PREV_VISIT.

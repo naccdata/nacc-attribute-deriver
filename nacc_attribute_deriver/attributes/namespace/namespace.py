@@ -14,7 +14,7 @@ from typing import (
 
 from pydantic import ValidationError
 
-from nacc_attribute_deriver.schema.constants import INVALID_TEXT
+from nacc_attribute_deriver.schema.constants import INVALID_TEXT, PREV_RECORD_CODE
 from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -246,7 +246,7 @@ class PreviousRecordNamespace(FormNamespace):
         return self.get_value(f"missingness.{attribute}", attr_type, default)
 
     def get_resolved_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None, prev_code: int = 777
+        self, attribute: str, attr_type: Type[T], default: Optional[T] = None, prev_code: int = PREV_RECORD_CODE
     ) -> Optional[T]:
         """Returns the value of the resolved attribute key in the table. First
         looks at the raw value - if a prev_visit code (e.g. 777) or None,
