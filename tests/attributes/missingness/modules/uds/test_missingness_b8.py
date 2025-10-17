@@ -24,17 +24,17 @@ class TestUDSFormB8Missingness:
         uds_table["file.info.forms.json"].update({"normnrexam": 1, "gaitabn": 0})
         assert attr._missingness_gaitfind() == 8
 
-                # no conditions passed, generic missingness
+        # no conditions passed, generic missingness
         uds_table["file.info.forms.json"].update({"normnrexam": 1, "gaitabn": 1})
         assert attr._missingness_gaitfind() == INFORMED_MISSINGNESS
         uds_table["file.info.forms.json.gaitfind"] = 5
         assert attr._missingness_gaitfind() is None
 
-    def test_missingness_normnrexam_gate(self, uds_table):
-        """Test _missingness_normnrexam_gate."""
+    def test_handle_normnrexam_gate(self, uds_table):
+        """Test _handle_normnrexam_gate."""
         # V3 and earlier is just informed missingness
         attr = UDSFormB8Missingness(uds_table)
-        assert attr._missingness_normnrexam_gate("somevar") == INFORMED_MISSINGNESS
+        assert attr._handle_normnrexam_gate("somevar") == INFORMED_MISSINGNESS
 
         # V4
         uds_table["file.info.forms.json.formver"] = 4.0
@@ -42,13 +42,13 @@ class TestUDSFormB8Missingness:
 
         # if normnrexam == 0, should return 0
         uds_table["file.info.forms.json.normnrexam"] = 0
-        assert attr._missingness_normnrexam_gate("somevar") == 0
+        assert attr._handle_normnrexam_gate("somevar") == 0
 
         # no conditions passed, generic missingness
         uds_table["file.info.forms.json.normnrexam"] = 1
-        assert attr._missingness_normnrexam_gate("somevar") == INFORMED_MISSINGNESS
+        assert attr._handle_normnrexam_gate("somevar") == INFORMED_MISSINGNESS
         uds_table["file.info.forms.json.somevar"] = 5
-        assert attr._missingness_normnrexam_gate("somevar") is None
+        assert attr._handle_normnrexam_gate("somevar") is None
 
     def test_handle_b8_missingness(self, uds_table):
         """Tests _handle_b8_missingness."""
@@ -76,5 +76,7 @@ class TestUDSFormB8Missingness:
         assert attr._handle_b8_missingness("gate", "somevar") == INFORMED_MISSINGNESS
 
         # default case, not missing so return None (so doesn't override)
-        uds_table["file.info.forms.json"].update({"normnrexam": None, "gate": None, "somevar": 5})
+        uds_table["file.info.forms.json"].update(
+            {"normnrexam": None, "gate": None, "somevar": 5}
+        )
         assert attr._handle_b8_missingness("gate", "somevar") is None

@@ -1,409 +1,339 @@
 """Class to handle B9-specific missingness values."""
 
-from typing import Optional
-
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from typing import List, Optional
 
 from .missingness_uds import UDSMissingness
 
 
 class UDSFormB9Missingness(UDSMissingness):
-    def _handle_b9_gate(self, gate: str, field: str, missingness_value: int) -> int:
-        """Handles missingness values gated by the specified variable:
+    def _handle_cascading_gates(
+        self, gates: List[str], field: str, missingness_value: int
+    ) -> Optional[int]:
+        """Handle cascading gates, all of which specify:
 
         If GATE = 0, then VAR must be MISSINGNESS_VALUE
-
-        If condition does not apply, return generic missingness.
+        If no conditions apply, return generic missingness.
         """
-        if self.uds.get_value(gate, int) == 0:
-            return missing_value
+        for gate in gates:
+            if self.uds.get_value(gate, int) == 0:
+                return missingness_value
 
         return self.generic_missingness(field)
 
-    def _missingness_decclog(self) -> Optional[int]:
-        """Handles missingness for DECCLOG"""
-        return self._handle_b9_gate("decclin", field="decclog", missingness_value=0)
+    #################
+    # DECCLCOG GATES #
+    ##################
+
+    def _missingness_decclcog(self) -> Optional[int]:
+        """Handles missingness for decclcog.
+
+        MUST BE HANDLED FIRST
+        """
+        return self._handle_cascading_gates(["decclin"], "decclcog", 0)
 
     def _missingness_cogmem(self) -> Optional[int]:
-        """Handles missingness for COGMEM"""
-        return self._handle_b9_gate("decclin", field="cogmem", missingness_value=0)
+        """Handles missingness for COGMEM."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogmem", 0)
 
     def _missingness_corogi(self) -> Optional[int]:
-        """Handles missingness for COROGI"""
-        return self._handle_b9_gate("decclin", field="corogi", missingness_value=0)
+        """Handles missingness for COROGI."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "corogi", 0)
 
     def _missingness_cogjudg(self) -> Optional[int]:
-        """Handles missingness for COGJUDG"""
-        return self._handle_b9_gate("decclin", field="cogjudg", missingness_value=0)
+        """Handles missingness for COGJUDG."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogjudg", 0)
 
     def _missingness_coglang(self) -> Optional[int]:
-        """Handles missingness for COGLANG"""
-        return self._handle_b9_gate("decclin", field="coglang", missingness_value=0)
+        """Handles missingness for COGLANG."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "coglang", 0)
 
     def _missingness_cogvis(self) -> Optional[int]:
-        """Handles missingness for COGVIS"""
-        return self._handle_b9_gate("decclin", field="cogvis", missingness_value=0)
+        """Handles missingness for COGVIS."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogvis", 0)
 
     def _missingness_cogattn(self) -> Optional[int]:
-        """Handles missingness for COGATTN"""
-        return self._handle_b9_gate("decclin", field="cogattn", missingness_value=0)
+        """Handles missingness for COGATTN."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogattn", 0)
 
     def _missingness_cogfluc(self) -> Optional[int]:
-        """Handles missingness for COGFLUC"""
-        return self._handle_b9_gate("decclin", field="cogfluc", missingness_value=0)
+        """Handles missingness for COGFLUC."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogfluc", 0)
 
     def _missingness_cogothr(self) -> Optional[int]:
-        """Handles missingness for COGOTHR"""
-        return self._handle_b9_gate("decclin", field="cogothr", missingness_value=0)
+        """Handles missingness for COGOTHR."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogothr", 0)
 
     def _missingness_cogmode(self) -> Optional[int]:
-        """Handles missingness for COGMODE"""
-        return self._handle_b9_gate("decclin", field="cogmode", missingness_value=0)
+        """Handles missingness for COGMODE."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogmode", 0)
+
+    #################
+    # DECCLBE GATES #
+    #################
 
     def _missingness_decclbe(self) -> Optional[int]:
-        """Handles missingness for DECCLBE"""
-        return self._handle_b9_gate("decclin", field="decclbe", missingness_value=0)
+        """Handles missingness for DECCLBE.
+
+        MUST BE HANDLED FIRST.
+        """
+        return self._handle_cascading_gates(["decclin"], "decclbe", 0)
 
     def _missingness_beapathy(self) -> Optional[int]:
-        """Handles missingness for BEAPATHY"""
-        return self._handle_b9_gate("decclin", field="beapathy", missingness_value=0)
+        """Handles missingness for BEAPATHY."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beapathy", 0)
 
     def _missingness_bedep(self) -> Optional[int]:
-        """Handles missingness for BEDEP"""
-        return self._handle_b9_gate("decclin", field="bedep", missingness_value=0)
+        """Handles missingness for BEDEP."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "bedep", 0)
 
     def _missingness_beanx(self) -> Optional[int]:
-        """Handles missingness for BEANX"""
-        return self._handle_b9_gate("decclin", field="beanx", missingness_value=0)
+        """Handles missingness for BEANX."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beanx", 0)
 
     def _missingness_beeuph(self) -> Optional[int]:
-        """Handles missingness for BEEUPH"""
-        return self._handle_b9_gate("decclin", field="beeuph", missingness_value=0)
+        """Handles missingness for BEEUPH."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beeuph", 0)
 
     def _missingness_beirrit(self) -> Optional[int]:
-        """Handles missingness for BEIRRIT"""
-        return self._handle_b9_gate("decclin", field="beirrit", missingness_value=0)
+        """Handles missingness for BEIRRIT."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beirrit", 0)
 
     def _missingness_beagit(self) -> Optional[int]:
-        """Handles missingness for BEAGIT"""
-        return self._handle_b9_gate("decclin", field="beagit", missingness_value=0)
+        """Handles missingness for BEAGIT."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beagit", 0)
 
     def _missingness_bevhall(self) -> Optional[int]:
-        """Handles missingness for BEVHALL"""
-        return self._handle_b9_gate("decclin", field="bevhall", missingness_value=0)
+        """Handles missingness for BEVHALL."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "bevhall", 0)
 
     def _missingness_bevpatt(self) -> Optional[int]:
-        """Handles missingness for BEVPATT"""
-        return self._handle_b9_gate("decclin", field="bevpatt", missingness_value=0)
+        """Handles missingness for BEVPATT."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "bevpatt", 0)
 
     def _missingness_bevwell(self) -> Optional[int]:
-        """Handles missingness for BEVWELL"""
-        return self._handle_b9_gate("decclin", field="bevwell", missingness_value=0)
+        """Handles missingness for BEVWELL."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "bevwell", 0)
 
     def _missingness_beahall(self) -> Optional[int]:
-        """Handles missingness for BEAHALL"""
-        return self._handle_b9_gate("decclin", field="beahall", missingness_value=0)
+        """Handles missingness for BEAHALL."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beahall", 0)
 
     def _missingness_beahsimp(self) -> Optional[int]:
-        """Handles missingness for BEAHSIMP"""
-        return self._handle_b9_gate("decclin", field="beahsimp", missingness_value=0)
+        """Handles missingness for BEAHSIMP."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beahsimp", 0)
 
     def _missingness_beahcomp(self) -> Optional[int]:
-        """Handles missingness for BEAHCOMP"""
-        return self._handle_b9_gate("decclin", field="beahcomp", missingness_value=0)
+        """Handles missingness for BEAHCOMP."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beahcomp", 0)
 
     def _missingness_bedel(self) -> Optional[int]:
-        """Handles missingness for BEDEL"""
-        return self._handle_b9_gate("decclin", field="bedel", missingness_value=0)
+        """Handles missingness for BEDEL."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "bedel", 0)
 
     def _missingness_beaggrs(self) -> Optional[int]:
-        """Handles missingness for BEAGGRS"""
-        return self._handle_b9_gate("decclin", field="beaggrs", missingness_value=0)
+        """Handles missingness for BEAGGRS."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beaggrs", 0)
 
     def _missingness_bedisin(self) -> Optional[int]:
-        """Handles missingness for BEDISIN"""
-        return self._handle_b9_gate("decclin", field="bedisin", missingness_value=0)
+        """Handles missingness for BEDISIN."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "bedisin", 0)
 
     def _missingness_beperch(self) -> Optional[int]:
-        """Handles missingness for BEPERCH"""
-        return self._handle_b9_gate("decclin", field="beperch", missingness_value=0)
+        """Handles missingness for BEPERCH."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beperch", 0)
 
     def _missingness_beempath(self) -> Optional[int]:
-        """Handles missingness for BEEMPATH"""
-        return self._handle_b9_gate("decclin", field="beempath", missingness_value=0)
+        """Handles missingness for BEEMPATH."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beempath", 0)
 
     def _missingness_beobcom(self) -> Optional[int]:
-        """Handles missingness for BEOBCOM"""
-        return self._handle_b9_gate("decclin", field="beobcom", missingness_value=0)
+        """Handles missingness for BEOBCOM."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beobcom", 0)
 
     def _missingness_beanger(self) -> Optional[int]:
-        """Handles missingness for BEANGER"""
-        return self._handle_b9_gate("decclin", field="beanger", missingness_value=0)
+        """Handles missingness for BEANGER."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beanger", 0)
 
     def _missingness_besubab(self) -> Optional[int]:
-        """Handles missingness for BESUBAB"""
-        return self._handle_b9_gate("decclin", field="besubab", missingness_value=0)
+        """Handles missingness for BESUBAB."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "besubab", 0)
 
     def _missingness_berem(self) -> Optional[int]:
-        """Handles missingness for BEREM"""
-        return self._handle_b9_gate("decclin", field="berem", missingness_value=0)
+        """Handles missingness for BEREM."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "berem", 0)
 
     def _missingness_beremconf(self) -> Optional[int]:
-        """Handles missingness for BEREMCONF"""
-        return self._handle_b9_gate("decclin", field="beremconf", missingness_value=0)
+        """Handles missingness for BEREMCONF."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beremconf", 0)
 
     def _missingness_beothr(self) -> Optional[int]:
-        """Handles missingness for BEOTHR"""
-        return self._handle_b9_gate("decclin", field="beothr", missingness_value=0)
+        """Handles missingness for BEOTHR."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "beothr", 0)
 
     def _missingness_bemode(self) -> Optional[int]:
-        """Handles missingness for BEMODE"""
-        return self._handle_b9_gate("decclin", field="bemode", missingness_value=0)
+        """Handles missingness for BEMODE."""
+        return self._handle_cascading_gates(["decclin", "decclbe"], "bemode", 0)
+
+    ##################
+    # DECCLMOT GATES #
+    ##################
 
     def _missingness_decclmot(self) -> Optional[int]:
-        """Handles missingness for DECCLMOT"""
-        return self._handle_b9_gate("decclin", field="decclmot", missingness_value=0)
+        """Handles missingness for DECCLMOT.
+
+        MUST BE HANDLED FIRST.
+        """
+        return self._handle_cascading_gates(["decclin"], "decclmot", 0)
 
     def _missingness_mogait(self) -> Optional[int]:
-        """Handles missingness for MOGAIT"""
-        return self._handle_b9_gate("decclin", field="mogait", missingness_value=0)
+        """Handles missingness for MOGAIT."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "mogait", 0)
 
     def _missingness_mofalls(self) -> Optional[int]:
-        """Handles missingness for MOFALLS"""
-        return self._handle_b9_gate("decclin", field="mofalls", missingness_value=0)
+        """Handles missingness for MOFALLS."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "mofalls", 0)
 
     def _missingness_moslow(self) -> Optional[int]:
-        """Handles missingness for MOSLOW"""
-        return self._handle_b9_gate("decclin", field="moslow", missingness_value=0)
+        """Handles missingness for MOSLOW."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "moslow", 0)
 
     def _missingness_motrem(self) -> Optional[int]:
-        """Handles missingness for MOTREM"""
-        return self._handle_b9_gate("decclin", field="motrem", missingness_value=0)
+        """Handles missingness for MOTREM."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "motrem", 0)
 
     def _missingness_molimb(self) -> Optional[int]:
-        """Handles missingness for MOLIMB"""
-        return self._handle_b9_gate("decclin", field="molimb", missingness_value=0)
+        """Handles missingness for MOLIMB."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "molimb", 0)
 
     def _missingness_moface(self) -> Optional[int]:
-        """Handles missingness for MOFACE"""
-        return self._handle_b9_gate("decclin", field="moface", missingness_value=0)
+        """Handles missingness for MOFACE."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "moface", 0)
 
     def _missingness_mospeech(self) -> Optional[int]:
-        """Handles missingness for MOSPEECH"""
-        return self._handle_b9_gate("decclin", field="mospeech", missingness_value=0)
+        """Handles missingness for MOSPEECH."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "mospeech", 0)
 
     def _missingness_momode(self) -> Optional[int]:
-        """Handles missingness for MOMODE"""
-        return self._handle_b9_gate("decclin", field="momode", missingness_value=0)
+        """Handles missingness for MOMODE."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "momode", 0)
 
     def _missingness_momopark(self) -> Optional[int]:
-        """Handles missingness for MOMOPARK"""
-        return self._handle_b9_gate("decclin", field="momopark", missingness_value=0)
+        """Handles missingness for MOMOPARK."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "momopark", 0)
 
     def _missingness_momoals(self) -> Optional[int]:
-        """Handles missingness for MOMOALS"""
-        return self._handle_b9_gate("decclin", field="momoals", missingness_value=0)
+        """Handles missingness for MOMOALS."""
+        return self._handle_cascading_gates(["decclin", "decclmot"], "momoals", 0)
+
+    ###########################################
+    # If DECCLIN = 0, the following must be 8 #
+    ###########################################
 
     def _missingness_course(self) -> Optional[int]:
-        """Handles missingness for COURSE"""
-        return self._handle_b9_gate("decclin", field="course", missingness_value=8)
+        """Handles missingness for COURSE."""
+        return self._handle_cascading_gates(["decclin"], "course", 8)
 
     def _missingness_frstchg(self) -> Optional[int]:
-        """Handles missingness for FRSTCHG"""
-        return self._handle_b9_gate("decclin", field="frstchg", missingness_value=8)
+        """Handles missingness for FRSTCHG. Has two rules:
 
-    def _missingness_cogmem(self) -> Optional[int]:
-        """Handles missingness for COGMEM"""
-        return self._handle_b9_gate("decclog", field="cogmem", missingness_value=0)
+        1. If DECCLIN = 0, VAR must be 8
+        2. If VAR = 777, Var must be equal to
+        """
+        if self.uds.get_value("decclin", int) == 0:
+            return self._handle_cascading_gates(["decclin"], "frstchg", 8)
 
-    def _missingness_corogi(self) -> Optional[int]:
-        """Handles missingness for COROGI"""
-        return self._handle_b9_gate("decclog", field="corogi", missingness_value=0)
+        return self.handle_prev_visit("frstchg")
 
-    def _missingness_cogjudg(self) -> Optional[int]:
-        """Handles missingness for COGJUDG"""
-        return self._handle_b9_gate("decclog", field="cogjudg", missingness_value=0)
+    ###############################################
+    # If VAR is blank, tn VAR should remain blank #
+    ###############################################
 
-    def _missingness_coglang(self) -> Optional[int]:
-        """Handles missingness for COGLANG"""
-        return self._handle_b9_gate("decclog", field="coglang", missingness_value=0)
+    def _missingness_cogothrx(self) -> Optional[str]:
+        """Handles missingness for COGOTHRX."""
+        return self.generic_blank("cogothrx")
 
-    def _missingness_cogvis(self) -> Optional[int]:
-        """Handles missingness for COGVIS"""
-        return self._handle_b9_gate("decclog", field="cogvis", missingness_value=0)
+    def _missingness_cogmodex(self) -> Optional[str]:
+        """Handles missingness for COGMODEX."""
+        return self.generic_blank("cogmodex")
 
-    def _missingness_cogattn(self) -> Optional[int]:
-        """Handles missingness for COGATTN"""
-        return self._handle_b9_gate("decclog", field="cogattn", missingness_value=0)
+    def _missingness_othsubusex(self) -> Optional[str]:
+        """Handles missingness for OTHSUBUSEX."""
+        return self.generic_blank("othsubusex")
 
-    def _missingness_cogfluc(self) -> Optional[int]:
-        """Handles missingness for COGFLUC"""
-        return self._handle_b9_gate("decclog", field="cogfluc", missingness_value=0)
+    def _missingness_beothrx(self) -> Optional[str]:
+        """Handles missingness for BEOTHRX."""
+        return self.generic_blank("beothrx")
 
-    def _missingness_cogothr(self) -> Optional[int]:
-        """Handles missingness for COGOTHR"""
-        return self._handle_b9_gate("decclog", field="cogothr", missingness_value=0)
+    def _missingness_bemodex(self) -> Optional[str]:
+        """Handles missingness for BEMODEX."""
+        return self.generic_blank("bemodex")
 
-    def _missingness_cogmode(self) -> Optional[int]:
-        """Handles missingness for COGMODE"""
-        return self._handle_b9_gate("decclog", field="cogmode", missingness_value=0)
+    def _missingness_momodex(self) -> Optional[str]:
+        """Handles missingness for MOMODEX."""
+        return self.generic_blank("momodex")
 
-    def _missingness_beapathy(self) -> Optional[int]:
-        """Handles missingness for BEAPATHY"""
-        return self._handle_b9_gate("decclbe", field="beapathy", missingness_value=0)
+    ######################################################
+    # If VAR = 777, then VAR = value from previous visit #
+    ######################################################
 
-    def _missingness_bedep(self) -> Optional[int]:
-        """Handles missingness for BEDEP"""
-        return self._handle_b9_gate("decclbe", field="bedep", missingness_value=0)
+    def _missingness_behage(self) -> Optional[int]:
+        """Handles missingness for BEHAGE."""
+        return self.handle_prev_visit("behage")
 
-    def _missingness_beanx(self) -> Optional[int]:
-        """Handles missingness for BEANX"""
-        return self._handle_b9_gate("decclbe", field="beanx", missingness_value=0)
+    def _missingness_psychage(self) -> Optional[int]:
+        """Handles missingness for PSYCHAGE."""
+        return self.handle_prev_visit("psychage")
 
-    def _missingness_beeuph(self) -> Optional[int]:
-        """Handles missingness for BEEUPH"""
-        return self._handle_b9_gate("decclbe", field="beeuph", missingness_value=0)
+    def _missingness_perchage(self) -> Optional[int]:
+        """Handles missingness for PERCHAGE."""
+        return self.handle_prev_visit("perchage")
 
-    def _missingness_beirrit(self) -> Optional[int]:
-        """Handles missingness for BEIRRIT"""
-        return self._handle_b9_gate("decclbe", field="beirrit", missingness_value=0)
+    def _missingness_beremago(self) -> Optional[int]:
+        """Handles missingness for BEREMAGO."""
+        return self.handle_prev_visit("beremago")
 
-    def _missingness_beagit(self) -> Optional[int]:
-        """Handles missingness for BEAGIT"""
-        return self._handle_b9_gate("decclbe", field="beagit", missingness_value=0)
+    def _missingness_motorage(self) -> Optional[int]:
+        """Handles missingness for MOTORAGE."""
+        return self.handle_prev_visit("motorage")
 
-    def _missingness_bevhall(self) -> Optional[int]:
-        """Handles missingness for BEVHALL"""
-        return self._handle_b9_gate("decclbe", field="bevhall", missingness_value=0)
+    #######################################################
+    # If BESUBAB =1 and VAR is blank, then VAR should = 0 #
+    #######################################################
 
-    def _missingness_bevpatt(self) -> Optional[int]:
-        """Handles missingness for BEVPATT"""
-        return self._handle_b9_gate("decclbe", field="bevpatt", missingness_value=0)
+    def _handle_besubab_gate(self, field: str) -> Optional[int]:
+        """Handles missingness values gated by BESUBAB:
 
-    def _missingness_bevwell(self) -> Optional[int]:
-        """Handles missingness for BEVWELL"""
-        return self._handle_b9_gate("decclbe", field="bevwell", missingness_value=0)
+        If BESUBAB =1 and VAR is blank, then VAR should = 0
 
-    def _missingness_beahall(self) -> Optional[int]:
-        """Handles missingness for BEAHALL"""
-        return self._handle_b9_gate("decclbe", field="beahall", missingness_value=0)
+        If condition does not apply, return generic missingness.
+        """
+        besubab = self.uds.get_value("besubab", int)
+        value = self.uds.get_value(field, int)
+        if besubab == 1 and value is None:
+            return 0
 
-    def _missingness_beahsimp(self) -> Optional[int]:
-        """Handles missingness for BEAHSIMP"""
-        return self._handle_b9_gate("decclbe", field="beahsimp", missingness_value=0)
-
-    def _missingness_beahcomp(self) -> Optional[int]:
-        """Handles missingness for BEAHCOMP"""
-        return self._handle_b9_gate("decclbe", field="beahcomp", missingness_value=0)
-
-    def _missingness_bedel(self) -> Optional[int]:
-        """Handles missingness for BEDEL"""
-        return self._handle_b9_gate("decclbe", field="bedel", missingness_value=0)
-
-    def _missingness_beaggrs(self) -> Optional[int]:
-        """Handles missingness for BEAGGRS"""
-        return self._handle_b9_gate("decclbe", field="beaggrs", missingness_value=0)
-
-    def _missingness_bedisin(self) -> Optional[int]:
-        """Handles missingness for BEDISIN"""
-        return self._handle_b9_gate("decclbe", field="bedisin", missingness_value=0)
-
-    def _missingness_beperch(self) -> Optional[int]:
-        """Handles missingness for BEPERCH"""
-        return self._handle_b9_gate("decclbe", field="beperch", missingness_value=0)
-
-    def _missingness_beempath(self) -> Optional[int]:
-        """Handles missingness for BEEMPATH"""
-        return self._handle_b9_gate("decclbe", field="beempath", missingness_value=0)
-
-    def _missingness_beobcom(self) -> Optional[int]:
-        """Handles missingness for BEOBCOM"""
-        return self._handle_b9_gate("decclbe", field="beobcom", missingness_value=0)
-
-    def _missingness_beanger(self) -> Optional[int]:
-        """Handles missingness for BEANGER"""
-        return self._handle_b9_gate("decclbe", field="beanger", missingness_value=0)
-
-    def _missingness_besubab(self) -> Optional[int]:
-        """Handles missingness for BESUBAB"""
-        return self._handle_b9_gate("decclbe", field="besubab", missingness_value=0)
+        return self.generic_missingness(field)
 
     def _missingness_alcuse(self) -> Optional[int]:
-        """Handles missingness for ALCUSE"""
-        return self._handle_b9_gate("decclbe", field="alcuse", missingness_value=0)
+        """Handles missingness for ALCUSE."""
+        return self._handle_besubab_gate("alcuse")
 
     def _missingness_seduse(self) -> Optional[int]:
-        """Handles missingness for SEDUSE"""
-        return self._handle_b9_gate("decclbe", field="seduse", missingness_value=0)
+        """Handles missingness for SEDUSE."""
+        return self._handle_besubab_gate("seduse")
 
     def _missingness_opiateuse(self) -> Optional[int]:
-        """Handles missingness for OPIATEUSE"""
-        return self._handle_b9_gate("decclbe", field="opiateuse", missingness_value=0)
+        """Handles missingness for OPIATEUSE."""
+        return self._handle_besubab_gate("opiateuse")
 
     def _missingness_cocaineuse(self) -> Optional[int]:
-        """Handles missingness for COCAINEUSE"""
-        return self._handle_b9_gate("decclbe", field="cocaineuse", missingness_value=0)
+        """Handles missingness for COCAINEUSE."""
+        return self._handle_besubab_gate("cocaineuse")
 
     def _missingness_cannabuse(self) -> Optional[int]:
-        """Handles missingness for CANNABUSE"""
-        return self._handle_b9_gate("decclbe", field="cannabuse", missingness_value=0)
+        """Handles missingness for CANNABUSE."""
+        return self._handle_besubab_gate("cannabuse")
 
     def _missingness_othsubuse(self) -> Optional[int]:
-        """Handles missingness for OTHSUBUSE"""
-        return self._handle_b9_gate("decclbe", field="othsubuse", missingness_value=0)
-
-    def _missingness_berem(self) -> Optional[int]:
-        """Handles missingness for BEREM"""
-        return self._handle_b9_gate("decclbe", field="berem", missingness_value=0)
-
-    def _missingness_beremconf(self) -> Optional[int]:
-        """Handles missingness for BEREMCONF"""
-        return self._handle_b9_gate("decclbe", field="beremconf", missingness_value=0)
-
-    def _missingness_beothr(self) -> Optional[int]:
-        """Handles missingness for BEOTHR"""
-        return self._handle_b9_gate("decclbe", field="beothr", missingness_value=0)
-
-    def _missingness_bemode(self) -> Optional[int]:
-        """Handles missingness for BEMODE"""
-        return self._handle_b9_gate("decclbe", field="bemode", missingness_value=0)
-
-    def _missingness_mogait(self) -> Optional[int]:
-        """Handles missingness for MOGAIT"""
-        return self._handle_b9_gate("decclmot", field="mogait", missingness_value=0)
-
-    def _missingness_mofalls(self) -> Optional[int]:
-        """Handles missingness for MOFALLS"""
-        return self._handle_b9_gate("decclmot", field="mofalls", missingness_value=0)
-
-    def _missingness_moslow(self) -> Optional[int]:
-        """Handles missingness for MOSLOW"""
-        return self._handle_b9_gate("decclmot", field="moslow", missingness_value=0)
-
-    def _missingness_motrem(self) -> Optional[int]:
-        """Handles missingness for MOTREM"""
-        return self._handle_b9_gate("decclmot", field="motrem", missingness_value=0)
-
-    def _missingness_molimb(self) -> Optional[int]:
-        """Handles missingness for MOLIMB"""
-        return self._handle_b9_gate("decclmot", field="molimb", missingness_value=0)
-
-    def _missingness_moface(self) -> Optional[int]:
-        """Handles missingness for MOFACE"""
-        return self._handle_b9_gate("decclmot", field="moface", missingness_value=0)
-
-    def _missingness_mospeech(self) -> Optional[int]:
-        """Handles missingness for MOSPEECH"""
-        return self._handle_b9_gate("decclmot", field="mospeech", missingness_value=0)
-
-    def _missingness_momode(self) -> Optional[int]:
-        """Handles missingness for MOMODE"""
-        return self._handle_b9_gate("decclmot", field="momode", missingness_value=0)
-
-    def _missingness_momopark(self) -> Optional[int]:
-        """Handles missingness for MOMOPARK"""
-        return self._handle_b9_gate("decclmot", field="momopark", missingness_value=0)
-
-    def _missingness_momoals(self) -> Optional[int]:
-        """Handles missingness for MOMOALS"""
-        return self._handle_b9_gate("decclmot", field="momoals", missingness_value=0)
+        """Handles missingness for OTHSUBUSE."""
+        return self._handle_besubab_gate("othsubuse")

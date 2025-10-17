@@ -2,15 +2,15 @@
 
 from typing import Optional
 
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
-
 from .missingness_uds import UDSMissingness
 
 
 class UDSFormB8Missingness(UDSMissingness):
-    def _missingness_normnrexam_gate(self, field: str) -> Optional[int]:
+    def _handle_normnrexam_gate(self, field: str) -> Optional[int]:
         """Handles missingness that relies solely on NORMNREXAM.
-        If condition does not pass, return generic missingness."""
+
+        If condition does not pass, return generic missingness.
+        """
         if self.uds.get_value("normnrexam", int) == 0:
             return 0
 
@@ -30,7 +30,9 @@ class UDSFormB8Missingness(UDSMissingness):
 
     def _missingness_gaitfind(self) -> Optional[int]:
         """Handle missingness for GAITFIND.
-        If condition does not pass, return generic missingness."""
+
+        If condition does not pass, return generic missingness.
+        """
         normnrexam = self.uds.get_value("normnrexam", int)
         gaitabn = self.uds.get_value("gaitabn", int)
 

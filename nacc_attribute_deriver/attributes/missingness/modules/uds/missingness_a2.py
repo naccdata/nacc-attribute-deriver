@@ -22,14 +22,14 @@ class UDSFormA2Missingness(UDSMissingness):
 
         If INLIVWTH=1 then INCNTMOD=8
         """
-        return self._handle_inlivwth_gate('incntmod')
+        return self._handle_inlivwth_gate("incntmod")
 
     def _missingness_incnttim(self) -> Optional[int]:
         """Handles missingness for INCNTTIM.
 
         If INLIVWTH=1 then INCNTTIM=8
         """
-        return self._handle_inlivwth_gate('incnttim')
+        return self._handle_inlivwth_gate("incnttim")
 
     def _missingness_incntmdx(self) -> Optional[str]:
         """Handles missingness for INCNTMDX.

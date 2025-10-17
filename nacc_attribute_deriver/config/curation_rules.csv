@@ -299,6 +299,12 @@ uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
 uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
 uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
 uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE
+uds,behage,subject.info.working.longitudinal.behage,list,TRUE
+uds,psychage,subject.info.working.longitudinal.psychage,list,TRUE
+uds,perchage,subject.info.working.longitudinal.perchage,list,TRUE
+uds,beremago,subject.info.working.longitudinal.beremago,list,TRUE
+uds,motorage,subject.info.working.longitudinal.motorage,list,TRUE
+uds,frstchg,subject.info.working.longitudinal.frstchg,list,TRUE
 uds,naccactv,subject.info.derived.cross-sectional.naccactv,update,FALSE
 uds,naccnovs,subject.info.derived.cross-sectional.naccnovs,update,FALSE
 uds,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
