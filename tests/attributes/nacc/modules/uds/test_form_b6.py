@@ -39,8 +39,11 @@ def gds_table(uds_table) -> SymbolTable:
 
 class TestUDSFormB6Attribute:
     def test_create_naccgds(self, gds_table):
-        """Tests _create_naccgds. This is exactly 2.5, which
-        we need to round up to 3 instead of Python's default down to 2."""
+        """Tests _create_naccgds.
+
+        This is exactly 2.5, which we need to round up to 3 instead of
+        Python's default down to 2.
+        """
         attr = UDSFormB6Attribute(gds_table)
         assert attr._create_naccgds() == 3
 

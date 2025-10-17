@@ -4,7 +4,6 @@ Form B6 may not have been filled out.
 """
 
 import math
-from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
@@ -47,7 +46,7 @@ class UDSFormB6Attribute(UDSAttributeCollection):
         if not self.submitted:
             return INFORMED_MISSINGNESS
 
-        nogds = self.uds.get_value('nogds', int)
+        nogds = self.uds.get_value("nogds", int)
         if nogds == 1:
             return 88
 
