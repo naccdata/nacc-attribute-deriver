@@ -9,6 +9,7 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
+from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormB6Attribute(UDSAttributeCollection):
@@ -38,13 +39,17 @@ class UDSFormB6Attribute(UDSAttributeCollection):
         ]
     )
 
-    def _create_naccgds(self) -> Optional[int]:
+    def _create_naccgds(self) -> int:
         """Create NACCGDS, total GDS score.
 
         See coding guidebook for details.
         """
         if not self.submitted:
-            return None
+            return INFORMED_MISSINGNESS
+
+        nogds = self.uds.get_value('nogds', int)
+        if nogds == 1:
+            return 88
 
         num_completed = 0
         completed_score = 0
