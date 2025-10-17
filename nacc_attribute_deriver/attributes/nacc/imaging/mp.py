@@ -25,6 +25,7 @@ from nacc_attribute_deriver.attributes.namespace.image_namespace import (
     MixedProtocolNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
+    SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
@@ -41,6 +42,7 @@ class MPAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         self.__mp = MixedProtocolNamespace(table=table)
         self.__working = WorkingDerivedNamespace(table=table)
+        self.__subject = SubjectDerivedNamespace(table=table)
 
     @property
     def mp(self) -> MixedProtocolNamespace:
@@ -96,17 +98,26 @@ class MPAttributeCollection(AttributeCollection):
 
         return lowest if lowest is not None else 8888
 
-    def get_filename(self) -> Optional[str]:
+    def get_filename(self, attribute: str) -> str:
         """File locator variable.
 
-        TODO: THIS FILENAME IS NOT AVAILABLE IN FW. NEED
-            TO DROP OR THINK OF ALTERNATE SOLUTION.
-        """
-        filename = self.__mp.get_value("filename", str)
-        if filename and filename.strip():
-            return filename.strip()
+        NOTE: FILENAME IS DIFFERENT IN LEGACY VS NEW. In the legacy system,
+        this was the name of the aggregate zip file in S3. However, in FW,
+        each image is attached as a separate file to the session. So instead
+        we are aggregating each curated dicom as a comma-deliminated list.
 
-        return None
+        Args:
+            attribute: The attribute name to grab current longitudinal
+                date from
+        """
+        # grab attribute if it already exists and append filename to it
+        filenames = self.__subject.get_corresponding_longitudinal_value(
+            str(self.__mp.study_date), attribute, str
+        )
+        if filenames is not None:
+            return f'{filenames.strip()},{self.__mp.filename}'
+
+        return self.__mp.filename
 
     def get_num_sessions(self, sessions_field: str) -> int:
         """Get total number of sessions.
@@ -166,11 +177,8 @@ class MPMRIAttributeCollection(MPAttributeCollection):
         """Create the NACCMRFI variable.
 
         File locator variable.
-
-        TODO: THIS FILENAME IS NOT AVAILABLE IN FW. NEED
-            TO DROP OR THINK OF ALTERNATE SOLUTION.
         """
-        return self.get_filename()
+        return self.get_filename("naccmrfi")
 
     def _create_naccnmri(self) -> int:
         """Create the NACCNMRI variable.
@@ -219,11 +227,8 @@ class MPPETAttributeCollection(MPAttributeCollection):
         """Create the NACCAPTF variable.
 
         Amyloid PET scan file locator variable
-
-        TODO: THIS FILENAME IS NOT AVAILABLE IN FW. NEED
-            TO DROP OR THINK OF ALTERNATE SOLUTION.
         """
-        return self.get_filename()
+        return self.get_filename("naccaptf")
 
     def _create_naccnapa(self) -> int:
         """Create the NACCNAPA variable.

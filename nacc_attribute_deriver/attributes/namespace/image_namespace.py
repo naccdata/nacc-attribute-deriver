@@ -30,6 +30,18 @@ class MixedProtocolNamespace(BaseNamespace):
 
         self.__study_date = datetime.strptime(study_date, "%Y%m%d").date()
 
+        # For imaging we need to know the corresponding filename. Assumed
+        # to be listed under file.info.filename
+        self.__filename = table.get('file.info.filename', None)
+        if not self.__filename:
+            raise AttributeDeriverError(
+                "No filename found for image (expected to be under file.info.filename)")
+        self.__filename = self.__filename.strip()
+
     @property
     def study_date(self) -> date:
         return self.__study_date
+
+    @property
+    def filename(self) -> str:
+        return self.__filename
