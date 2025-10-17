@@ -25,10 +25,10 @@ class UDSMissingness(UDSAttributeCollection):
         super().__init__(table)
         self.__prev_record = None
 
-        # prev record will contain
+        # prev record should exist for non-initial visits, and contain:
         #   raw form info under info.forms.json.x
         #   missingness info under info.forms.missingness.x
-        if '_prev_record' in table:
+        if not self.uds.is_initial():
             self.__prev_record = PreviousRecordNamespace(table=table)
 
     def _missingness_uds(self, field: str) -> Optional[int]:

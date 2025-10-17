@@ -273,33 +273,3 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def _create_cogfrst(self) -> Optional[int]:
         """Carries over COGFRST (V1, V2)."""
         return self.determine_carryover("cogfrst")
-
-    ###############################################################
-    # Tracked form variables - needed for missingness
-    # Curation order does not matter for these, just keeping track
-    # of what they are at each visit
-    ###############################################################
-
-    def _create_behage(self) -> Optional[int]:
-        """Keeps track of BEHAGE."""
-        return self.uds.get_value("behage", int)
-
-    def _create_psychage(self) -> Optional[int]:
-        """Keeps track of PSYCHAGE."""
-        return self.uds.get_value("psychage", int)
-
-    def _create_perchage(self) -> Optional[int]:
-        """Keeps track of PERCHAGE."""
-        return self.uds.get_value("perchage", int)
-
-    def _create_beremago(self) -> Optional[int]:
-        """Keeps track of BEREMAGO."""
-        return self.uds.get_value("beremago", int)
-
-    def _create_motorage(self) -> Optional[int]:
-        """Keeps track of MOTORAGE."""
-        return self.uds.get_value("motorage", int)
-
-    def _create_frstchg(self) -> Optional[int]:
-        """Keeps track of FRSTCHG."""
-        return self.uds.get_value("frstchg", int)
