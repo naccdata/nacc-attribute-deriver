@@ -9,7 +9,7 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingDerivedNamespace,
+    PreviousRecordNamespace
 )
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
@@ -23,7 +23,13 @@ class UDSMissingness(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         super().__init__(table)
-        self.__working = WorkingDerivedNamespace(table=table)
+        self.__prev_record = None
+
+        # prev record will contain
+        #   raw form info under info.forms.json.x
+        #   missingness info under info.forms.missingness.x
+        if '_prev_record' in table:
+            self.__prev_record = PreviousRecordNamespace(table=table)
 
     def _missingness_uds(self, field: str) -> Optional[int]:
         """Defines general missingness for UDS; -4 if missing."""
@@ -84,14 +90,18 @@ class UDSMissingness(UDSAttributeCollection):
     def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
         """Handle when the value is provided by the previous visit.
 
-        Looking for previous non-empty value that is NOT the prev_code.
-        If none found, return generic missingness.
+        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT.
+        ELIF VAR is not blank and not PREV_CODE, return None (do not override)
+        ELSE generic missingness
         """
-        if self.uds.get_value(field, int) == prev_code:
-            records = self.__working.get_longitudinal_value(field, int)
-            if records:
-                for record in reversed(records):
-                    if record.value is not None and record.value != 777:
-                        return record.value
+        value = self.uds.get_value(field, int)
+        if value == prev_code and self.__prev_record is not None:
+            prev_value = self.__prev_record.get_resolved_value(
+                field, int, prev_code=prev_code)
+            if prev_value is not None:
+                return prev_value
+
+        elif value is not None:
+            return None
 
         return self.generic_missingness(field)

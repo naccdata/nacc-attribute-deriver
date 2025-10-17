@@ -57,7 +57,8 @@ Most of these changes are associated with the following aggregate PRs:
 
 * Adds UDS missingness logic + V4 derived variables - [#69](https://github.com/naccdata/nacc-attribute-deriver/pull/69)
     * Sets up a second deriver class that works specifically on missingness values (with its own rules and `_missingness` functions)
-    * Uses this missingness workflow instead of `MissingFormAttributes`
+        * Uses this missingness workflow instead of `MissingFormAttributes`
+    * Adds the `PreviousRecordNamespace` to support namespace of the previous form record, required for many missingness values that need to pull values across visits
     * A1, A1a, A2
 
 ## 1.4.3
