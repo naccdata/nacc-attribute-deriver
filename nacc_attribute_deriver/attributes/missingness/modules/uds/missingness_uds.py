@@ -31,6 +31,10 @@ class UDSMissingness(UDSAttributeCollection):
         if not self.uds.is_initial():
             self.__prev_record = PreviousRecordNamespace(table=table)
 
+    @property
+    def prev_record(self) -> PreviousRecordNamespace:
+        return self.__prev_record
+
     def _missingness_uds(self, field: str) -> Optional[int]:
         """Defines general missingness for UDS; -4 if missing."""
         if self.uds.get_value(field, str) is None:
@@ -47,7 +51,7 @@ class UDSMissingness(UDSAttributeCollection):
     ) -> Optional[int]:
         """Handles generic V4 missingness, which follows the logic:
 
-        If FORMVER=4 and VAR is blank, VAR should = VALUE
+        If FORMVER=4 and VAR is blank, VAR should = MISSING_VALUE
         else if FORMVER < 4, VAR should be -4
 
         Args:
@@ -86,22 +90,3 @@ class UDSMissingness(UDSAttributeCollection):
             return INFORMED_BLANK
 
         return self.generic_blank(field)
-
-    def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
-        """Handle when the value is provided by the previous visit.
-
-        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT.
-        ELIF VAR is not blank and not PREV_CODE, return None (do not override)
-        ELSE generic missingness
-        """
-        value = self.uds.get_value(field, int)
-        if value == prev_code and self.__prev_record is not None:
-            prev_value = self.__prev_record.get_resolved_value(
-                field, int, prev_code=prev_code)
-            if prev_value is not None:
-                return prev_value
-
-        elif value is not None:
-            return None
-
-        return self.generic_missingness(field)

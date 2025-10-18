@@ -246,7 +246,7 @@ class PreviousRecordNamespace(FormNamespace):
         return self.get_value(f"missingness.{attribute}", attr_type, default)
 
     def get_resolved_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None, prev_code: int = 777
+        self, attribute: str, attr_type: Type[T], default: Optional[T] = None, prev_code: Optional[int] = None
     ) -> Optional[T]:
         """Returns the value of the resolved attribute key in the table. First
         looks at the raw value - if a prev_visit code (e.g. 777) or None,
