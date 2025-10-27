@@ -16,6 +16,9 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingDerivedNamespace,
 )
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    RxClassNamespace,
+)
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -27,12 +30,15 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__working = WorkingDerivedNamespace(table=table)
+        self.__rxclass = RxClassNamespace(table=table)
         self.__meds = self.__load_drugs_list()
 
     @property
     def submitted(self) -> bool:
-        # TODO: for v4 this will be modea4
-        # SAS looks at anymeds but a4sub seems to be a better indicator
+        anymeds = self.uds.get_value("anymeds", int)
+        if anymeds is not None:
+            return anymeds == 1
+
         return self.uds.get_value("a4sub", int) == 1
 
     def __load_drugs_list(self) -> List[str]:
@@ -40,7 +46,20 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         subject.info.derived.drugs_list.<visitdate>."""
         if not self.submitted:
             return []
+        drugs = []
 
+        # V4+ uses RXNORM 1-40 values directly from A4 form
+        # it also assumes 
+        if self.formver >= 4:
+            for i in range(1, 41):
+                rxnorm = self.uds.get_value(f"rxnorm{i}", str)
+                if rxnorm is not None:
+                    drugs.append(rxnorm.strip())
+
+            return drugs
+
+        # V3 and earlier forms use a supplemental MEDS file, which needs
+        # to be mapped to this form's visitdate
         form_date = self.uds.get_value("frmdatea4", str)
         if not form_date:  # try visitdate
             form_date = self.uds.get_value("visitdate", str)
@@ -82,8 +101,32 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         return 1 if any(x in target_codes for x in self.__meds) else 0
 
+    def check_rxclass(self, rxclasses: List[str]) -> int:
+        """Check if any of the 40 RXNORM values are a member of the given RxClasses.
+        """
+        if not self.submitted:
+            return INFORMED_MISSINGNESS
+
+        if not self.__meds:
+            return 0
+
+        members = []
+        for rxclass in rxclasses:
+            members.extend(self.__rxclass.get_members(rxclass))
+
+        return 1 if any(x in members for x in self.__meds) else 0
+
     def _create_naccaaas(self) -> Optional[int]:
         """Creates NACCAAAS - Reported current use of an antiadenergic agent."""
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C02A",
+                    "C02B",
+                    "C02C"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00131",
@@ -110,6 +153,14 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCAANX - Reported current use of an anxiolytic,
         sedative, or hypnotic agent
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "N05B",
+                    "N05C",
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00171",
@@ -159,6 +210,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCAC - Reported current use of an anticoagulant
         or antiplatelet agent.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "B01"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00252",
@@ -201,6 +259,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCACEI - Reported current use of an angiotensin
         converting enzyme (ACE) inhibitor.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C09A"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00006",
@@ -218,6 +283,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     def _create_naccadep(self) -> Optional[int]:
         """Creates NACCADEP - Reported current use of an antidepressant."""
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "N06A"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00181",
@@ -261,6 +333,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCADMD - Reported current use of a FDA-approved
         medication for Alzheimer's disease symptoms.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "N06D"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d03176",
@@ -296,6 +375,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCANGI - Reported current use of an angiotensin
         II inhibitor.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C09C"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d03821",
@@ -313,6 +399,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCAPSY - Reported current use of an antipsychotic
         agent.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "N05A"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00027",
@@ -351,6 +444,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCBETA - Reported current use of a beta-adrenergic
         blocking agent (beta-blocker).
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C07A"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00004",
@@ -376,6 +476,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCCCBS - Reported current use of a calcium channel
         blocking agent.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C08"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00045",
@@ -395,6 +502,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     def _create_naccdbmd(self) -> Optional[int]:
         """Creates NACCDBMD - Reported current use of a diabetes medication."""
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "A10"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00042",
@@ -450,6 +564,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     def _create_naccdiur(self) -> Optional[int]:
         """Creates NACCDIUR - Reported current use of a diuretic."""
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C03"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00070",
@@ -482,6 +603,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCEMD - Reported current use of estrogen hormone
         therapy.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "G03C"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00537",
@@ -497,6 +625,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCEPMD - Reported current use of estrogen + progestin
         hormone therapy.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "G03F"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d05530",
@@ -511,6 +646,17 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCHTNC - Reported current use of antihypertensive
         combination therapy.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C02L",
+                    "C07B",
+                    "C07C",
+                    "C09B",
+                    "C09D"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d03052",
@@ -572,6 +718,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCLIPL - Reported current use of lipid lowering
         medication.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C10"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00280",
@@ -608,6 +761,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCNSD - Reported current use of nonsteroidal
         anti-inflammatory medication.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "M01A"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00015",
@@ -674,6 +834,13 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         """Creates NACCPDMD - Reported current use of an antiparkinson
         agent.
         """
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "N04"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00175",
@@ -702,6 +869,14 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     def _create_naccvasd(self) -> Optional[int]:
         """Creates NACCVASD - Reported current use of a vasodilator."""
+        if self.formver >= 4:
+            return self.check_rxclass(
+                [
+                    "C01D",
+                    "C02D"
+                ]
+            )
+
         return self.check_drugs(
             [
                 "d00132",

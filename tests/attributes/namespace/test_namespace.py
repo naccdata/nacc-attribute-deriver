@@ -6,8 +6,10 @@ import pytest
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     BaseNamespace,
     INVALID_TEXT,
-    PreviousRecordNamespace,
     SubjectDerivedNamespace,
+)
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
