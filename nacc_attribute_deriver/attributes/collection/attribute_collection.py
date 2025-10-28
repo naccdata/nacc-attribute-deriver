@@ -110,7 +110,10 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             if isfunction(attr) and any(
                 attr_name.startswith(f"_{derive_type}_") for derive_type in DERIVE_TYPES
             ):
-                result[attr_name.lstrip("_")] = attr
+                hook = attr_name.lstrip("_")
+                if hook in result:
+                    raise ValueError(f"Attribute {attr_name} already defined")
+                result[hook] = attr
 
         return result
 

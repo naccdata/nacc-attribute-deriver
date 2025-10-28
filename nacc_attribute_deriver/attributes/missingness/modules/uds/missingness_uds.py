@@ -3,7 +3,7 @@
 In general, returns -4 unless otherwise specified.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
@@ -96,6 +96,17 @@ class UDSMissingness(UDSAttributeCollection):
         """
         if self.uds.get_value(gate, int) != value:
             return INFORMED_BLANK
+
+        return None
+
+    def handle_set_to_gate(self, gate: str, check_values: List[int]) -> Optional[int]:
+        """Generically handle:
+
+        If GATE is in CHECK_VALUES, then FIELD should = GATE.
+        """
+        value = self.uds.get_value(gate, int)
+        if value in check_values:
+            return value
 
         return None
 
