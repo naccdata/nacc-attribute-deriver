@@ -113,7 +113,9 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             ):
                 hook = attr_name.lstrip("_")
                 if hook in result:
-                    raise AttributeDeriverError(f"Attribute {attr_name} already defined")
+                    raise AttributeDeriverError(
+                        f"Attribute {attr_name} already defined"
+                    )
                 result[hook] = attr
 
         return result

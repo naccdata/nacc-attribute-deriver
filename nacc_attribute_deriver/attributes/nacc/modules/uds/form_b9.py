@@ -17,8 +17,8 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    SubjectDerivedNamespace,
     PreviousRecordNamespace,
+    SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.constants import (
@@ -62,10 +62,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
     def _create_nacccogage(self) -> int:
         """Creates NACCCOGAGE - Age that participant's cognitive impairment began."""
-        target_var = 'decage' if self.formver < 4 else 'cogage'
+        target_var = "decage" if self.formver < 4 else "cogage"
 
         value = self.uds.get_value(target_var, int)
-        if value == 777:
+        if value == 777 and self.__prev_record:
             value = self.__prev_record.get_resolved_value(target_var, int)
 
         if value is None:
@@ -231,12 +231,12 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         return nacccogf if nacccogf is not None else 99
 
-    def _create_naccmotf(self) -> int:
+    def _create_naccmotf(self) -> int:  # noqa: C901
         """Creates NACCMOTF, Indicate the predominant symptom that was first
         recognized as a decline in the subject's motor function."""
         # not defined in V4
         if self.formver == 4:
-            return INFORMED_BLANK
+            return INFORMED_MISSINGNESS
 
         mofrst = self.uds.get_value("mofrst", int)
 
@@ -272,6 +272,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     # Carryover form variables - needed for above curation
     # These should be curated AFTER the above
     # We do check dates though so it shouldn't matter too much
+    # TODO: SHOULD MIGRATE TO USE PREV_RECORD LOGIC INSTEAD
     #######################################################################
 
     def determine_carryover(self, attribute: str) -> Optional[int]:
