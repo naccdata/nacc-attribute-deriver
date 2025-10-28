@@ -12,7 +12,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_raceaianx(self) -> Optional[str]:
         """Handles missingness for RACEAIANX."""
-        return self.handle_v4_blank("raceaianx")
+        return self.handle_v4_writein("raceaianx")
 
     def _missingness_raceasian(self) -> Optional[int]:
         """Handles missingness for RACEASIAN."""
@@ -48,7 +48,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_ethasnothx(self) -> Optional[str]:
         """Handles missingness for ETHASNOTHX."""
-        return self.handle_v4_blank("ethasnothx")
+        return self.handle_v4_writein("ethasnothx")
 
     def _missingness_raceblack(self) -> Optional[int]:
         """Handles missingness for RACEBLACK."""
@@ -84,7 +84,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_ethblkothx(self) -> Optional[str]:
         """Handles missingness for ETHBLKOTHX."""
-        return self.handle_v4_blank("ethblkothx")
+        return self.handle_v4_writein("ethblkothx")
 
     def _missingness_ethmexican(self) -> Optional[int]:
         """Handles missingness for ETHMEXICAN."""
@@ -116,7 +116,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_ethhisothx(self) -> Optional[str]:
         """Handles missingness for ETHHISOTHX."""
-        return self.handle_v4_blank("ethhisothx")
+        return self.handle_v4_writein("ethhisothx")
 
     def _missingness_racemena(self) -> Optional[int]:
         """Handles missingness for RACEMENA."""
@@ -152,7 +152,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_ethmenaotx(self) -> Optional[str]:
         """Handles missingness for ETHMENAOTX."""
-        return self.handle_v4_blank("ethmenaotx")
+        return self.handle_v4_writein("ethmenaotx")
 
     def _missingness_racenhpi(self) -> Optional[int]:
         """Handles missingness for RACENHPI."""
@@ -188,7 +188,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_ethnhpiotx(self) -> Optional[str]:
         """Handles missingness for ETHNHPIOTX."""
-        return self.handle_v4_blank("ethnhpiotx")
+        return self.handle_v4_writein("ethnhpiotx")
 
     def _missingness_racewhite(self) -> Optional[int]:
         """Handles missingness for RACEWHITE."""
@@ -224,7 +224,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_ethwhiothx(self) -> Optional[str]:
         """Handles missingness for ETHWHIOTHX."""
-        return self.handle_v4_blank("ethwhiothx")
+        return self.handle_v4_writein("ethwhiothx")
 
     def _missingness_raceunkn(self) -> Optional[int]:
         """Handles missingness for RACEUNKN."""
@@ -260,7 +260,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_genothx(self) -> Optional[str]:
         """Handles missingness for GENOTHX."""
-        return self.handle_v4_blank("genothx")
+        return self.handle_v4_writein("genothx")
 
     def _missingness_gendkn(self) -> Optional[int]:
         """Handles missingness for GENDKN."""
@@ -292,7 +292,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_sexornothx(self) -> Optional[str]:
         """Handles missingness for SEXORNOTHX."""
-        return self.handle_v4_blank("sexornothx")
+        return self.handle_v4_writein("sexornothx")
 
     def _missingness_sexorndnk(self) -> Optional[int]:
         """Handles missingness for SEXORNDNK."""

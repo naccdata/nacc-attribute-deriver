@@ -68,8 +68,8 @@ class UDSMissingness(UDSAttributeCollection):
 
         return missing_value
 
-    def generic_blank(self, field: str) -> Optional[str]:
-        """Generic blankness for internal calls."""
+    def generic_writein(self, field: str) -> Optional[str]:
+        """Generic blankness (write-ins) for internal calls."""
         # if value exists, return None so we don't override
         value = self.uds.get_value(field, str)
         if value is not None:
@@ -77,15 +77,27 @@ class UDSMissingness(UDSAttributeCollection):
 
         return INFORMED_BLANK
 
-    def handle_v4_blank(self, field: str) -> Optional[str]:
-        """Handles generic V4 blank missingness, which follows the logic:
+    def handle_v4_writein(self, field: str) -> Optional[str]:
+        """Handles generic V4 writein missingness, which follows the logic:
 
         If FORMVER < 4 or VAR is blank, VAR should remain blank
         """
         if self.formver < 4:
             return INFORMED_BLANK
 
-        return self.generic_blank(field)
+        return self.generic_writein(field)
+
+    def handle_gated_writein(self, gate: str, value: int) -> Optional[str]:
+        """Handles write-in blanks that rely on a gate variable.
+
+        Args:
+            gate: The gate variable
+            value: The value the gate must NOT equal to trigger the condition
+        """
+        if self.uds.get_value(gate, int) != value:
+            return INFORMED_BLANK
+
+        return None
 
     def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
         """Handle when the value is provided by the previous visit.
