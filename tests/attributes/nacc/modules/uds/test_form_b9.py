@@ -12,17 +12,7 @@ def base_table(uds_table) -> SymbolTable:
     """Create dummy base table."""
     uds_table["file.info.forms.json"].update({"packet": "F"})
     uds_table.update(
-        {
-            "_prev_record": {
-                "info": {
-                    "forms": {
-                        "json": {
-                            "visitdate": "01-01-1900"
-                        }
-                    }
-                }
-            }
-        }
+        {"_prev_record": {"info": {"forms": {"json": {"visitdate": "01-01-1900"}}}}}
     )
     return uds_table
 
@@ -36,10 +26,12 @@ class TestUDSFormB9Attribute:
         null since V1
         """
         base_table["file.info.forms.json"].update({"b9chg": 3, "formver": 1.0})
-        base_table["_prev_record.info.forms.json"].update({
-            "befrst": 88,
-            "decclin": 1,
-        })
+        base_table["_prev_record.info.forms.json"].update(
+            {
+                "befrst": 88,
+                "decclin": 1,
+            }
+        )
 
         attr = UDSFormB9Attribute(base_table)
         assert attr._create_naccbehf() == 0
@@ -60,9 +52,11 @@ class TestUDSFormB9Attribute:
         V3 form befpred == 0, so should get previous value
         """
         base_table["file.info.forms.json.befpred"] = 0
-        base_table["_prev_record.info.forms.json"].update({
-            "befpred": 3,
-        })
+        base_table["_prev_record.info.forms.json"].update(
+            {
+                "befpred": 3,
+            }
+        )
 
         attr = UDSFormB9Attribute(base_table)
         assert attr._create_naccbehf() == 3
@@ -90,9 +84,11 @@ class TestUDSFormB9Attribute:
         assert attr._create_nacccogf() == 99
 
         # now add a previous, so should return previous
-        base_table["_prev_record.info.forms.json"].update({
-            "cogfpred": 3,
-        })
+        base_table["_prev_record.info.forms.json"].update(
+            {
+                "cogfpred": 3,
+            }
+        )
 
         assert attr._create_nacccogf() == 3
 
@@ -143,10 +139,12 @@ class TestUDSFormB9Attribute:
 
         # b9 changes and p_decclin is 0
         base_table["file.info.forms.json.b9chg"] = 1
-        base_table["_prev_record.info.forms.json"].update({
-            "decclin": 0,
-            "cogfrst": 88,
-        })
+        base_table["_prev_record.info.forms.json"].update(
+            {
+                "decclin": 0,
+                "cogfrst": 88,
+            }
+        )
 
         attr = UDSFormB9Attribute(base_table)
         assert attr._create_nacccogf() == 0

@@ -10,7 +10,6 @@ DERIVE_TYPES = ["create", "missingness"]
 ALL_RXCLASSES = [
     "A10",
     "B01",
-
     "C01D",
     "C02A",
     "C02B",
@@ -27,16 +26,13 @@ ALL_RXCLASSES = [
     "C09C",
     "C09D",
     "C10",
-
     "G03C",
     "G03F",
-
     "N04",
     "N05A",
     "N05B",
     "N05C",
     "N06A",
     "N06D",
-
     "M01A",
 ]

@@ -279,14 +279,15 @@ class UDSFormB9Missingness(UDSMissingness):
     def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
         """Handle when the value is provided by the previous visit.
 
-        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT.
-        ELIF VAR is not blank and not PREV_CODE, return None (do not override)
+        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT. ELIF VAR
+        is not blank and not PREV_CODE, return None (do not override)
         ELSE generic missingness
         """
         value = self.uds.get_value(field, int)
         if value == prev_code and self.prev_record is not None:
             prev_value = self.prev_record.get_resolved_value(
-                field, int, prev_code=prev_code)
+                field, int, prev_code=prev_code
+            )
             if prev_value is not None:
                 return prev_value
 

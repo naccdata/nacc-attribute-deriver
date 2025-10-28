@@ -1,23 +1,21 @@
-"""
-Namespaces for working/intermediate data, namely those stored under special keys
-in the passed SymbolTable.
-"""
+"""Namespaces for working/intermediate data, namely those stored under special
+keys in the passed SymbolTable."""
+
 from typing import List, Optional, Type
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     BaseNamespace,
     FormNamespace,
-    T
+    T,
 )
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class PreviousRecordNamespace(FormNamespace):
-    """Namespace for attributes from the previous record, namely under
+    """Namespace for attributes from the previous record, namely under.
 
-        _prev_record.info.forms.json and
-        _prev_record.info.forms.missingness
+    _prev_record.info.forms.json and _prev_record.info.forms.missingness
     """
 
     def __init__(
@@ -66,9 +64,14 @@ class PreviousRecordNamespace(FormNamespace):
         return self.get_value(f"missingness.{attribute}", attr_type, default)
 
     def get_resolved_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None, prev_code: Optional[int] = None
+        self,
+        attribute: str,
+        attr_type: Type[T],
+        default: Optional[T] = None,
+        prev_code: Optional[int] = None,
     ) -> Optional[T]:
-        """Returns the value of the resolved attribute key in the table. First
+        """Returns the value of the resolved attribute key in the table. First.
+
         looks at the raw value - if a prev_visit code (e.g. 777) or None,
         looks at the missingness value instead.
 
@@ -89,7 +92,7 @@ class PreviousRecordNamespace(FormNamespace):
 
 class RxClassNamespace(BaseNamespace):
     """Namespace for RxClass members.
-    
+
     This is honestly of a hack, but done to avoid directly calling the RxClass API
         https://lhncbc.nlm.nih.gov/RxNav/APIs/api-RxClass.getClassMembers.html
 
@@ -133,7 +136,6 @@ class RxClassNamespace(BaseNamespace):
         """
         members = self.get_value(rxclass, list)
         if not members:
-            raise AttributeDeriverError(
-                f"No RxCUIs associated with RxClass {rxclass}")
+            raise AttributeDeriverError(f"No RxCUIs associated with RxClass {rxclass}")
 
         return [x.strip() for x in members]

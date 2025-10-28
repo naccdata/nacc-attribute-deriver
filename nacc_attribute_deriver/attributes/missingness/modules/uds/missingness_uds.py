@@ -9,7 +9,7 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace
+    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,

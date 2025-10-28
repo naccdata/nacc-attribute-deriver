@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from nacc_attribute_deriver.schema.constants import INFORMED_BLANK, INFORMED_MISSINGNESS
+from nacc_attribute_deriver.schema.constants import INFORMED_BLANK
 
 from .missingness_uds import UDSMissingness
 

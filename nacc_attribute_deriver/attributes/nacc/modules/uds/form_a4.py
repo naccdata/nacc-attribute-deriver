@@ -13,11 +13,11 @@ from typing import List, Optional
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingDerivedNamespace,
-)
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     RxClassNamespace,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
@@ -49,7 +49,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         drugs = []
 
         # V4+ uses RXNORM 1-40 values directly from A4 form
-        # it also assumes 
+        # it also assumes
         if self.formver >= 4:
             for i in range(1, 41):
                 rxnorm = self.uds.get_value(f"rxnorm{i}", str)
@@ -102,8 +102,8 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         return 1 if any(x in target_codes for x in self.__meds) else 0
 
     def check_rxclass(self, rxclasses: List[str]) -> int:
-        """Check if any of the 40 RXNORM values are a member of the given RxClasses.
-        """
+        """Check if any of the 40 RXNORM values are a member of the given
+        RxClasses."""
         if not self.submitted:
             return INFORMED_MISSINGNESS
 
@@ -119,13 +119,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def _create_naccaaas(self) -> Optional[int]:
         """Creates NACCAAAS - Reported current use of an antiadenergic agent."""
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C02A",
-                    "C02B",
-                    "C02C"
-                ]
-            )
+            return self.check_rxclass(["C02A", "C02B", "C02C"])
 
         return self.check_drugs(
             [
@@ -211,11 +205,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         or antiplatelet agent.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "B01"
-                ]
-            )
+            return self.check_rxclass(["B01"])
 
         return self.check_drugs(
             [
@@ -260,11 +250,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         converting enzyme (ACE) inhibitor.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C09A"
-                ]
-            )
+            return self.check_rxclass(["C09A"])
 
         return self.check_drugs(
             [
@@ -284,11 +270,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def _create_naccadep(self) -> Optional[int]:
         """Creates NACCADEP - Reported current use of an antidepressant."""
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "N06A"
-                ]
-            )
+            return self.check_rxclass(["N06A"])
 
         return self.check_drugs(
             [
@@ -334,11 +316,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         medication for Alzheimer's disease symptoms.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "N06D"
-                ]
-            )
+            return self.check_rxclass(["N06D"])
 
         return self.check_drugs(
             [
@@ -376,11 +354,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         II inhibitor.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C09C"
-                ]
-            )
+            return self.check_rxclass(["C09C"])
 
         return self.check_drugs(
             [
@@ -400,11 +374,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         agent.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "N05A"
-                ]
-            )
+            return self.check_rxclass(["N05A"])
 
         return self.check_drugs(
             [
@@ -445,11 +415,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         blocking agent (beta-blocker).
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C07A"
-                ]
-            )
+            return self.check_rxclass(["C07A"])
 
         return self.check_drugs(
             [
@@ -477,11 +443,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         blocking agent.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C08"
-                ]
-            )
+            return self.check_rxclass(["C08"])
 
         return self.check_drugs(
             [
@@ -503,11 +465,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def _create_naccdbmd(self) -> Optional[int]:
         """Creates NACCDBMD - Reported current use of a diabetes medication."""
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "A10"
-                ]
-            )
+            return self.check_rxclass(["A10"])
 
         return self.check_drugs(
             [
@@ -565,11 +523,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def _create_naccdiur(self) -> Optional[int]:
         """Creates NACCDIUR - Reported current use of a diuretic."""
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C03"
-                ]
-            )
+            return self.check_rxclass(["C03"])
 
         return self.check_drugs(
             [
@@ -604,11 +558,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         therapy.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "G03C"
-                ]
-            )
+            return self.check_rxclass(["G03C"])
 
         return self.check_drugs(
             [
@@ -626,11 +576,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         hormone therapy.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "G03F"
-                ]
-            )
+            return self.check_rxclass(["G03F"])
 
         return self.check_drugs(
             [
@@ -647,15 +593,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         combination therapy.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C02L",
-                    "C07B",
-                    "C07C",
-                    "C09B",
-                    "C09D"
-                ]
-            )
+            return self.check_rxclass(["C02L", "C07B", "C07C", "C09B", "C09D"])
 
         return self.check_drugs(
             [
@@ -719,11 +657,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         medication.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C10"
-                ]
-            )
+            return self.check_rxclass(["C10"])
 
         return self.check_drugs(
             [
@@ -762,11 +696,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         anti-inflammatory medication.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "M01A"
-                ]
-            )
+            return self.check_rxclass(["M01A"])
 
         return self.check_drugs(
             [
@@ -835,11 +765,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         agent.
         """
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "N04"
-                ]
-            )
+            return self.check_rxclass(["N04"])
 
         return self.check_drugs(
             [
@@ -870,12 +796,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def _create_naccvasd(self) -> Optional[int]:
         """Creates NACCVASD - Reported current use of a vasodilator."""
         if self.formver >= 4:
-            return self.check_rxclass(
-                [
-                    "C01D",
-                    "C02D"
-                ]
-            )
+            return self.check_rxclass(["C01D", "C02D"])
 
         return self.check_drugs(
             [

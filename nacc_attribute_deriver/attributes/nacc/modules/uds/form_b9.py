@@ -16,11 +16,11 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.attributes.namespace.namespace import (
-    SubjectDerivedNamespace,
-)
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     PreviousRecordNamespace,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
@@ -114,9 +114,15 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         if self.__prev_record:
             prev_code = 0 if self.formver == 3 else None
-            p_decclin = self.__prev_record.get_resolved_value("decclin", int, prev_code=prev_code)
-            p_befrst = self.__prev_record.get_resolved_value("befrst", int, prev_code=prev_code)
-            p_befpred = self.__prev_record.get_resolved_value("befpred", int, prev_code=prev_code)
+            p_decclin = self.__prev_record.get_resolved_value(
+                "decclin", int, prev_code=prev_code
+            )
+            p_befrst = self.__prev_record.get_resolved_value(
+                "befrst", int, prev_code=prev_code
+            )
+            p_befpred = self.__prev_record.get_resolved_value(
+                "befpred", int, prev_code=prev_code
+            )
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccbehf = 0
@@ -209,9 +215,15 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         if self.__prev_record:
             prev_code = 0 if self.formver == 3 else None
-            p_decclin = self.__prev_record.get_resolved_value("decclin", int, prev_code=prev_code)
-            p_cogfrst = self.__prev_record.get_resolved_value("cogfrst", int, prev_code=prev_code)
-            p_cogfpred = self.__prev_record.get_resolved_value("cogfpred", int, prev_code=prev_code)
+            p_decclin = self.__prev_record.get_resolved_value(
+                "decclin", int, prev_code=prev_code
+            )
+            p_cogfrst = self.__prev_record.get_resolved_value(
+                "cogfrst", int, prev_code=prev_code
+            )
+            p_cogfpred = self.__prev_record.get_resolved_value(
+                "cogfpred", int, prev_code=prev_code
+            )
 
         # see note in _create_naccbehf; same situation
         if cogfrst is None and cogfpred is None:
@@ -264,8 +276,12 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_mofrst = None
         if self.__prev_record:
             prev_code = 0 if self.formver == 3 else None
-            p_decclin = self.__prev_record.get_resolved_value('decclin', int, prev_code=prev_code)
-            p_mofrst = self.__prev_record.get_resolved_value("mofrst", int, prev_code=prev_code)
+            p_decclin = self.__prev_record.get_resolved_value(
+                "decclin", int, prev_code=prev_code
+            )
+            p_mofrst = self.__prev_record.get_resolved_value(
+                "mofrst", int, prev_code=prev_code
+            )
 
         if mofrst and mofrst not in [0, 88]:
             naccmotf = mofrst

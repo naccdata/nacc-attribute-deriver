@@ -128,7 +128,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         # then they are all coded as Unknown (9)"
         return 9 if any(status == 9 for status in family_status) else 0
 
-
     ###########
     # V3 ONLY #
     ###########
@@ -206,7 +205,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        if not self.submitted or self.formver !=  3:
+        if not self.submitted or self.formver != 3:
             return None
 
         return self.uds.get_value("fadmusox", str)
