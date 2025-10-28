@@ -178,7 +178,7 @@ class BaseNamespace:
 
 
 class FormNamespace(BaseNamespace):
-    """Base class for attributes over file.info.forms.json"""
+    """Base class for attributes over file.info.forms.json."""
 
     def __init__(
         self,

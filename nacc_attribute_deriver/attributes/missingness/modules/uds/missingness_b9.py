@@ -250,27 +250,27 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_cogothrx(self) -> Optional[str]:
         """Handles missingness for COGOTHRX."""
-        return self.generic_blank("cogothrx")
+        return self.generic_writein("cogothrx")
 
     def _missingness_cogmodex(self) -> Optional[str]:
         """Handles missingness for COGMODEX."""
-        return self.generic_blank("cogmodex")
+        return self.generic_writein("cogmodex")
 
     def _missingness_othsubusex(self) -> Optional[str]:
         """Handles missingness for OTHSUBUSEX."""
-        return self.generic_blank("othsubusex")
+        return self.generic_writein("othsubusex")
 
     def _missingness_beothrx(self) -> Optional[str]:
         """Handles missingness for BEOTHRX."""
-        return self.generic_blank("beothrx")
+        return self.generic_writein("beothrx")
 
     def _missingness_bemodex(self) -> Optional[str]:
         """Handles missingness for BEMODEX."""
-        return self.generic_blank("bemodex")
+        return self.generic_writein("bemodex")
 
     def _missingness_momodex(self) -> Optional[str]:
         """Handles missingness for MOMODEX."""
-        return self.generic_blank("momodex")
+        return self.generic_writein("momodex")
 
     ######################################################
     # If VAR = 777, then VAR = value from previous visit #

@@ -117,9 +117,7 @@ def prev_record() -> SymbolTable:
                         "naccid": "NACC123456",
                         "adcid": 0,
                     },
-                    "missingness": {
-                        "missingvar": 5
-                    }
+                    "missingness": {"missingvar": 5},
                 }
             }
         }
