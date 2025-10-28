@@ -258,7 +258,7 @@ class FamilyHandler:
     #     return True
 
 
-    def check_parent_etpr(self, prev_value: int) -> Optional[int]:
+    def check_parent_etpr(self, prev_value: Optional[int] = None) -> Optional[int]:
         """Handles the V4 version of NACCMOM and NACCDAD, which follows
         the following logic checking the corresponding parent ETPR variable:
 

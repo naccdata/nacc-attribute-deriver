@@ -17,9 +17,10 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    PreviousRecordNamespace,
     SubjectDerivedNamespace,
-    WorkingDerivedNamespace,
+)
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
@@ -33,7 +34,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__working = WorkingDerivedNamespace(table=table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
         self.__prev_record = None
 
@@ -108,8 +108,15 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             elif self.__decclin == 0:
                 return 0
 
-        p_decclin = self.__working.get_prev_value("decclin", int)
-        p_befrst = self.__working.get_prev_value("befrst", int)
+        p_decclin = None
+        p_befrst = None
+        p_befpred = None
+
+        if self.__prev_record:
+            prev_code = 0 if self.formver == 3 else None
+            p_decclin = self.__prev_record.get_resolved_value("decclin", int, prev_code=prev_code)
+            p_befrst = self.__prev_record.get_resolved_value("befrst", int, prev_code=prev_code)
+            p_befpred = self.__prev_record.get_resolved_value("befpred", int, prev_code=prev_code)
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccbehf = 0
@@ -121,7 +128,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         if self.formver >= 3:
             if befpred == 0:
-                p_befpred = self.__working.get_prev_value("befpred", int)
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
                 elif p_befpred == 0:
@@ -196,10 +202,16 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         cogfrst = self.harmonize_cogfrst()
         cogfpred = self.uds.get_value("cogfpred", int)
-        p_decclin = self.__working.get_prev_value("decclin", int)
-        p_cogfrst = self.__working.get_prev_value("cogfrst", int)
-        p_cogfpred = self.__working.get_prev_value("cogfpred", int)
         nacccogf = None
+        p_decclin = None
+        p_cogfrst = None
+        p_cogfpred = None
+
+        if self.__prev_record:
+            prev_code = 0 if self.formver == 3 else None
+            p_decclin = self.__prev_record.get_resolved_value("decclin", int, prev_code=prev_code)
+            p_cogfrst = self.__prev_record.get_resolved_value("cogfrst", int, prev_code=prev_code)
+            p_cogfpred = self.__prev_record.get_resolved_value("cogfpred", int, prev_code=prev_code)
 
         # see note in _create_naccbehf; same situation
         if cogfrst is None and cogfpred is None:
@@ -248,8 +260,12 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 return 0
 
         naccmotf = None
-        p_decclin = self.__working.get_prev_value("decclin", int)
-        p_mofrst = self.__working.get_prev_value("mofrst", int)
+        p_decclin = None
+        p_mofrst = None
+        if self.__prev_record:
+            prev_code = 0 if self.formver == 3 else None
+            p_decclin = self.__prev_record.get_resolved_value('decclin', int, prev_code=prev_code)
+            p_mofrst = self.__prev_record.get_resolved_value("mofrst", int, prev_code=prev_code)
 
         if mofrst and mofrst not in [0, 88]:
             naccmotf = mofrst
@@ -267,52 +283,3 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             naccmotf = 0
 
         return naccmotf if naccmotf is not None else 99
-
-    #######################################################################
-    # Carryover form variables - needed for above curation
-    # These should be curated AFTER the above
-    # We do check dates though so it shouldn't matter too much
-    # TODO: SHOULD MIGRATE TO USE PREV_RECORD LOGIC INSTEAD
-    #######################################################################
-
-    def determine_carryover(self, attribute: str) -> Optional[int]:
-        """In many followup visits, 0 == assessed at previous visit.
-
-        Need to pull in that case.
-        """
-        raw_value = self.uds.get_value(attribute, int)
-
-        # see note in _create_naccbehf; same situation
-        if not self.uds.is_initial():  # noqa: SIM102
-            if raw_value == 0 or (
-                raw_value is None and self.formver < 3 and self.__decclin is None
-            ):
-                prev_value = self.__working.get_prev_value(attribute, int)
-                if prev_value is not None:
-                    return prev_value
-
-        return raw_value
-
-    def _create_mofrst(self) -> Optional[int]:
-        """Carries over MOFRST (V3+ and V1, V2)."""
-        return self.determine_carryover("mofrst")
-
-    def _create_befpred(self) -> Optional[int]:
-        """Carries over BEFPRED (V3+)."""
-        return self.determine_carryover("befpred")
-
-    def _create_cogfpred(self) -> Optional[int]:
-        """Carries over COGFPRED (V3+)."""
-        return self.determine_carryover("cogfpred")
-
-    def _create_decclin(self) -> Optional[int]:
-        """Carries over DECCLIN (V1, V2)."""
-        return self.determine_carryover("decclin")
-
-    def _create_befrst(self) -> Optional[int]:
-        """Carries over BEFRST (V1, V2)."""
-        return self.determine_carryover("befrst")
-
-    def _create_cogfrst(self) -> Optional[int]:
-        """Carries over COGFRST (V1, V2)."""
-        return self.determine_carryover("cogfrst")

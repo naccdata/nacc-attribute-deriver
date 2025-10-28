@@ -32,7 +32,7 @@ class UDSMissingness(UDSAttributeCollection):
             self.__prev_record = PreviousRecordNamespace(table=table)
 
     @property
-    def prev_record(self) -> PreviousRecordNamespace:
+    def prev_record(self) -> Optional[PreviousRecordNamespace]:
         return self.__prev_record
 
     def _missingness_uds(self, field: str) -> Optional[int]:

@@ -67,7 +67,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         if not form_date:
             raise AttributeDeriverError("Cannot determine A4 form date")
 
-        drugs = self.__working.get_corresponding_longitudinal_value(
+        drugs = self.__working.get_corresponding_longitudinal_value(  # type: ignore
             form_date, "drugs-list", list
         )
 

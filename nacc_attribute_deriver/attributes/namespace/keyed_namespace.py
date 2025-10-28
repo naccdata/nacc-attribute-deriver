@@ -4,10 +4,13 @@ in the passed SymbolTable.
 """
 from typing import List, Optional, Type
 
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    BaseNamespace,
+    FormNamespace,
+    T
+)
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
-
-from .namepsace import BaseNamespace, FormNamespace, T
 
 
 class PreviousRecordNamespace(FormNamespace):

@@ -1,13 +1,16 @@
-"""Class to handle A4a-specific missingness values."""
+"""Class to handle A4a-specific missingness values.
 
-from typing import List, Optional
+# TODO: STILL IN PROGRESS, WAITING RT FEEDBACK
+"""
+
+from typing import Any, List, Optional
 
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 
-from .missingness_uds import UDSMissingness
+from .missingness_uds import VersionedUDSMissingness
 
 
-class UDSFormA4aMissingness(UDSMissingness):
+class UDSFormA4aMissingness(VersionedUDSMissingness):
 
     def _handle_fvp_gate(self, gate: str, field: str) -> Optional[int]:
         """Handle FVP gated by NEWTREAT and NEWADEVENT.
@@ -20,7 +23,7 @@ class UDSFormA4aMissingness(UDSMissingness):
 
         return self.generic_missingness(field)
 
-    def _handle_a4a_missingness(self, fvp_gates: List[str], field: str, writein: bool = False) -> Optional[int | str]:
+    def _handle_a4a_missingness(self, fvp_gates: List[str], field: str, writein: bool = False) -> Optional[Any]:
         """Handle A4a missingness, which is generally:
 
         If FVP, check gates from fvp_gates argument, can be any one of the following:
@@ -33,20 +36,14 @@ class UDSFormA4aMissingness(UDSMissingness):
         If V4 and VAR is blank then VAR should = 0 (general UDS V4 missingness)
         Else default missingness (-4)
         """
-        # mappings of gates to gate values that trigger missingness conditions
-        mappings = {
-            'newtreat': [0, 9]
-        }
-
-
         if not self.uds.is_initial():
             for gate in fvp_gates:
                 gate_value = self.uds.get_value(gate, int)
 
                 if gate in ['newtreat', 'newadevent']:
-                    if gate_value in [0, 9]:
+                    if gate_value in [0, 9] and self.prev_record:
                         return self.prev_record.get_resolved_value(
-                            field, attribute_type=str if writein else int)
+                            field, attr_type=str if writein else int)
 
                 elif gate in ['trtbiomark', 'advevent']:
                     if gate_value == 0:
@@ -55,9 +52,9 @@ class UDSFormA4aMissingness(UDSMissingness):
                         return 9
 
         if writein:
-            return self.generic_blank(field)
+            return self.generic_writein(field)
 
-        return self.handle_v4_missingness(field)
+        return self.handle_formver_missingness(field)
 
     def _missingness_targetab1(self) -> Optional[int]:
         """Handles missingness for TARGETAB1"""
@@ -317,16 +314,16 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_ariae(self) -> Optional[int]:
         """Handles missingness for ARIAE"""
-        self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "ariae")
+        return self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "ariae")
 
     def _missingness_ariah(self) -> Optional[int]:
         """Handles missingness for ARIAH"""
-        self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "ariah")
+        return self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "ariah")
 
     def _missingness_adverseoth(self) -> Optional[int]:
         """Handles missingness for ADVERSEOTH"""
-        self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "adverseoth")
+        return self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "adverseoth")
 
     def _missingness_adverseotx(self) -> Optional[str]:
         """Handles missingness for ADVERSEOTX"""
-        self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "adverseotx", writein=True)
+        return self._handle_a4a_missingness(["newtreat", "newadevent", "trtbiomark"], "adverseotx", writein=True)
