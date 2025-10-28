@@ -202,6 +202,8 @@ uds,naccgds,file.info.derived.naccgds,update,FALSE
 uds,naccgds,subject.info.derived.longitudinal.naccgds,list,TRUE
 uds,naccnrex,file.info.derived.naccnrex,update,FALSE
 uds,naccnrex,subject.info.derived.longitudinal.naccnrex,list,TRUE
+uds,nacccogage,file.info.derived.nacccogage,update,FALSE
+uds,nacccogage,subject.info.derived.longitudinal.nacccogage,list,TRUE
 uds,naccbehf,file.info.derived.naccbehf,update,FALSE
 uds,naccbehf,subject.info.derived.longitudinal.naccbehf,list,TRUE
 uds,nacccogf,file.info.derived.nacccogf,update,FALSE
