@@ -9,7 +9,7 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    PreviousRecordNamespace
+    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
@@ -42,32 +42,6 @@ class UDSMissingness(UDSAttributeCollection):
         """Generic missingness for internal calls."""
         return self._missingness_uds(field)
 
-    def handle_v4_missingness(
-        self, field: str, missing_value: int = 0
-    ) -> Optional[int]:
-        """Handles generic V4 missingness, which follows the logic:
-
-        If FORMVER=4 and VAR is blank, VAR should = VALUE
-        else if FORMVER < 4, VAR should be -4
-
-        Args:
-            field: The field to check and set missingness for
-            missing_value: The value to set if the field is missing;
-                defaults to 0
-        Returns:
-            Missingness value if missing, None otherwise (so it isn't
-            set)
-        """
-        if self.formver < 4:
-            return INFORMED_MISSINGNESS
-
-        # if value exists, return None so we don't override
-        value = self.uds.get_value(field, int)
-        if value is not None:
-            return None
-
-        return missing_value
-
     def generic_writein(self, field: str) -> Optional[str]:
         """Generic blankness (write-ins) for internal calls."""
         # if value exists, return None so we don't override
@@ -76,16 +50,6 @@ class UDSMissingness(UDSAttributeCollection):
             return None
 
         return INFORMED_BLANK
-
-    def handle_v4_writein(self, field: str) -> Optional[str]:
-        """Handles generic V4 writein missingness, which follows the logic:
-
-        If FORMVER < 4 or VAR is blank, VAR should remain blank
-        """
-        if self.formver < 4:
-            return INFORMED_BLANK
-
-        return self.generic_writein(field)
 
     def handle_gated_writein(self, gate: str, value: int) -> Optional[str]:
         """Handles write-in blanks that rely on a gate variable.
@@ -113,14 +77,15 @@ class UDSMissingness(UDSAttributeCollection):
     def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
         """Handle when the value is provided by the previous visit.
 
-        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT.
-        ELIF VAR is not blank and not PREV_CODE, return None (do not override)
+        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT. ELIF VAR
+        is not blank and not PREV_CODE, return None (do not override)
         ELSE generic missingness
         """
         value = self.uds.get_value(field, int)
         if value == prev_code and self.__prev_record is not None:
             prev_value = self.__prev_record.get_resolved_value(
-                field, int, prev_code=prev_code)
+                field, int, prev_code=prev_code
+            )
             if prev_value is not None:
                 return prev_value
 
@@ -128,3 +93,49 @@ class UDSMissingness(UDSAttributeCollection):
             return None
 
         return self.generic_missingness(field)
+
+
+class VersionedUDSMissingness(UDSMissingness):
+    """Class to handle UDS missingness values that rely heavily on the form
+    version."""
+
+    def handle_formver_missingness(
+        self,
+        field: str,
+        missing_value: int = 0,
+        gate_version: int = 4,
+    ) -> Optional[int]:
+        """Handles generic formver-gated missingness, which follows the logic:
+
+        If FORMVER=4 and VAR is blank, VAR should = VALUE
+        else if FORMVER < 4, VAR should be -4
+
+        Args:
+            field: The field to check and set missingness for
+            missing_value: The value to set if the field is missing;
+                defaults to 0
+        Returns:
+            Missingness value if missing, None otherwise (so it isn't
+            set)
+        """
+        if self.formver < gate_version:
+            return INFORMED_MISSINGNESS
+
+        # if value exists, return None so we don't override
+        value = self.uds.get_value(field, int)
+        if value is not None:
+            return None
+
+        return missing_value
+
+    def handle_formver_writein(
+        self, field: str, gate_version: int = 4
+    ) -> Optional[str]:
+        """Handles formver-gated writein missingness, which follows the logic:
+
+        If FORMVER < 4 or VAR is blank, VAR should remain blank
+        """
+        if self.formver < gate_version:
+            return INFORMED_BLANK
+
+        return self.generic_writein(field)

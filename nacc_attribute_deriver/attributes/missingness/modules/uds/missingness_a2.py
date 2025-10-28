@@ -36,4 +36,4 @@ class UDSFormA2Missingness(UDSMissingness):
 
         If INCNTMDX is blank then INCNTMDX should remain blank
         """
-        return self.handle_v4_blank("incntmdx")
+        return self.generic_writein("incntmdx")
