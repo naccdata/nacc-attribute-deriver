@@ -14,7 +14,7 @@ from typing import (
 
 from pydantic import ValidationError
 
-from nacc_attribute_deriver.schema.constants import INVALID_TEXT, PREV_RECORD_CODE
+from nacc_attribute_deriver.schema.constants import INVALID_TEXT
 from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable

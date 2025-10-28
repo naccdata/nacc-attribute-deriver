@@ -24,7 +24,6 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
-    PREV_RECORD_CODE,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -66,7 +65,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         target_var = 'decage' if self.formver < 4 else 'cogage'
 
         value = self.uds.get_value(target_var, int)
-        if value == PREV_RECORD_CODE:
+        if value == 777:
             value = self.__prev_record.get_resolved_value(target_var, int)
 
         if value is None:
