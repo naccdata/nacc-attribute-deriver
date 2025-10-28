@@ -178,7 +178,7 @@ class BaseNamespace:
 
 
 class FormNamespace(BaseNamespace):
-    """Base class for attributes over file.info.forms.json"""
+    """Base class for attributes over file.info.forms.json."""
 
     def __init__(
         self,
@@ -197,8 +197,8 @@ class FormNamespace(BaseNamespace):
 
 
 class PreviousRecordNamespace(FormNamespace):
-    """Base class for attributes over _prev_record.info.forms.json
-    and _prev_record.info.forms.missingness"""
+    """Base class for attributes over _prev_record.info.forms.json and
+    _prev_record.info.forms.missingness."""
 
     def __init__(
         self,
@@ -246,9 +246,14 @@ class PreviousRecordNamespace(FormNamespace):
         return self.get_value(f"missingness.{attribute}", attr_type, default)
 
     def get_resolved_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None, prev_code: int = PREV_RECORD_CODE
+        self,
+        attribute: str,
+        attr_type: Type[T],
+        default: Optional[T] = None,
+        prev_code: int = 777,
     ) -> Optional[T]:
-        """Returns the value of the resolved attribute key in the table. First
+        """Returns the value of the resolved attribute key in the table. First.
+
         looks at the raw value - if a prev_visit code (e.g. 777) or None,
         looks at the missingness value instead.
 
@@ -265,6 +270,7 @@ class PreviousRecordNamespace(FormNamespace):
             return self.get_missingness_value(attribute, attr_type, default=default)
 
         return raw_value
+
 
 class RawNamespace(BaseNamespace):
     """Base class for attributes over file.info.raw."""
