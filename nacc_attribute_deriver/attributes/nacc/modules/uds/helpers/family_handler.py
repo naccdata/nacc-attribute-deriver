@@ -15,6 +15,11 @@ class FamilyHandler:
 
     ALLOWED_PREFIXES: frozenset[str] = frozenset(["mom", "dad", "sib", "kid"])
 
+    VALID_ETPR_VALUES = [
+        '01', '02', '03', '04', '05', '06', '07',
+        '08', '09', '10', '11', '12'
+    ]
+
     DXCODES: ClassVar[List[int]] = [
         40,
         41,
@@ -251,3 +256,48 @@ class FamilyHandler:
     #             return False
 
     #     return True
+
+
+    def check_parent_etpr(self, prev_value: int) -> Optional[int]:
+        """Handles the V4 version of NACCMOM and NACCDAD, which follows
+        the following logic checking the corresponding parent ETPR variable:
+
+        IVP:
+            If MOMETPR is blank, NACCMOM = -4
+            If MOMETPR in 01-12, NACCMOM = 1
+            If MOMETPR is 00, NACCMOM = 0
+
+        FVP:
+            If NWINFPAR = 0, then NACCMOM = NACCMOM[prev_vis]
+            If NWINFPAR = 1 and (NACCMOM[prev_vis] = 1 and MOMETPR == 66)
+                or MOMETPR in 01-12, then NACCMOM = 1
+            If NWINFPAR = 1 and (NACCMOM[prev_vis] = 0 and MOMETPR == 66)
+                or MOMETPR is 00, NACCMOM = 0
+
+        Else NACCMOM = 9.
+        Same for NACCDAD.
+        """
+        if not self.is_parent():
+            return None
+
+        etpr = self.__uds.get_value(f"{self.__prefix}etpr", str)
+        if self.__uds.is_initial():
+            if etpr is None:
+                return -4
+            if etpr in self.VALID_ETPR_VALUES:
+                return 1
+            if etpr == '00':
+                return 0
+        else:
+            nwinfpar = self.__uds.get_value("nwinfpar", int)
+            if nwinfpar == 0:
+                return prev_value
+            if nwinfpar == 1:
+                if ((prev_value == 1 and etpr == '66') or
+                    (etpr in self.VALID_ETPR_VALUES)):
+                    return 1
+                if ((prev_value == 0 and etpr == '66') or
+                    (etpr == '00')):
+                    return 0
+
+        return 9

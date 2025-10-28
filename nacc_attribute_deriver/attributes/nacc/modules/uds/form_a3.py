@@ -48,6 +48,9 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if known_value == 1:
             return 1
 
+        if self.formver >= 4:
+            self.__dad.check_parent_etpr(known_value)
+
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
         # and
@@ -72,6 +75,9 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         )
         if known_value == 1:
             return 1
+
+        if self.formver >= 4:
+            self.__mom.check_parent_etpr(known_value)
 
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
