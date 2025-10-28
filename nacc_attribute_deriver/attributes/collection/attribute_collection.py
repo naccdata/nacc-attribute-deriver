@@ -14,6 +14,7 @@ from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel, ConfigDict
 
 from nacc_attribute_deriver.schema.constants import DERIVE_TYPES
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 log = logging.getLogger(__name__)
@@ -112,7 +113,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
             ):
                 hook = attr_name.lstrip("_")
                 if hook in result:
-                    raise ValueError(f"Attribute {attr_name} already defined")
+                    raise AttributeDeriverError(f"Attribute {attr_name} already defined")
                 result[hook] = attr
 
         return result
