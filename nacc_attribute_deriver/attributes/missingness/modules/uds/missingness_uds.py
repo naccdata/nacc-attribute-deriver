@@ -3,7 +3,7 @@
 In general, returns -4 unless otherwise specified.
 """
 
-from typing import List, Optional, Type
+from typing import List, Optional, Type, Union
 
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,

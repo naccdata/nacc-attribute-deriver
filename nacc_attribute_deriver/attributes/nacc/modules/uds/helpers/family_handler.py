@@ -4,7 +4,7 @@ Handles calculating cognitive status across an entire family. This is
 mainly required for NACCFAM, which is significantly involved.
 """
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
@@ -14,7 +14,7 @@ from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
 )
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 
-from .helpers.family_member_handler import (
+from .family_member_handler import (
     BaseFamilyMemberHandler,
     FamilyMemberHandler,
     LegacyFamilyMemberHandler,
@@ -63,9 +63,13 @@ class BaseFamiylHandler(ABC):
     def kids(self) -> BaseFamilyMemberHandler:
         return self.__kids
 
+    @property
+    def all_members(self) -> List[BaseFamilyMemberHandler]:
+        return self.__all_members
+
     @abstractmethod
     def determine_naccparent(self,
-                             member: BaseFamiylHandler,
+                             member: BaseFamilyMemberHandler,
                              known_value: int) -> int:
         """Determines NACCMOM and NACCDAD.
 
@@ -91,14 +95,16 @@ class BaseFamiylHandler(ABC):
 class LegacyFamilyHandler(BaseFamiylHandler):
     """Handles cognitive status across an entire family for V1-V3."""
 
-    def __init__(self, uds: UDSNamespace) -> None:
+    def __init__(self,
+                 uds: UDSNamespace,
+                 prev_record: Optional[PreviousRecordNamespace] = None) -> None:
         """Initializer."""
         if uds.normalized_formver() > 3:
             raise AttributeDeriverError(
                 "Cannot instantiate LegacyFamilyHandler for UDS form version "
                 + f"{uds.normalized_formver()} (required V1-V3)")
 
-        super().__init__(uds)
+        super().__init__(uds, prev_record)
 
     def determine_naccparent(self,
                              member: BaseFamiylHandler,
@@ -130,20 +136,20 @@ class LegacyFamilyHandler(BaseFamiylHandler):
             return 1
 
         # if all have no data, then fallback to known value
-        if all(not member.has_data() for member in self.__all_members):
+        if all(not member.has_data() for member in self.all_members):
             return known_value
 
         # if V3 and all 8, return 9
         # TODO - I really don't think this is the correct behavior;
         # see comments under check_neur_is_8
         # if self.formver >= 3:
-        #     all_8s = [member.check_neur_is_8() for member in self.__all_members]
+        #     all_8s = [member.check_neur_is_8() for member in self.all_members]
         #     if all(all_8s):
         #         return 9
 
         # get cognitive status for each family member
         family_status = [
-            member.cognitive_impairment_status() for member in self.__all_members
+            member.cognitive_impairment_status() for member in self.all_members
         ]
         if any(status == 1 for status in family_status):
             return 1
@@ -158,14 +164,16 @@ class LegacyFamilyHandler(BaseFamiylHandler):
 class FamilyHandler(BaseFamiylHandler):
     """Handles cognitive status across an entire family for V4+."""
 
-    def __init__(self, uds: UDSNamespace) -> None:
+    def __init__(self,
+                 uds: UDSNamespace,
+                 prev_record: Optional[PreviousRecordNamespace] = None) -> None:
         """Initializer."""
         if uds.normalized_formver() < 4:
             raise AttributeDeriverError(
                 "Cannot instantiate FamilyHandler for UDS form version "
                 + f"{uds.normalized_formver()} (required V4+)")
 
-        super().__init__(uds)
+        super().__init__(uds, prev_record)
 
     def determine_naccparent(self,
                              member: BaseFamiylHandler,
@@ -229,7 +237,7 @@ class FamilyHandler(BaseFamiylHandler):
 
         family_status = [
             self.__determine_parent_status(),
-            self.__determine_sibs_kids_status(self.__sibs)
+            self.__determine_sibs_kids_status(self.__sibs),
             self.__determine_sibs_kids_status(self.__kids)
         ]
 

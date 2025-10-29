@@ -12,6 +12,9 @@ from typing import ClassVar, List, Optional
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace
+)
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 
 
@@ -30,11 +33,18 @@ class BaseFamilyMemberHandler:
 
         self.__prefix = prefix
         self.__uds = uds
-        self.__formver = self.__uds.normalized_formver()
 
     @property
     def prefix(self) -> str:
         return self.__prefix
+
+    @property
+    def uds(self) -> UDSNamespace:
+        return self.__uds
+
+    @property
+    def formver(self) -> int:
+        return self.__uds.normalized_formver()
 
     def is_parent(self) -> bool:
         """Returns whether or not this prefix is a parent."""
@@ -155,14 +165,14 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         if self.is_parent():
             return any(x is not None for x in [self._dem(), self._neur(), self._prdx()])
 
-        num_total = self.__uds.get_value(f"{self.__prefix}s", int)
+        num_total = self.uds.get_value(f"{self.prefix}s", int)
         if num_total is None:
             return False
         elif num_total == 0:  # if 0, not expecting any data
             return True
 
-        if self.__formver == 1:
-            return self.__uds.get_value(f"{self.__prefix}sdem", int) is not None
+        if self.formver == 1:
+            return self.uds.get_value(f"{self.prefix}sdem", int) is not None
 
         for i in range(1, self.get_bound()):
             if any(x is not None for x in [self._dem(i), self._neur(i), self._prdx(i)]):
@@ -187,7 +197,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         """
         if self.is_parent():
             # V3+, neur/pdx
-            if self.__formver >= 3:
+            if self.formver >= 3:
                 return self._neur() == 1 and self._prdx() in self.DXCODES
 
             # V1/V2, dem
@@ -196,8 +206,8 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         # handle sibs/kids. return True if ANY have cognitive impairment
         # in V1, each sib/kid doesn't have their own DEM value, instead
         # stored in an overall SIBSDEM or KIDSDEM variable
-        if self.__formver == 1:
-            num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
+        if self.formver == 1:
+            num_dem = self.uds.get_value(f"{self.prefix}sdem", int)
             return num_dem is not None and num_dem > 0 and num_dem < 30
 
         # in V2+, each sib/kid does have specific dem/neur values
@@ -205,7 +215,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         # in V3+, look for SIB#NEU/SIB#PDX and KID#NEU/KID#PDX
         for i in range(1, self.get_bound()):
             # V3+, neur/pdx
-            if self.__formver >= 3:
+            if self.formver >= 3:
                 if self._neur(i) == 1 and self._prdx(i) in self.DXCODES:
                     return True
             # V1/V2, dem
@@ -243,15 +253,15 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
             return 0
 
         if self.is_parent():
-            if self.__formver >= 3:
+            if self.formver >= 3:
                 return 0 if self._neur() is not None else 9
 
             return 9 if self._dem() == 9 else 0
 
         # in V1, each sib/kid doesn't have their own DEM value, instead
         # stored in an overall SIBSDEM or KIDSDEM variable
-        if self.__formver == 1:
-            num_dem = self.__uds.get_value(f"{self.__prefix}sdem", int)
+        if self.formver == 1:
+            num_dem = self.uds.get_value(f"{self.prefix}sdem", int)
             return 9 if num_dem == 99 else 0
 
         # check all the kids/sibs; per RDD, if ANY are Unknown they are ALL
@@ -364,18 +374,18 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
         else:
             index = ""
 
-        field = f"{self.__prefix}{index}etpr"
-        etpr = self.__uds.get_value(field, str)
+        field = f"{self.prefix}{index}etpr"
+        etpr = self.uds.get_value(field, str)
         prev_etpr = None
         if prev_record:
             prev_etpr = prev_record.get_value(field, str)
 
         if self.is_parent():
-            nwinfo = self.__uds.get_value("nwinfpar", int)
-        elif self.__prefix == 'sib':
-            nwinfo self.__uds.get_value("nwinfsib", int)
+            nwinfo = self.uds.get_value("nwinfpar", int)
+        elif self.prefix == 'sib':
+            nwinfo = self.uds.get_value("nwinfsib", int)
         else:
-            nwinfo self.__uds.get_value("nwinfkid", int)
+            nwinfo = self.uds.get_value("nwinfkid", int)
 
         if nwinfo == 0 or etpr == '66':
             return self.__etpr_status(prev_etpr)
