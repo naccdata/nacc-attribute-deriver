@@ -175,8 +175,7 @@ class FamilyHandler(BaseFamiylHandler):
         if known_value == 1:
             return 1
 
-        prev_etpr = self.prev_record.get_value(f'{member.prefix}etpr', int)
-        result = member.determine_etpr_status(prev_etpr)
+        result = member.determine_etpr_status(prev_record=self.prev_record)
         if result in [INFORMED_MISSINGNESS, 9] and known_value in [0, 1]:
             return known_value
 
@@ -205,11 +204,22 @@ class FamilyHandler(BaseFamiylHandler):
         Checks the ETPR status for all relevant sibs/kids, and resolves
         the results across all of them.
         """
-        bound = member.get_bound()
         results = []
 
-        results = [member.determine_etpr_status(prefix=)]
+        for i in range(1, member.get_bound()):
+            results.append(member.determine_etpr_status(
+                index=i, prev_record=self.prev_record))
 
+        if all(x is None for x in results):
+            return INFORMED_MISSINGNESS
+
+        if any(x == 1 for x in results):
+            return 1
+
+        if all(x == 0 for x in results):
+            return 0
+
+        return 9
 
     def determine_naccfam(self, known_value: int) -> int:
         """Determine NACCFAM for V4+."""
@@ -217,6 +227,19 @@ class FamilyHandler(BaseFamiylHandler):
         if known_value == 1:
             return 1
 
-        parents = self.__determine_parent_status()
+        family_status = [
+            self.__determine_parent_status(),
+            self.__determine_sibs_kids_status(self.__sibs)
+            self.__determine_sibs_kids_status(self.__kids)
+        ]
 
-        self.__sibs
+        if all(x == -4 for x in family_status):
+            return INFORMED_MISSINGNESS
+
+        if any(x == 1 for x in family_status):
+            return 1
+
+        if all(x == 0 for x in family_status):
+            return 0
+
+        return 9

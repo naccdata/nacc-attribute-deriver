@@ -43,7 +43,11 @@ class BaseFamilyMemberHandler:
     def get_bound(self) -> int:
         """Get the upper bound based on the number of sibs/kids reported."""
         assert not self.is_parent(), "Trying to get bound on parent attribute"
-        return self.__uds.get_value(f"{self.__prefix}s", int, default=0)  # type: ignore
+        result = self.__uds.get_value(f"{self.__prefix}s", int)
+        if result is not None:
+            return result + 1
+
+        return 0
 
     def get_parent_attribute(self, postfix: str) -> Optional[int]:
         """Build and get attribute for mom/dad."""
@@ -160,7 +164,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         if self.__formver == 1:
             return self.__uds.get_value(f"{self.__prefix}sdem", int) is not None
 
-        for i in range(1, self.get_bound() + 1):
+        for i in range(1, self.get_bound()):
             if any(x is not None for x in [self._dem(i), self._neur(i), self._prdx(i)]):
                 return True
 
@@ -199,7 +203,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         # in V2+, each sib/kid does have specific dem/neur values
         # in V2, look for SIB#DEM and KID#DEM
         # in V3+, look for SIB#NEU/SIB#PDX and KID#NEU/KID#PDX
-        for i in range(1, self.get_bound() + 1):
+        for i in range(1, self.get_bound()):
             # V3+, neur/pdx
             if self.__formver >= 3:
                 if self._neur(i) == 1 and self._prdx(i) in self.DXCODES:
@@ -252,7 +256,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
 
         # check all the kids/sibs; per RDD, if ANY are Unknown they are ALL
         # coded as Unknown (9), so leave early
-        for i in range(1, self.get_bound() + 1):
+        for i in range(1, self.get_bound()):
             if self._dem(i) == 9 or self._neur(i) == 9:
                 return 9
 
@@ -271,7 +275,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
     #     if self.is_parent():
     #         return self._neur() == 8
 
-    #     for i in range(1, self.get_bound() + 1):
+    #     for i in range(1, self.get_bound()):
     #         if self._neur(i) != 8:
     #             return False
 
@@ -306,8 +310,7 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
         super().__init__(prefix, uds)
 
     def __etpr_status(self, value: str) -> Optional[int]:
-        """Determine the ETPR status based on a KNOWN values (does not include previous error
-        codes like 66). As such, ETPR values MUST be carried through with resolved
+        """Determine the ETPR status
         missingness values.
 
             If None/blank -> -4
@@ -323,9 +326,16 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
         if value == '00':
             return 0
 
-        raise AttributeDeriverError(f"Cannot determine status from {value}")
+        # 66 should be handled before calling this method
+        if value == '66':
+            raise AttributeDeriverError(
+                "Internal logic error: 66 should be handled for ETPR beforehand")
 
-    def determine_etpr_status(self, prev_etpr: Optional[int] = None, index: str = None) -> Optional[int]:
+        return 9
+
+    def determine_etpr_status(self,
+                              index: int = None,
+                              prev_record: Optional[PreviousRecordNamespace] = None) -> Optional[int]:
         """Determines the ETPR status for a family member in V4, with the
         following logic:
 
@@ -343,6 +353,10 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
 
         Else if all above cannot be evaluated, STATUS = 9 (unknown).
 
+        Longitudinally, the overall logic is:
+            If NWINFO is 0 or ETPR == 66 (both cases only possible in FVP),
+                get the status from the previous visit
+            Else get the status of MEMBER_ETPR
         """
         # index is indicitive of if we're looking at a kid/sib
         if not self.is_parent() and not index:
@@ -350,25 +364,20 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
         else:
             index = ""
 
-        etpr = self.__uds.get_value(f"{self.__prefix}{index}etpr", str)
-        if self.__uds.is_initial():
-            return self.__etpr_status(etpr)
+        field = f"{self.__prefix}{index}etpr"
+        etpr = self.__uds.get_value(field, str)
+        prev_etpr = None
+        if prev_record:
+            prev_etpr = prev_record.get_value(field, str)
+
+        if self.is_parent():
+            nwinfo = self.__uds.get_value("nwinfpar", int)
+        elif self.__prefix == 'sib':
+            nwinfo self.__uds.get_value("nwinfsib", int)
         else:
-            if self.is_parent():
-                nwinfo = self.__uds.get_value("nwinfpar", int)
-            elif self.__prefix == 'sib':
-                nwinfo self.__uds.get_value("nwinfsib", int)
-            else:
-                nwinfo self.__uds.get_value("nwinfkid", int)
+            nwinfo self.__uds.get_value("nwinfkid", int)
 
-            if nwinfo == 0:
-                return self.__etpr_status(prev_etpr)
-            if nwinfo == 1:
-                if (prev_etpr == 1 and etpr == "66") or (
-                    etpr in self.VALID_ETPR_VALUES
-                ):
-                    return 1
-                if (prev_etpr == 0 and etpr == "66") or (etpr == "00"):
-                    return 0
+        if nwinfo == 0 or etpr == '66':
+            return self.__etpr_status(prev_etpr)
 
-        return 9
+        return self.__etpr_status(etpr)

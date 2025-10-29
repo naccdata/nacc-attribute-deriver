@@ -49,40 +49,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.submitted:
             return None
 
-        # if reported 1 at any visit, stays as 1
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccdad", int, default=9
         )
-
-        prev_value = None
-        if self.__prev_record:
-            prev_value = self.__prev_record.
-
-
-        return self.__family.determine_naccparent(
-            self.__family.dad, known_value)
-
-
-        if known_value == 1:
-            return 1
-
-        if self.formver >= 4:
-            result = self.__family.dad.determine_etpr_status()
-            if result in [INFORMED_MISSINGNESS, 9] and known_value in [0, 1]:
-                return known_value
-
-            return result
-
-        # if no data, per RDD: "Known cognitive impairment history
-        # reported at any visit supersedes all visits with missing codes"
-        # and
-        # "Those with submitted Form A3 who are missing necessary data are
-        # coded as Unknown (9)", which known_value might be by default
-        if not self.__family.dad.has_data():
-            return known_value
-
-        # otherwise, check cognitive impairment status
-        return self.__family.dad.cognitive_impairment_status()
+        return self.__family.determine_naccparent(self.__family.dad, known_value)
 
     def _create_naccmom(self) -> Optional[int]:
         """Creates NACCMOM - Indicator of mother with cognitive
@@ -91,30 +61,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.submitted:
             return None
 
-        # if reported 1 at any visit, stays as 1
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccmom", int, default=9
         )
-        if known_value == 1:
-            return 1
-
-        if self.formver >= 4:
-            result = self.__family.mom.determine_etpr_status()
-            if result in [INFORMED_MISSINGNESS, 9] and known_value in [0, 1]:
-                return known_value
-
-            return result
-
-        # if no data, per RDD: "Known cognitive impairment history
-        # reported at any visit supersedes all visits with missing codes"
-        # and
-        # "Those with submitted Form A3 who are missing necessary data are
-        # coded as Unknown (9)", which known_value might be by default
-        if not self.__family.mom.has_data():
-            return known_value
-
-        # otherwise, check cognitive impairment status
-        return self.__family.mom.cognitive_impairment_status()
+        return self.__family.determine_naccparent(self.__family.mom, known_value)
 
     def _create_naccfam(self) -> Optional[int]:
         """Creates NACCFAM - Indicator of first-degree family
