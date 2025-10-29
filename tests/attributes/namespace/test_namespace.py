@@ -134,8 +134,5 @@ class TestPreviousRecordNamespace:
         assert namespace.get_form_value("naccid", str) == "NACC123456"
         assert namespace.get_form_value("missingvar", int) is None
 
-        assert namespace.get_missingness_value("naccid", str) is None
-        assert namespace.get_missingness_value("missingvar", int) == 5
-
         assert namespace.get_resolved_value("naccid", str) == "NACC123456"
         assert namespace.get_resolved_value("missingvar", int) == 5

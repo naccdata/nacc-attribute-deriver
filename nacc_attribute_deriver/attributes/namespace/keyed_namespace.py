@@ -48,21 +48,6 @@ class PreviousRecordNamespace(FormNamespace):
         """
         return self.get_value(f"json.{attribute}", attr_type, default)
 
-    def get_missingness_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
-    ) -> Optional[T]:
-        """Returns the value of the missingness attribute key in the table.
-
-        Args:
-          attribute: the attribute name
-          attr_type: the attribute type; an error is thrown if the
-            non-null grabbed value cannot be casted to it
-          default: the default value
-        Returns:
-          the value for the attribute in the table
-        """
-        return self.get_value(f"missingness.{attribute}", attr_type, default)
-
     def get_resolved_value(
         self,
         attribute: str,
@@ -73,7 +58,8 @@ class PreviousRecordNamespace(FormNamespace):
         """Returns the value of the resolved attribute key in the table. First.
 
         looks at the raw value - if a prev_visit code (e.g. 777) or None,
-        looks at the missingness value instead.
+        looks at the missingness/resolved value already stored at
+        file.info.resolved instead.
 
         Args:
           attribute: the attribute name
@@ -85,7 +71,7 @@ class PreviousRecordNamespace(FormNamespace):
         """
         raw_value = self.get_form_value(attribute, attr_type, default=default)
         if raw_value is None or raw_value == prev_code:
-            return self.get_missingness_value(attribute, attr_type, default=default)
+            return self.get_value(f"resolved.{attribute}", attr_type, default)
 
         return raw_value
 

@@ -14,7 +14,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
-from .helpers.family_handler import FamilyHandler
+from .helpers.family_handler import FamilyHandler, LegacyFamilyHandler
 
 
 class UDSFormA3Attribute(UDSAttributeCollection):
@@ -24,11 +24,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
-        self.__mom = FamilyHandler("mom", self.uds)
-        self.__dad = FamilyHandler("dad", self.uds)
-        self.__sib = FamilyHandler("sib", self.uds)
-        self.__kid = FamilyHandler("kid", self.uds)
-        self.__family = [self.__mom, self.__dad, self.__sib, self.__kid]
+        if self.formver < 4:
+            self.__family = LegacyFamilyHandler(uds=self.uds)
+        else:
+            self.__family = FamilyHandler(uds=self.uds)
 
     @property
     def submitted(self) -> bool:
@@ -49,18 +48,18 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             return 1
 
         if self.formver >= 4:
-            self.__dad.check_parent_etpr(known_value)
+            self.__family.dad.check_parent_etpr(known_value)
 
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
         # and
         # "Those with submitted Form A3 who are missing necessary data are
         # coded as Unknown (9)", which known_value might be by default
-        if not self.__dad.has_data():
+        if not self.__family.dad.has_data():
             return known_value
 
         # otherwise, check cognitive impairment status
-        return self.__dad.cognitive_impairment_status()
+        return self.__family.dad.cognitive_impairment_status()
 
     def _create_naccmom(self) -> Optional[int]:
         """Creates NACCMOM - Indicator of mother with cognitive
@@ -77,18 +76,18 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             return 1
 
         if self.formver >= 4:
-            self.__mom.check_parent_etpr(known_value)
+            self.__family.mom.check_parent_etpr(known_value)
 
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
         # and
         # "Those with submitted Form A3 who are missing necessary data are
         # coded as Unknown (9)", which known_value might be by default
-        if not self.__mom.has_data():
+        if not self.__family.mom.has_data():
             return known_value
 
         # otherwise, check cognitive impairment status
-        return self.__mom.cognitive_impairment_status()
+        return self.__family.mom.cognitive_impairment_status()
 
     def _create_naccfam(self) -> Optional[int]:
         """Creates NACCFAM - Indicator of first-degree family
@@ -100,33 +99,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccfam", int, default=9
         )
-        if known_value == 1:
-            return 1
-
-        # if all have no data, then fallback to known value
-        if all(not member.has_data() for member in self.__family):
-            return known_value
-
-        # if V3 and all 8, return 9
-        # TODO - I really don't think this is the correct behavior;
-        # see comments under check_neur_is_8
-        # if self.formver >= 3:
-        #     all_8s = [member.check_neur_is_8() for member in self.__family]
-        #     if all(all_8s):
-        #         return 9
-
-        # get cognitive status for each family member
-        family_status = [
-            member.cognitive_impairment_status() for member in self.__family
-        ]
-        if any(status == 1 for status in family_status):
-            return 1
-
-        # from RDD: "Those who are missing data on all first-degree
-        # family members are coded as Unknown (9). If some first-degree
-        # family members are coded as No and some are coded as Unknown,
-        # then they are all coded as Unknown (9)"
-        return 9 if any(status == 9 for status in family_status) else 0
+        return self.__family.determine_naccfam(known_value)
 
     ###########
     # V3 ONLY #
