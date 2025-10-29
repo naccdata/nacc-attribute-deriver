@@ -33,27 +33,12 @@ class PreviousRecordNamespace(FormNamespace):
             date_attribute=date_attribute,
         )
 
-    def get_form_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
-    ) -> Optional[T]:
-        """Returns the value of the raw form attribute key in the table.
-
-        Args:
-          attribute: the attribute name
-          attr_type: the attribute type; an error is thrown if the
-            non-null grabbed value cannot be casted to it
-          default: the default value
-        Returns:
-          the value for the attribute in the table
-        """
-        return self.get_value(f"json.{attribute}", attr_type, default)
-
     def get_resolved_value(
         self,
         attribute: str,
         attr_type: Type[T],
-        default: Optional[T] = None,
         prev_code: Optional[int] = None,
+        default: Optional[T] = None,
     ) -> Optional[T]:
         """Returns the value of the resolved attribute key in the table. First.
 
@@ -69,7 +54,7 @@ class PreviousRecordNamespace(FormNamespace):
         Returns:
           the value for the attribute in the table
         """
-        raw_value = self.get_form_value(attribute, attr_type, default=default)
+        raw_value = self.get_value(f"json.{attribute}", attr_type, default)
         if raw_value is None or raw_value == prev_code:
             return self.get_value(f"resolved.{attribute}", attr_type, default)
 

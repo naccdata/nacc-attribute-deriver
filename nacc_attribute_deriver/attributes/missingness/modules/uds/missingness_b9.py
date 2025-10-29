@@ -357,3 +357,31 @@ class UDSFormB9Missingness(UDSMissingness):
     def _missingness_othsubuse(self) -> Optional[int]:
         """Handles missingness for OTHSUBUSE."""
         return self._handle_besubab_gate("othsubuse")
+
+    ###############################################################
+    # Derived variable-related fields 
+    # variables we need to pull through for derived variable work #
+    ###############################################################
+
+    def _missingness_mofrst(self) -> Optional[int]
+        """Handles missingness for MOFRST."""
+        prev_code = 0 if self.formver == 3 else None
+        self.handle_prev_visit('mofrst', prev_code=prev_code)
+
+    def _missingness_befpred(self) -> Optional[int]
+        """Handles missingness for BEFPRED."""
+        prev_code = 0 if self.formver == 3 else None
+        self.handle_prev_visit('befpred', prev_code=prev_code)
+
+    def _missingness_cogfpred(self) -> Optional[int]
+        """Handles missingness for COGFPRED."""
+        prev_code = 0 if self.formver == 3 else None
+        self.handle_prev_visit('cogfpred', prev_code=prev_code)
+
+    def _missingness_befrst(self) -> Optional[int]
+        """Handles missingness for BEFRST."""
+        self.handle_prev_visit('befrst', prev_code=None)
+
+    def _missingness_cogfrst(self) -> Optional[int]
+        """Handles missingness for COGFRST."""
+        self.handle_prev_visit('cogfrst', prev_code=None)

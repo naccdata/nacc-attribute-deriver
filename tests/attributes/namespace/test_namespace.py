@@ -117,7 +117,7 @@ def prev_record() -> SymbolTable:
                         "naccid": "NACC123456",
                         "adcid": 0,
                     },
-                    "missingness": {"missingvar": 5},
+                    "resolved": {"missingvar": 5},
                 }
             }
         }
@@ -130,9 +130,6 @@ class TestPreviousRecordNamespace:
     def test_get_values(self, prev_record):
         """Tests getting raw vs missingness form value."""
         namespace = PreviousRecordNamespace(table=prev_record)
-
-        assert namespace.get_form_value("naccid", str) == "NACC123456"
-        assert namespace.get_form_value("missingvar", int) is None
 
         assert namespace.get_resolved_value("naccid", str) == "NACC123456"
         assert namespace.get_resolved_value("missingvar", int) == 5

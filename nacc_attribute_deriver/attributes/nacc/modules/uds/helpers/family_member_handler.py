@@ -7,12 +7,12 @@ NACCFAM
 NACCMOM
 NACCDAD
 """
-
 from typing import ClassVar, List, Optional
 
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 
 
 class BaseFamilyMemberHandler:
@@ -31,6 +31,10 @@ class BaseFamilyMemberHandler:
         self.__prefix = prefix
         self.__uds = uds
         self.__formver = self.__uds.normalized_formver()
+
+    @property
+    def prefix(self) -> str:
+        return self.__prefix
 
     def is_parent(self) -> bool:
         """Returns whether or not this prefix is a parent."""
@@ -207,7 +211,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         return False
 
     def cognitive_impairment_status(self) -> int:
-        """Gets the cognitive impairment status.
+        """Gets the cognitive impairment status for V3 and earlier.
 
         In SAS, this was the XNOT variable code (MNOT, DNOT, SNOT, KNOT), but
         ended up being quite confusing, so was rewritten based on RDD
@@ -301,46 +305,70 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
 
         super().__init__(prefix, uds)
 
-    def check_parent_etpr(self, prev_value: Optional[int] = None) -> Optional[int]:
-        """Handles the V4 version of NACCMOM and NACCDAD, which follows the
-        following logic checking the corresponding parent ETPR variable:
+    def __etpr_status(self, value: str) -> Optional[int]:
+        """Determine the ETPR status based on a KNOWN values (does not include previous error
+        codes like 66). As such, ETPR values MUST be carried through with resolved
+        missingness values.
+
+            If None/blank -> -4
+            If 01-12 -> 1
+            If 00 -> 0
+        """
+        if value is None or value == INFORMED_MISSINGNESS:
+            return INFORMED_MISSINGNESS
+
+        if value in self.VALID_ETPR_VALUES:
+            return 1
+
+        if value == '00':
+            return 0
+
+        raise AttributeDeriverError(f"Cannot determine status from {value}")
+
+    def determine_etpr_status(self, prev_etpr: Optional[int] = None, index: str = None) -> Optional[int]:
+        """Determines the ETPR status for a family member in V4, with the
+        following logic:
 
         IVP:
-            If MOMETPR is blank, NACCMOM = -4
-            If MOMETPR in 01-12, NACCMOM = 1
-            If MOMETPR is 00, NACCMOM = 0
+            If MEMBER_ETPR is blank, STATUS = -4
+            If MEMBER_ETPR in 01-12, STATUS = 1
+            If MEMBER_ETPR is 00, STATUS = 0
 
         FVP:
-            If NWINFPAR = 0, then NACCMOM = NACCMOM[prev_vis]
-            If NWINFPAR = 1 and (NACCMOM[prev_vis] = 1 and MOMETPR == 66)
-                or MOMETPR in 01-12, then NACCMOM = 1
-            If NWINFPAR = 1 and (NACCMOM[prev_vis] = 0 and MOMETPR == 66)
-                or MOMETPR is 00, NACCMOM = 0
+            If NWINFPAR/NWINFSIB = 0, then STATUS = STATUS[prev_vis]
+            If NWINFPAR/NWINFSIB = 1 and (STATUS[prev_vis] = 1 and MEMBER_ETPR == 66)
+                or MEMBER_ETPR in 01-12, then STATUS = 1
+            If NWINFPAR/NWINFSIB = 1 and (STATUS[prev_vis] = 0 and MEMBER_ETPR == 66)
+                or MEMBER_ETPR is 00, STATUS = 0
 
-        Else NACCMOM = 9.
-        Same for NACCDAD.
+        Else if all above cannot be evaluated, STATUS = 9 (unknown).
+
         """
-        if not self.is_parent():
-            return None
-
-        etpr = self.__uds.get_value(f"{self.__prefix}etpr", str)
-        if self.__uds.is_initial():
-            if etpr is None:
-                return -4
-            if etpr in self.VALID_ETPR_VALUES:
-                return 1
-            if etpr == "00":
-                return 0
+        # index is indicitive of if we're looking at a kid/sib
+        if not self.is_parent() and not index:
+            raise AttributeDeriverError("Need index to check SIB/KID ETPR")
         else:
-            nwinfpar = self.__uds.get_value("nwinfpar", int)
-            if nwinfpar == 0:
-                return prev_value
-            if nwinfpar == 1:
-                if (prev_value == 1 and etpr == "66") or (
+            index = ""
+
+        etpr = self.__uds.get_value(f"{self.__prefix}{index}etpr", str)
+        if self.__uds.is_initial():
+            return self.__etpr_status(etpr)
+        else:
+            if self.is_parent():
+                nwinfo = self.__uds.get_value("nwinfpar", int)
+            elif self.__prefix == 'sib':
+                nwinfo self.__uds.get_value("nwinfsib", int)
+            else:
+                nwinfo self.__uds.get_value("nwinfkid", int)
+
+            if nwinfo == 0:
+                return self.__etpr_status(prev_etpr)
+            if nwinfo == 1:
+                if (prev_etpr == 1 and etpr == "66") or (
                     etpr in self.VALID_ETPR_VALUES
                 ):
                     return 1
-                if (prev_value == 0 and etpr == "66") or (etpr == "00"):
+                if (prev_etpr == 0 and etpr == "66") or (etpr == "00"):
                     return 0
 
         return 9

@@ -113,15 +113,14 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_befpred = None
 
         if self.__prev_record:
-            prev_code = 0 if self.formver == 3 else None
             p_decclin = self.__prev_record.get_resolved_value(
-                "decclin", int, prev_code=prev_code
+                "decclin", int
             )
             p_befrst = self.__prev_record.get_resolved_value(
-                "befrst", int, prev_code=prev_code
+                "befrst", int
             )
             p_befpred = self.__prev_record.get_resolved_value(
-                "befpred", int, prev_code=prev_code
+                "befpred", int, prev_code=0 if self.formver == 3 else None
             )
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
@@ -214,15 +213,14 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_cogfpred = None
 
         if self.__prev_record:
-            prev_code = 0 if self.formver == 3 else None
             p_decclin = self.__prev_record.get_resolved_value(
-                "decclin", int, prev_code=prev_code
+                "decclin", int
             )
             p_cogfrst = self.__prev_record.get_resolved_value(
-                "cogfrst", int, prev_code=prev_code
+                "cogfrst", int
             )
             p_cogfpred = self.__prev_record.get_resolved_value(
-                "cogfpred", int, prev_code=prev_code
+                "cogfpred", int, prev_code=0 if self.formver == 3 else None
             )
 
         # see note in _create_naccbehf; same situation
@@ -275,12 +273,11 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_decclin = None
         p_mofrst = None
         if self.__prev_record:
-            prev_code = 0 if self.formver == 3 else None
             p_decclin = self.__prev_record.get_resolved_value(
-                "decclin", int, prev_code=prev_code
+                "decclin", int
             )
             p_mofrst = self.__prev_record.get_resolved_value(
-                "mofrst", int, prev_code=prev_code
+                "mofrst", int, prev_code=0 if self.formver == 3 else None
             )
 
         if mofrst and mofrst not in [0, 88]:

@@ -11,6 +11,10 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
 )
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace
+)
+
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -24,10 +28,15 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
-        if self.formver < 4:
-            self.__family = LegacyFamilyHandler(uds=self.uds)
-        else:
-            self.__family = FamilyHandler(uds=self.uds)
+        handler = LegacyFamilyHandler if self.formver < 4 else FamilyHandler
+        prev_record = None
+        if not self.uds.is_initial():
+            prev_record = PreviousRecordNamespace(table=table)
+
+        self.__family = handler(
+            uds=self.uds,
+            prev_record=prev_record
+        )
 
     @property
     def submitted(self) -> bool:
@@ -44,11 +53,25 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccdad", int, default=9
         )
+
+        prev_value = None
+        if self.__prev_record:
+            prev_value = self.__prev_record.
+
+
+        return self.__family.determine_naccparent(
+            self.__family.dad, known_value)
+
+
         if known_value == 1:
             return 1
 
         if self.formver >= 4:
-            self.__family.dad.check_parent_etpr(known_value)
+            result = self.__family.dad.determine_etpr_status()
+            if result in [INFORMED_MISSINGNESS, 9] and known_value in [0, 1]:
+                return known_value
+
+            return result
 
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
@@ -76,7 +99,11 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             return 1
 
         if self.formver >= 4:
-            self.__family.mom.check_parent_etpr(known_value)
+            result = self.__family.mom.determine_etpr_status()
+            if result in [INFORMED_MISSINGNESS, 9] and known_value in [0, 1]:
+                return known_value
+
+            return result
 
         # if no data, per RDD: "Known cognitive impairment history
         # reported at any visit supersedes all visits with missing codes"
@@ -101,9 +128,9 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         )
         return self.__family.determine_naccfam(known_value)
 
-    ###########
-    # V3 ONLY #
-    ###########
+    #######################
+    # V3 AND EARLIER ONLY #
+    #######################
 
     def _create_naccam(self) -> Optional[int]:
         """Creates NACCAM - In this family, is there evidence
