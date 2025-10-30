@@ -1,7 +1,22 @@
 """FamilyHandler helper class, primarily for form A3.
 
-Handles calculating cognitive status across an entire family. This is
-mainly required for NACCFAM, which is significantly involved.
+Handles calculating cognitive status across an entire family, namely
+
+NACCMOM
+NACCDAD
+NACCFAM
+
+NOTE: In older versions (V3 and earlier), it was originally intended that
+if any of these variables were set to 1, it always stayed as 1. The behavior
+of when it was 9 (unknown) on the other hand was a lot messier and seemed
+inconsistent between versions.
+
+GOING FORWARD, for V4 AND with changes to legacy code, we have decided that it
+can switch between a 0 and a 1 (so always following the newest entry, especially
+if the previous one was a mistake), but a 9 cannot "override" a 0 or 1 if it
+already exists. While this will cause different output regarding older data in
+the QAFs, enforcing this across all versions should hopefully help stabalize
+the previous inconsistencies.
 """
 from abc import ABC, abstractmethod
 from typing import List, Optional
@@ -91,6 +106,32 @@ class BaseFamiylHandler(ABC):
         pass
 
 
+    def determine_single_status(self, status: int, known_value: int) -> int:
+        """See note at top. Determines status for a single member. Only
+        override if derived status is 0 or 1, or known value is not already a 0 or 1.
+        """
+        if (status in [0, 1]) or (known_value not in [0, 1]):
+            return status
+
+        # means known_value is 0 or 1, so return that instead
+        return known_value
+
+    def determine_group_status(self, all_statuses: List[int], known_value: int) -> int:
+        """See note at top. Determines status across an entire group. Only
+        override if derived status is 0 or 1, or known value is not already a 0 or 1.
+        """
+        if any(x == 1 for x in all_statuses):
+            return 1
+
+        if all(x == 0 for x in all_statuses):
+            return 0
+
+        status = 9
+        if all(x == -4 for x in all_statuses):
+            status = INFORMED_MISSINGNESS
+
+        return self.determine_single_status(status, known_value)
+
 
 class LegacyFamilyHandler(BaseFamiylHandler):
     """Handles cognitive status across an entire family for V1-V3."""
@@ -108,32 +149,22 @@ class LegacyFamilyHandler(BaseFamiylHandler):
 
     def determine_naccparent(self,
                              member: BaseFamiylHandler,
-                             known_value: int,) -> int:
-        """Determine NACCPARENT (NACCMOM or NACCDAD).
+                             known_value: int) -> int:
+        """Determine V1-V3 NACCPARENT (NACCMOM or NACCDAD).
 
         TODO: currently doesn't use prev record since it's based off the legacy
             SAS code, but probably should - would likely help with the confusion
         """
-        # if reported 1 at any visit, stays as 1
-        if known_value == 1:
-            return 1
-
-        # if no data, per RDD: "Known cognitive impairment history
-        # reported at any visit supersedes all visits with missing codes"
-        # and
-        # "Those with submitted Form A3 who are missing necessary data are
-        # coded as Unknown (9)", which known_value might be by default
+        # if no data, fallback to known value
         if not member.has_data():
             return known_value
 
         # otherwise, check cognitive impairment status
-        return member.cognitive_impairment_status()
+        status = member.cognitive_impairment_status()
+        return self.determine_single_status(status, known_value)
 
     def determine_naccfam(self, known_value: int) -> int:
         """Determine V1-V3 NACCFAM."""
-        # If known value is already 1, stays at 1
-        if known_value == 1:
-            return 1
 
         # if all have no data, then fallback to known value
         if all(not member.has_data() for member in self.all_members):
@@ -151,14 +182,7 @@ class LegacyFamilyHandler(BaseFamiylHandler):
         family_status = [
             member.cognitive_impairment_status() for member in self.all_members
         ]
-        if any(status == 1 for status in family_status):
-            return 1
-
-        # from RDD: "Those who are missing data on all first-degree
-        # family members are coded as Unknown (9). If some first-degree
-        # family members are coded as No and some are coded as Unknown,
-        # then they are all coded as Unknown (9)"
-        return 9 if any(status == 9 for status in family_status) else 0
+        return self.determine_group_status(family_status, known_value)
 
 
 class FamilyHandler(BaseFamiylHandler):
@@ -183,28 +207,15 @@ class FamilyHandler(BaseFamiylHandler):
         if known_value == 1:
             return 1
 
-        result = member.determine_etpr_status(prev_record=self.prev_record)
-        if result in [INFORMED_MISSINGNESS, 9] and known_value in [0, 1]:
-            return known_value
-
-        return result
+        status = member.determine_etpr_status(prev_record=self.prev_record)
+        return self.determine_single_status(status, known_value)
 
     def __determine_parent_status(self) -> int:
         """Determine the parent status by looking at MOMETPR and DADETPR.
-
-        This  looks at the same code determine_etpr_status() that is
-        used to determine NACCMOM and NACCDAD, and resolves the two.
         """
         mometpr = self.mom.determine_etpr_status()
         dadetpr = self.dad.determine_etpr_status()
-        parents = None
-
-        if mometpr == 1 or dadetpr == 1:
-            return 1
-        if mometpr == 0 and dadetpr == 0:
-            return 0
-
-        return INFORMED_MISSINGNESS
+        return self.determine_group_status([mometpr, dadetpr], known_value)
 
     def __determine_sibs_kids_status(self, member: FamilyMemberHandler):
         """Determine the SIBS/KIDS status.
@@ -212,42 +223,19 @@ class FamilyHandler(BaseFamiylHandler):
         Checks the ETPR status for all relevant sibs/kids, and resolves
         the results across all of them.
         """
-        results = []
+        group_status = [
+            member.determine_etpr_status(index=i, prev_record=self.prev_record)
+            for i in range(1, member.get_bound())
+        ]
 
-        for i in range(1, member.get_bound()):
-            results.append(member.determine_etpr_status(
-                index=i, prev_record=self.prev_record))
-
-        if all(x is None for x in results):
-            return INFORMED_MISSINGNESS
-
-        if any(x == 1 for x in results):
-            return 1
-
-        if all(x == 0 for x in results):
-            return 0
-
-        return 9
+        self.determine_group_status(group_status, known_value=None)
 
     def determine_naccfam(self, known_value: int) -> int:
         """Determine NACCFAM for V4+."""
-        # If known value is already 1, stays at 1
-        if known_value == 1:
-            return 1
-
         family_status = [
             self.__determine_parent_status(),
             self.__determine_sibs_kids_status(self.__sibs),
             self.__determine_sibs_kids_status(self.__kids)
         ]
 
-        if all(x == -4 for x in family_status):
-            return INFORMED_MISSINGNESS
-
-        if any(x == 1 for x in family_status):
-            return 1
-
-        if all(x == 0 for x in family_status):
-            return 0
-
-        return 9
+        return self.determine_group_status(family_status, known_value)

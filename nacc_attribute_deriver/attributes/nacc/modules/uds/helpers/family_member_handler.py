@@ -253,7 +253,7 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
             return 0
 
         if self.is_parent():
-            if self.formver >= 3:
+            if self.formver == 3:
                 return 0 if self._neur() is not None else 9
 
             return 9 if self._dem() == 9 else 0

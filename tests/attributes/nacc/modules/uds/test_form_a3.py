@@ -80,21 +80,21 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "daddem", 0)
         assert attr._create_naccdad() == 0
 
-    def test_create_naccdad_superseded(
-        self, table, form_prefix, subject_derived_prefix
-    ):
-        """Tests creating NACCDAD when an already-computed value supersedes."""
-        attr = UDSFormA3Attribute(table)
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 1)
-        assert attr._create_naccdad() == 1
+    # def test_create_naccdad_superseded(
+    #     self, table, form_prefix, subject_derived_prefix
+    # ):
+    #     """Tests creating NACCDAD when an already-computed value supersedes."""
+    #     attr = UDSFormA3Attribute(table)
+    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 1)
+    #     assert attr._create_naccdad() == 1
 
-        set_attribute(table, form_prefix, "dadneur", 3)
-        assert attr._create_naccdad() == 1
+    #     set_attribute(table, form_prefix, "dadneur", 3)
+    #     assert attr._create_naccdad() == 1
 
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 9)
-        assert attr._create_naccdad() == 0
-        set_attribute(table, form_prefix, "dadneur", None)
-        assert attr._create_naccdad() == 9
+    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 9)
+    #     assert attr._create_naccdad() == 0
+    #     set_attribute(table, form_prefix, "dadneur", None)
+    #     assert attr._create_naccdad() == 9
 
     # def test_create_naccfam(self, table, naccfam_table, form_prefix):
     #     """Tests creating NACCFAM."""
