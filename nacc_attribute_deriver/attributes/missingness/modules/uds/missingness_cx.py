@@ -178,13 +178,6 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # Relies on both VERBALTEST and an earlier variable   #
     #######################################################
 
-    def _handle_optional_gate(self, gate: str) -> Optional[int]:
-        """Generically handle:
-
-        If GATE is in 88 or 95-98, then FIELD should = GATE.
-        """
-        return self.handle_set_to_gate(gate, check_values=[88, 95, 96, 97, 98])
-
     def _handle_reyxrec_cascade(self, gate: str) -> Optional[int]:
         """Handle the REYXREC cascading rules, e.g:
 
@@ -193,7 +186,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """
         result = self._handle_verbaltest_gate(verbal_value=2, set_value=888)
         if result is None:
-            result = self._handle_optional_gate(gate)
+            result = self.handle_set_to_gate(gate, check_values=[88, 95, 96, 97, 98])
 
         return result
 

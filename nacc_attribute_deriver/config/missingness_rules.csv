@@ -659,6 +659,7 @@ uds,posstab,file.info.forms.resolved.posstab,update,FALSE
 uds,posstabx,file.info.forms.resolved.posstabx,update,FALSE
 uds,bradykin,file.info.forms.resolved.bradykin,update,FALSE
 uds,bradykix,file.info.forms.resolved.bradykix,update,FALSE
+uds,totalupdrs,file.info.forms.resolved.totalupdrs,update,FALSE
 uds,memory,file.info.forms.resolved.memory,update,FALSE
 uds,orient,file.info.forms.resolved.orient,update,FALSE
 uds,judgment,file.info.forms.resolved.judgment,update,FALSE
