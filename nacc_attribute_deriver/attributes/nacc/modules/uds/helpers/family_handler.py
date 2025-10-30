@@ -18,16 +18,18 @@ already exists. While this will cause different output regarding older data in
 the QAFs, enforcing this across all versions should hopefully help stabalize
 the previous inconsistencies.
 """
-from abc import ABC, abstractmethod
-from typing import List, Optional
 
+from abc import ABC, abstractmethod
+from typing import Generic, List, Optional, TypeVar, cast
+
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
+)
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace
-)
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 
 from .family_member_handler import (
     BaseFamilyMemberHandler,
@@ -35,20 +37,24 @@ from .family_member_handler import (
     LegacyFamilyMemberHandler,
 )
 
+F = TypeVar("F", bound=BaseFamilyMemberHandler)
 
-class BaseFamiylHandler(ABC):
+
+class BaseFamilyHandler(Generic[F], ABC):
     """Handles cognitive status across an entire family."""
 
-    def __init__(self,
-                 uds: UDSNamespace,
-                 prev_record: Optional[PreviousRecordNamespace] = None) -> None:
+    def __init__(
+        self, uds: UDSNamespace, prev_record: Optional[PreviousRecordNamespace] = None
+    ) -> None:
         """Initializer."""
         self.uds = uds
         self.prev_record = prev_record
 
-        member_handler = FamilyMemberHandler
-        if self.uds.normalized_formver() < 4:
-            member_handler = LegacyFamilyMemberHandler
+        member_handler = (
+            LegacyFamilyMemberHandler
+            if self.uds.normalized_formver() < 4
+            else FamilyMemberHandler
+        )
 
         self.__mom = member_handler("mom", uds)
         self.__dad = member_handler("dad", uds)
@@ -63,29 +69,27 @@ class BaseFamiylHandler(ABC):
         ]
 
     @property
-    def mom(self) -> BaseFamilyMemberHandler:
-        return self.__mom
+    def mom(self) -> F:
+        return cast(F, self.__mom)
 
     @property
-    def dad(self) -> BaseFamilyMemberHandler:
-        return self.__dad
+    def dad(self) -> F:
+        return cast(F, self.__dad)
 
     @property
-    def sibs(self) -> BaseFamilyMemberHandler:
-        return self.__sibs
+    def sibs(self) -> F:
+        return cast(F, self.__sibs)
 
     @property
-    def kids(self) -> BaseFamilyMemberHandler:
-        return self.__kids
+    def kids(self) -> F:
+        return cast(F, self.__kids)
 
     @property
-    def all_members(self) -> List[BaseFamilyMemberHandler]:
-        return self.__all_members
+    def all_members(self) -> List[F]:
+        return cast(List[F], self.__all_members)
 
     @abstractmethod
-    def determine_naccparent(self,
-                             member: BaseFamilyMemberHandler,
-                             known_value: int) -> int:
+    def determine_naccparent(self, member: F, known_value: int) -> int:
         """Determines NACCMOM and NACCDAD.
 
         Args:
@@ -105,10 +109,11 @@ class BaseFamiylHandler(ABC):
         """
         pass
 
+    def determine_member_status(self, status: int, known_value: int | None) -> int:
+        """See note at top.
 
-    def determine_single_status(self, status: int, known_value: int) -> int:
-        """See note at top. Determines status for a single member. Only
-        override if derived status is 0 or 1, or known value is not already a 0 or 1.
+        Determines status for a single member. Only override if derived
+        status is 0 or 1, or known value is not already a 0 or 1.
         """
         if (status in [0, 1]) or (known_value not in [0, 1]):
             return status
@@ -116,9 +121,14 @@ class BaseFamiylHandler(ABC):
         # means known_value is 0 or 1, so return that instead
         return known_value
 
-    def determine_group_status(self, all_statuses: List[int], known_value: int) -> int:
-        """See note at top. Determines status across an entire group. Only
-        override if derived status is 0 or 1, or known value is not already a 0 or 1.
+    def determine_group_status(
+        self, all_statuses: List[int], known_value: int | None
+    ) -> int:
+        """See note at top.
+
+        Determines status across an entire group. Only override if
+        derived status is 0 or 1, or known value is not already a 0 or
+        1.
         """
         if any(x == 1 for x in all_statuses):
             return 1
@@ -130,45 +140,46 @@ class BaseFamiylHandler(ABC):
         if all(x == -4 for x in all_statuses):
             status = INFORMED_MISSINGNESS
 
-        return self.determine_single_status(status, known_value)
+        return self.determine_member_status(status, known_value)
 
 
-class LegacyFamilyHandler(BaseFamiylHandler):
+class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
     """Handles cognitive status across an entire family for V1-V3."""
 
-    def __init__(self,
-                 uds: UDSNamespace,
-                 prev_record: Optional[PreviousRecordNamespace] = None) -> None:
+    def __init__(
+        self, uds: UDSNamespace, prev_record: Optional[PreviousRecordNamespace] = None
+    ) -> None:
         """Initializer."""
         if uds.normalized_formver() > 3:
             raise AttributeDeriverError(
                 "Cannot instantiate LegacyFamilyHandler for UDS form version "
-                + f"{uds.normalized_formver()} (required V1-V3)")
+                + f"{uds.normalized_formver()} (required V1-V3)"
+            )
 
         super().__init__(uds, prev_record)
 
-    def determine_naccparent(self,
-                             member: BaseFamiylHandler,
-                             known_value: int) -> int:
+    def determine_naccparent(
+        self, member: LegacyFamilyMemberHandler, known_value: int | None
+    ) -> int:
         """Determine V1-V3 NACCPARENT (NACCMOM or NACCDAD).
 
         TODO: currently doesn't use prev record since it's based off the legacy
             SAS code, but probably should - would likely help with the confusion
         """
-        # if no data, fallback to known value
+        # if no data, fallback to known value or informed missingness
         if not member.has_data():
-            return known_value
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
 
         # otherwise, check cognitive impairment status
         status = member.cognitive_impairment_status()
-        return self.determine_single_status(status, known_value)
+        return self.determine_member_status(status, known_value)
 
-    def determine_naccfam(self, known_value: int) -> int:
+    def determine_naccfam(self, known_value: int | None) -> int:
         """Determine V1-V3 NACCFAM."""
 
         # if all have no data, then fallback to known value
         if all(not member.has_data() for member in self.all_members):
-            return known_value
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
 
         # if V3 and all 8, return 9
         # TODO - I really don't think this is the correct behavior;
@@ -185,37 +196,37 @@ class LegacyFamilyHandler(BaseFamiylHandler):
         return self.determine_group_status(family_status, known_value)
 
 
-class FamilyHandler(BaseFamiylHandler):
+class FamilyHandler(BaseFamilyHandler[FamilyMemberHandler]):
     """Handles cognitive status across an entire family for V4+."""
 
-    def __init__(self,
-                 uds: UDSNamespace,
-                 prev_record: Optional[PreviousRecordNamespace] = None) -> None:
+    def __init__(
+        self, uds: UDSNamespace, prev_record: Optional[PreviousRecordNamespace] = None
+    ) -> None:
         """Initializer."""
         if uds.normalized_formver() < 4:
             raise AttributeDeriverError(
                 "Cannot instantiate FamilyHandler for UDS form version "
-                + f"{uds.normalized_formver()} (required V4+)")
+                + f"{uds.normalized_formver()} (required V4+)"
+            )
 
         super().__init__(uds, prev_record)
 
-    def determine_naccparent(self,
-                             member: BaseFamiylHandler,
-                             known_value: int) -> int:
+    def determine_naccparent(
+        self, member: FamilyMemberHandler, known_value: int | None
+    ) -> int:
         """Determine NACCPARENT (NACCMOM or NACCDAD)."""
         # if reported 1 at any visit, stays as 1
         if known_value == 1:
             return 1
 
         status = member.determine_etpr_status(prev_record=self.prev_record)
-        return self.determine_single_status(status, known_value)
+        return self.determine_member_status(status, known_value)
 
     def __determine_parent_status(self) -> int:
-        """Determine the parent status by looking at MOMETPR and DADETPR.
-        """
+        """Determine the parent status by looking at MOMETPR and DADETPR."""
         mometpr = self.mom.determine_etpr_status()
         dadetpr = self.dad.determine_etpr_status()
-        return self.determine_group_status([mometpr, dadetpr], known_value)
+        return self.determine_group_status([mometpr, dadetpr], known_value=None)
 
     def __determine_sibs_kids_status(self, member: FamilyMemberHandler):
         """Determine the SIBS/KIDS status.
@@ -230,12 +241,12 @@ class FamilyHandler(BaseFamiylHandler):
 
         self.determine_group_status(group_status, known_value=None)
 
-    def determine_naccfam(self, known_value: int) -> int:
+    def determine_naccfam(self, known_value: int | None) -> int:
         """Determine NACCFAM for V4+."""
         family_status = [
             self.__determine_parent_status(),
-            self.__determine_sibs_kids_status(self.__sibs),
-            self.__determine_sibs_kids_status(self.__kids)
+            self.__determine_sibs_kids_status(self.__sibs),  # type: ignore
+            self.__determine_sibs_kids_status(self.__kids),  # type: ignore
         ]
 
         return self.determine_group_status(family_status, known_value)

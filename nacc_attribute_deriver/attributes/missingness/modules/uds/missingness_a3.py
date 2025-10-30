@@ -1,7 +1,7 @@
 """Class to handle A3-specific missingness values.
 
-While not explicitly pushed to the QAFs, are necessary to keep track
-of for calculationss of derived variables.
+While not explicitly pushed to the QAFs, are necessary to keep track of
+for calculationss of derived variables.
 """
 
 from typing import Optional
@@ -10,7 +10,6 @@ from .missingness_uds import UDSMissingness
 
 
 class UDSFormA3Missingness(UDSMissingness):
-
     def __handle_etpr_missingness(self, field: str) -> Optional[str]:
         """Handles ETPR missingness.
 
@@ -22,152 +21,152 @@ class UDSFormA3Missingness(UDSMissingness):
         In short, if we see 66 or blank, we pull the previous visit
         through.
         """
-        return self.handle_prev_visit(field, attribute_type=str, prev_code='66')
+        return self.handle_prev_visit(field, str, prev_code="66")
 
     def _missingness_mometpr(self) -> Optional[str]:
-        """Handles missingness for MOMETPR"""
-        return self.handle_prev_visit('mometpr')
+        """Handles missingness for MOMETPR."""
+        return self.__handle_etpr_missingness("mometpr")
 
     def _missingness_dadetpr(self) -> Optional[str]:
-        """Handles missingness for DADETPR"""
-        return self.handle_prev_visit('dadetpr')
+        """Handles missingness for DADETPR."""
+        return self.__handle_etpr_missingness("dadetpr")
 
     def _missingness_sib1etpr(self) -> Optional[str]:
-        """Handles missingness for SIB1ETPR"""
-        return self.handle_prev_visit('sib1etpr')
+        """Handles missingness for SIB1ETPR."""
+        return self.__handle_etpr_missingness("sib1etpr")
 
     def _missingness_sib2etpr(self) -> Optional[str]:
-        """Handles missingness for SIB2ETPR"""
-        return self.handle_prev_visit('sib2etpr')
+        """Handles missingness for SIB2ETPR."""
+        return self.__handle_etpr_missingness("sib2etpr")
 
     def _missingness_sib3etpr(self) -> Optional[str]:
-        """Handles missingness for SIB3ETPR"""
-        return self.handle_prev_visit('sib3etpr')
+        """Handles missingness for SIB3ETPR."""
+        return self.__handle_etpr_missingness("sib3etpr")
 
     def _missingness_sib4etpr(self) -> Optional[str]:
-        """Handles missingness for SIB4ETPR"""
-        return self.handle_prev_visit('sib4etpr')
+        """Handles missingness for SIB4ETPR."""
+        return self.__handle_etpr_missingness("sib4etpr")
 
     def _missingness_sib5etpr(self) -> Optional[str]:
-        """Handles missingness for SIB5ETPR"""
-        return self.handle_prev_visit('sib5etpr')
+        """Handles missingness for SIB5ETPR."""
+        return self.__handle_etpr_missingness("sib5etpr")
 
     def _missingness_sib6etpr(self) -> Optional[str]:
-        """Handles missingness for SIB6ETPR"""
-        return self.handle_prev_visit('sib6etpr')
+        """Handles missingness for SIB6ETPR."""
+        return self.__handle_etpr_missingness("sib6etpr")
 
     def _missingness_sib7etpr(self) -> Optional[str]:
-        """Handles missingness for SIB7ETPR"""
-        return self.handle_prev_visit('sib7etpr')
+        """Handles missingness for SIB7ETPR."""
+        return self.__handle_etpr_missingness("sib7etpr")
 
     def _missingness_sib8etpr(self) -> Optional[str]:
-        """Handles missingness for SIB8ETPR"""
-        return self.handle_prev_visit('sib8etpr')
+        """Handles missingness for SIB8ETPR."""
+        return self.__handle_etpr_missingness("sib8etpr")
 
     def _missingness_sib9etpr(self) -> Optional[str]:
-        """Handles missingness for SIB9ETPR"""
-        return self.handle_prev_visit('sib9etpr')
+        """Handles missingness for SIB9ETPR."""
+        return self.__handle_etpr_missingness("sib9etpr")
 
     def _missingness_sib10etpr(self) -> Optional[str]:
-        """Handles missingness for SIB10ETPR"""
-        return self.handle_prev_visit('sib10etpr')
+        """Handles missingness for SIB10ETPR."""
+        return self.__handle_etpr_missingness("sib10etpr")
 
     def _missingness_sib11etpr(self) -> Optional[str]:
-        """Handles missingness for SIB11ETPR"""
-        return self.handle_prev_visit('sib11etpr')
+        """Handles missingness for SIB11ETPR."""
+        return self.__handle_etpr_missingness("sib11etpr")
 
     def _missingness_sib12etpr(self) -> Optional[str]:
-        """Handles missingness for SIB12ETPR"""
-        return self.handle_prev_visit('sib12etpr')
+        """Handles missingness for SIB12ETPR."""
+        return self.__handle_etpr_missingness("sib12etpr")
 
     def _missingness_sib13etpr(self) -> Optional[str]:
-        """Handles missingness for SIB13ETPR"""
-        return self.handle_prev_visit('sib13etpr')
+        """Handles missingness for SIB13ETPR."""
+        return self.__handle_etpr_missingness("sib13etpr")
 
     def _missingness_sib14etpr(self) -> Optional[str]:
-        """Handles missingness for SIB14ETPR"""
-        return self.handle_prev_visit('sib14etpr')
+        """Handles missingness for SIB14ETPR."""
+        return self.__handle_etpr_missingness("sib14etpr")
 
     def _missingness_sib15etpr(self) -> Optional[str]:
-        """Handles missingness for SIB15ETPR"""
-        return self.handle_prev_visit('sib15etpr')
+        """Handles missingness for SIB15ETPR."""
+        return self.__handle_etpr_missingness("sib15etpr")
 
     def _missingness_sib16etpr(self) -> Optional[str]:
-        """Handles missingness for SIB16ETPR"""
-        return self.handle_prev_visit('sib16etpr')
+        """Handles missingness for SIB16ETPR."""
+        return self.__handle_etpr_missingness("sib16etpr")
 
     def _missingness_sib17etpr(self) -> Optional[str]:
-        """Handles missingness for SIB17ETPR"""
-        return self.handle_prev_visit('sib17etpr')
+        """Handles missingness for SIB17ETPR."""
+        return self.__handle_etpr_missingness("sib17etpr")
 
     def _missingness_sib18etpr(self) -> Optional[str]:
-        """Handles missingness for SIB18ETPR"""
-        return self.handle_prev_visit('sib18etpr')
+        """Handles missingness for SIB18ETPR."""
+        return self.__handle_etpr_missingness("sib18etpr")
 
     def _missingness_sib19etpr(self) -> Optional[str]:
-        """Handles missingness for SIB19ETPR"""
-        return self.handle_prev_visit('sib19etpr')
+        """Handles missingness for SIB19ETPR."""
+        return self.__handle_etpr_missingness("sib19etpr")
 
     def _missingness_sib20etpr(self) -> Optional[str]:
-        """Handles missingness for SIB20ETPR"""
-        return self.handle_prev_visit('sib20etpr')
+        """Handles missingness for SIB20ETPR."""
+        return self.__handle_etpr_missingness("sib20etpr")
 
     def _missingness_kid1etpr(self) -> Optional[str]:
-        """Handles missingness for KID1ETPR"""
-        return self.handle_prev_visit('kid1etpr')
+        """Handles missingness for KID1ETPR."""
+        return self.__handle_etpr_missingness("kid1etpr")
 
     def _missingness_kid2etpr(self) -> Optional[str]:
-        """Handles missingness for KID2ETPR"""
-        return self.handle_prev_visit('kid2etpr')
+        """Handles missingness for KID2ETPR."""
+        return self.__handle_etpr_missingness("kid2etpr")
 
     def _missingness_kid3etpr(self) -> Optional[str]:
-        """Handles missingness for KID3ETPR"""
-        return self.handle_prev_visit('kid3etpr')
+        """Handles missingness for KID3ETPR."""
+        return self.__handle_etpr_missingness("kid3etpr")
 
     def _missingness_kid4etpr(self) -> Optional[str]:
-        """Handles missingness for KID4ETPR"""
-        return self.handle_prev_visit('kid4etpr')
+        """Handles missingness for KID4ETPR."""
+        return self.__handle_etpr_missingness("kid4etpr")
 
     def _missingness_kid5etpr(self) -> Optional[str]:
-        """Handles missingness for KID5ETPR"""
-        return self.handle_prev_visit('kid5etpr')
+        """Handles missingness for KID5ETPR."""
+        return self.__handle_etpr_missingness("kid5etpr")
 
     def _missingness_kid6etpr(self) -> Optional[str]:
-        """Handles missingness for KID6ETPR"""
-        return self.handle_prev_visit('kid6etpr')
+        """Handles missingness for KID6ETPR."""
+        return self.__handle_etpr_missingness("kid6etpr")
 
     def _missingness_kid7etpr(self) -> Optional[str]:
-        """Handles missingness for KID7ETPR"""
-        return self.handle_prev_visit('kid7etpr')
+        """Handles missingness for KID7ETPR."""
+        return self.__handle_etpr_missingness("kid7etpr")
 
     def _missingness_kid8etpr(self) -> Optional[str]:
-        """Handles missingness for KID8ETPR"""
-        return self.handle_prev_visit('kid8etpr')
+        """Handles missingness for KID8ETPR."""
+        return self.__handle_etpr_missingness("kid8etpr")
 
     def _missingness_kid9etpr(self) -> Optional[str]:
-        """Handles missingness for KID9ETPR"""
-        return self.handle_prev_visit('kid9etpr')
+        """Handles missingness for KID9ETPR."""
+        return self.__handle_etpr_missingness("kid9etpr")
 
     def _missingness_kid10etpr(self) -> Optional[str]:
-        """Handles missingness for KID10ETPR"""
-        return self.handle_prev_visit('kid10etpr')
+        """Handles missingness for KID10ETPR."""
+        return self.__handle_etpr_missingness("kid10etpr")
 
     def _missingness_kid11etpr(self) -> Optional[str]:
-        """Handles missingness for KID11ETPR"""
-        return self.handle_prev_visit('kid11etpr')
+        """Handles missingness for KID11ETPR."""
+        return self.__handle_etpr_missingness("kid11etpr")
 
     def _missingness_kid12etpr(self) -> Optional[str]:
-        """Handles missingness for KID12ETPR"""
-        return self.handle_prev_visit('kid12etpr')
+        """Handles missingness for KID12ETPR."""
+        return self.__handle_etpr_missingness("kid12etpr")
 
     def _missingness_kid13etpr(self) -> Optional[str]:
-        """Handles missingness for KID13ETPR"""
-        return self.handle_prev_visit('kid13etpr')
+        """Handles missingness for KID13ETPR."""
+        return self.__handle_etpr_missingness("kid13etpr")
 
     def _missingness_kid14etpr(self) -> Optional[str]:
-        """Handles missingness for KID14ETPR"""
-        return self.handle_prev_visit('kid14etpr')
+        """Handles missingness for KID14ETPR."""
+        return self.__handle_etpr_missingness("kid14etpr")
 
     def _missingness_kid15etpr(self) -> Optional[str]:
-        """Handles missingness for KID15ETPR"""
-        return self.handle_prev_visit('kid15etpr')
+        """Handles missingness for KID15ETPR."""
+        return self.__handle_etpr_missingness("kid15etpr")

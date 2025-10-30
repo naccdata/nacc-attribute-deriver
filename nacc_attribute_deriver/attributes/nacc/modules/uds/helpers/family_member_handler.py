@@ -7,15 +7,17 @@ NACCFAM
 NACCMOM
 NACCDAD
 """
+
 from typing import ClassVar, List, Optional
 
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
+)
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace
-)
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 
 
 class BaseFamilyMemberHandler:
@@ -120,7 +122,8 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         if uds.normalized_formver() > 3:
             raise AttributeDeriverError(
                 "Cannot instantiate LegacyFamilyMemberHandler for UDS form version "
-                + f"{uds.normalized_formver()} (required V1-V3)")
+                + f"{uds.normalized_formver()} (required V1-V3)"
+            )
 
         super().__init__(prefix, uds)
 
@@ -315,17 +318,15 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
         if uds.normalized_formver() < 4:
             raise AttributeDeriverError(
                 "Cannot instantiate FamilyMemberHandler for UDS form version "
-                + f"{uds.normalized_formver()} (required V4+)")
+                + f"{uds.normalized_formver()} (required V4+)"
+            )
 
         super().__init__(prefix, uds)
 
-    def __etpr_status(self, value: str) -> Optional[int]:
-        """Determine the ETPR status
-        missingness values.
+    def __etpr_status(self, value: str | None) -> int:
+        """Determine the ETPR status missingness values.
 
-            If None/blank -> -4
-            If 01-12 -> 1
-            If 00 -> 0
+        If None/blank -> -4 If 01-12 -> 1 If 00 -> 0
         """
         if value is None or value == INFORMED_MISSINGNESS:
             return INFORMED_MISSINGNESS
@@ -333,19 +334,22 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
         if value in self.VALID_ETPR_VALUES:
             return 1
 
-        if value == '00':
+        if value == "00":
             return 0
 
         # 66 should be handled before calling this method
-        if value == '66':
+        if value == "66":
             raise AttributeDeriverError(
-                "Internal logic error: 66 should be handled for ETPR beforehand")
+                "Internal logic error: 66 should be handled for ETPR beforehand"
+            )
 
         return 9
 
-    def determine_etpr_status(self,
-                              index: int = None,
-                              prev_record: Optional[PreviousRecordNamespace] = None) -> Optional[int]:
+    def determine_etpr_status(
+        self,
+        index: Optional[int] = None,
+        prev_record: Optional[PreviousRecordNamespace] = None,
+    ) -> int:
         """Determines the ETPR status for a family member in V4, with the
         following logic:
 
@@ -369,12 +373,13 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
             Else get the status of MEMBER_ETPR
         """
         # index is indicitive of if we're looking at a kid/sib
-        if not self.is_parent() and not index:
-            raise AttributeDeriverError("Need index to check SIB/KID ETPR")
+        if not self.is_parent():
+            if not index:
+                raise AttributeDeriverError("Need index to check SIB/KID ETPR")
+            field = f"{self.prefix}{index}etpr"
         else:
-            index = ""
+            field = f"{self.prefix}etpr"
 
-        field = f"{self.prefix}{index}etpr"
         etpr = self.uds.get_value(field, str)
         prev_etpr = None
         if prev_record:
@@ -382,12 +387,12 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
 
         if self.is_parent():
             nwinfo = self.uds.get_value("nwinfpar", int)
-        elif self.prefix == 'sib':
+        elif self.prefix == "sib":
             nwinfo = self.uds.get_value("nwinfsib", int)
         else:
             nwinfo = self.uds.get_value("nwinfkid", int)
 
-        if nwinfo == 0 or etpr == '66':
+        if nwinfo == 0 or etpr == "66":
             return self.__etpr_status(prev_etpr)
 
         return self.__etpr_status(etpr)

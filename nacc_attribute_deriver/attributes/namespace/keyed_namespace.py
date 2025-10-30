@@ -37,7 +37,7 @@ class PreviousRecordNamespace(FormNamespace):
         self,
         attribute: str,
         attr_type: Type[T],
-        prev_code: Optional[int] = None,
+        prev_code: Optional[T] = None,
         default: Optional[T] = None,
     ) -> Optional[T]:
         """Returns the value of the resolved attribute key in the table. First.

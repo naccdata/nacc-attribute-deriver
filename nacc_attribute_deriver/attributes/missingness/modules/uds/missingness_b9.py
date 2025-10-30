@@ -242,7 +242,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.uds.get_value("decclin", int) == 0:
             return self._handle_cascading_gates(["decclin"], "frstchg", 8)
 
-        return self.handle_prev_visit("frstchg")
+        return self.handle_prev_visit("frstchg", int, prev_code=777)
 
     ###############################################
     # If VAR is blank, tn VAR should remain blank #
@@ -276,45 +276,25 @@ class UDSFormB9Missingness(UDSMissingness):
     # If VAR = 777, then VAR = value from previous visit #
     ######################################################
 
-    def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
-        """Handle when the value is provided by the previous visit.
-
-        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT. ELIF VAR
-        is not blank and not PREV_CODE, return None (do not override)
-        ELSE generic missingness
-        """
-        value = self.uds.get_value(field, int)
-        if value == prev_code and self.prev_record is not None:
-            prev_value = self.prev_record.get_resolved_value(
-                field, int, prev_code=prev_code
-            )
-            if prev_value is not None:
-                return prev_value
-
-        elif value is not None:
-            return None
-
-        return self.generic_missingness(field)
-
     def _missingness_behage(self) -> Optional[int]:
         """Handles missingness for BEHAGE."""
-        return self.handle_prev_visit("behage")
+        return self.handle_prev_visit("behage", int, prev_code=777)
 
     def _missingness_psychage(self) -> Optional[int]:
         """Handles missingness for PSYCHAGE."""
-        return self.handle_prev_visit("psychage")
+        return self.handle_prev_visit("psychage", int, prev_code=777)
 
     def _missingness_perchage(self) -> Optional[int]:
         """Handles missingness for PERCHAGE."""
-        return self.handle_prev_visit("perchage")
+        return self.handle_prev_visit("perchage", int, prev_code=777)
 
     def _missingness_beremago(self) -> Optional[int]:
         """Handles missingness for BEREMAGO."""
-        return self.handle_prev_visit("beremago")
+        return self.handle_prev_visit("beremago", int, prev_code=777)
 
     def _missingness_motorage(self) -> Optional[int]:
         """Handles missingness for MOTORAGE."""
-        return self.handle_prev_visit("motorage")
+        return self.handle_prev_visit("motorage", int, prev_code=777)
 
     #######################################################
     # If BESUBAB =1 and VAR is blank, then VAR should = 0 #
@@ -359,29 +339,29 @@ class UDSFormB9Missingness(UDSMissingness):
         return self._handle_besubab_gate("othsubuse")
 
     ###############################################################
-    # Derived variable-related fields 
+    # Derived variable-related fields
     # variables we need to pull through for derived variable work #
     ###############################################################
 
-    def _missingness_mofrst(self) -> Optional[int]
+    def _missingness_mofrst(self) -> Optional[int]:
         """Handles missingness for MOFRST."""
         prev_code = 0 if self.formver == 3 else None
-        self.handle_prev_visit('mofrst', prev_code=prev_code)
+        return self.handle_prev_visit("mofrst", int, prev_code=prev_code)
 
-    def _missingness_befpred(self) -> Optional[int]
+    def _missingness_befpred(self) -> Optional[int]:
         """Handles missingness for BEFPRED."""
         prev_code = 0 if self.formver == 3 else None
-        self.handle_prev_visit('befpred', prev_code=prev_code)
+        return self.handle_prev_visit("befpred", int, prev_code=prev_code)
 
-    def _missingness_cogfpred(self) -> Optional[int]
+    def _missingness_cogfpred(self) -> Optional[int]:
         """Handles missingness for COGFPRED."""
         prev_code = 0 if self.formver == 3 else None
-        self.handle_prev_visit('cogfpred', prev_code=prev_code)
+        return self.handle_prev_visit("cogfpred", int, prev_code=prev_code)
 
-    def _missingness_befrst(self) -> Optional[int]
+    def _missingness_befrst(self) -> Optional[int]:
         """Handles missingness for BEFRST."""
-        self.handle_prev_visit('befrst', prev_code=None)
+        return self.handle_prev_visit("befrst", int)
 
-    def _missingness_cogfrst(self) -> Optional[int]
+    def _missingness_cogfrst(self) -> Optional[int]:
         """Handles missingness for COGFRST."""
-        self.handle_prev_visit('cogfrst', prev_code=None)
+        return self.handle_prev_visit("cogfrst", int)

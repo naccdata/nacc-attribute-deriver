@@ -8,13 +8,12 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
+)
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
 )
-from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace
-)
-
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -33,10 +32,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.uds.is_initial():
             prev_record = PreviousRecordNamespace(table=table)
 
-        self.__family = handler(
-            uds=self.uds,
-            prev_record=prev_record
-        )
+        self.__family = handler(uds=self.uds, prev_record=prev_record)
 
     @property
     def submitted(self) -> bool:
@@ -52,7 +48,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccdad", int, default=9
         )
-        return self.__family.determine_naccparent(self.__family.dad, known_value)
+        return self.__family.determine_naccparent(  # type: ignore
+            self.__family.dad,  # type: ignore
+            known_value,
+        )
 
     def _create_naccmom(self) -> Optional[int]:
         """Creates NACCMOM - Indicator of mother with cognitive
@@ -64,7 +63,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccmom", int, default=9
         )
-        return self.__family.determine_naccparent(self.__family.mom, known_value)
+        return self.__family.determine_naccparent(  # type: ignore
+            self.__family.mom,  # type: ignore
+            known_value,
+        )
 
     def _create_naccfam(self) -> Optional[int]:
         """Creates NACCFAM - Indicator of first-degree family
@@ -76,7 +78,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         known_value = self.__subject_derived.get_cross_sectional_value(
             "naccfam", int, default=9
         )
-        return self.__family.determine_naccfam(known_value)
+        return self.__family.determine_naccfam(known_value)  # type: ignore
 
     #######################
     # V3 AND EARLIER ONLY #

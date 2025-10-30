@@ -113,12 +113,8 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_befpred = None
 
         if self.__prev_record:
-            p_decclin = self.__prev_record.get_resolved_value(
-                "decclin", int
-            )
-            p_befrst = self.__prev_record.get_resolved_value(
-                "befrst", int
-            )
+            p_decclin = self.__prev_record.get_resolved_value("decclin", int)
+            p_befrst = self.__prev_record.get_resolved_value("befrst", int)
             p_befpred = self.__prev_record.get_resolved_value(
                 "befpred", int, prev_code=0 if self.formver == 3 else None
             )
@@ -213,12 +209,8 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_cogfpred = None
 
         if self.__prev_record:
-            p_decclin = self.__prev_record.get_resolved_value(
-                "decclin", int
-            )
-            p_cogfrst = self.__prev_record.get_resolved_value(
-                "cogfrst", int
-            )
+            p_decclin = self.__prev_record.get_resolved_value("decclin", int)
+            p_cogfrst = self.__prev_record.get_resolved_value("cogfrst", int)
             p_cogfpred = self.__prev_record.get_resolved_value(
                 "cogfpred", int, prev_code=0 if self.formver == 3 else None
             )
@@ -273,9 +265,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_decclin = None
         p_mofrst = None
         if self.__prev_record:
-            p_decclin = self.__prev_record.get_resolved_value(
-                "decclin", int
-            )
+            p_decclin = self.__prev_record.get_resolved_value("decclin", int)
             p_mofrst = self.__prev_record.get_resolved_value(
                 "mofrst", int, prev_code=0 if self.formver == 3 else None
             )

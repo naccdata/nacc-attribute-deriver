@@ -3,15 +3,15 @@
 In general, returns -4 unless otherwise specified.
 """
 
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.attributes.namespace.namespace import T
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     PreviousRecordNamespace,
 )
+from nacc_attribute_deriver.attributes.namespace.namespace import T
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
@@ -79,21 +79,20 @@ class UDSMissingness(UDSAttributeCollection):
 
         return None
 
-    def handle_prev_visit(self,
-                          field: str,
-                          prev_code: Union[int, str, None],
-                          attribute_type: Type[T] = int) -> Optional[T]:
+    def handle_prev_visit(
+        self, field: str, attr_type: Type[T], prev_code: Optional[T] = None
+    ) -> Optional[T]:
         """Handle when the value is provided by the previous visit.
 
         If VAR == PREV_CODE, VAR = PREV_VISIT.
         ELIF VAR is not blank and not PREV_CODE, return None (do not override)
         ELSE generic missingness
         """
-        value = self.uds.get_value(field, attribute_type)
+        value = self.uds.get_value(field, attr_type)
 
         if value == prev_code and self.__prev_record is not None:
             prev_value = self.__prev_record.get_resolved_value(
-                field, attribute_type, prev_code=prev_code
+                field, attr_type, prev_code=prev_code
             )
             if prev_value is not None:
                 return prev_value
@@ -103,9 +102,10 @@ class UDSMissingness(UDSAttributeCollection):
 
         result = self.generic_missingness(field)
         if result is not None:
-            return attribute_type(result)
+            return attr_type(result)  # type: ignore
 
         return None
+
 
 class VersionedUDSMissingness(UDSMissingness):
     """Class to handle UDS missingness values that rely heavily on the form
