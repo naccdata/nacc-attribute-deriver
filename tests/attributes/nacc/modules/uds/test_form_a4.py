@@ -2,7 +2,7 @@
 
 import pytest
 from typing import Any, Dict
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a4 import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_a4 import (
     UDSFormA4Attribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

@@ -2,7 +2,7 @@
 
 import random
 import pytest
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a1 import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1 import (
     UDSFormA1Attribute,
 )
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError

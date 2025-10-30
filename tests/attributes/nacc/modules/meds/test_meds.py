@@ -1,7 +1,7 @@
 """Tests MEDS form."""
 
 import pytest
-from nacc_attribute_deriver.attributes.nacc.modules.meds.form_meds import (
+from nacc_attribute_deriver.attributes.derived.modules.meds.form_meds import (
     MEDSFormAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

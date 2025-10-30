@@ -2,7 +2,7 @@ import pytest
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
-from nacc_attribute_deriver.attributes.nacc.modules.np.np_mapper import (
+from nacc_attribute_deriver.attributes.derived.modules.np.np_mapper import (
     NPMapper,
 )
 from nacc_attribute_deriver.schema.errors import AttributeDeriverError

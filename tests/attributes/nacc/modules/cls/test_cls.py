@@ -1,7 +1,7 @@
 """Tests CLS form."""
 
 import pytest
-from nacc_attribute_deriver.attributes.nacc.modules.cls.form_cls import (
+from nacc_attribute_deriver.attributes.derived.modules.cls.form_cls import (
     CLSFormAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

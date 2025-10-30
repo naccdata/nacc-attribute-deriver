@@ -2,7 +2,7 @@
 
 import pytest
 from datetime import date
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_header import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_header import (
     UDSHeaderAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

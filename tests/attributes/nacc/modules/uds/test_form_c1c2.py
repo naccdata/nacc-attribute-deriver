@@ -1,7 +1,7 @@
 """Tests UDS Form A1 attributes."""
 
 import pytest
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_c1c2 import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_c1c2 import (
     UDSFormC1C2Attribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

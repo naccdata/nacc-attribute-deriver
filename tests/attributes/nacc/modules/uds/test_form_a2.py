@@ -1,7 +1,7 @@
 """Tests UDS Form A2 attributes."""
 
 import pytest
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_a2 import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_a2 import (
     UDSFormA2Attribute,
 )
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS

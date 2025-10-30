@@ -2,7 +2,7 @@
 
 import copy
 import pytest
-from nacc_attribute_deriver.attributes.nacc.imaging.mp import (
+from nacc_attribute_deriver.attributes.derived.imaging.mp import (
     MPAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

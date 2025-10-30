@@ -1,7 +1,7 @@
 """Tests UDS Form B9 attributes."""
 
 import pytest
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_b9 import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_b9 import (
     UDSFormB9Attribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

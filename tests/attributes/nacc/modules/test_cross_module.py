@@ -1,7 +1,7 @@
 """Tests cross-module attributes."""
 
 import pytest
-from nacc_attribute_deriver.attributes.nacc.modules.cross_module import (
+from nacc_attribute_deriver.attributes.derived.modules.cross_module import (
     CrossModuleAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

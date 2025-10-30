@@ -1,7 +1,7 @@
 """Tests NIAGADS genetic attributes."""
 
 import pytest
-from nacc_attribute_deriver.attributes.nacc.genetics.niagads import (
+from nacc_attribute_deriver.attributes.derived.genetics.niagads import (
     NIAGADSAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

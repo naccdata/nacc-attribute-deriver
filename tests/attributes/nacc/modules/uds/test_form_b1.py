@@ -2,7 +2,7 @@
 
 import random
 
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_b1 import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_b1 import (
     UDSFormB1Attribute,
 )
 from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS

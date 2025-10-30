@@ -5,7 +5,7 @@ Mostly GDS and test cases grabbed from regression testing.
 
 import pytest
 
-from nacc_attribute_deriver.attributes.nacc.modules.uds.form_b6 import (
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_b6 import (
     UDSFormB6Attribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
