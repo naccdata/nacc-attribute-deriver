@@ -11,39 +11,13 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def base_table(uds_table) -> SymbolTable:
     """Create dummy base table."""
     uds_table["file.info.forms.json"].update({"packet": "F"})
-
+    uds_table.update(
+        {"_prev_record": {"info": {"forms": {"json": {"visitdate": "01-01-1900"}}}}}
+    )
     return uds_table
 
 
 class TestUDSFormB9Attribute:
-    def test_determine_carryover(self, base_table):
-        """Test determining the carryover value, where 0 == look at previous
-        record."""
-        base_table["file.info.forms.json"].update({"var": 0, "null_var": 0})
-
-        base_table.update(
-            {
-                "subject": {
-                    "info": {
-                        "working": {
-                            "longitudinal": {
-                                "var": [
-                                    {"date": "2023-01-01", "value": 6},
-                                    {"date": "2024-01-01", "value": 2},
-                                ]
-                            }
-                        }
-                    }
-                }
-            }
-        )
-
-        attr = UDSFormB9Attribute(base_table)
-        assert attr.determine_carryover("var") == 2
-
-        # when there is no previous value - return as-is
-        assert attr.determine_carryover("null_var") == 0
-
     def test_naccbehf_case1(self, base_table):
         """Tests NACCBEHF case 1.
 
@@ -52,18 +26,10 @@ class TestUDSFormB9Attribute:
         null since V1
         """
         base_table["file.info.forms.json"].update({"b9chg": 3, "formver": 1.0})
-        base_table.update(
+        base_table["_prev_record.info.forms.json"].update(
             {
-                "subject": {
-                    "info": {
-                        "working": {
-                            "longitudinal": {
-                                "befrst": [{"date": "2023-01-01", "value": 88}],
-                                "decclin": [{"date": "2023-01-01", "value": 1}],
-                            }
-                        }
-                    }
-                }
+                "befrst": 88,
+                "decclin": 1,
             }
         )
 
@@ -86,17 +52,9 @@ class TestUDSFormB9Attribute:
         V3 form befpred == 0, so should get previous value
         """
         base_table["file.info.forms.json.befpred"] = 0
-        base_table.update(
+        base_table["_prev_record.info.forms.json"].update(
             {
-                "subject": {
-                    "info": {
-                        "working": {
-                            "longitudinal": {
-                                "befpred": [{"date": "2023-01-01", "value": 3}]
-                            }
-                        }
-                    }
-                }
+                "befpred": 3,
             }
         )
 
@@ -126,17 +84,9 @@ class TestUDSFormB9Attribute:
         assert attr._create_nacccogf() == 99
 
         # now add a previous, so should return previous
-        base_table.update(
+        base_table["_prev_record.info.forms.json"].update(
             {
-                "subject": {
-                    "info": {
-                        "working": {
-                            "longitudinal": {
-                                "cogfpred": [{"date": "2023-01-01", "value": 3}]
-                            }
-                        }
-                    }
-                }
+                "cogfpred": 3,
             }
         )
 
@@ -189,18 +139,10 @@ class TestUDSFormB9Attribute:
 
         # b9 changes and p_decclin is 0
         base_table["file.info.forms.json.b9chg"] = 1
-        base_table.update(
+        base_table["_prev_record.info.forms.json"].update(
             {
-                "subject": {
-                    "info": {
-                        "working": {
-                            "longitudinal": {
-                                "decclin": [{"date": "2023-01-01", "value": 0}],
-                                "cogfrst": [{"date": "2023-01-01", "value": 88}],
-                            }
-                        }
-                    }
-                }
+                "decclin": 0,
+                "cogfrst": 88,
             }
         )
 
@@ -208,13 +150,13 @@ class TestUDSFormB9Attribute:
         assert attr._create_nacccogf() == 0
 
         # p_decclin is 1 and p_cogfrst is 88 so return 0
-        base_table["subject.info.working.longitudinal.decclin"][0]["value"] = 1
+        base_table["_prev_record.info.forms.json.decclin"] = 1
         assert attr._create_nacccogf() == 0
 
         # now p_cogfrst is something valid
-        base_table["subject.info.working.longitudinal.cogfrst"][0]["value"] = 3
+        base_table["_prev_record.info.forms.json.cogfrst"] = 3
         assert attr._create_nacccogf() == 3
 
         # out of range
-        base_table["subject.info.working.longitudinal.cogfrst"][0]["value"] = 15
+        base_table["_prev_record.info.forms.json.cogfrst"] = 15
         assert attr._create_nacccogf() == 15

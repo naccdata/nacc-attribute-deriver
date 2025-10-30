@@ -3,14 +3,15 @@
 In general, returns -4 unless otherwise specified.
 """
 
-from typing import List, Optional
+from typing import List, Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.attributes.namespace.namespace import (
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     PreviousRecordNamespace,
 )
+from nacc_attribute_deriver.attributes.namespace.namespace import T
 from nacc_attribute_deriver.schema.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
@@ -30,6 +31,10 @@ class UDSMissingness(UDSAttributeCollection):
         #   missingness info under info.forms.missingness.x
         if not self.uds.is_initial():
             self.__prev_record = PreviousRecordNamespace(table=table)
+
+    @property
+    def prev_record(self) -> Optional[PreviousRecordNamespace]:
+        return self.__prev_record
 
     def _missingness_uds(self, field: str) -> Optional[int]:
         """Defines general missingness for UDS; -4 if missing."""
@@ -74,17 +79,20 @@ class UDSMissingness(UDSAttributeCollection):
 
         return None
 
-    def handle_prev_visit(self, field: str, prev_code: int = 777) -> Optional[int]:
+    def handle_prev_visit(
+        self, field: str, attr_type: Type[T], prev_code: Optional[T] = None
+    ) -> Optional[T]:
         """Handle when the value is provided by the previous visit.
 
-        If VAR == PREV_CODE, VAR must be equal to PREV_VISIT. ELIF VAR
-        is not blank and not PREV_CODE, return None (do not override)
+        If VAR == PREV_CODE, VAR = PREV_VISIT.
+        ELIF VAR is not blank and not PREV_CODE, return None (do not override)
         ELSE generic missingness
         """
-        value = self.uds.get_value(field, int)
+        value = self.uds.get_value(field, attr_type)
+
         if value == prev_code and self.__prev_record is not None:
             prev_value = self.__prev_record.get_resolved_value(
-                field, int, prev_code=prev_code
+                field, attr_type, prev_code=prev_code
             )
             if prev_value is not None:
                 return prev_value
@@ -92,7 +100,11 @@ class UDSMissingness(UDSAttributeCollection):
         elif value is not None:
             return None
 
-        return self.generic_missingness(field)
+        result = self.generic_missingness(field)
+        if result is not None:
+            return attr_type(result)  # type: ignore
+
+        return None
 
 
 class VersionedUDSMissingness(UDSMissingness):
@@ -107,7 +119,7 @@ class VersionedUDSMissingness(UDSMissingness):
     ) -> Optional[int]:
         """Handles generic formver-gated missingness, which follows the logic:
 
-        If FORMVER=4 and VAR is blank, VAR should = VALUE
+        If FORMVER=4 and VAR is blank, VAR should = MISSING_VALUE
         else if FORMVER < 4, VAR should be -4
 
         Args:

@@ -295,12 +295,6 @@ uds,naccmod,subject.info.derived.cross-sectional.naccmod,update,FALSE
 uds,naccyod,subject.info.derived.cross-sectional.naccyod,update,FALSE
 uds,affiliate,subject.info.derived.affiliate,update,FALSE
 uds,naccpaff,subject.info.derived.cross-sectional.naccpaff,update,FALSE
-uds,decclin,subject.info.working.longitudinal.decclin,list,TRUE
-uds,befrst,subject.info.working.longitudinal.befrst,list,TRUE
-uds,cogfrst,subject.info.working.longitudinal.cogfrst,list,TRUE
-uds,mofrst,subject.info.working.longitudinal.mofrst,list,TRUE
-uds,befpred,subject.info.working.longitudinal.befpred,list,TRUE
-uds,cogfpred,subject.info.working.longitudinal.cogfpred,list,TRUE
 uds,naccactv,subject.info.derived.cross-sectional.naccactv,update,FALSE
 uds,naccnovs,subject.info.derived.cross-sectional.naccnovs,update,FALSE
 uds,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE

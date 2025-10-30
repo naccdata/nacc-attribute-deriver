@@ -33,7 +33,6 @@ def load_normalized_drugs_list() -> Dict[str, str | None]:
             - pulled from drugs.txt file found on server
         2. Lookup the drug in UDSMEDS, which is a NACC-specific database
             of brand/drug names and map to the listed drug ID
-            - drug ID seems to be NACC-specific, e.g. not related to RxCUI or similar
             - not all drugs matched - not sure how they were handled in SAS code
             - UDSMEDS does have name clashes - just used first one found
         3. Manually map any stragglers as needed - mostly focused on those

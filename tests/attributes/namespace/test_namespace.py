@@ -6,8 +6,10 @@ import pytest
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     BaseNamespace,
     INVALID_TEXT,
-    PreviousRecordNamespace,
     SubjectDerivedNamespace,
+)
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -115,7 +117,7 @@ def prev_record() -> SymbolTable:
                         "naccid": "NACC123456",
                         "adcid": 0,
                     },
-                    "missingness": {"missingvar": 5},
+                    "resolved": {"missingvar": 5},
                 }
             }
         }
@@ -128,12 +130,6 @@ class TestPreviousRecordNamespace:
     def test_get_values(self, prev_record):
         """Tests getting raw vs missingness form value."""
         namespace = PreviousRecordNamespace(table=prev_record)
-
-        assert namespace.get_form_value("naccid", str) == "NACC123456"
-        assert namespace.get_form_value("missingvar", int) is None
-
-        assert namespace.get_missingness_value("naccid", str) is None
-        assert namespace.get_missingness_value("missingvar", int) == 5
 
         assert namespace.get_resolved_value("naccid", str) == "NACC123456"
         assert namespace.get_resolved_value("missingvar", int) == 5

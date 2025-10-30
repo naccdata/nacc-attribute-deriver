@@ -97,20 +97,20 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             raceunkn=self.uds.get_value("raceunkn", int),
         )
 
-    # REMOVE IN V4
-    # def _create_naccreas(self) -> Optional[int]:
-    #     """Creates NACCREAS - primary reason for coming to ADC.
+    def _create_naccreas(self) -> Optional[int]:
+        """Creates NACCREAS - primary reason for coming to ADC.
 
-    #     Not collected at followup visits.
-    #     """
-    #     if not self.uds.is_initial():
-    #         return None
+        Not collected at followup visits.
+        REMOVED IN V4
+        """
+        if self.formver >= 4 or not self.uds.is_initial():
+            return None
 
-    #     reason = self.uds.get_value("reason", int)
-    #     if reason in [3, 4]:
-    #         return 7
+        reason = self.uds.get_value("reason", int)
+        if reason in [3, 4]:
+            return 7
 
-    #     return reason if reason is not None else 9
+        return reason if reason is not None else 9
 
     def _create_naccrefr(self) -> Optional[int]:
         """Ceates NACCREFR - principle referral source.
