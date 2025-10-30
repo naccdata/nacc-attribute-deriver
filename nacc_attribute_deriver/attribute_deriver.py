@@ -63,7 +63,7 @@ class BaseAttributeDeriver(ABC):
             for row in reader:
                 try:
                     rule_schema = RuleFileModel.model_validate(row)
-                except ValidationError as error:
+                except (ValidationError, OperationError) as error:
                     raise AttributeDeriverError(
                         f"error loading rule row: {error}"
                     ) from error
@@ -111,7 +111,7 @@ class BaseAttributeDeriver(ABC):
             return
 
         for rule in rules:
-            raw_value, date = self.get_curated_value(table, rule, scope)
+            raw_value, date = self.get_curated_value(table, rule, scope.value)
             if raw_value is None:
                 continue
 

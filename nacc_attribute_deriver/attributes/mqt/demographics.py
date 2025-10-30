@@ -26,7 +26,8 @@ class DemographicsAttributeCollection(AttributeCollection):
     """Class to collect demographic attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table, required=frozenset(["sex"]))
+        self.__uds = UDSNamespace(table)
+        self.__formver = self.__uds.normalized_formver()
 
     def get_date(self) -> Optional[datetime.date]:
         return self.__uds.get_date()
@@ -36,11 +37,10 @@ class DemographicsAttributeCollection(AttributeCollection):
     )
 
     def _create_uds_sex(self) -> str:
-        """UDS sex.
+        """UDS sex."""
+        field = 'sex' if self.__formver < 4 else 'birthsex'
+        sex = self.__uds.get_value(field, int)
 
-        Always required.
-        """
-        sex = self.__uds.get_required("sex", int)
         mapped_sex = self.SEX_MAPPING.get(sex)
 
         if not mapped_sex:
@@ -69,7 +69,8 @@ class DemographicsAttributeCollection(AttributeCollection):
         if not self.__uds.is_initial():
             return None
 
-        primlang = self.__uds.get_value("primlang", int)
+        field = 'primlang' if self.__formver < 4 else 'predomlan'
+        primlang = self.__uds.get_value(field, int)
         mapped_primlang = (
             self.PRIMARY_LANGUAGE_MAPPING.get(primlang) if primlang else None
         )

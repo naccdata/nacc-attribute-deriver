@@ -35,9 +35,9 @@ class UDSFormB9Missingness(UDSMissingness):
         """Handles missingness for COGMEM."""
         return self._handle_cascading_gates(["decclin", "decclcog"], "cogmem", 0)
 
-    def _missingness_corogi(self) -> Optional[int]:
-        """Handles missingness for COROGI."""
-        return self._handle_cascading_gates(["decclin", "decclcog"], "corogi", 0)
+    def _missingness_cogori(self) -> Optional[int]:
+        """Handles missingness for COGORI."""
+        return self._handle_cascading_gates(["decclin", "decclcog"], "cogori", 0)
 
     def _missingness_cogjudg(self) -> Optional[int]:
         """Handles missingness for COGJUDG."""

@@ -20,4 +20,4 @@ class MilestoneMissingness(SubjectMissingnessCollection):
 
     def _missingness_naccnryr(self) -> Optional[int]:
         """Handles NACCNRYR."""
-        return self.handle_missing("naccnyr", 8888)
+        return self.handle_missing("naccnryr", 8888)
