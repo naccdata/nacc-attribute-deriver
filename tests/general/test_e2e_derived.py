@@ -6,6 +6,12 @@ fully due to its complexity/length.
 
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.scope import (
+    FormScope,
+    GeneticsScope,
+    SCANMRIScope,
+    SCANPETScope,
+)
 
 
 def test_uds_form(uds_table):
@@ -44,7 +50,7 @@ def test_uds_form(uds_table):
     )
 
     deriver = AttributeDeriver()
-    deriver.curate(uds_table, "uds")
+    deriver.curate(uds_table, FormScope.UDS)
 
 
 def test_np_form():
@@ -61,7 +67,7 @@ def test_np_form():
     np_table["file.info.forms.json.formver"] = 11.0
 
     deriver = AttributeDeriver()
-    deriver.curate(np_table, "np")
+    deriver.curate(np_table, FormScope.NP)
     assert np_table.to_dict() == {
         "file": {
             "info": {
@@ -132,7 +138,7 @@ def test_ncrad_apoe():
     form["file.info.raw"] = {"a1": "E4", "a2": "E2"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "apoe")
+    deriver.curate(form, GeneticsScope.APOE)
     assert form["subject.info.derived.cross-sectional"] == {
         "naccapoe": 5,
         "naccne4s": 1,
@@ -150,7 +156,7 @@ def test_niagads_investigator():
     }
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "niagads_availability")
+    deriver.curate(form, GeneticsScope.NIAGADS_AVAILABILITY)
 
     assert "file.info.derived" not in form
     assert form["subject.info.derived.cross-sectional"] == {
@@ -171,7 +177,7 @@ def test_scan_mri_qc():
     form["file.info.raw"] = {"series_type": "T1w", "study_date": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_mri_qc")
+    deriver.curate(form, SCANMRIScope.MRI_QC)
     assert form.to_dict() == {
         "file": {"info": {"raw": {"series_type": "T1w", "study_date": "2025-01-01"}}},
         "subject": {
@@ -191,7 +197,7 @@ def test_scan_pet_qc():
     form["file.info.raw"] = {"radiotracer": "2.0", "scan_date": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_pet_qc")
+    deriver.curate(form, SCANPETScope.PET_QC)
     assert form["subject.info.working.cross-sectional"] == {
         "scan-pet-dates": ["2025-01-01"]
     }
@@ -213,7 +219,7 @@ def test_scan_mri_sbm():
     form["file.info.raw"] = {"cerebrumtcv": "2.5", "wmh": "3.5", "scandt": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_mri_sbm")
+    deriver.curate(form, SCANMRIScope.MRI_SBM)
     assert form.to_dict() == {
         "file": {
             "info": {
@@ -255,7 +261,7 @@ def test_scan_amyloid_gaain():
     ]
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "scan_amyloid_pet_gaain")
+    deriver.curate(form, SCANPETScope.AMYLOID_PET_GAAIN)
     assert form.to_dict() == {
         "file": {
             "info": {
@@ -305,7 +311,7 @@ def test_meds():
     }
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "meds")
+    deriver.curate(form, FormScope.MEDS)
     assert form.to_dict() == {
         "file": {
             "info": {
@@ -351,7 +357,7 @@ def test_cls():
     }
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "cls")
+    deriver.curate(form, FormScope.CLS)
     assert form.to_dict() == {
         "file": {
             "info": {
@@ -384,7 +390,7 @@ def test_ftld():
     form["file.info.forms.json"] = {"module": "FTLD", "visitdate": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "ftld")
+    deriver.curate(form, FormScope.FTLD)
 
     assert form.to_dict() == {
         "file": {
@@ -407,7 +413,7 @@ def test_lbd():
     form["file.info.forms.json"] = {"module": "LBD", "visitdate": "2025-01-01"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "lbd")
+    deriver.curate(form, FormScope.LBD)
 
     assert form.to_dict() == {
         "file": {

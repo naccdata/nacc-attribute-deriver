@@ -1,4 +1,5 @@
-"""Class to handle C1/C2-specific missingness values.
+"""Class to handle C1/C2 (V3 and earlier) and C2/C2T (V4) specific missingness
+values.
 
 It is arguably overkill to write a _missingness_ function for every
 variable, when many could call a common rule instead (e.g. all MINTTOTS-

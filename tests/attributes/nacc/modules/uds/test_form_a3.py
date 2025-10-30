@@ -47,6 +47,73 @@ def naccfam_table(uds_table) -> SymbolTable:
 
 
 class TestUDSFormA3Attribute:
+    def test_create_naccdad_v4(self, table, form_prefix):
+        """Test creating NACCDAD V4."""
+        table["file.info.forms.json"].update({"formver": 4, "dadetpr": "00"})
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccdad() == 0
+
+        set_attribute(table, form_prefix, "dadetpr", "05")
+        assert attr._create_naccdad() == 1
+
+        # -4 because IVP
+        set_attribute(table, form_prefix, "dadetpr", None)
+        assert attr._create_naccdad() == -4
+
+        # FVP form - requires previous record
+        table["file.info.forms.json"].update(
+            {"formver": 4, "packet": "F", "dadetpr": "00"}
+        )
+        table["_prev_record.info.forms.json"] = {
+            "visitdate": "01-01-2025",
+        }
+
+        # when the FVP form still determines it
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccdad() == 0
+
+        set_attribute(table, form_prefix, "dadetpr", "12")
+        assert attr._create_naccdad() == 1
+
+        # in this case it will be 9, -4 only set in IVP
+        set_attribute(table, form_prefix, "dadetpr", None)
+        assert attr._create_naccdad() == 9
+
+        # when previous record informs
+        table["file.info.forms.json"].update(
+            {
+                "nwinfpar": 0,  # triggers to check previous record
+                "dadetpr": "09",
+            }
+        )
+        table["_prev_record.info.forms.json"].update({"dadetpr": "00"})
+        assert attr._create_naccdad() == 0
+
+        # now the current form's 09 will trigger look at current
+        set_attribute(table, form_prefix, "nwinfpar", 1)
+        assert attr._create_naccdad() == 1
+
+        # now the current form's 66 will trigger look at prev
+        set_attribute(table, form_prefix, "dadetpr", "66")
+        assert attr._create_naccdad() == 0
+
+        # test -4 or 9 is carried forward
+        table["_prev_record.info.forms.json"].update({"dadetpr": None, "packet": "I"})
+        assert attr._create_naccdad() == -4
+
+        table["_prev_record.info.forms.json"].update(
+            {"dadetpr": "nonsesnse to turn into a 9", "packet": "I"}
+        )
+        assert attr._create_naccdad() == 9
+
+        # pull from missingness when previous record is not IVP
+        table["_prev_record.info.forms.json"].update({"dadetpr": "66", "packet": "F"})
+        table["_prev_record.info.forms.resolved"] = {"dadetpr": "01"}
+        assert attr._create_naccdad() == 1
+
+        table["_prev_record.info.forms.resolved"] = {"dadetpr": "00"}
+        assert attr._create_naccdad() == 0
+
     def test_create_naccdad_v3(self, table, form_prefix):
         """Tests creating NACCDAD V3."""
         attr = UDSFormA3Attribute(table)

@@ -38,10 +38,10 @@ class DemographicsAttributeCollection(AttributeCollection):
 
     def _create_uds_sex(self) -> str:
         """UDS sex."""
-        field = 'sex' if self.__formver < 4 else 'birthsex'
+        field = "sex" if self.__formver < 4 else "birthsex"
         sex = self.__uds.get_value(field, int)
 
-        mapped_sex = self.SEX_MAPPING.get(sex)
+        mapped_sex = self.SEX_MAPPING.get(sex)  # type: ignore
 
         if not mapped_sex:
             raise InvalidFieldError(f"Invalid/unknown sex code: {sex}")
@@ -69,7 +69,7 @@ class DemographicsAttributeCollection(AttributeCollection):
         if not self.__uds.is_initial():
             return None
 
-        field = 'primlang' if self.__formver < 4 else 'predomlan'
+        field = "primlang" if self.__formver < 4 else "predomlan"
         primlang = self.__uds.get_value(field, int)
         mapped_primlang = (
             self.PRIMARY_LANGUAGE_MAPPING.get(primlang) if primlang else None

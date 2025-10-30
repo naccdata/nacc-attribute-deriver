@@ -1,7 +1,4 @@
-"""Derived variables from form A3: Family History.
-
-Form A3 is optional, so may not have been submitted.
-"""
+"""Derived variables from form A3: Family History."""
 
 from typing import Optional
 
@@ -36,7 +33,15 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        return self.uds.get_value("a3sub", int) == 1
+        """Form A3 is optional in earlier versions.
+
+        Required in V4.
+        """
+        if self.formver < 4:
+            return self.uds.get_value("a3sub", int) == 1
+
+        # required in V4
+        return True
 
     def _create_naccdad(self) -> Optional[int]:
         """Creates NACCDAD - Indicator of father with cognitive

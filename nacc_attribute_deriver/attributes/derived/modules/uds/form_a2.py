@@ -1,8 +1,4 @@
-"""Derived variables from form A2: Co-participant Demographics.
-
-Form A2 is optional, so may not have been submitted. From
-a2structrdd.sas
-"""
+"""Derived variables from form A2: Co-participant Demographics."""
 
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
@@ -26,7 +22,14 @@ class UDSFormA2Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        return self.uds.get_value("a2sub", int) == 1
+        """Form A2 is optional, so may have not been submitted.
+
+        See A2SUB for V3 and earlier, MODEA2 for V4.
+        """
+        if self.formver < 4:
+            return self.uds.get_value("a2sub", int) == 1
+
+        return self.uds.get_value("modea2", int) in [1, 2]
 
     def _create_naccninr(self) -> int:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new

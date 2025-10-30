@@ -1,6 +1,7 @@
 """Tests UDS Form A2 attributes."""
 
 import pytest
+import random
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_a2 import (
     UDSFormA2Attribute,
 )
@@ -72,13 +73,14 @@ class TestUDSFormA2Attribute:
 
         # V4
         table["file.info.forms.json"].update(
-            {
-                "formver": "4.0",
-                "inlivwth": "1",
-            }
+            {"formver": "4.0", "inlivwth": "1", "modea2": random.choice([1, 2])}
         )
         attr = UDSFormA2Attribute(table)
         assert attr._create_naccincntfq() == 8
 
         table["file.info.forms.json"].update({"inlivwth": "0", "incntfrq": "6"})
         assert attr._create_naccincntfq() == 6
+
+        # not submitted
+        table["file.info.forms.json.modea2"] = 0
+        assert attr._create_naccincntfq() == INFORMED_MISSINGNESS

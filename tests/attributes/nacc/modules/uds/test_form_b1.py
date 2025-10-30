@@ -99,13 +99,18 @@ class TestUDSFormB1Attribute:
         attr = UDSFormB1Attribute(uds_table)
         assert attr._compute_average("field1", "field2") == INFORMED_MISSINGNESS
 
-        # test form not submitted
-        uds_table["file.info.forms.json"].update({"b1sub": 0, "formver": 4.0})
+        # test form not submitted, V3 and earlier
+        uds_table["file.info.forms.json"].update({"b1sub": 0})
+        attr = UDSFormB1Attribute(uds_table)
+        assert attr._compute_average("field1", "field2") == INFORMED_MISSINGNESS
+
+        # test form not submitted, V4
+        uds_table["file.info.forms.json"].update({"modeb1": 0, "formver": 4.0})
         attr = UDSFormB1Attribute(uds_table)
         assert attr._compute_average("field1", "field2") == INFORMED_MISSINGNESS
 
         # test fields are missing
-        uds_table["file.info.forms.json.b1sub"] = 1
+        uds_table["file.info.forms.json.modeb1"] = 1
         assert attr._compute_average("field1", "field2") == 888
 
         # test fields are 888

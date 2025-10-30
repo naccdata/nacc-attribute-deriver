@@ -36,16 +36,12 @@ class UDSMissingness(UDSAttributeCollection):
     def prev_record(self) -> Optional[PreviousRecordNamespace]:
         return self.__prev_record
 
-    def _missingness_uds(self, field: str) -> Optional[int]:
-        """Defines general missingness for UDS; -4 if missing."""
+    def generic_missingness(self, field: str) -> Optional[int]:
+        """Generic missingness for internal calls."""
         if self.uds.get_value(field, str) is None:
             return INFORMED_MISSINGNESS
 
         return None
-
-    def generic_missingness(self, field: str) -> Optional[int]:
-        """Generic missingness for internal calls."""
-        return self._missingness_uds(field)
 
     def generic_writein(self, field: str) -> Optional[str]:
         """Generic blankness (write-ins) for internal calls."""
@@ -151,3 +147,12 @@ class VersionedUDSMissingness(UDSMissingness):
             return INFORMED_BLANK
 
         return self.generic_writein(field)
+
+
+class GenericUDSMissingness(UDSMissingness):
+    """Need to define generic missingness rule in its own subclass otherwise it
+    gets inherited by all subclasses and imported multiple times."""
+
+    def _missingness_uds(self, field: str) -> Optional[int]:
+        """Defines general missingness for UDS; -4 if missing."""
+        return self.generic_missingness(field)

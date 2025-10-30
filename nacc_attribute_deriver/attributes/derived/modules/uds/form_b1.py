@@ -1,7 +1,4 @@
-"""Derived variables from form B1: Physical.
-
-Form B1 is optional, so may not have been submitted.
-"""
+"""Derived variables from form B1: Physical."""
 
 from typing import Optional
 
@@ -19,7 +16,14 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        return self.uds.get_value("b1sub", int) == 1
+        """Form B1 is optional, so may have not been submitted.
+
+        See B1SUB for V3 and earlier, MODEB1 for V4.
+        """
+        if self.formver < 4:
+            return self.uds.get_value("b1sub", int) == 1
+
+        return self.uds.get_value("modeb1", int) == 1
 
     def get_height(self) -> Optional[float]:
         """Get height; may need to add decimal.

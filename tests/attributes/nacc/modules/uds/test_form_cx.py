@@ -1,8 +1,8 @@
 """Tests UDS Form A1 attributes."""
 
 import pytest
-from nacc_attribute_deriver.attributes.derived.modules.uds.form_c1c2 import (
-    UDSFormC1C2Attribute,
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_cx import (
+    UDSFormCXAttribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -36,20 +36,20 @@ def table(uds_table) -> SymbolTable:
     return uds_table
 
 
-class TestUDSFormC1C2Attribute:
+class TestUDSFormCXAttribute:
     def test_create_nacc1(self, table):
         """Tests creating NACCC1, < 90 days."""
-        attr = UDSFormC1C2Attribute(table)
+        attr = UDSFormCXAttribute(table)
         assert attr._create_naccc1() == 0
 
     def test_create_nacc2(self, table):
         """Tests creating NACCC2, > 90 days."""
-        attr = UDSFormC1C2Attribute(table)
+        attr = UDSFormCXAttribute(table)
         assert attr._create_naccc2() == 1
 
     def test_create_naccmmse(self, table, form_prefix):
         """Tests creating NACCMMSE."""
-        attr = UDSFormC1C2Attribute(table)
+        attr = UDSFormCXAttribute(table)
         assert attr._create_naccmmse() == 95
 
         # should still return mmse value
@@ -61,7 +61,7 @@ class TestUDSFormC1C2Attribute:
 
     def test_create_naccmoca(self, table, form_prefix, working_derived_prefix):
         """Tests creating NACCMOCA."""
-        attr = UDSFormC1C2Attribute(table)
+        attr = UDSFormCXAttribute(table)
         assert attr._create_naccmoca() == 30
 
         # educ < 12 and mocatots > 30
@@ -91,7 +91,7 @@ class TestUDSFormC1C2Attribute:
 
     def test_create_naccmocb(self, table, form_prefix, working_derived_prefix):
         """Tests creating NACCMOCB."""
-        attr = UDSFormC1C2Attribute(table)
+        attr = UDSFormCXAttribute(table)
 
         # default does not fulfill packet conditions, should return None
         assert attr._create_naccmocb() is None
@@ -131,5 +131,5 @@ class TestUDSFormC1C2Attribute:
             }
         )
         table["subject.info.working.cross-sectional"].update({"educ": 18})
-        attr = UDSFormC1C2Attribute(table)
+        attr = UDSFormCXAttribute(table)
         assert attr._create_naccmocb() == 21

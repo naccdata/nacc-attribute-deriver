@@ -35,6 +35,10 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
+        """In V4, form completion dependent on ANYMEDS variable.
+
+        For earlier versions, see A4SUB.
+        """
         anymeds = self.uds.get_value("anymeds", int)
         if anymeds is not None:
             return anymeds == 1
@@ -52,7 +56,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         # it also assumes
         if self.formver >= 4:
             for i in range(1, 41):
-                rxnorm = self.uds.get_value(f"rxnorm{i}", str)
+                rxnorm = self.uds.get_value(f"rxnormid{i}", str)
                 if rxnorm is not None:
                     drugs.append(rxnorm.strip())
 

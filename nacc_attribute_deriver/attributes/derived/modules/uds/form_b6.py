@@ -1,7 +1,4 @@
-"""Derived variables from form B6: GDS.
-
-Form B6 may not have been filled out.
-"""
+"""Derived variables from form B6: GDS."""
 
 import math
 
@@ -16,7 +13,14 @@ class UDSFormB6Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        return self.uds.get_value("b6sub", int) == 1
+        """Form B6 is optional, so may have not been submitted.
+
+        See B6SUB for V3 and earlier, MODEB6 for V4.
+        """
+        if self.formver < 4:
+            return self.uds.get_value("b6sub", int) == 1
+
+        return self.uds.get_value("modeb6", int) in [1, 2]
 
     GDS_VARS: frozenset[str] = frozenset(
         [

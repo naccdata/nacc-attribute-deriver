@@ -323,12 +323,12 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
 
         super().__init__(prefix, uds)
 
-    def __etpr_status(self, value: str | None) -> int:
+    def __etpr_status(self, value: str | None, is_initial: bool) -> int:
         """Determine the ETPR status missingness values.
 
         If None/blank -> -4 If 01-12 -> 1 If 00 -> 0
         """
-        if value is None or value == INFORMED_MISSINGNESS:
+        if (is_initial and value is None) or value == INFORMED_MISSINGNESS:
             return INFORMED_MISSINGNESS
 
         if value in self.VALID_ETPR_VALUES:
@@ -382,8 +382,11 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
 
         etpr = self.uds.get_value(field, str)
         prev_etpr = None
+        prev_initial = False
+
         if prev_record:
-            prev_etpr = prev_record.get_value(field, str)
+            prev_etpr = prev_record.get_resolved_value(field, str, prev_code="66")
+            prev_initial = prev_record.is_initial()
 
         if self.is_parent():
             nwinfo = self.uds.get_value("nwinfpar", int)
@@ -393,6 +396,6 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
             nwinfo = self.uds.get_value("nwinfkid", int)
 
         if nwinfo == 0 or etpr == "66":
-            return self.__etpr_status(prev_etpr)
+            return self.__etpr_status(prev_etpr, is_initial=prev_initial)
 
-        return self.__etpr_status(etpr)
+        return self.__etpr_status(etpr, is_initial=self.uds.is_initial())

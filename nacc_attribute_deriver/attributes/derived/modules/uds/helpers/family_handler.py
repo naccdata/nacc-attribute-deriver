@@ -215,10 +215,6 @@ class FamilyHandler(BaseFamilyHandler[FamilyMemberHandler]):
         self, member: FamilyMemberHandler, known_value: int | None
     ) -> int:
         """Determine NACCPARENT (NACCMOM or NACCDAD)."""
-        # if reported 1 at any visit, stays as 1
-        if known_value == 1:
-            return 1
-
         status = member.determine_etpr_status(prev_record=self.prev_record)
         return self.determine_member_status(status, known_value)
 
@@ -239,14 +235,14 @@ class FamilyHandler(BaseFamilyHandler[FamilyMemberHandler]):
             for i in range(1, member.get_bound())
         ]
 
-        self.determine_group_status(group_status, known_value=None)
+        return self.determine_group_status(group_status, known_value=None)
 
     def determine_naccfam(self, known_value: int | None) -> int:
         """Determine NACCFAM for V4+."""
         family_status = [
             self.__determine_parent_status(),
-            self.__determine_sibs_kids_status(self.__sibs),  # type: ignore
-            self.__determine_sibs_kids_status(self.__kids),  # type: ignore
+            self.__determine_sibs_kids_status(self.sibs),
+            self.__determine_sibs_kids_status(self.kids),
         ]
 
         return self.determine_group_status(family_status, known_value)

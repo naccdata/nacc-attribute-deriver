@@ -193,7 +193,7 @@ class MissingnessDeriver(BaseAttributeDeriver):
         # missingness value for since this is a generic function, so strip out
         # the leading missingness_ in the original function name
         method = self._instance_collections.get(f"{self.derive_type}_{scope}", None)
-        field = rule.function.lstrip(f"{self.derive_type}_")
+        field = rule.function.removeprefix(f"{self.derive_type}_")
 
         if not method:
             raise AttributeDeriverError(

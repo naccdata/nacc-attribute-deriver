@@ -8,7 +8,6 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
     T,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -32,6 +31,11 @@ class PreviousRecordNamespace(FormNamespace):
             required=required,
             date_attribute=date_attribute,
         )
+
+    def is_initial(self) -> bool:
+        """Returns whether or not the previous record was an initial packet."""
+        packet = self.get_resolved_value("packet", str)
+        return packet is not None and packet.upper().startswith("I")
 
     def get_resolved_value(
         self,
@@ -107,6 +111,6 @@ class RxClassNamespace(BaseNamespace):
         """
         members = self.get_value(rxclass, list)
         if not members:
-            raise AttributeDeriverError(f"No RxCUIs associated with RxClass {rxclass}")
+            return []
 
         return [x.strip() for x in members]
