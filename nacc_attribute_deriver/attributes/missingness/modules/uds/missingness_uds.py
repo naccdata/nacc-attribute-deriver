@@ -103,52 +103,6 @@ class UDSMissingness(UDSAttributeCollection):
         return None
 
 
-class VersionedUDSMissingness(UDSMissingness):
-    """Class to handle UDS missingness values that rely heavily on the form
-    version."""
-
-    def handle_formver_missingness(
-        self,
-        field: str,
-        missing_value: int = 0,
-        gate_version: int = 4,
-    ) -> Optional[int]:
-        """Handles generic formver-gated missingness, which follows the logic:
-
-        If FORMVER=4 and VAR is blank, VAR should = MISSING_VALUE
-        else if FORMVER < 4, VAR should be -4
-
-        Args:
-            field: The field to check and set missingness for
-            missing_value: The value to set if the field is missing;
-                defaults to 0
-        Returns:
-            Missingness value if missing, None otherwise (so it isn't
-            set)
-        """
-        if self.formver < gate_version:
-            return INFORMED_MISSINGNESS
-
-        # if value exists, return None so we don't override
-        value = self.uds.get_value(field, int)
-        if value is not None:
-            return None
-
-        return missing_value
-
-    def handle_formver_writein(
-        self, field: str, gate_version: int = 4
-    ) -> Optional[str]:
-        """Handles formver-gated writein missingness, which follows the logic:
-
-        If FORMVER < 4 or VAR is blank, VAR should remain blank
-        """
-        if self.formver < gate_version:
-            return INFORMED_BLANK
-
-        return self.generic_writein(field)
-
-
 class GenericUDSMissingness(UDSMissingness):
     """Need to define generic missingness rule in its own subclass otherwise it
     gets inherited by all subclasses and imported multiple times."""

@@ -233,11 +233,17 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             "Unable to derive NACCHISP (V4) from ETHISPANIC and RACEUNKN"
         )
 
-    def _create_naccedulvl(self) -> int:  # noqa: C901
-        """Creates NACCEDULVL - Highest achieved level of education"""
+    def _create_naccedulvl(self) -> Optional[int]:  # noqa: C901
+        """Creates NACCEDULVL - Highest achieved level of education.
+
+        Source variables only provided in IVP.
+        """
+        if not self.uds.is_initial():
+            return None
+
         if self.formver < 4:
             # educ is not provided in FVP, so may need to resolve from previous record
-            educ = self.get_propogated_value("educ", int)
+            educ = self.uds.get_value("educ", int)
             if educ is None:
                 raise AttributeDeriverError(
                     "Unable to derive NACCEDULVL (V3 and earlier): " + "missing EDUC"
@@ -264,7 +270,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             )
 
         # lvleduc is not provided in FVP, so may need to resolve from previous record
-        lvleduc = self.get_propogated_value("lvleduc", int)
+        lvleduc = self.uds.get_value("lvleduc", int)
         if lvleduc is None:
             raise AttributeDeriverError(
                 "Unable to derive NACCEDULVL (V4): missing LVLEDUC"

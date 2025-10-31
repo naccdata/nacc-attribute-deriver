@@ -181,7 +181,10 @@ np,npatgfr4,file.info.resolved.npatgfr4,update,FALSE
 uds,birthmo,file.info.resolved.birthmo,update,FALSE
 uds,birthyr,file.info.resolved.birthyr,update,FALSE
 uds,sex,file.info.resolved.sex,update,FALSE
+uds,birthsex,file.info.resolved.birthsex,update,FALSE
 uds,hispanic,file.info.resolved.hispanic,update,FALSE
+uds,ethispanic,file.info.resolved.ethispanic,update,FALSE
+uds,raceunkn,file.info.resolved.raceunkn,update,FALSE
 uds,hispor,file.info.resolved.hispor,update,FALSE
 uds,hisporx,file.info.resolved.hisporx,update,FALSE
 uds,race,file.info.resolved.race,update,FALSE
@@ -192,6 +195,8 @@ uds,raceter,file.info.resolved.raceter,update,FALSE
 uds,raceterx,file.info.resolved.raceterx,update,FALSE
 uds,primlang,file.info.resolved.primlang,update,FALSE
 uds,primlanx,file.info.resolved.primlanx,update,FALSE
+uds,primlangx,file.info.resolved.primlangx,update,FALSE
+uds,predomlanx,file.info.resolved.predomlanx,update,FALSE
 uds,educ,file.info.resolved.educ,update,FALSE
 uds,lvleduc,file.info.resolved.lvleduc,update,FALSE
 uds,source,file.info.resolved.source,update,FALSE

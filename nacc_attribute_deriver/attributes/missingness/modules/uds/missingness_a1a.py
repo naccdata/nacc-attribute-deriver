@@ -4,69 +4,84 @@ from typing import Optional
 
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
-from .missingness_uds import VersionedUDSMissingness
+from .missingness_uds import UDSMissingness
 
 
-class UDSFormA1aMissingness(VersionedUDSMissingness):
+class UDSFormA1aMissingness(UDSMissingness):
+    def _handle_a1a_missingness(self, field: str) -> Optional[int]:
+        """A1a missingness logic:
+
+        If FORMVER=4 and VAR is blank, VAR should = 0
+        else if FORMVER < 4, VAR should be -4
+        """
+        if self.formver < 4:
+            return INFORMED_MISSINGNESS
+
+        result = self.uds.get_value(field, int)
+        if result is not None:
+            return None
+
+        return 0
+
     def _missingness_expancest(self) -> Optional[int]:
         """Handles missingness for EXPANCEST."""
-        return self.handle_formver_missingness("expancest")
+        return self._handle_a1a_missingness("expancest")
 
     def _missingness_expgender(self) -> Optional[int]:
         """Handles missingness for EXPGENDER."""
-        return self.handle_formver_missingness("expgender")
+        return self._handle_a1a_missingness("expgender")
 
     def _missingness_exprace(self) -> Optional[int]:
         """Handles missingness for EXPRACE."""
-        return self.handle_formver_missingness("exprace")
+        return self._handle_a1a_missingness("exprace")
 
     def _missingness_expage(self) -> Optional[int]:
         """Handles missingness for EXPAGE."""
-        return self.handle_formver_missingness("expage")
+        return self._handle_a1a_missingness("expage")
 
     def _missingness_exprelig(self) -> Optional[int]:
         """Handles missingness for EXPRELIG."""
-        return self.handle_formver_missingness("exprelig")
+        return self._handle_a1a_missingness("exprelig")
 
     def _missingness_expheight(self) -> Optional[int]:
         """Handles missingness for EXPHEIGHT."""
-        return self.handle_formver_missingness("expheight")
+        return self._handle_a1a_missingness("expheight")
 
     def _missingness_expweight(self) -> Optional[int]:
         """Handles missingness for EXPWEIGHT."""
-        return self.handle_formver_missingness("expweight")
+        return self._handle_a1a_missingness("expweight")
 
     def _missingness_expappear(self) -> Optional[int]:
         """Handles missingness for EXPAPPEAR."""
-        return self.handle_formver_missingness("expappear")
+        return self._handle_a1a_missingness("expappear")
 
     def _missingness_expsexorn(self) -> Optional[int]:
         """Handles missingness for EXPSEXORN."""
-        return self.handle_formver_missingness("expsexorn")
+        return self._handle_a1a_missingness("expsexorn")
 
     def _missingness_expeducinc(self) -> Optional[int]:
         """Handles missingness for EXPEDUCINC."""
-        return self.handle_formver_missingness("expeducinc")
+        return self._handle_a1a_missingness("expeducinc")
 
     def _missingness_expdisab(self) -> Optional[int]:
         """Handles missingness for EXPDISAB."""
-        return self.handle_formver_missingness("expdisab")
+        return self._handle_a1a_missingness("expdisab")
 
     def _missingness_expskin(self) -> Optional[int]:
         """Handles missingness for EXPSKIN."""
-        return self.handle_formver_missingness("expskin")
+        return self._handle_a1a_missingness("expskin")
 
     def _missingness_expother(self) -> Optional[int]:
         """Handles missingness for EXPOTHER."""
-        return self.handle_formver_missingness("expother")
+        return self._handle_a1a_missingness("expother")
 
     def _missingness_expnotapp(self) -> Optional[int]:
         """Handles missingness for EXPNOTAPP."""
-        return self.handle_formver_missingness("expnotapp")
+        return self._handle_a1a_missingness("expnotapp")
 
     def _missingness_expnoans(self) -> Optional[int]:
         """Handles missingness for EXPNOANS."""
-        return self.handle_formver_missingness("expnoans")
+        return self._handle_a1a_missingness("expnoans")
 
     def _missingness_expstrs(self) -> Optional[int]:
         """Handles missingness for EXPSTRS."""

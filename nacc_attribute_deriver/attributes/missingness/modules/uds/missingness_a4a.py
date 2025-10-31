@@ -5,10 +5,12 @@
 
 from typing import Any, List, Optional
 
-from .missingness_uds import VersionedUDSMissingness
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+
+from .missingness_uds import UDSMissingness
 
 
-class UDSFormA4aMissingness(VersionedUDSMissingness):
+class UDSFormA4aMissingness(UDSMissingness):
     def _handle_fvp_gate(self, gate: str, field: str) -> Optional[int]:
         """Handle FVP gated by NEWTREAT and NEWADEVENT.
 
@@ -22,10 +24,13 @@ class UDSFormA4aMissingness(VersionedUDSMissingness):
 
         return self.generic_missingness(field)
 
-    def _handle_a4a_missingness(
+    def _handle_a4a_missingness(  # noqa: C901
         self, fvp_gates: List[str], field: str, writein: bool = False
     ) -> Optional[Any]:
         """Handle A4a missingness, which is generally:
+
+        For V4:
+        If IVP and VAR is blank then VAR should = 0
 
         If FVP, check gates from fvp_gates argument, can be any one of the following:
             If NEWTREAT = 0 or 9, all subsequent variables Q.2a1a-3b3a
@@ -36,9 +41,11 @@ class UDSFormA4aMissingness(VersionedUDSMissingness):
             If ADVEVENT = 0 then VAR should = 8; if ADVEVENT = 9 then VAR should = 9
             If NEWADEVENT=0 then VAR should =8; If NEWADEVENT=9 then VAR should =9
 
-        If V4 and VAR is blank then VAR should = 0 (general UDS V4 missingness)
         Else default missingness (-4)
         """
+        if self.formver < 4:
+            return INFORMED_MISSINGNESS
+
         if not self.uds.is_initial():
             for gate in fvp_gates:
                 gate_value = self.uds.get_value(gate, int)
@@ -58,7 +65,11 @@ class UDSFormA4aMissingness(VersionedUDSMissingness):
         if writein:
             return self.generic_writein(field)
 
-        return self.handle_formver_missingness(field)
+        result = self.uds.get_value(field, int)
+        if result is not None:
+            return None
+
+        return 0
 
     def _missingness_targetab1(self) -> Optional[int]:
         """Handles missingness for TARGETAB1."""
