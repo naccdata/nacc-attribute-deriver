@@ -4,8 +4,8 @@ from datetime import date, datetime
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import BaseNamespace
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class MixedProtocolNamespace(BaseNamespace):
@@ -32,11 +32,10 @@ class MixedProtocolNamespace(BaseNamespace):
 
         # For imaging we need to know the corresponding filename. Assumed
         # to be listed under file.info.filename
-        self.__filename = table.get("file.info._filename", None)
+        self.__filename = table.get("_filename", None)
         if not self.__filename:
             raise AttributeDeriverError(
-                "No filename found for image (expected to be under "
-                + "file.info._filename)"
+                "No filename found for image (expected to be under " + "_filename)"
             )
         self.__filename = self.__filename.strip()
 

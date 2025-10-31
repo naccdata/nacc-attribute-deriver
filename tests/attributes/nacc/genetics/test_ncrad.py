@@ -5,7 +5,7 @@ from nacc_attribute_deriver.attributes.derived.genetics.ncrad import (
     HistoricalNCRADAPOEAttributeCollection,
     NCRADAPOEAttributeCollection,
 )
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.utils.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from tests.conftest import set_attribute

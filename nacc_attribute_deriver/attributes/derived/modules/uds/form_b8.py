@@ -6,7 +6,7 @@ Form B8 is required and expected to have been filled out.
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormB8Attribute(UDSAttributeCollection):

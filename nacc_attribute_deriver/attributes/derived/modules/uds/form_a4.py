@@ -19,9 +19,9 @@ from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingDerivedNamespace,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class UDSFormA4Attribute(UDSAttributeCollection):

@@ -5,7 +5,7 @@ import random
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_a2 import (
     UDSFormA2Attribute,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

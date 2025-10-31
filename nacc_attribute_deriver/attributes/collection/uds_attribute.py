@@ -9,11 +9,11 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import (
+from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
     InvalidFieldError,
 )
-from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class UDSAttributeCollection(AttributeCollection):

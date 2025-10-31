@@ -5,7 +5,7 @@ from nacc_attribute_deriver.attributes.mqt.demographics import (
     DemographicsAttributeCollection,
     DerivedDemographicsAttributeCollection,
 )
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

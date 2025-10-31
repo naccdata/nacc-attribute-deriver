@@ -9,9 +9,9 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 from .np_form_wide_evaluator import NPFormWideEvaluator
 from .np_mapper import NPMapper

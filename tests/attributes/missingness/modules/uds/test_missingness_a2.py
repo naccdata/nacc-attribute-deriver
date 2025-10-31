@@ -3,7 +3,7 @@
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_a2 import (
     UDSFormA2Missingness,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormA2Missingness:

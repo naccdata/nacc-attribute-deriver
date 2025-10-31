@@ -12,15 +12,15 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingDerivedNamespace,
 )
-from nacc_attribute_deriver.schema.constants import (
+from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
-from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_days,
     date_from_form_date,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class UDSFormCXAttribute(UDSAttributeCollection):

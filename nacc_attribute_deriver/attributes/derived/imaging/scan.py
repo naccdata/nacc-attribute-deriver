@@ -7,8 +7,8 @@ from nacc_attribute_deriver.attributes.namespace.scan_namespace import (
     SCANMRINamespace,
     SCANPETNamespace,
 )
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.utils.date import date_from_form_date
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 from nacc_attribute_deriver.utils.scope import (
     SCANMRIScope,
     SCANPETScope,

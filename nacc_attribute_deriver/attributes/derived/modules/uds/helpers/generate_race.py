@@ -4,7 +4,7 @@ participant race)"""
 from types import MappingProxyType
 from typing import Optional
 
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 #########
 # UDSv4 #

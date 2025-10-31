@@ -5,10 +5,10 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_attribute import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.schema.constants import (
+from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class UDSFormB1Attribute(UDSAttributeCollection):

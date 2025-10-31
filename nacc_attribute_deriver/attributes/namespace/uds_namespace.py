@@ -4,8 +4,8 @@ from datetime import date, datetime
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import FormNamespace
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 
 class UDSNamespace(FormNamespace):

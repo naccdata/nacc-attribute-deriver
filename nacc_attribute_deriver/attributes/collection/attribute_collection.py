@@ -13,9 +13,9 @@ from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel, ConfigDict
 
-from nacc_attribute_deriver.schema.constants import DERIVE_TYPES
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import DERIVE_TYPES
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 log = logging.getLogger(__name__)
 

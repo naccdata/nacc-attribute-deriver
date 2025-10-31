@@ -5,7 +5,7 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class NPMapper:

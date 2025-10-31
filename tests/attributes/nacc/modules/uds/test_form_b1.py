@@ -5,7 +5,7 @@ import random
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_b1 import (
     UDSFormB1Attribute,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 ALL_FORMVERS = [1.0, 2.0, 3.0, 3.2, 4.0]
 

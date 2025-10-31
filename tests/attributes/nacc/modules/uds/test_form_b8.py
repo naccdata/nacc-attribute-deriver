@@ -5,7 +5,7 @@ import random
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_b8 import (
     UDSFormB8Attribute,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormB8Attribute:

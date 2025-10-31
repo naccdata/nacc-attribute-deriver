@@ -5,7 +5,7 @@ import pytest
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1 import (
     UDSFormA1Attribute,
 )
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from tests.conftest import set_attribute

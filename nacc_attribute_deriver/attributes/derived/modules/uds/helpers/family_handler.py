@@ -28,8 +28,8 @@ from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 from .family_member_handler import (
     BaseFamilyMemberHandler,

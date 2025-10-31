@@ -18,12 +18,12 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
     WorkingDerivedNamespace,
 )
-from nacc_attribute_deriver.schema.errors import (
+from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.date import create_death_date
+from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
     InvalidFieldError,
 )
-from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import create_death_date
 
 
 class MilestoneAttributeCollection(AttributeCollection):

@@ -13,9 +13,6 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import (
-    AttributeDeriverError,
-)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
@@ -23,6 +20,9 @@ from nacc_attribute_deriver.utils.date import (
     date_came_after,
     date_came_after_sparse,
     date_from_form_date,
+)
+from nacc_attribute_deriver.utils.errors import (
+    AttributeDeriverError,
 )
 
 

@@ -7,7 +7,7 @@ import pytest
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import InvalidFieldError
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from tests.conftest import set_attribute
 

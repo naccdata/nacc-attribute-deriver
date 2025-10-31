@@ -7,9 +7,9 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import RawNamespace
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import date_from_form_date
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class MRISummaryAttributeCollection(AttributeCollection):

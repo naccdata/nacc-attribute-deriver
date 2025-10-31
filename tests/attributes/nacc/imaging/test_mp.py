@@ -18,8 +18,7 @@ def nifti_table() -> SymbolTable:
                     "dicom": {
                         "StudyDate": "20060816",
                     }
-                },
-                "_filename": "test_image2.dicom.zip  ",
+                }
             }
         },
         "subject": {
@@ -43,6 +42,7 @@ def nifti_table() -> SymbolTable:
                 },
             }
         },
+        "_filename": "test_image2.dicom.zip  ",
     }
     return SymbolTable(data)
 

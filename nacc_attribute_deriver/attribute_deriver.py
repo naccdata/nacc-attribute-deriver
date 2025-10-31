@@ -15,11 +15,11 @@ from pydantic import ValidationError
 
 from . import config
 from .attributes.collection.attribute_collection import AttributeCollectionRegistry
-from .schema.constants import DERIVE_TYPES
-from .schema.errors import AttributeDeriverError, OperationError
 from .schema.rule_types import DateTaggedValue
 from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
 from .symbol_table import SymbolTable
+from .utils.constants import DERIVE_TYPES
+from .utils.errors import AttributeDeriverError, OperationError
 from .utils.scope import ScopeLiterals
 
 
@@ -111,7 +111,7 @@ class BaseAttributeDeriver(ABC):
             return
 
         for rule in rules:
-            raw_value, date = self.get_curated_value(table, rule, scope.value)
+            raw_value, date = self.get_curated_value(table, rule, scope)
             if raw_value is None:
                 continue
 

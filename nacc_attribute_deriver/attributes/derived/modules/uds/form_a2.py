@@ -6,9 +6,9 @@ from nacc_attribute_deriver.attributes.collection.uds_attribute import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
-from nacc_attribute_deriver.schema.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 from .helpers.generate_race import generate_race_v3
 
