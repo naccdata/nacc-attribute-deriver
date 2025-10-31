@@ -10,7 +10,7 @@ NOTE: Derived variable are only supposed to reflect the last 2 weeks, so
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (

@@ -1,3 +1,5 @@
 scope,function,location,operation,dated
-uds,npiqinf,file.info.forms.missingness.npiqinf,update,FALSE
-uds,npiqinfx,file.info.forms.missingness.npiqinfx,update,FALSE
+uds,npiqinf,file.info.forms.resolved.npiqinf,update,FALSE
+uds,npiqinfx,file.info.forms.resolved.npiqinfx,update,FALSE
+np,npsex,file.info.forms.resolved.npsex,update,FALSE
+np,nppmih,file.info.forms.resolved.nppmih,update,FALSE

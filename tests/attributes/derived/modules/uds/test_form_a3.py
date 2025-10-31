@@ -60,13 +60,10 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "dadetpr", None)
         assert attr._create_naccdad() == -4
 
-        # FVP form - requires previous record
+        # FVP form
         table["file.info.forms.json"].update(
             {"formver": 4, "packet": "F", "dadetpr": "00"}
         )
-        table["_prev_record.info.forms.json"] = {
-            "visitdate": "01-01-2025",
-        }
 
         # when the FVP form still determines it
         attr = UDSFormA3Attribute(table)

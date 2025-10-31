@@ -193,6 +193,9 @@ uds,raceterx,file.info.forms.resolved.raceterx,update,FALSE
 uds,primlang,file.info.forms.resolved.primlang,update,FALSE
 uds,primlanx,file.info.forms.resolved.primlanx,update,FALSE
 uds,educ,file.info.forms.resolved.educ,update,FALSE
+uds,lvleduc,file.info.forms.resolved.lvleduc,update,FALSE
+uds,source,file.info.forms.resolved.source,update,FALSE
+uds,sourcenw,file.info.forms.resolved.sourcenw,update,FALSE
 uds,maristat,file.info.forms.resolved.maristat,update,FALSE
 uds,independ,file.info.forms.resolved.independ,update,FALSE
 uds,residenc,file.info.forms.resolved.residenc,update,FALSE

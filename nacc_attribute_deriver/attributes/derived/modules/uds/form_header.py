@@ -3,7 +3,7 @@
 import datetime
 from typing import Any, List, Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (

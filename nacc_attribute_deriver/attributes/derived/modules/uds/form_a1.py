@@ -6,7 +6,7 @@ From derive.sas and a1structrdd.sas
 from datetime import date
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
@@ -236,7 +236,8 @@ class UDSFormA1Attribute(UDSAttributeCollection):
     def _create_naccedulvl(self) -> int:  # noqa: C901
         """Creates NACCEDULVL - Highest achieved level of education"""
         if self.formver < 4:
-            educ = self.uds.get_value("educ", int)
+            # educ is not provided in FVP, so may need to resolve from previous record
+            educ = self.get_propogated_value("educ", int)
             if educ is None:
                 raise AttributeDeriverError(
                     "Unable to derive NACCEDULVL (V3 and earlier): " + "missing EDUC"
@@ -262,7 +263,8 @@ class UDSFormA1Attribute(UDSAttributeCollection):
                 + f"unhandled EDUC value: {educ}"
             )
 
-        lvleduc = self.uds.get_value("lvleduc", int)
+        # lvleduc is not provided in FVP, so may need to resolve from previous record
+        lvleduc = self.get_propogated_value("lvleduc", int)
         if lvleduc is None:
             raise AttributeDeriverError(
                 "Unable to derive NACCEDULVL (V4): missing LVLEDUC"
@@ -283,9 +285,9 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if affiliate:
             return True
 
-        # check source == 4 or sourcenw == 2
-        source = self.uds.get_value("source", int)
-        sourcenw = self.uds.get_value("sourcenw", int)
+        # check source == 4 or sourcenw == 2; propagated from IVP
+        source = self.get_propogated_value("source", int)
+        sourcenw = self.get_propogated_value("sourcenw", int)
 
         return source == 4 or sourcenw == 2
 
@@ -301,7 +303,9 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         return 1 if self._create_affiliate() else 0
 
     def _create_educ(self) -> Optional[int]:
-        """UDS education level."""
+        """UDS education level - this rule is used by MQT, since it also
+        needs to know the latest. Other derived variables looking for educ
+        should use the get_propagated_value method instead."""
         return self.uds.get_value("educ", int)
 
     def _create_uds_date_of_birth(self) -> date:

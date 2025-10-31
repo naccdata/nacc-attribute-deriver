@@ -1,10 +1,14 @@
 """UDS Attribute collection."""
 
 import datetime
-from typing import Optional
+from typing import Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
+)
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
+    T,
 )
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
@@ -27,6 +31,29 @@ class UDSAttributeCollection(AttributeCollection):
         if module.upper() != "UDS":
             msg = f"Current file is not a UDS form: found {module}"
             raise InvalidFieldError(msg)
+
+        self.__prev_record = None
+        if not self.uds.is_initial():
+            self.__prev_record = PreviousRecordNamespace(table=table)
+
+    @property
+    def prev_record(self) -> Optional[PreviousRecordNamespace]:
+        return self.__prev_record
+
+    def get_propogated_value(
+        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
+    ) -> Optional[T]:
+        """Several values are only provided on IVP and need to be propogated
+        through for calculations on FVP forms.
+
+        Need to resolve from current and previous records.
+        """
+        if self.__uds.is_initial() or not self.__prev_record:
+            return self.__uds.get_value(attribute, attr_type, default=default)
+
+        return self.__prev_record.get_resolved_value(
+            attribute, attr_type, default=default
+        )
 
     @property
     def uds(self) -> UDSNamespace:

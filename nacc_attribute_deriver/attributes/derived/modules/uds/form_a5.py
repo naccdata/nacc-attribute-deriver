@@ -10,7 +10,7 @@ tests okay.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
 

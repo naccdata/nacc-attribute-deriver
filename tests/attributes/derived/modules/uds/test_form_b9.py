@@ -11,9 +11,6 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def base_table(uds_table) -> SymbolTable:
     """Create dummy base table."""
     uds_table["file.info.forms.json"].update({"packet": "F"})
-    uds_table.update(
-        {"_prev_record": {"info": {"forms": {"json": {"visitdate": "01-01-1900"}}}}}
-    )
     return uds_table
 
 

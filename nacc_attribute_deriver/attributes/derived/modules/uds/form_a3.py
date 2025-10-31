@@ -2,11 +2,8 @@
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
-)
-from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
@@ -25,11 +22,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         handler = LegacyFamilyHandler if self.formver < 4 else FamilyHandler
-        prev_record = None
-        if not self.uds.is_initial():
-            prev_record = PreviousRecordNamespace(table=table)
-
-        self.__family = handler(uds=self.uds, prev_record=prev_record)
+        self.__family = handler(uds=self.uds, prev_record=self.prev_record)
 
     @property
     def submitted(self) -> bool:

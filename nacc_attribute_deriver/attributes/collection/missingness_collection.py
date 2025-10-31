@@ -7,21 +7,35 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
+    FormNamespace,
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+
+
+class FormMissingnessCollection(AttributeCollection):
+    """Class to handle missingness values at the form level."""
+
+    def __init__(self, table: SymbolTable, required=frozenset([])) -> None:
+        self.__form = FormNamespace(table=table, required=required)
+
+    def generic_missingness(self, field: str) -> Optional[int]:
+        """Generic missingness for internal calls."""
+        if self.__form.get_value(field, str) is None:
+            return INFORMED_MISSINGNESS
+
+        return None
 
 
 class SubjectMissingnessCollection(AttributeCollection):
-    """Class to handle Milestone missingness values."""
+    """Class to handle missingness values at the subject level."""
 
     def __init__(self, table: SymbolTable):
-        # TODO - may or may not be the actual subject data depending on
-        # where this is run, so namespace may change
         self.__derived = SubjectDerivedNamespace(table=table)
 
-    def handle_missing(self, attribute: str, default: int) -> Optional[int]:
-        """Handle missing values."""
+    def handle_subject_missing(self, attribute: str, default: int) -> Optional[int]:
+        """Handle missing values at the subject level."""
         value = self.__derived.get_cross_sectional_value(attribute, str)
         if value is None:
             return default

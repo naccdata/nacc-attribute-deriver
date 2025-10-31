@@ -13,11 +13,8 @@ either.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
-)
-from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
@@ -35,10 +32,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
-        self.__prev_record = None
-
-        if not self.uds.is_initial():
-            self.__prev_record = PreviousRecordNamespace(table=table)
 
         # if b9chg == 1 was selected in version 1.2 of UDS (no meaningful changes),
         # indicates NACC has brought forward data from previous visit
@@ -65,8 +58,8 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         target_var = "decage" if self.formver < 4 else "cogage"
 
         value = self.uds.get_value(target_var, int)
-        if value == 777 and self.__prev_record:
-            value = self.__prev_record.get_resolved_value(target_var, int)
+        if value == 777 and self.prev_record:
+            value = self.prev_record.get_resolved_value(target_var, int)
 
         if value is None:
             return INFORMED_MISSINGNESS
@@ -112,10 +105,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_befrst = None
         p_befpred = None
 
-        if self.__prev_record:
-            p_decclin = self.__prev_record.get_resolved_value("decclin", int)
-            p_befrst = self.__prev_record.get_resolved_value("befrst", int)
-            p_befpred = self.__prev_record.get_resolved_value(
+        if self.prev_record:
+            p_decclin = self.prev_record.get_resolved_value("decclin", int)
+            p_befrst = self.prev_record.get_resolved_value("befrst", int)
+            p_befpred = self.prev_record.get_resolved_value(
                 "befpred", int, prev_code=0 if self.formver == 3 else None
             )
 
@@ -208,10 +201,10 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_cogfrst = None
         p_cogfpred = None
 
-        if self.__prev_record:
-            p_decclin = self.__prev_record.get_resolved_value("decclin", int)
-            p_cogfrst = self.__prev_record.get_resolved_value("cogfrst", int)
-            p_cogfpred = self.__prev_record.get_resolved_value(
+        if self.prev_record:
+            p_decclin = self.prev_record.get_resolved_value("decclin", int)
+            p_cogfrst = self.prev_record.get_resolved_value("cogfrst", int)
+            p_cogfpred = self.prev_record.get_resolved_value(
                 "cogfpred", int, prev_code=0 if self.formver == 3 else None
             )
 
@@ -264,9 +257,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         naccmotf = None
         p_decclin = None
         p_mofrst = None
-        if self.__prev_record:
-            p_decclin = self.__prev_record.get_resolved_value("decclin", int)
-            p_mofrst = self.__prev_record.get_resolved_value(
+        if self.prev_record:
+            p_decclin = self.prev_record.get_resolved_value("decclin", int)
+            p_mofrst = self.prev_record.get_resolved_value(
                 "mofrst", int, prev_code=0 if self.formver == 3 else None
             )
 

@@ -27,11 +27,7 @@ def table(uds_table) -> SymbolTable:
             "mocacomp": 1,
         }
     )
-    uds_table.update(
-        {
-            "subject": {"info": {"working": {"cross-sectional": {"educ": "3"}}}},
-        }
-    )
+    uds_table["_prev_record.info.forms.json"].update({"educ": "3"})
 
     return uds_table
 
@@ -59,8 +55,9 @@ class TestUDSFormCXAttribute:
         set_attribute(table, form_prefix, "mmse", None)
         assert attr._create_naccmmse() == 98
 
-    def test_create_naccmoca(self, table, form_prefix, working_derived_prefix):
+    def test_create_naccmoca(self, table, form_prefix):
         """Tests creating NACCMOCA."""
+        set_attribute(table, form_prefix, "educ", "3")
         attr = UDSFormCXAttribute(table)
         assert attr._create_naccmoca() == 30
 
@@ -69,14 +66,14 @@ class TestUDSFormCXAttribute:
         assert attr._create_naccmoca() == 34
 
         # educ > 12 and mocatots < 30, should not + 1
-        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 20)
+        set_attribute(table, form_prefix, "educ", 20)
         set_attribute(table, form_prefix, "mocatots", 25)
         assert attr._create_naccmoca() == 25
 
         # educ is 99 or None
-        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 99)
+        set_attribute(table, form_prefix, "educ", 99)
         assert attr._create_naccmoca() == 99
-        set_attribute(table, working_derived_prefix, "cross-sectional.educ", None)
+        set_attribute(table, form_prefix, "educ", None)
         assert attr._create_naccmoca() == 99
 
         # mocatots is 88 or None
@@ -89,8 +86,12 @@ class TestUDSFormCXAttribute:
         set_attribute(table, form_prefix, "packet", "IT")
         assert attr._create_naccmoca() is None
 
-    def test_create_naccmocb(self, table, form_prefix, working_derived_prefix):
-        """Tests creating NACCMOCB."""
+    def test_create_naccmocb(self, table, form_prefix):
+        """Tests creating NACCMOCB.
+
+        Test the packets here as well.
+        """
+        set_attribute(table, form_prefix, "educ", "3")
         attr = UDSFormCXAttribute(table)
 
         # default does not fulfill packet conditions, should return None
@@ -98,21 +99,26 @@ class TestUDSFormCXAttribute:
 
         # set packet to IT, should run now
         set_attribute(table, form_prefix, "packet", "IT")
+        attr = UDSFormCXAttribute(table)
         assert attr._create_naccmocb() == 16
 
         # also works if formver is 3.2
-        set_attribute(table, form_prefix, "packet", "F")
+        set_attribute(table, form_prefix, "packet", "I")
         set_attribute(table, form_prefix, "formver", 3.2)
+        attr = UDSFormCXAttribute(table)
         assert attr._create_naccmocb() == 16
 
         # educ > 12, mocbtots < 22, should not add 1
-        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 15)
+        set_attribute(table, form_prefix, "packet", "F")
+        set_attribute(table, form_prefix, "educ", None)
+        attr = UDSFormCXAttribute(table)
+        table["_prev_record.info.forms.json.educ"] = 15
         assert attr._create_naccmocb() == 15
 
         # educ is 99 or None
-        set_attribute(table, working_derived_prefix, "cross-sectional.educ", 99)
+        table["_prev_record.info.forms.json.educ"] = 99
         assert attr._create_naccmocb() == 99
-        set_attribute(table, working_derived_prefix, "cross-sectional.educ", None)
+        table["_prev_record.info.forms.json.educ"] = None
         assert attr._create_naccmocb() == 99
 
         # mocacomp == 0
@@ -128,8 +134,9 @@ class TestUDSFormCXAttribute:
                 "formver": 3.2,
                 "frmdatec1": None,
                 "frmdatec2": "2020-07-15",
+                "packet": "F",
             }
         )
-        table["subject.info.working.cross-sectional"].update({"educ": 18})
+        table["_prev_record.info.forms.json"].update({"educ": 18})
         attr = UDSFormCXAttribute(table)
         assert attr._create_naccmocb() == 21

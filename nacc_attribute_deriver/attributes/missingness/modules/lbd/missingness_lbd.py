@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.subject_missingness import (
+from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     SubjectMissingnessCollection,
 )
 
@@ -12,4 +12,4 @@ class LBDMissingness(SubjectMissingnessCollection):
 
     def _missingness_nacclbdm(self) -> Optional[int]:
         """Handles NACCLBDM."""
-        return self.handle_missing("nacclbdm", 0)
+        return self.handle_subject_missing("nacclbdm", 0)

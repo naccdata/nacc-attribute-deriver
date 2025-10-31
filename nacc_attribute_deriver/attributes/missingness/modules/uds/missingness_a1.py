@@ -313,3 +313,25 @@ class UDSFormA1Missingness(VersionedUDSMissingness):
     def _missingness_priocc(self) -> Optional[int]:
         """Handles missingness for PRIOCC."""
         return self.handle_formver_missingness("priocc", missing_value=999)
+
+    ############################################################
+    # Need to pull through the following for derived variables
+    # Many of these variables are only provided at the initial
+    # visit.
+    ############################################################
+
+    def _missingness_educ(self) -> Optional[int]:
+        """Handles missingness for EDUC."""
+        return self.handle_prev_visit("educ", int)
+
+    def _missingness_lvleduc(self) -> Optional[int]:
+        """Handles missingness for LVLEDUC."""
+        return self.handle_prev_visit("lvleduc", int)
+
+    def _missingness_source(self) -> Optional[int]:
+        """Handles missingness for SOURCE."""
+        return self.handle_prev_visit("source", int)
+
+    def _missingness_sourcenw(self) -> Optional[int]:
+        """Handles missingness for SOURCENW."""
+        return self.handle_prev_visit("sourcenw", int)

@@ -62,6 +62,18 @@ def uds_table():
                         }
                     }
                 }
-            }
+            },
+            # most ignore this, but needed for any UDS
+            # visits looking at an FVP form, so set in base
+            # fixture
+            "_prev_record": {
+                "info": {
+                    "forms": {
+                        "json": {
+                            "visitdate": "02-02-2020",
+                        }
+                    }
+                }
+            },
         }
     )

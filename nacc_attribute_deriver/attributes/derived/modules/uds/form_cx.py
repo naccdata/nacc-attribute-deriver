@@ -6,11 +6,8 @@ One of form (C1 or C2)/(C2 or C2T) is expected to have been submitted.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_attribute import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
-)
-from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
@@ -28,10 +25,6 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__working = WorkingDerivedNamespace(
-            table=table, required=frozenset(["cross-sectional.educ"])
-        )
-
         # V3 and earlier, used to differentiate which version was used
         self.__frmdatec1 = self.uds.get_value("frmdatec1", str)
         self.__frmdatec2 = self.uds.get_value("frmdatec2", str)
@@ -129,7 +122,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
         if (self.formver >= 4) or (precise_formver == 3 and packet != "IT"):
             mocatots = self.uds.get_value("mocatots", int)
-            educ = self.__working.get_cross_sectional_value("educ", int)
+            educ = self.get_propogated_value("educ", int)
             if mocatots is None or mocatots == 88:
                 return 88
             if educ is None or educ == 99:
@@ -163,7 +156,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         ):
             mocbtots = self.uds.get_value("mocbtots", int)
             mocacomp = self.uds.get_value("mocacomp", int)
-            educ = self.__working.get_cross_sectional_value("educ", int)
+            educ = self.get_propogated_value("educ", int)
             if mocbtots is None or mocbtots == 88 or mocacomp == 0:
                 return 88
             if educ is None or educ == 99:
