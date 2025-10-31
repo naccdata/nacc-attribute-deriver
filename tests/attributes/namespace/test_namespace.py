@@ -116,9 +116,9 @@ def prev_record() -> SymbolTable:
                         "packet": "I",
                         "naccid": "NACC123456",
                         "adcid": 0,
-                    },
-                    "resolved": {"missingvar": 5},
-                }
+                    }
+                },
+                "resolved": {"missingvar": 5},
             }
         }
     }

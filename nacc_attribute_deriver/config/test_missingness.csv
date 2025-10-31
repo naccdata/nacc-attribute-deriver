@@ -1,5 +1,5 @@
 scope,function,location,operation,dated
-uds,npiqinf,file.info.forms.resolved.npiqinf,update,FALSE
-uds,npiqinfx,file.info.forms.resolved.npiqinfx,update,FALSE
-np,npsex,file.info.forms.resolved.npsex,update,FALSE
-np,nppmih,file.info.forms.resolved.nppmih,update,FALSE
+uds,npiqinf,file.info.resolved.npiqinf,update,FALSE
+uds,npiqinfx,file.info.resolved.npiqinfx,update,FALSE
+np,npsex,file.info.resolved.npsex,update,FALSE
+np,nppmih,file.info.resolved.nppmih,update,FALSE

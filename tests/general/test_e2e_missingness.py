@@ -13,7 +13,7 @@ def test_uds_form(uds_table):
     deriver = MissingnessDeriver(missingness_file="test_missingness.csv")
     deriver.curate(uds_table, "uds")
 
-    assert uds_table["file.info.forms.resolved"] == {"npiqinf": -4, "npiqinfx": None}
+    assert uds_table["file.info.resolved"] == {"npiqinf": -4, "npiqinfx": None}
 
 
 def test_np_form():
@@ -26,4 +26,4 @@ def test_np_form():
     deriver = MissingnessDeriver(missingness_file="test_missingness.csv")
     deriver.curate(np_table, "np")
 
-    assert np_table["file.info.forms.resolved"] == {"npsex": -4, "nppmih": -4}
+    assert np_table["file.info.resolved"] == {"npsex": -4, "nppmih": -4}

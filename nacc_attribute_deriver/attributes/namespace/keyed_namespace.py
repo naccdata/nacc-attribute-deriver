@@ -21,9 +21,9 @@ class PreviousRecordNamespace(FormNamespace):
         self,
         *,
         table: SymbolTable,
-        attribute_prefix: str = "_prev_record.info.forms.",
+        attribute_prefix: str = "_prev_record.info.",
         required: frozenset[str] = frozenset(),
-        date_attribute: str = "json.visitdate",
+        date_attribute: str = "forms.json.visitdate",
     ) -> None:
         super().__init__(
             table=table,
@@ -58,7 +58,7 @@ class PreviousRecordNamespace(FormNamespace):
         Returns:
           the value for the attribute in the table
         """
-        raw_value = self.get_value(f"json.{attribute}", attr_type, default)
+        raw_value = self.get_value(f"forms.json.{attribute}", attr_type, default)
         if raw_value is None or raw_value == prev_code:
             return self.get_value(f"resolved.{attribute}", attr_type, default)
 

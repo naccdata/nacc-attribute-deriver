@@ -105,10 +105,10 @@ class TestUDSFormA3Attribute:
 
         # pull from missingness when previous record is not IVP
         table["_prev_record.info.forms.json"].update({"dadetpr": "66", "packet": "F"})
-        table["_prev_record.info.forms.resolved"] = {"dadetpr": "01"}
+        table["_prev_record.info.resolved"] = {"dadetpr": "01"}
         assert attr._create_naccdad() == 1
 
-        table["_prev_record.info.forms.resolved"] = {"dadetpr": "00"}
+        table["_prev_record.info.resolved"] = {"dadetpr": "00"}
         assert attr._create_naccdad() == 0
 
     def test_create_naccdad_v3(self, table, form_prefix):
