@@ -7,7 +7,7 @@ Form A5 was combined with Form D2 in V4; as such, the variables listed here
 are derived from both forms.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
@@ -62,7 +62,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         if cbstroke == 0:
             return 8888
 
-        return None
+        return INFORMED_MISSINGNESS
 
     def _create_nacctiyr(self) -> Optional[int]:
         """Creates NACCTIYR - Most recently reported year of TIA as of
@@ -90,9 +90,9 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         if cbtia == 0:
             return 8888
 
-        return None
+        return INFORMED_MISSINGNESS
 
-    def _create_nacctbi(self) -> Optional[int]:
+    def _create_nacctbi(self) -> int:
         """Creates NACCTBI - History of traumatic brain injury (TBI).
 
         V4: From form A5D2
@@ -113,6 +113,291 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         if (traumbrf == 0 and traumchr == 0 and traumext == 0) or tbi == 0:
             return 0
         if all(x == -4 or x is None for x in all_vars):
-            return None
+            return INFORMED_MISSINGNESS
 
         return 9
+
+    def _create_naccsubst(self) -> Optional[int]:
+        """Creates NACCSUBST - Participant used substances including
+        prescription or recreational drugs that caused significant
+        impairment in work, legal, driving, or social areas within
+        the past 12 months.
+
+        New in V4, but applied to all versions.
+
+        V4: From form A5D2
+        V3 and earlier: From form A5
+        """
+        if self.formver < 4:
+            abusothr = self.uds.get_value("abusothr", int)
+            if abusothr in [0, 2]:
+                return 0
+            if abusothr == 1:
+                return 1
+            if abusothr == 9:
+                return 9
+
+        return self.uds.get_value("substyear", int, default=INFORMED_MISSINGNESS)
+
+    def _create_naccheart(self) -> int:
+        """Creates NACCHEART - Heart attack / cardiac arrest
+
+        New in V4, but applied to all versions.
+
+        V4: From form A5D2
+        V3 and earlier: From both form A5 and form D2
+        """
+        # V1 and V2
+        if self.formver < 3:
+            return self.uds.get_value(
+                "cvhatt", int, default=INFORMED_MISSINGNESS)
+
+        # V3
+        if self.formver < 4:
+            cvhatt = self.uds.get_value("cvhatt", int)
+            myoinf = self.uds.get_value("myoinf", int)
+            if cvhatt == 1 or myoinf == 1:
+                return 1
+            if cvhatt == 0 or myoinf == 0:
+                return 0
+            if cvhatt == 2:
+                return 2
+            if cvhatt == 9 and myoinf == 8:
+                return 9
+
+            return INFORMED_MISSINGNESS
+
+        # V4
+        hrtattack = self.uds.get_value("hrtattack", int)
+        cardarrest = self.uds.get_value("cardarrest", int)
+        if hrtattack == 1 or cardarrest == 1:
+            return 1
+        if hrtattack == 2 or cardarrest == 2:
+            return 2
+        if hrtattack == 0 or cardarrest == 0:
+            return 0
+        if hrtattack == 9 and myoinf == 9:
+            return 9
+
+        return INFORMED_MISSINGNESS
+
+    def __v3_determine_arthritis_result(
+        self, yes_condition: List[int], no_conditions: List[int]) -> int:
+        """V3 arthritis helper for NACCRHEUM, NACCOSTEO, and NACCARTOTH,
+        which ALL follow the below logic for V3:
+
+            If ARTHRIT is blank and ARTH is blank than VAR = -4
+            Elif ARTHTYPE or ARTYPE is YES_CONDITION then VAR = 1
+            Elif ARTHTYPE or ARTYPE in NO_CONDITION then VAR = 0
+            Elif ARTHRIT or ARTH = 0 then VAR = 0
+            ELIF ARTHTYPE or ARTYPE = 9 then VAR = 9
+            Else -4.
+        """
+        arth = self.uds.get_value("arth", int)
+        arthrit = self.uds.get_value("arthrit", int)
+        if arthrit is None and arthrit is None:
+            return INFORMED_MISSINGNESS
+
+        arthtype = self.uds.get_value("arthtype", int)
+        artype = self.uds.get_value("artype", int)
+        if arthtype == yes_condition or artype == yes_condition:
+            return 1
+        if arthtype in no_conditions or artype in no_conditions:
+            return 0
+        if arthrit == 0 or arth == 0:
+            return 8
+        if arthtype == 9 and artype == 9:
+            return 9
+
+        return INFORMED_MISSINGNESS
+
+    def __v4_determine_arthritis_result(self, field: str) -> int:
+        """V4 arthritis helper for NACCRHEUM, NACCOSTEO, and NACCARTOTH,
+        which ALL follow the below logic for V4:
+
+            If TARGET_FIELD = 1 then VAR = 1
+            Elif ARTHRIT in (1,2) and FIELD is blank and ARTHTYPUNK is blank, then VAR = 0
+            Elif ARTHRIT=0 then VAR = 8
+            Elif ARTHTYPUNK=1 then VAR = 9
+            Else -4
+        """
+        target_value = self.uds.get_value(field, int)
+        arthrit = self.uds.get_value("arthrit", int)
+        arthtypunk = self.uds.get_value("arthtypunk", int)
+
+        if target_value == 1:
+            return 1
+        if arthrit in [1, 2] and target_value is None and arthtypunk is None:
+            return 0
+        if arthrit == 0:
+            return 8
+        if arthtypunk == 1:
+            return 9
+
+        return INFORMED_MISSINGNESS
+
+    def _create_naccrheum(self) -> int:
+        """Creates NACCRHEUM - Type of arthritis: Rheumatoid
+
+        New in V4, but applied to earlier versions.
+
+        V4: From form A5D2
+        V3: From form A5
+        V2 and earlier: Not applicable
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        if self.formver < 4:
+            return self.__v3_determine_arthritis_result(
+                yes_condition=1, no_conditions=[2, 3])
+
+        return self.__v4_determine_arthritis_result("arthrrheum")
+
+    def _create_naccosteo(self) -> int:
+        """Creates NACCOSTEO - Type of arthritis: Osteoarthritis
+
+        New in V4, but applied to earlier versions.
+
+        V4: From form A5D2
+        V3: From form A5
+        V2 and earlier: Not applicable
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        if self.formver < 4:
+            return self.__v3_determine_arthritis_result(
+                yes_condition=2, no_conditions=[1, 3])
+
+        return self.__v4_determine_arthritis_result("arthrosteo")
+
+    def _create_naccartoth(self) -> int:
+        """Creates NACCARTOTH - Type of arthritis: Other
+
+        New in V4, but applied to earlier versions.
+
+        V4: From form A5D2
+        V3: From form A5
+        V2 and earlier: Not applicable
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        if self.formver < 4:
+            return self.__v3_determine_arthritis_result(
+                yes_condition=3, no_conditions=[1, 2])
+
+        return self.__v4_determine_arthritis_result("arthrothr")
+
+    def _create_nacccancer(self) -> int:
+        """Creates NACCCANCER - Cancer present in the last 12 months
+        (excluding non-melanoma skin cancer)
+
+        New in V4, but applied to earlier versions.
+
+        V4: From form A5D2 (CANCERACTV)
+        V3: From form D2 (CANCER)
+        V2 and earlier: Not applicable
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        field = "canceractv" if self.formver >= 4 else "cancer"
+        cancer_value = self.uds.get_value(field, int)
+        if cancer_value == 0:
+            return 0
+        if cancer_value in [1, 2]:
+            return 1
+        if cancer_value == 9:
+            return 9
+
+        return INFORMED_MISSINGNESS
+
+
+    def _create_naccothcon(self) -> int:
+        """Creates NACCOTHCON - Other medical conditions or procedures
+        within the past 12 months
+
+        New in V4, but applied to earlier versions.
+
+        V4: From form A5D2
+        V3: From form D2
+        V2 and earlier: Not applicable
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        if self.formver < 4:
+            return self.uds.get_value("othcond", int, default=INFORMED_MISSINGNESS)
+
+        othercond = self.uds.get_value("othercond", int)
+        if othercond == 0:
+            return 0
+        if othercond in [0, 2]:
+            return 1
+        if othercond == 9:
+            return 9
+
+        return INFORMED_MISSINGNESS
+
+    def _create_naccdep(self) -> int:
+        """Creates NACCDEP - Depression (recent or remote)
+
+        New in V4, but applied to all versions.
+
+        V4: From form A5D2
+        V3 and earlier: From form A5
+        """
+        if self.formver < 4:
+            dep2yrs = self.uds.get_value("dep2yrs", int)
+            depothr = self.uds.get_value("depothr", int)
+            if dep2yrs == 1 or depothr == 1:
+                return 1
+            if dep2yrs == 0 and depothr == 0:
+                return 0
+            if dep2yrs == 9 or depothr == 9:
+                return 9
+
+            return INFORMED_MISSINGNESS
+
+        majordep = self.uds.get_value("majordep", int)
+        otherdep = self.uds.get_value("otherdep", int)
+
+        if majordep in [1, 2] or otherdep in [1, 2]:
+            return 1
+        if majordep == 0 and otherdep == 0:
+            return 0
+        if majordep == 9 or otherdep == 9:
+            return 9
+
+        return INFORMED_MISSINGNESS
+
+    def _create_naccanx(self) -> int:
+        """Creates NACCANX - Anxiety disorder (including OCD)
+
+        New in V4, but applied to earlier versions.
+
+        V4: From form A5D2
+        V3: From form D2
+        V2 and earlier: Not applicable
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        if self.formver < 4:
+            anxiety = self.uds.get_value("anxiety", int)
+            ocd = self.uds.get_value("ocd", int)
+
+            if anxiety == 1 or ocd == 1:
+                return 1
+            if anxiety == 2 or ocd == 2:
+                return 2
+            if anxiety == 0 and ocd == 0:
+                return 0
+            if anxiety == 9 or ocd == 9:
+                return 9
+
+            return INFORMED_MISSINGNESS
+
+        return self.uds.get_value("anxiety", int, default=INFORMED_MISSINGNESS)
