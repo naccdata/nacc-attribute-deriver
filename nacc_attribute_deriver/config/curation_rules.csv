@@ -329,7 +329,7 @@ uds,naccnovs,subject.info.derived.cross-sectional.naccnovs,update,FALSE
 uds,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
 uds,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
 uds,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE
-mri_dicom,image_session,subject.info.working.cross-sectional.mri-sessions,set,FALSE
+mri_dicom,mri_image_session,subject.info.working.cross-sectional.mri-sessions,set,FALSE
 mri_dicom,naccdico,subject.info.derived.longitudinal.naccdico,dated-set,TRUE
 mri_nifti,naccnift,subject.info.derived.longitudinal.naccnift,dated-set,TRUE
 mri_dicom,naccmria,subject.info.derived.longitudinal.naccmria,dated-set,TRUE
@@ -338,7 +338,7 @@ mri_dicom,naccnmri,subject.info.derived.cross-sectional.naccnmri,update,FALSE
 mri_dicom,naccmnum,subject.info.derived.longitudinal.naccmnum,dated-set,TRUE
 mri_dicom,naccmrdy,subject.info.derived.longitudinal.naccmrdy,dated-set,TRUE
 mri_dicom,naccmrsa,subject.info.derived.cross-sectional.naccmrsa,update,FALSE
-pet_dicom,image_session,subject.info.working.cross-sectional.pet-sessions,set,FALSE
+pet_dicom,pet_image_session,subject.info.working.cross-sectional.pet-sessions,set,FALSE
 pet_dicom,naccapta,subject.info.derived.longitudinal.naccapta,dated-set,TRUE
 pet_dicom,naccaptf,subject.info.derived.longitudinal.naccaptf,dated-set,TRUE
 pet_dicom,naccnapa,subject.info.derived.cross-sectional.naccnapa,update,FALSE

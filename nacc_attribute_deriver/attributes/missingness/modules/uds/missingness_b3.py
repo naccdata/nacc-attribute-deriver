@@ -62,7 +62,7 @@ class UDSFormB3Missingness(UDSMissingness):
         if self.uds.get_value("pdnormal", int) == 1:
             return 0
 
-        return None
+        return self.generic_missingness(field)
 
     # technically these could all have the rules CSV call a single
     # _missingness_pdnormal_gate rule; however doing this for

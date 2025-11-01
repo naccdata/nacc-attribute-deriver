@@ -1,6 +1,9 @@
-"""Derived variables from
+"""Derived variables from.
 
-V3 and earlier: Form A5: Subject Health History - see a5structrdd.sas
+V3 and earlier:
+    Form A5: Subject Health History - see a5structrdd.sas
+    Form D2: Clinician-assessed Medical Conditions (not
+        used for older derived variables)
 V4: Form A5/D2: Participant Health History/Clinician-assessed Medical Conditions
 
 Form A5 was combined with Form D2 in V4; as such, the variables listed here
@@ -12,7 +15,6 @@ from typing import List, Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
-
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
@@ -99,8 +101,8 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         V3 and earlier: From form A5
         """
         if self.formver >= 4:
-            return self.uds.get_value(
-                "headinjury", int, default=INFORMED_MISSINGNESS)
+            result = self.uds.get_value("headinjury", int)
+            return result if result is not None else INFORMED_MISSINGNESS
 
         traumbrf = self.uds.get_value("traumbrf", int)
         traumchr = self.uds.get_value("traumchr", int)
@@ -117,7 +119,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
 
         return 9
 
-    def _create_naccsubst(self) -> Optional[int]:
+    def _create_naccsubst(self) -> int:
         """Creates NACCSUBST - Participant used substances including
         prescription or recreational drugs that caused significant
         impairment in work, legal, driving, or social areas within
@@ -137,9 +139,10 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
             if abusothr == 9:
                 return 9
 
-        return self.uds.get_value("substyear", int, default=INFORMED_MISSINGNESS)
+        result = self.uds.get_value("substyear", int)
+        return result if result is not None else INFORMED_MISSINGNESS
 
-    def _create_naccheart(self) -> int:
+    def _create_naccheart(self) -> int:  # noqa: C901
         """Creates NACCHEART - Heart attack / cardiac arrest
 
         New in V4, but applied to all versions.
@@ -149,8 +152,8 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         """
         # V1 and V2
         if self.formver < 3:
-            return self.uds.get_value(
-                "cvhatt", int, default=INFORMED_MISSINGNESS)
+            result = self.uds.get_value("cvhatt", int)
+            return result if result is not None else INFORMED_MISSINGNESS
 
         # V3
         if self.formver < 4:
@@ -182,16 +185,17 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         return INFORMED_MISSINGNESS
 
     def __v3_determine_arthritis_result(
-        self, yes_condition: List[int], no_conditions: List[int]) -> int:
-        """V3 arthritis helper for NACCRHEUM, NACCOSTEO, and NACCARTOTH,
-        which ALL follow the below logic for V3:
+        self, yes_conditions: List[int], no_conditions: List[int]
+    ) -> int:
+        """V3 arthritis helper for NACCRHEUM, NACCOSTEO, and NACCARTOTH, which
+        ALL follow the below logic for V3:
 
-            If ARTHRIT is blank and ARTH is blank than VAR = -4
-            Elif ARTHTYPE or ARTYPE is YES_CONDITION then VAR = 1
-            Elif ARTHTYPE or ARTYPE in NO_CONDITION then VAR = 0
-            Elif ARTHRIT or ARTH = 0 then VAR = 0
-            ELIF ARTHTYPE or ARTYPE = 9 then VAR = 9
-            Else -4.
+        If ARTHRIT is blank and ARTH is blank than VAR = -4
+        Elif ARTHTYPE or ARTYPE is YES_CONDITION then VAR = 1
+        Elif ARTHTYPE or ARTYPE in NO_CONDITION then VAR = 0
+        Elif ARTHRIT or ARTH = 0 then VAR = 0
+        ELIF ARTHTYPE or ARTYPE = 9 then VAR = 9
+        Else -4.
         """
         arth = self.uds.get_value("arth", int)
         arthrit = self.uds.get_value("arthrit", int)
@@ -200,7 +204,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
 
         arthtype = self.uds.get_value("arthtype", int)
         artype = self.uds.get_value("artype", int)
-        if arthtype == yes_condition or artype == yes_condition:
+        if arthtype in yes_conditions or artype in yes_conditions:
             return 1
         if arthtype in no_conditions or artype in no_conditions:
             return 0
@@ -212,14 +216,14 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         return INFORMED_MISSINGNESS
 
     def __v4_determine_arthritis_result(self, field: str) -> int:
-        """V4 arthritis helper for NACCRHEUM, NACCOSTEO, and NACCARTOTH,
-        which ALL follow the below logic for V4:
+        """V4 arthritis helper for NACCRHEUM, NACCOSTEO, and NACCARTOTH, which
+        ALL follow the below logic for V4:
 
-            If TARGET_FIELD = 1 then VAR = 1
-            Elif ARTHRIT in (1,2) and FIELD is blank and ARTHTYPUNK is blank, then VAR = 0
-            Elif ARTHRIT=0 then VAR = 8
-            Elif ARTHTYPUNK=1 then VAR = 9
-            Else -4
+        If TARGET_FIELD = 1 then VAR = 1
+        Elif ARTHRIT in (1,2) and FIELD is blank and ARTHTYPUNK is blank, then VAR = 0
+        Elif ARTHRIT=0 then VAR = 8
+        Elif ARTHTYPUNK=1 then VAR = 9
+        Else -4
         """
         target_value = self.uds.get_value(field, int)
         arthrit = self.uds.get_value("arthrit", int)
@@ -250,7 +254,8 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
 
         if self.formver < 4:
             return self.__v3_determine_arthritis_result(
-                yes_condition=1, no_conditions=[2, 3])
+                yes_conditions=[1], no_conditions=[2, 3]
+            )
 
         return self.__v4_determine_arthritis_result("arthrrheum")
 
@@ -268,7 +273,8 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
 
         if self.formver < 4:
             return self.__v3_determine_arthritis_result(
-                yes_condition=2, no_conditions=[1, 3])
+                yes_conditions=[2], no_conditions=[1, 3]
+            )
 
         return self.__v4_determine_arthritis_result("arthrosteo")
 
@@ -286,7 +292,8 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
 
         if self.formver < 4:
             return self.__v3_determine_arthritis_result(
-                yes_condition=3, no_conditions=[1, 2])
+                yes_conditions=[3], no_conditions=[1, 2]
+            )
 
         return self.__v4_determine_arthritis_result("arthrothr")
 
@@ -314,7 +321,6 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
 
         return INFORMED_MISSINGNESS
 
-
     def _create_naccothcon(self) -> int:
         """Creates NACCOTHCON - Other medical conditions or procedures
         within the past 12 months
@@ -329,7 +335,8 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
             return INFORMED_MISSINGNESS
 
         if self.formver < 4:
-            return self.uds.get_value("othcond", int, default=INFORMED_MISSINGNESS)
+            result = self.uds.get_value("othcond", int)
+            return result if result is not None else INFORMED_MISSINGNESS
 
         othercond = self.uds.get_value("othercond", int)
         if othercond == 0:
@@ -400,4 +407,5 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
 
             return INFORMED_MISSINGNESS
 
-        return self.uds.get_value("anxiety", int, default=INFORMED_MISSINGNESS)
+        result = self.uds.get_value("anxiety", int)
+        return result if result is not None else INFORMED_MISSINGNESS

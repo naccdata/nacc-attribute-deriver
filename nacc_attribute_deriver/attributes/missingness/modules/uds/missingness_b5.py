@@ -8,4 +8,4 @@ from .missingness_uds import UDSMissingness
 class UDSFormB5Missingness(UDSMissingness):
     def _missingness_npiqinfx(self) -> Optional[str]:
         """Handle missingness for NPIQINFX."""
-        return self.handle_gated_writein("npiqinf", 3)
+        return self.handle_forbidden_gated_writein("npiqinf", 3)

@@ -132,9 +132,9 @@ class MPAttributeCollection(AttributeCollection):
         # only allow 1-20
         return min(len(sessions), 20)
 
-    def _create_image_session(self) -> str:
-        """Create variable to keep track of unique image sessions, based on
-        study date."""
+    def generate_image_session(self) -> str:
+        """Create variable to keep track of unique sessions, based on study
+        date."""
         return str(self.__mp.study_date)
 
 
@@ -212,6 +212,11 @@ class MPMRIAttributeCollection(MPAttributeCollection):
         """
         return 1
 
+    def _create_mri_image_session(self) -> str:
+        """Create variable to keep track of unique MRI sessions, based on study
+        date."""
+        return self.generate_image_session()
+
 
 class MPPETAttributeCollection(MPAttributeCollection):
     """Attribute collection for MP PETs."""
@@ -261,3 +266,8 @@ class MPPETAttributeCollection(MPAttributeCollection):
         that means a PET exists, so set to 1.
         """
         return 1
+
+    def _create_pet_image_session(self) -> str:
+        """Create variable to keep track of unique PET sessions, based on study
+        date."""
+        return self.generate_image_session()
