@@ -10,6 +10,8 @@ here to make sure we aren't accidentally missing or duplicating any.
 
 from typing import Optional
 
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+
 from .missingness_uds import UDSMissingness
 
 
@@ -27,8 +29,11 @@ class UDSFormC1C2Missingness(UDSMissingness):
         value = self.uds.get_value(field, int)
         respval = self.uds.get_value("respval", int)
 
-        if value is None and respval in [2, 3]:
-            return 0
+        if value is None:
+            if respval in [2, 3]:
+                return 0
+
+            return INFORMED_MISSINGNESS
 
         return None
 
@@ -43,10 +48,6 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_respintr(self) -> Optional[int]:
         """Handles missingness for RESPINTR."""
         return self._handle_respval_gate("respintr")
-
-    def _missingness_motrem(self) -> Optional[int]:
-        """Handles missingness for MOTREM."""
-        return self._handle_respval_gate("motrem")
 
     def _missingness_respdisn(self) -> Optional[int]:
         """Handles missingness for RESPDISN."""
@@ -159,19 +160,19 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_mocalanx(self) -> Optional[str]:
         """Handles missingness for MOCALANX."""
-        return self.handle_gated_writein("mocalan", 3)
+        return self.handle_forbidden_gated_writein("mocalan", 3)
 
     def _missingness_npsylanx(self) -> Optional[str]:
         """Handles missingness for NPSYLANX."""
-        return self.handle_gated_writein("npsylan", 3)
+        return self.handle_forbidden_gated_writein("npsylan", 3)
 
     def _missingness_respothx(self) -> Optional[str]:
         """Handles missingness for RESPOTHX."""
-        return self.handle_gated_writein("respoth", 1)
+        return self.handle_forbidden_gated_writein("respoth", 1)
 
     def _missingness_mmselanx(self) -> Optional[str]:
         """Handles missingness for MMSELANX."""
-        return self.handle_gated_writein("mmselan", 3)
+        return self.handle_forbidden_gated_writein("mmselan", 3)
 
     #######################################################
     # REYXREC gated variables - cascades across variables #

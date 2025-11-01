@@ -52,8 +52,20 @@ class UDSMissingness(UDSAttributeCollection):
 
         return INFORMED_BLANK
 
-    def handle_gated_writein(self, gate: str, value: int) -> Optional[str]:
-        """Handles write-in blanks that rely on a gate variable.
+    def handle_gated_writein(self, gate: str, values: List[int]) -> Optional[str]:
+        """Handles generic write-in logic in the form:
+
+        If GATE is in GATE_VALUES, then FIELD should be blank
+        """
+        gate_value = self.uds.get_value(gate, int)
+        if gate_value is None or gate_value in values:
+            return INFORMED_BLANK
+
+        return None
+
+    def handle_forbidden_gated_writein(self, gate: str, value: int) -> Optional[str]:
+        """Handles write-in blanks that rely on a gate variable in the form: If
+        GATE is NOT VALUE then FIELD should be blank.
 
         Args:
             gate: The gate variable
@@ -81,11 +93,10 @@ class UDSMissingness(UDSAttributeCollection):
         """Handle when the value is provided by the previous visit.
 
         If VAR == PREV_CODE, VAR = PREV_VISIT.
-        ELIF VAR is not blank and not PREV_CODE, return None (do not override)
+        ELIF VAR is not blank, return None (do not override)
         ELSE generic missingness
         """
         value = self.uds.get_value(field, attr_type)
-
         if value == prev_code and self.__prev_record is not None:
             prev_value = self.__prev_record.get_resolved_value(
                 field, attr_type, prev_code=prev_code
@@ -104,8 +115,8 @@ class UDSMissingness(UDSAttributeCollection):
 
 
 class GenericUDSMissingness(UDSMissingness):
-    """Need to define generic missingness rule in its own subclass otherwise it
-    gets inherited by all subclasses and imported multiple times."""
+    """Defines generic missingness rule in its own subclass otherwise it gets
+    inherited by all subclasses and imported multiple times."""
 
     def _missingness_uds(self, field: str) -> Optional[int]:
         """Defines general missingness for UDS; -4 if missing."""

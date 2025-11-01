@@ -90,6 +90,9 @@ class AttributeCollectionRegistry(type):
         methods: Dict[str, AttributeExpression] = {}
         for collection_type in cls.collection_types:
             for name, function in collection_type.get_all_hooks().items():  # type: ignore
+                if name in methods:
+                    raise AttributeDeriverError(f"Attribute {name} already defined")
+
                 methods[name] = AttributeExpression(
                     function=function,  # type: ignore
                     attribute_class=collection_type,
