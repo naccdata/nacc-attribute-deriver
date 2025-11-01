@@ -7,7 +7,16 @@ INFORMED_BLANK = "blank"  # will be translated to an overriding None
 DERIVE_TYPES = ["create", "missingness"]
 
 # For form A4 derived variables
-ALL_RXCLASSES = [
+COMBINATION_RX_CLASSES = [
+    "C02L",
+    "C07B",
+    "C07C",
+    "C09B",
+    "C09D",
+    "G03F",
+]
+
+NON_COMBINATION_RX_CLASSES = [
     "A10",
     "B01",
     "C01D",
@@ -36,3 +45,5 @@ ALL_RXCLASSES = [
     "N06D",
     "M01A",
 ]
+
+ALL_RX_CLASSES = COMBINATION_RX_CLASSES + NON_COMBINATION_RX_CLASSES
