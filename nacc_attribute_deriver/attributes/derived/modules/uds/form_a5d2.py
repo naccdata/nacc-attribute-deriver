@@ -1,11 +1,10 @@
-"""Derived variables from form A5: Subject Health History.
+"""Derived variables from
 
-From a5structrdd.sas.
+V3 and earlier: Form A5: Subject Health History - see a5structrdd.sas
+V4: Form A5/D2: Participant Health History/Clinician-assessed Medical Conditions
 
-These variables are heavily involved in a recode4g macro; it
-is not entirely clear to me what this is doing, but despite not
-aftievly translating that these seem to pass the regression
-tests okay.
+Form A5 was combined with Form D2 in V4; as such, the variables listed here
+are derived from both forms.
 """
 
 from typing import Optional
@@ -14,9 +13,11 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
 
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
-class UDSFormA45ttribute(UDSAttributeCollection):
-    """Class to collect UDS A5 attributes."""
+
+class UDSFormA5D2Attribute(UDSAttributeCollection):
+    """Class to collect UDS A5/D2 attributes."""
 
     def calculate_mrsyear(self, prefix: str, max_index: int = 6) -> Optional[int]:
         """Calculate mrsyear, which is the maximum of all {PREFIX}{I}YR
@@ -38,7 +39,12 @@ class UDSFormA45ttribute(UDSAttributeCollection):
     def _create_naccstyr(self) -> Optional[int]:
         """Creates NACCSTYR - Most recently reported year of stroke
         as of the initial visit.
+
+        Only computed in V3 and earlier from form A5.
         """
+        if self.formver >= 4:
+            return INFORMED_MISSINGNESS
+
         if not self.uds.is_initial():
             return None
 
@@ -60,7 +66,13 @@ class UDSFormA45ttribute(UDSAttributeCollection):
 
     def _create_nacctiyr(self) -> Optional[int]:
         """Creates NACCTIYR - Most recently reported year of TIA as of
-        the Initial Visit."""
+        the Initial Visit.
+
+        Only computed in V3 and earlier from form A5.
+        """
+        if self.formver >= 4:
+            return INFORMED_MISSINGNESS
+
         if not self.uds.is_initial():
             return None
 
@@ -81,7 +93,15 @@ class UDSFormA45ttribute(UDSAttributeCollection):
         return None
 
     def _create_nacctbi(self) -> Optional[int]:
-        """Creates NACCTBI - History of traumatic brain injury (TBI)."""
+        """Creates NACCTBI - History of traumatic brain injury (TBI).
+
+        V4: From form A5D2
+        V3 and earlier: From form A5
+        """
+        if self.formver >= 4:
+            return self.uds.get_value(
+                "headinjury", int, default=INFORMED_MISSINGNESS)
+
         traumbrf = self.uds.get_value("traumbrf", int)
         traumchr = self.uds.get_value("traumchr", int)
         traumext = self.uds.get_value("traumext", int)
