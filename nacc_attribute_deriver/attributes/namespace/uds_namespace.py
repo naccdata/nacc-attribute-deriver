@@ -42,10 +42,15 @@ class UDSNamespace(FormNamespace):
         packet = self.get_required("packet", str)
         return packet.upper().startswith("I")
 
+    def is_i4(self) -> bool:
+        """Returns whether or not this is specifically an I4 packet."""
+        packet = self.get_required("packet", str)
+        return packet.upper() == "I4"
+
     def is_in_person(self) -> bool:
         """Returns whethher or not this is an in-person visit."""
         packet = self.get_required("packet", str)
-        return packet is not None and packet.upper() in ["I", "F"]
+        return packet.upper() in ["I", "F"]
 
     def normalized_formver(self) -> int:
         """Returns the normalized form version.
