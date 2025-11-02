@@ -400,9 +400,9 @@ class UDSFormA1Missingness(UDSMissingness):
         """Handles missingness for PRIMLANG."""
         return self.handle_prev_visit("primlang", int)
 
-    def _missingness_primlangx(self) -> Optional[str]:
-        """Handles missingness for PRIMLANGX."""
-        return self.handle_prev_visit("primlangx", str)
+    def _missingness_primlanx(self) -> Optional[str]:
+        """Handles missingness for PRIMLANX."""
+        return self.handle_prev_visit("primlanx", str)
 
     def _missingness_handed(self) -> Optional[int]:
         """Handles missingness for HANDED."""

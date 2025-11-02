@@ -195,7 +195,6 @@ uds,raceter,file.info.resolved.raceter,update,FALSE
 uds,raceterx,file.info.resolved.raceterx,update,FALSE
 uds,primlang,file.info.resolved.primlang,update,FALSE
 uds,primlanx,file.info.resolved.primlanx,update,FALSE
-uds,primlangx,file.info.resolved.primlangx,update,FALSE
 uds,predomlanx,file.info.resolved.predomlanx,update,FALSE
 uds,educ,file.info.resolved.educ,update,FALSE
 uds,lvleduc,file.info.resolved.lvleduc,update,FALSE
