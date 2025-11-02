@@ -37,20 +37,24 @@ class UDSMissingness(UDSAttributeCollection):
         return self.__prev_record
 
     def generic_missingness(self, field: str) -> Optional[int]:
-        """Generic missingness for internal calls."""
+        """Generic missingness:
+
+        If FIELD is None, FIELD = -4.
+        """
         if self.uds.get_value(field, str) is None:
             return INFORMED_MISSINGNESS
 
         return None
 
     def generic_writein(self, field: str) -> Optional[str]:
-        """Generic blankness (write-ins) for internal calls."""
-        # if value exists, return None so we don't override
-        value = self.uds.get_value(field, str)
-        if value is not None:
-            return None
+        """Generic blankness (write-ins):
 
-        return INFORMED_BLANK
+        If FIELD is blank, FIELD should remain blank (INFORMED_BLANK)
+        """
+        if self.uds.get_value(field, str) is None:
+            return INFORMED_BLANK
+
+        return None
 
     def handle_gated_writein(self, gate: str, values: List[int]) -> Optional[str]:
         """Handles generic write-in logic in the form:

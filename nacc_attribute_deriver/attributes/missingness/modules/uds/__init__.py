@@ -12,4 +12,5 @@ from .missingness_b6 import *
 from .missingness_b8 import *
 from .missingness_b9 import *
 from .missingness_cx import *
+from .missingness_d1a import *
 from .missingness_uds import *
