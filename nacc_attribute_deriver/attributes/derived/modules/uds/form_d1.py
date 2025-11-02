@@ -37,9 +37,19 @@ class UDSFormDxAttribute(UDSAttributeCollection):
 
     def generate_mci(self) -> int:
         """Mild cognitive impairment MCI, which is not a derived variable
-        itself but is used to calculate other derived variables."""
+        itself but is used to calculate other derived variables.
 
-        # all of these fields are null, 0, or 1
+        In V4, this is just the MCI variable.     Returns 1 if MCI == 1,
+        else 0 (only option is that or blank, which     means the same
+        thing for the purpose of deriving variables) In V3 and earlier,
+        this is determined from several variables.     Returns 1 if ANY
+        are 1. Returns 0 if all are 0 or blank.
+        """
+        if self.formver >= 4:
+            mci = self.uds.get_value("mci", int)
+            return 1 if mci == 1 else 0
+
+        # all of these fields can be null, 0, or 1
         mci_vars = self.uds.group_attributes(
             ["mciamem", "mciaplus", "mcinon1", "mcinon2"], int
         )

@@ -171,45 +171,6 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
 
         return 99
 
-    def _create_naccbvft(self) -> int:
-        """From d1structdd.sas.
-
-        Dementia syndrome -- behavioral variant FTD syndrome (bvFTD)
-        """
-        if self.demented != 1:
-            return 8
-
-        # assuming demented == 1 after this point
-        ftd = self.uds.get_value("ftd", int)
-        ftdsyn = self.uds.get_value("ftdsyn", int)
-
-        if ftd in [0, 1]:
-            return ftd
-        if ftdsyn in [0, 1]:
-            return ftdsyn
-
-        # return self.uds.check_default("naccbvft", 8)
-        return 8
-
-    def _create_nacclbds(self) -> int:
-        """From d1structdd.sas.
-
-        Dementia syndrome -- Lewy body dementia syndrome
-        """
-        if self.demented != 1:
-            return 8
-
-        # assuming demented == 1 after this point
-        dlb = self.uds.get_value("dlb", int)
-        lbdsyn = self.uds.get_value("lbdsyn", int)
-
-        if dlb in [0, 1]:
-            return dlb
-        if lbdsyn in [0, 1]:
-            return lbdsyn
-
-        return 8
-
     def _create_naccalzd(self) -> int:
         """Creates NACCALZD - Presumptive etiologic diagnosis of
         the cognitive disorder - Alzheimer's disease.
@@ -230,16 +191,3 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         # the above are expected to always be defined, so throw
         # error if we cannot determine it
         raise AttributeDeriverError("Cannot determine NACCALZD")
-
-    def _create_nacctmci(self) -> int:
-        """Creates NACCTMCI - Mild cognitive impairment (MCI) type"""
-        if self.uds.get_value("mciamem", int) == 1:
-            return 1
-        if self.uds.get_value("mciaplus", int) == 1:
-            return 2
-        if self.uds.get_value("mcinon1", int) == 1:
-            return 3
-        if self.uds.get_value("mcinon2", int) == 1:
-            return 4
-
-        return 8
