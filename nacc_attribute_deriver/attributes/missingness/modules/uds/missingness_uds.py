@@ -111,7 +111,8 @@ class UDSMissingness(UDSAttributeCollection):
         elif value is not None:
             return None
 
-        result = self.generic_missingness(field)
+        result = self.generic_writein(field) if isinstance(attr_type, str) else \
+            self.generic_missingness(field)
         if result is not None:
             return attr_type(result)  # type: ignore
 

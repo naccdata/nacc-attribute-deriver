@@ -1,12 +1,6 @@
 """Derived variables from form D1a: Clinical Syndrome.
 
 In V3 and earlier, was part of D1: Clinician Diagnosis.
-
-The original SAS code has a lot of recode logic that basically bulk-
-handles recoding variables (usually to handle null values). It is very
-unintuitive so that was effectively ignored in this rewrite, and their
-function was "redone" per-variable based on the RDD description and
-regression testing.
 """
 
 from typing import List, Optional

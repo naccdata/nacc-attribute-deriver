@@ -7,12 +7,6 @@ In V4 this was split into the following 2 forms:
 See corresponding form_d1a.py and form_d1b.py for the variables that
 moved to those forms. The variables remaining here are either
 not applicable to V4 or require variables from both forms.
-
-The original SAS code has a lot of recode logic that basically bulk-
-handles recoding variables (usually to handle null values). It is very
-unintuitive so that was effectively ignored in this rewrite, and their
-function was "redone" per-variable based on the RDD description and
-regression testing.
 """
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
