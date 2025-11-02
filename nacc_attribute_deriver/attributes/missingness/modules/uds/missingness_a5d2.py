@@ -1,7 +1,15 @@
-"""Class to handle A5D2-specific missingness values."""
+"""Class to handle A5D2-specific missingness values.
+
+Some of these variables have recode logic defined in the legacy SAS
+code, so there are some version differences.
+"""
 
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    DerivedNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
@@ -10,9 +18,45 @@ from .missingness_uds import UDSMissingness
 
 
 class UDSFormA5D2Missingness(UDSMissingness):
-    ########################
-    # GATED CARRY FORWARDS #
-    ########################
+    def __init__(self, table: SymbolTable) -> None:
+        super().__init__(table=table)
+
+        # needed for variables gated by NACCTBI
+        self.__derived = DerivedNamespace(table=table)
+
+    def __handle_a5d2_gate(
+        self,
+        gate: str,
+        field: str,
+        no_return_value: int = 8,
+        unknown_return_value: int = 9,
+        carry_forward: bool = False,
+    ) -> Optional[int]:
+        """Handle generic A5D2 when there is both a gate and potentially a
+        carryforward (777) situation:
+
+        If GATE == 0, return NO_RETURN_VALUE
+            (value to return when the answer is 0 = No, generally 888)
+        If GATE == 9, return UNKNOWN_RETURN_VALUE
+            (value to return when anwer is 9 = Unknown, generally 999)
+
+        If carry forward, handle carry forward case (if 777, carry forward
+        from previous visit), else generic missingness.
+
+        If GATE = 0, then FIELD should be 8
+        If GATE = 9, then FIELD should be 9
+        Else generic missingness
+        """
+        gate_value = self.uds.get_value(gate, int)
+        if gate_value == 0:
+            return no_return_value
+        if gate_value == 9:
+            return unknown_return_value
+
+        if carry_forward:
+            return self.handle_prev_visit(field, int, prev_code=777)
+
+        return self.generic_missingness(field)
 
     def handle_a5d2_carry_forward(
         self,
@@ -21,30 +65,24 @@ class UDSFormA5D2Missingness(UDSMissingness):
         no_return_value: int = 888,
         unknown_return_value: int = 999,
     ) -> Optional[int]:
-        """Handle generic A5D2 when there is both a gate and a carryforward
-        (777) situation:
-
-        If GATE == 0, return NO_RETURN_VALUE
-            (value to return when the answer is 0 = No, generally 888)
-        If GATE == 9, return UNKNOWN_RETURN_VALUE
-            (value to return when anwer is 9 = Unknown, generally 999)
-
-        Handle carry forward case (if 777, carry forward from previous visit),
-        else generic missingness.
-        """
-        gate_value = self.uds.get_value(gate, int)
-        if gate_value == 0:
-            return no_return_value
-        if gate_value == 9:
-            return unknown_return_value
-
-        return self.handle_prev_visit(field, int, prev_code=777)
+        """Handle generic A5D2 gate with carry forward."""
+        return self.__handle_a5d2_gate(
+            gate,
+            field,
+            no_return_value=no_return_value,
+            unknown_return_value=unknown_return_value,
+            carry_forward=True,
+        )
 
     def _missingness_smokyrs(self) -> Optional[int]:
         """Handles missingness for SMOKYRS."""
         return self.handle_a5d2_carry_forward(
             "tobac100", "smokyrs", no_return_value=88, unknown_return_value=99
         )
+
+    ########################
+    # GATED CARRY FORWARDS #
+    ########################
 
     def _missingness_quitsmok(self) -> Optional[int]:
         """Handles missingness for QUITSMOK."""
@@ -138,21 +176,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
     # GENERIC GATES #
     #################
 
-    def __handle_a5d2_gate(self, gate: str, field: str) -> Optional[int]:
-        """Handle generic A5D2 gated logic which is:
-
-        If GATE = 0, then FIELD should be 8
-        If GATE = 9, then FIELD should be 9
-        Else generic missingness
-        """
-        gate_value = self.uds.get_value(gate, int)
-        if gate_value == 0:
-            return 8
-        if gate_value == 9:
-            return 9
-
-        return self.generic_missingness(field)
-
     def _missingness_packsper(self) -> Optional[int]:
         """Handles missingness for PACKSPER."""
         return self.__handle_a5d2_gate("tobac100", "packsper")
@@ -173,10 +196,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
         """Handles missingness for HRTATTMULT."""
         return self.__handle_a5d2_gate("hrtattack", "hrtattmult")
 
-    def _missingness_strokmul(self) -> Optional[int]:
-        """Handles missingness for STROKMUL."""
-        return self.__handle_a5d2_gate("cbstroke", "strokmul")
-
     def _missingness_strokstat(self) -> Optional[int]:
         """Handles missingness for STROKSTAT."""
         return self.__handle_a5d2_gate("cbstroke", "strokstat")
@@ -184,10 +203,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
     def _missingness_angiocp(self) -> Optional[int]:
         """Handles missingness for ANGIOCP."""
         return self.__handle_a5d2_gate("cbstroke", "angiocp")
-
-    def _missingness_diabtype(self) -> Optional[int]:
-        """Handles missingness for DIABTYPE."""
-        return self.__handle_a5d2_gate("diabetes", "diabtype")
 
     def _missingness_covidhosp(self) -> Optional[int]:
         """Handles missingness for COVIDHOSP."""
@@ -201,13 +216,96 @@ class UDSFormA5D2Missingness(UDSMissingness):
         """Handles missingness for PANICDIS."""
         return self.__handle_a5d2_gate("anxiety", "panicdis")
 
-    def _missingness_ocd(self) -> Optional[int]:
-        """Handles missingness for OCD."""
-        return self.__handle_a5d2_gate("anxiety", "ocd")
-
     def _missingness_othanxdis(self) -> Optional[int]:
         """Handles missingness for OTHANXDIS."""
         return self.__handle_a5d2_gate("anxiety", "othanxdis")
+
+    # the following have logic from V3 and earlier and brought
+    # over from SAS recode logic
+    def _missingness_strokmul(self) -> Optional[int]:
+        """Handles missingness for STROKMUL.
+
+        V3+ only
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_a5d2_gate("cbstroke", "strokmul")
+
+    def _missingness_ocd(self) -> Optional[int]:
+        """Handles missingness for OCD.
+
+        Only V3+
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_a5d2_gate("anxiety", "ocd")
+
+    def _missingness_diabtype(self) -> Optional[int]:
+        """Handles missingness for DIABTYPE."""
+        diabetes = self.uds.get_value("diabetes", int)
+        if self.formver < 3 and diabetes in [1, 2]:
+            return 9
+        if self.formver < 4 and diabetes in [0, 9]:
+            return 8
+
+        return self.__handle_a5d2_gate("diabetes", "diabtype")
+
+    def _missingness_tiamult(self) -> Optional[int]:
+        """Handles missingness for TIAMULT.
+
+        V3 only.
+        """
+        if self.formver != 3:
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_a5d2_gate("cbtia", "tiamult")
+
+    def _missingness_alcfreq(self) -> Optional[int]:
+        """Only V3.
+
+        Handles missingness for ALCFREQ.
+        """
+        if self.formver != 3:
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_a5d2_gate(
+            "alcoccas",
+            "alcfreq",
+            no_return_value=8,
+            unknown_return_value=INFORMED_MISSINGNESS,
+        )
+
+    def _missingness_hattmult(self) -> Optional[int]:
+        """Handles missingness for HATTMULT.
+
+        Only V3.
+        """
+        if self.formver != 3:
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_a5d2_gate(
+            "cvhatt",
+            "hattmult",
+            no_return_value=8,
+            unknown_return_value=INFORMED_MISSINGNESS,
+        )
+
+    def _missingness_hattyear(self) -> Optional[int]:
+        """Handles missingness for HATTYEAR.
+
+        Only V3
+        """
+        if self.formver != 3:
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_a5d2_gate(
+            "cvhatt",
+            "hattyear",
+            no_return_value=888,
+            unknown_return_value=INFORMED_MISSINGNESS,
+        )
 
     #############################
     # CARRY FORWARD ONLY VALUES #
@@ -340,38 +438,95 @@ class UDSFormA5D2Missingness(UDSMissingness):
     ##########################
 
     def __handle_arthritis_gate(self, field: str) -> Optional[int]:
-        """Handles variables gated by ARTHRITIS, which follow:
+        """Handles variables gated by ARTHRITIS (V4) or ARTHRIT (V3 and
+        earlier), which follow:
 
         If ARTHRITIS = 1 or 2 and FIELD is blank, FIELD should = 0
         If ARTHRITIS is 0 or 9 and FIELD is blank, then FIELD should = 8
+
+        OR
+
+        If ARTHRIT = 0 and FIELD is blank, FIELD should = 0
+        If ARTHRIT = 9 and FIELD is blank, then FIELD should = 8
         """
-        arthritis = self.uds.get_value("arthritis", int)
+        gate = "arthrit" if self.formver < 4 else "arthritis"
+        gate_value = self.uds.get_value(gate, int)
         value = self.uds.get_value(field, int)
 
         if value is None:
-            if arthritis in [1, 2]:
-                return 0
-            if arthritis in [0, 9]:
-                return 8
+            if self.formver < 4:
+                if gate_value == 0:
+                    return 0
+                if gate_value == 9:
+                    return 8
+            else:
+                if gate_value in [1, 2]:
+                    return 0
+                if gate_value in [0, 9]:
+                    return 8
+
             return INFORMED_MISSINGNESS
 
         return None
 
     def _missingness_arthupex(self) -> Optional[int]:
-        """Handles missingness for ARTHUPEX."""
+        """Handles missingness for ARTHUPEX.
+
+        Only V3+
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
         return self.__handle_arthritis_gate("arthupex")
 
     def _missingness_arthloex(self) -> Optional[int]:
-        """Handles missingness for ARTHLOEX."""
+        """Handles missingness for ARTHLOEX.
+
+        Only V3+
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
         return self.__handle_arthritis_gate("arthloex")
 
     def _missingness_arthspin(self) -> Optional[int]:
-        """Handles missingness for ARTHSPIN."""
+        """Handles missingness for ARTHSPIN.
+
+        Only V3+
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
         return self.__handle_arthritis_gate("arthspin")
 
     def _missingness_arthunk(self) -> Optional[int]:
-        """Handles missingness for ARTHUNK."""
+        """Handles missingness for ARTHUNK.
+
+        Only V3+
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
         return self.__handle_arthritis_gate("arthunk")
+
+    def _missingness_arthtype(self) -> Optional[int]:
+        """Handles missingness for ARTHTYPE.
+
+        V3 only.
+        """
+        if self.formver != 3:
+            return INFORMED_MISSINGNESS
+
+        arthrit = self.uds.get_value("arthrit", int)
+        arthtype = self.uds.get_value("arthtype", int)
+
+        if arthtype is None:
+            if arthrit in [0, 9]:
+                return 8
+
+            return INFORMED_MISSINGNESS
+
+        return None
 
     ######################
     # APNEA GATED VALUES #
@@ -563,6 +718,55 @@ class UDSFormA5D2Missingness(UDSMissingness):
         """Handles missingness for NOMENSOTH."""
         return self.__handle_nomensage_gate("nomensoth")
 
+    ########################
+    # NACCTBI-GATED VALUES #
+    ########################
+
+    def __handle_nacctbi_gated_values(self, field: str) -> Optional[int]:
+        """V3 only. Handles values gated by TBI logic and actually looks at the
+        derived variable NACCTBI.
+
+        Since this is derived before missingness, assumes it can find it
+        under file.info.derived.nacctbi
+        """
+        if self.formver != 3:
+            return INFORMED_MISSINGNESS
+
+        value = self.uds.get_value(field, int)
+        if value is None:
+            nacctbi = self.__derived.get_value("nacctbi", int)
+            if nacctbi == 0:
+                return 0
+            if nacctbi == 9:
+                return INFORMED_MISSINGNESS
+
+        return self.generic_missingness(field)
+
+    def _missingness_tbibrief(self) -> Optional[int]:
+        """Handles missingness for TBIBRIEF."""
+        return self.__handle_nacctbi_gated_values("tbibrief")
+
+    def _missingness_tbiexten(self) -> Optional[int]:
+        """Handles missingness for TBIEXTEN."""
+        return self.__handle_nacctbi_gated_values("tbiexten")
+
+    def _missingness_tbiwolos(self) -> Optional[int]:
+        """Handles missingness for TBIWOLOS."""
+        return self.__handle_nacctbi_gated_values("tbiwolos")
+
+    def _missingness_tbiyear(self) -> Optional[int]:
+        """Handles missingness for TBIYEAR."""
+        if self.formver != 3:
+            return INFORMED_MISSINGNESS
+
+        tbiyear = self.uds.get_value("tbiyear", int)
+        nacctbi = self.__derived.get_value("nacctbi", int)
+
+        if tbiyear is None and nacctbi in [0, 9]:
+            return 8888
+
+        return self.generic_missingness("tbiyear")
+
     #########
     # OTHER #
     #########
@@ -598,25 +802,39 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
         return self.generic_missingness("deprtreat")
 
+    def _missingness_pdyr(self) -> Optional[int]:
+        """Handles missingness for PDYR.
+
+        From V3 and earlier SAS recode logic
+        """
+        if self.formver >= 4:
+            return INFORMED_MISSINGNESS
+
+        if self.uds.get_value("pd", int) in [0, 9]:
+            return 8888
+
+        return self.generic_missingness("pdyr")
+
+    def _missingness_pdothryr(self) -> Optional[int]:
+        """Handles missingness for PDOTHRYR.
+
+        From V3 and earlier SAS recode logic
+        """
+        if self.formver >= 4:
+            return INFORMED_MISSINGNESS
+
+        if self.uds.get_value("pdpdothr", int) in [0, 9]:
+            return 8888
+
+        return self.generic_missingness("pdothryr")
+
     ###################
     # OTHER - WRITEIN #
     ###################
 
-    def _missingness_cvothrx(self) -> Optional[str]:
-        """Handles missingness for CVOTHRX."""
-        return self.handle_gated_writein("cvothr", [0, 9])
-
     def _missingness_impotherx(self) -> Optional[str]:
         """Handles missingness for IMPOTHERX."""
         return self.handle_gated_writein("impother", [0])
-
-    def _missingness_arthtypx(self) -> Optional[str]:
-        """Handles missingness for ARTHTYPX."""
-        return self.handle_gated_writein("arthrothr", [0])
-
-    def _missingness_othsleex(self) -> Optional[str]:
-        """Handles missingness for OTHSLEEX."""
-        return self.handle_gated_writein("othsleep", [0, 9])
 
     def _missingness_cancotherx(self) -> Optional[str]:
         """Handles missingness for CANCOTHERX."""
@@ -634,10 +852,46 @@ class UDSFormA5D2Missingness(UDSMissingness):
         """Handles missingness for OTHANXDISX."""
         return self.handle_gated_writein("othanxdis", [0, 9])
 
-    def _missingness_psycdisx(self) -> Optional[str]:
-        """Handles missingness for PSYCDISX."""
-        return self.handle_gated_writein("psycdis", [0, 9])
-
     def _missingness_nomensothx(self) -> Optional[str]:
         """Handles missingness for NOMENSOTHX."""
         return self.handle_gated_writein("nomensoth", [0])
+
+    def _missingness_cvothrx(self) -> Optional[str]:
+        """Handles missingness for CVOTHRX."""
+        if self.formver < 4:
+            return self.generic_writein("cvothrx")
+
+        return self.handle_gated_writein("cvothr", [0, 9])
+
+    def _missingness_arthtypx(self) -> Optional[str]:
+        """Handles missingness for ARTHTYPX."""
+        if self.formver < 4:
+            return self.generic_writein("arthtypx")
+
+        return self.handle_gated_writein("arthrothr", [0])
+
+    def _missingness_othsleex(self) -> Optional[str]:
+        """Handles missingness for OTHSLEEX."""
+        if self.formver < 4:
+            return self.generic_writein("othsleex")
+
+        return self.handle_gated_writein("othsleep", [0, 9])
+
+    def _missingness_psycdisx(self) -> Optional[str]:
+        """Handles missingness for PSYCDISX."""
+        if self.formver < 4:
+            return self.generic_writein("psycdisx")
+
+        return self.handle_gated_writein("psycdis", [0, 9])
+
+    def _missingness_abusx(self) -> Optional[str]:
+        """Handles missingness for ABUSX."""
+        return self.generic_writein("abusx")
+
+    def _missingness_cbothrx(self) -> Optional[str]:
+        """Handles missingness for CBOTHRX."""
+        return self.generic_writein("cbothrx")
+
+    def _missingness_ncothrx(self) -> Optional[str]:
+        """Handles missingness for NCOTHRX."""
+        return self.generic_writein("ncothrx")

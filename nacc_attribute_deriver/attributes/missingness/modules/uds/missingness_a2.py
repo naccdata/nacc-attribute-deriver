@@ -55,29 +55,29 @@ class UDSFormA2Missingness(UDSMissingness):
         return self.generic_missingness(field)
 
     def _missingness_inknown(self) -> Optional[int]:
-        """Handles missingness for INKNOWN"""
-        return self.__handle_newinf_gate('inknown')
+        """Handles missingness for INKNOWN."""
+        return self.__handle_newinf_gate("inknown")
 
     def _missingness_inhisp(self) -> Optional[int]:
-        """Handles missingness for INHISP"""
-        return self.__handle_newinf_gate('inhisp')
+        """Handles missingness for INHISP."""
+        return self.__handle_newinf_gate("inhisp")
 
     def _missingness_inhispor(self) -> Optional[int]:
-        """Handles missingness for INHISPOR"""
-        return self.__handle_newinf_gate('inhispor')
+        """Handles missingness for INHISPOR."""
+        return self.__handle_newinf_gate("inhispor")
 
     def _missingness_inrace(self) -> Optional[int]:
-        """Handles missingness for INRACE"""
-        return self.__handle_newinf_gate('inrace')
+        """Handles missingness for INRACE."""
+        return self.__handle_newinf_gate("inrace")
 
     def _missingness_inrasec(self) -> Optional[int]:
-        """Handles missingness for INRASEC"""
-        return self.__handle_newinf_gate('inrasec')
+        """Handles missingness for INRASEC."""
+        return self.__handle_newinf_gate("inrasec")
 
     def _missingness_inrater(self) -> Optional[int]:
-        """Handles missingness for INRATER"""
-        return self.__handle_newinf_gate('inrater')
+        """Handles missingness for INRATER."""
+        return self.__handle_newinf_gate("inrater")
 
     def _missingness_ineduc(self) -> Optional[int]:
-        """Handles missingness for INEDUC"""
-        return self.__handle_newinf_gate('ineduc')
+        """Handles missingness for INEDUC."""
+        return self.__handle_newinf_gate("ineduc")

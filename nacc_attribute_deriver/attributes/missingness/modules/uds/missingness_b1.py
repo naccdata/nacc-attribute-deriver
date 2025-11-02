@@ -13,7 +13,6 @@ from .missingness_uds import UDSMissingness
 
 
 class UDSFormB1Missingness(UDSMissingness):
-
     def _missingness_viswcorr(self) -> Optional[int]:
         """Handles missingness for VISWCORR.
 

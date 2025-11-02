@@ -13,7 +13,6 @@ from .missingness_uds import UDSMissingness
 
 
 class UDSFormB2Missingness(UDSMissingness):
-
     def __handle_cvdimag_gate(self, field: str) -> Optional[int]:
         """Handles missingness for values gated by CVDIMG."""
         if self.formver != 2:
@@ -25,17 +24,17 @@ class UDSFormB2Missingness(UDSMissingness):
         return self.generic_missingness(field)
 
     def _missingness_cvdimag1(self) -> Optional[int]:
-        """Handles missingness for CVDIMAG1"""
-        return self.__handle_cvdimag_gate('cvdimag1')
+        """Handles missingness for CVDIMAG1."""
+        return self.__handle_cvdimag_gate("cvdimag1")
 
     def _missingness_cvdimag2(self) -> Optional[int]:
-        """Handles missingness for CVDIMAG2"""
-        return self.__handle_cvdimag_gate('cvdimag2')
+        """Handles missingness for CVDIMAG2."""
+        return self.__handle_cvdimag_gate("cvdimag2")
 
     def _missingness_cvdimag3(self) -> Optional[int]:
-        """Handles missingness for CVDIMAG3"""
-        return self.__handle_cvdimag_gate('cvdimag3')
+        """Handles missingness for CVDIMAG3."""
+        return self.__handle_cvdimag_gate("cvdimag3")
 
     def _missingness_cvdimag4(self) -> Optional[int]:
-        """Handles missingness for CVDIMAG4"""
-        return self.__handle_cvdimag_gate('cvdimag4')
+        """Handles missingness for CVDIMAG4."""
+        return self.__handle_cvdimag_gate("cvdimag4")
