@@ -259,28 +259,55 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # TRAILX gated variables #
     ##########################
 
-    def _handle_trailx_gate(self, gate: str) -> Optional[int]:
+    def _handle_trailx_gate(self, gate: str, field: str) -> Optional[int]:
         """Generically handle:
 
-        If GATE is 995-998 then FIELD should = GATE.
+        For V4: If GATE is 995-998 then FIELD should = GATE.
+        For V3 and earlier: see SAS code
         """
-        return self.handle_set_to_gate(gate, check_values=[995, 996, 997, 998])
+        # if self.uds.get_value(gate, int) == 999:
+        #     return 99
+
+        # if self.formver < 3:
+        #     value = self.uds.get_value(field, int)
+        #     if value is None or value == 88:
+        #         return INFORMED_MISSINGNESS
+
+        result = self.handle_set_to_gate(gate, check_values=[995, 996, 997, 998])
+        if result is not None:
+            return result
+
+        return self.generic_missingness(field)
 
     def _missingness_trailarr(self) -> Optional[int]:
         """Handles missingness for TRAILARR."""
-        return self._handle_trailx_gate("traila")
+        return self._handle_trailx_gate("traila", "trailarr")
 
     def _missingness_trailali(self) -> Optional[int]:
         """Handles missingness for TRAILALI."""
-        return self._handle_trailx_gate("traila")
+        return self._handle_trailx_gate("traila", "trailali")
 
     def _missingness_trailbrr(self) -> Optional[int]:
         """Handles missingness for TRAILBRR."""
-        return self._handle_trailx_gate("trailb")
+        return self._handle_trailx_gate("trailb", "trailbrr")
 
     def _missingness_trailbli(self) -> Optional[int]:
         """Handles missingness for TRAILBLI."""
-        return self._handle_trailx_gate("trailb")
+        return self._handle_trailx_gate("trailb", "trailbli")
+
+    # def _missingness_traila(self) -> Optional[int]:
+    #     """Handles missingness for TRAILA."""
+    #     if self.uds.get_value("traila", int) is None:
+    #         return 999
+
+    #     return None
+
+    # def _missingness_trailb(self) -> Optional[int]:
+    #     """Handles missingness for TRAILB."""
+    #     if self.uds.get_value("trailb", int) is None:
+    #         return 999
+
+    #     return None
 
     ###########################
     # OTRAILX gated variables #
