@@ -569,10 +569,11 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         # we can assume we are on the following case:
         # "NORMCOG = 1 or IMPNOMCI = 1" at IVP is true
         # this is the same as ivcstat == 1; technically ivcstat can = 0 as well,
-        # but we are ignoring that, see comments below
+        # but we are ignoring that, see comments below. If it ends up being
+        # a problem, can maybe return -4 in that case
 
         # Point being, if we got here we consider that condition true, and all
-        # we care about is the current MCi status, so just return that :)
+        # we care about is the current MCI status, so just return that :)
         return self.generate_mci()
 
     """
@@ -675,3 +676,40 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         # if this form does not give us any new information, return whatever
         # FVMCI was; default 0 for no MCI or demented at followup visit
         return fvmci if fvmci is not None else 0
+
+    def generate_nodx(self) -> int:
+        """No diagnosis - used to derive other variables."""
+
+        diagnosis = self.uds.group_attributes(
+            [
+                "probad",
+                "possad",
+                "dlb",
+                "vasc",
+                "vascps",
+                "alcdem",
+                "demun",
+                "ftd",
+                "ppaph",
+                "psp",
+                "cort",
+                "hunt",
+                "prion",
+                "meds",
+                "dysill",
+                "dep",
+                "othpsy",
+                "downs",
+                "park",
+                "stroke",
+                "hyceph",
+                "brninj",
+                "neop",
+                "cogoth",
+                "cogoth2",
+                "cogoth3",
+            ],
+            int,
+        )
+
+        return all(x != 1 for x in diagnosis)

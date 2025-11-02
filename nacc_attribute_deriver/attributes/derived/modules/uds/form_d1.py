@@ -39,11 +39,12 @@ class UDSFormDxAttribute(UDSAttributeCollection):
         """Mild cognitive impairment MCI, which is not a derived variable
         itself but is used to calculate other derived variables.
 
-        In V4, this is just the MCI variable.     Returns 1 if MCI == 1,
-        else 0 (only option is that or blank, which     means the same
-        thing for the purpose of deriving variables) In V3 and earlier,
-        this is determined from several variables.     Returns 1 if ANY
-        are 1. Returns 0 if all are 0 or blank.
+        In V4, this is just the MCI variable.
+        Returns 1 if MCI == 1, else 0 (only option is that or blank, which
+        means the same thing for the purpose of deriving variables)
+
+        In V3 and earlier, this is determined from several variables.
+        Returns 1 if ANY are 1. Returns 0 if all are 0 or blank.
         """
         if self.formver >= 4:
             mci = self.uds.get_value("mci", int)
@@ -55,43 +56,6 @@ class UDSFormDxAttribute(UDSAttributeCollection):
         )
 
         return 1 if any(x == 1 for x in mci_vars) else 0
-
-    def generate_nodx(self) -> int:
-        """No diagnosis - used to derive other variables."""
-
-        diagnosis = self.uds.group_attributes(
-            [
-                "probad",
-                "possad",
-                "dlb",
-                "vasc",
-                "vascps",
-                "alcdem",
-                "demun",
-                "ftd",
-                "ppaph",
-                "psp",
-                "cort",
-                "hunt",
-                "prion",
-                "meds",
-                "dysill",
-                "dep",
-                "othpsy",
-                "downs",
-                "park",
-                "stroke",
-                "hyceph",
-                "brninj",
-                "neop",
-                "cogoth",
-                "cogoth2",
-                "cogoth3",
-            ],
-            int,
-        )
-
-        return all(x != 1 for x in diagnosis)
 
 
 class UDSFormD1Attribute(UDSFormDxAttribute):
