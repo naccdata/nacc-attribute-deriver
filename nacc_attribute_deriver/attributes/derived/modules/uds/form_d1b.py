@@ -264,7 +264,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if self.normcog == 1:
             return 88
 
-        # assuming normcog == 0 != 1 after this point
+        # assuming normcog == 0 after this point
         # get all statuses in a list, evaluate each group in order
 
         if self.has_primary(["probadif", "possadif", "alzdisif"]):

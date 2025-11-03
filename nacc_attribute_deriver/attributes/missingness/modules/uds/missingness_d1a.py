@@ -1,50 +1,13 @@
 """Class to handle D1a-specific missingness values."""
 
-from typing import List, Optional
+from typing import Optional
 
-from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
-from .missingness_uds import UDSMissingness
+from .missingness_d1 import UDSFormD1Missingness
 
 
-class UDSFormD1aMissingness(UDSMissingness):
-    def __init__(self, table: SymbolTable) -> None:
-        super().__init__(table)
-
-        # variables a majority of these missingness values rely on
-        self.__normcog = self.uds.get_value("normcog", int)
-        self.__demented = self.uds.get_value("demented", int)
-        self.__impnomci = self.uds.get_value("impnomci", int)
-        self.__mci = self.generate_mci()
-
-    def check_applicable(self, versions: Optional[List[float]] = None) -> bool:
-        """Called by each variable; returns True if this variable is applicable
-        to the specified versions.
-
-        In general, a lot of variables are only calculated for version
-        3.0, 3.2, and 4.0.
-        """
-        if versions is None:
-            versions = [3.0, 3.2, 4.0]
-
-        raw_formver = self.uds.get_required("formver", float)
-        return raw_formver in versions
-
-    def generate_mci(self) -> int:
-        """(This is copied from the derived variable code; should probably
-        figure out a better pattern to avoid duplication."""
-        if self.formver >= 4:
-            mci = self.uds.get_value("mci", int)
-            return 1 if mci == 1 else 0
-
-        # all of these fields can be null, 0, or 1
-        mci_vars = self.uds.group_attributes(
-            ["mciamem", "mciaplus", "mcinon1", "mcinon2"], int
-        )
-
-        return 1 if any(x == 1 for x in mci_vars) else 0
-
+class UDSFormD1aMissingness(UDSFormD1Missingness):
     ###########################
     # NORMCOG-gated variables #
     ###########################
@@ -57,9 +20,9 @@ class UDSFormD1aMissingness(UDSMissingness):
         If NORMCOG = 1 and FIELD is blank, FIELD = 8
         """
         if self.uds.get_value(field, int) is None:
-            if self.__normcog == 1:
+            if self.normcog == 1:
                 return 8
-            if not ignore_normcog_0 and self.__normcog == 0:
+            if not ignore_normcog_0 and self.normcog == 0:
                 return 0
 
             return INFORMED_MISSINGNESS
@@ -174,13 +137,6 @@ class UDSFormD1aMissingness(UDSMissingness):
 
         return self.__handle_normcog_gate("impsub")
 
-    def _missingness_ftldnos(self) -> Optional[int]:
-        """Handles missingness for FTLDNOS."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
-        return self.__handle_normcog_gate("ftldnos")
-
     def _missingness_meds(self) -> Optional[int]:
         """Handles missingness for MEDS."""
         return self.__handle_normcog_gate("meds")
@@ -213,22 +169,6 @@ class UDSFormD1aMissingness(UDSMissingness):
         """Handles missingness for POSSADIF."""
         return self.__handle_normcog_gate("possadif")
 
-    def _missingness_msaif(self) -> Optional[int]:
-        """Handles missingness for MSAIF."""
-        return self.__handle_normcog_gate("msaif")
-
-    def _missingness_pspif(self) -> Optional[int]:
-        """Handles missingness for PSPIF."""
-        return self.__handle_normcog_gate("pspif")
-
-    def _missingness_ftldmoif(self) -> Optional[int]:
-        """Handles missingness for FTLDMOIF."""
-        return self.__handle_normcog_gate("ftldmoif")
-
-    def _missingness_ftldnoif(self) -> Optional[int]:
-        """Handles missingness for FTLDNOIF."""
-        return self.__handle_normcog_gate("ftldnoif")
-
     def _missingness_ftd(self) -> Optional[int]:
         """Handles missingness for FTD."""
         return self.__handle_normcog_gate("ftd")
@@ -244,18 +184,6 @@ class UDSFormD1aMissingness(UDSMissingness):
     def _missingness_ppaphif(self) -> Optional[int]:
         """Handles missingness for PPAPHIF."""
         return self.__handle_normcog_gate("ppaphif")
-
-    def _missingness_ftldsubt(self) -> Optional[int]:
-        """Handles missingness for FTLDSUBT."""
-        return self.__handle_normcog_gate("ftldsubt")
-
-    def _missingness_cortif(self) -> Optional[int]:
-        """Handles missingness for CORTIF."""
-        return self.__handle_normcog_gate("cortif")
-
-    def _missingness_cvdif(self) -> Optional[int]:
-        """Handles missingness for CVDIF."""
-        return self.__handle_normcog_gate("cvdif")
 
     def _missingness_vasc(self) -> Optional[int]:
         """Handles missingness for VASC."""
@@ -281,25 +209,9 @@ class UDSFormD1aMissingness(UDSMissingness):
         """Handles missingness for ESSTREIF."""
         return self.__handle_normcog_gate("esstreif")
 
-    def _missingness_downsif(self) -> Optional[int]:
-        """Handles missingness for DOWNSIF."""
-        return self.__handle_normcog_gate("downsif")
-
-    def _missingness_huntif(self) -> Optional[int]:
-        """Handles missingness for HUNTIF."""
-        return self.__handle_normcog_gate("huntif")
-
-    def _missingness_prionif(self) -> Optional[int]:
-        """Handles missingness for PRIONIF."""
-        return self.__handle_normcog_gate("prionif")
-
     def _missingness_brninjif(self) -> Optional[int]:
         """Handles missingness for BRNINJIF."""
         return self.__handle_normcog_gate("brninjif")
-
-    def _missingness_othcogif(self) -> Optional[int]:
-        """Handles missingness for OTHCOGIF."""
-        return self.__handle_normcog_gate("othcogif")
 
     def _missingness_depif(self) -> Optional[int]:
         """Handles missingness for DEPIF."""
@@ -331,7 +243,7 @@ class UDSFormD1aMissingness(UDSMissingness):
         If NORMCOG = 0 and DEMENTED = 0 and FIELD is blank, then FIELD = 0
         """
         if self.uds.get_value(field, int) is None:
-            if self.__normcog == 0 and self.__demented == 0:
+            if self.normcog == 0 and self.demented == 0:
                 return 0
 
             return INFORMED_MISSINGNESS
@@ -361,7 +273,7 @@ class UDSFormD1aMissingness(UDSMissingness):
         then FIELD = 0
         """
         if self.uds.get_value(field, int) is None:
-            if self.__normcog == 0 and self.__demented == 0 and self.__mci == 0:
+            if self.normcog == 0 and self.demented == 0 and self.mci == 0:
                 return 0
 
             return INFORMED_MISSINGNESS
@@ -395,9 +307,9 @@ class UDSFormD1aMissingness(UDSMissingness):
         If (NORMCOG = 1 or IMPNOMCI = 1) and FIELD is blank, then FIELD = 8
         """
         if self.uds.get_value(field, int) is None:
-            if self.__mci == 1 or self.__demented == 1:
+            if self.mci == 1 or self.demented == 1:
                 return 0
-            if self.__normcog == 1 or self.__impnomci == 1:
+            if self.normcog == 1 or self.impnomci == 1:
                 return 8
 
             return INFORMED_MISSINGNESS
@@ -445,7 +357,7 @@ class UDSFormD1aMissingness(UDSMissingness):
         Else if NORMCOG=1 and FIELD is blank, then FIELD should =8
         """
         assert gate in ["predomsyn", "anxiet"]
-        if self.__normcog == 0 and self.uds.get_value(field, int) is None:
+        if self.normcog == 0 and self.uds.get_value(field, int) is None:
             gate_value = self.uds.get_value(gate, int)
             if gate_value == 1:
                 return 0
@@ -543,7 +455,7 @@ class UDSFormD1aMissingness(UDSMissingness):
         value = self.uds.get_value(field, int)
 
         if (
-            self.__normcog == 0
+            self.normcog == 0
             and (gate_value is None or gate_value == 0)
             and value is None
         ):
@@ -728,7 +640,7 @@ class UDSFormD1aMissingness(UDSMissingness):
         """Handles missingness for SCDDXCONF."""
         if self.uds.get_value("scddxconf", int) is None:
             scd = self.uds.get_value("scd", int)
-            if self.__normcog == 1 and scd == 0:
+            if self.normcog == 1 and scd == 0:
                 return 8
 
             return INFORMED_MISSINGNESS
@@ -738,7 +650,7 @@ class UDSFormD1aMissingness(UDSMissingness):
     def _missingness_mbi(self) -> Optional[int]:
         """Handles missingness for MBI."""
         if self.uds.get_value("mbi", int) is None:
-            if self.__normcog == 1 or self.__demented == 1:
+            if self.normcog == 1 or self.demented == 1:
                 return 8
 
             return INFORMED_MISSINGNESS
