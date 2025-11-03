@@ -823,7 +823,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if self.formver >= 4:
             return INFORMED_MISSINGNESS
 
-        if self.uds.get_value("pdpdothr", int) in [0, 9]:
+        if self.uds.get_value("pdothr", int) in [0, 9]:
             return 8888
 
         return self.generic_missingness("pdothryr")

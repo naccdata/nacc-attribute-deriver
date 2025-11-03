@@ -44,3 +44,23 @@ class UDSFormB1Missingness(UDSMissingness):
             return INFORMED_MISSINGNESS
 
         return None
+
+    def _missingness_height(self) -> Optional[float]:
+        """Handle missingness for HEIGHT.
+
+        This is less of a missingness and more just resolving,
+        because in early versions we may need to add the decimal.
+
+        Min 36 UDSv3+, max is 87.9, UDSv2 and earlier max is 96.0
+        """
+        height = self.uds.get_value("height", float)
+        if height is None:
+            return INFORMED_MISSINGNESS
+
+        heigdec = self.uds.get_value("heigdec", float)
+        if heigdec is not None and heigdec != 0:
+            height_with_dec = height + heigdec / 10
+            if height != height_with_dec:
+                return height_with_dec
+
+        return None

@@ -8,6 +8,10 @@ from .missingness_uds import UDSMissingness
 
 
 class UDSFormA2Missingness(UDSMissingness):
+    ############################
+    # INLIVWTH-gated variables #
+    ############################
+
     def _handle_inlivwth_gate(self, field: str) -> Optional[int]:
         """Handles missingness for gated by INLIVWTH.
 
@@ -20,18 +24,20 @@ class UDSFormA2Missingness(UDSMissingness):
         return self.generic_missingness(field)
 
     def _missingness_incntmod(self) -> Optional[int]:
-        """Handles missingness for INCNTMOD.
-
-        If INLIVWTH=1 then INCNTMOD=8
-        """
+        """Handles missingness for INCNTMOD."""
         return self._handle_inlivwth_gate("incntmod")
 
     def _missingness_incnttim(self) -> Optional[int]:
-        """Handles missingness for INCNTTIM.
-
-        If INLIVWTH=1 then INCNTTIM=8
-        """
+        """Handles missingness for INCNTTIM."""
         return self._handle_inlivwth_gate("incnttim")
+
+    def _missingness_invisits(self) -> Optional[int]:
+        """Handles missingness for INVISITS."""
+        return self._handle_inlivwth_gate("invisits")
+
+    def _missingness_incalls(self) -> Optional[int]:
+        """Handles missingness for INCALLS."""
+        return self._handle_inlivwth_gate("incalls")
 
     def _missingness_incntmdx(self) -> Optional[str]:
         """Handles missingness for INCNTMDX.
@@ -64,6 +70,9 @@ class UDSFormA2Missingness(UDSMissingness):
 
     def _missingness_inhispor(self) -> Optional[int]:
         """Handles missingness for INHISPOR."""
+        if self.uds.get_value("inhisp", int) in [0, 9]:
+            return 88
+
         return self.__handle_newinf_gate("inhispor")
 
     def _missingness_inrace(self) -> Optional[int]:

@@ -113,7 +113,7 @@ class UDSMissingness(UDSAttributeCollection):
 
         result = (
             self.generic_writein(field)
-            if isinstance(attr_type, str)
+            if attr_type == str  # noqa: E721
             else self.generic_missingness(field)
         )
         if result is not None:

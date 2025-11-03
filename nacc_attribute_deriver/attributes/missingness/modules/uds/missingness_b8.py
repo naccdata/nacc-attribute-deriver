@@ -386,9 +386,13 @@ class UDSFormB8Missingness(UDSMissingness):
 
         return self.generic_missingness("othneur")
 
-    #########
-    # Other #
-    #########
+    #############
+    # Write-ins #
+    #############
+
+    def _missingness_othneurx(self) -> Optional[str]:
+        """Handles missingness for OTHNEURX."""
+        return self.generic_writein("othneurx")
 
     # there is recode logic for PARKQ, CVDQ, and PSPQ but these do not
     # appear in the DED nor are they in the QAF, so can probably ignore?

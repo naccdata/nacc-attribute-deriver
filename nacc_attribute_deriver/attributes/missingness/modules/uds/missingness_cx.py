@@ -418,3 +418,31 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_udsverti(self) -> Optional[int]:
         """Handles missingness for UDSVERTI."""
         return self._handle_non_optional_gate("udsverlc")
+
+    ############################
+    # LOGIPREV-gated variables #
+    ############################
+
+    def __handle_logiprev_gate(self, field: str) -> Optional[int]:
+        """Handles variables gated by LOGIPREV."""
+        logiprev = self.uds.get_value("logiprev", int)
+        if logiprev is None or logiprev in [88, 99]:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness(field)
+
+    def _missingness_logiprev(self) -> Optional[int]:
+        """Handles missingness for LOGIPREV."""
+        return self.__handle_logiprev_gate("logiprev")
+
+    def _missingness_logimo(self) -> Optional[int]:
+        """Handles missingness for LOGIMO."""
+        return self.__handle_logiprev_gate("logimo")
+
+    def _missingness_logiday(self) -> Optional[int]:
+        """Handles missingness for LOGIDAY."""
+        return self.__handle_logiprev_gate("logiday")
+
+    def _missingness_logiyr(self) -> Optional[int]:
+        """Handles missingness for LOGIYR."""
+        return self.__handle_logiprev_gate("logiyr")

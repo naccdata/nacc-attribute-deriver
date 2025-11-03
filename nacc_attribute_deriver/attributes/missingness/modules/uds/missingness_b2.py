@@ -38,3 +38,7 @@ class UDSFormB2Missingness(UDSMissingness):
     def _missingness_cvdimag4(self) -> Optional[int]:
         """Handles missingness for CVDIMAG4."""
         return self.__handle_cvdimag_gate("cvdimag4")
+
+    def _missingness_cvdimagx(self) -> Optional[int]:
+        """Handles missingness for CVDIMAGX."""
+        return self.__handle_cvdimag_gate("cvdimagx")

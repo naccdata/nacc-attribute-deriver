@@ -366,6 +366,9 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_hispor(self) -> Optional[int]:
         """Handles missingness for HISPOR."""
+        if self.uds.get_value("hispanic", int) != 1:
+            return 88
+
         return self.handle_prev_visit("hispor", int)
 
     def _missingness_hisporx(self) -> Optional[str]:
