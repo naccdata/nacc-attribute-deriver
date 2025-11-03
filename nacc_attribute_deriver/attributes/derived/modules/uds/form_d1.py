@@ -5,8 +5,7 @@ In V4 this was split into the following 2 forms:
     D1b: Etiological Diagnosis and Biomarker Support
 
 See corresponding form_d1a.py and form_d1b.py for the variables that
-moved to those forms. The variables remaining here are either
-not applicable to V4 or require variables from both forms.
+moved to those forms.
 """
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
@@ -51,44 +50,7 @@ class UDSFormDxAttribute(UDSAttributeCollection):
 
         return 1 if any(x == 1 for x in mci_vars) else 0
 
-
-class UDSFormD1Attribute(UDSFormDxAttribute):
-    """The following require NP variables."""
-
-    def _create_naccadmu(self) -> int:
-        """Creates NACCADMU - Does the subject have a dominantly
-        inherited AD mutation?
-
-        Requires NPCHROM/NPPDXP from NP.
-        """
-        naccadmu = self.subject_derived.get_cross_sectional_value("naccadmu", int)
-        if naccadmu == 1:
-            return 1
-
-        admut = self.uds.get_value("admut", int)
-        npchrom = self.working.get_cross_sectional_value("npchrom", int)
-        nppdxp = self.working.get_cross_sectional_value("nppdxp", int)
-
-        if admut == 1 or npchrom in [1, 2, 3] or nppdxp == 1:
-            return 1
-
-        return 0
-
-    def _create_naccftdm(self) -> int:
-        """Creates NACCFTDM - Does the subject have an hereditary
-        FTLD mutation?
-
-        Requires NPCHROM/NPPDXQ from NP.
-        """
-        naccftdm = self.subject_derived.get_cross_sectional_value("naccftdm", int)
-        if naccftdm == 1:
-            return 1
-
-        ftldmut = self.uds.get_value("ftldmut", int)
-        npchrom = self.working.get_cross_sectional_value("npchrom", int)
-        nppdxq = self.working.get_cross_sectional_value("nppdxq", int)
-
-        if ftldmut == 1 or npchrom == 4 or nppdxq == 1:
-            return 1
-
-        return 0
+    def has_cognitive_impairment(self) -> bool:
+        """Check DEMENTED, MCI, and IMPNOMCI for cognitive impairment."""
+        impnomci = self.uds.get_value("impnomci", int)
+        return self.demented == 1 or self.generate_mci() == 1 or impnomci == 1

@@ -300,10 +300,12 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             return 6
 
         naccppa = self._create_naccppa()
-        if (self.demented == 1 or impnomci == 1 or mci == 1) and naccppa != 1:
+        has_cognitive_impairment = self.has_cognitive_impairment()
+
+        if (has_cognitive_impairment) and naccppa != 1:
             return 7
 
-        if impnomci != 1 and mci != 1 and self.demented != 1:
+        if not has_cognitive_impairment:
             return 8
 
         # SAS returns -9; likely changes to -4 at some point

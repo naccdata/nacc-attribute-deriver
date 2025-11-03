@@ -6,7 +6,9 @@ In V3 and earlier, was part of D1: Clinician Diagnosis.
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.utils.errors import AttributeDeriverError
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_MISSINGNESS,
+)
 
 from .form_d1 import UDSFormDxAttribute
 
@@ -50,11 +52,21 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if self.normcog == 1:
             return 8
 
-        contr_status = self.get_contr_status(["probadif", "possadif", "alzdisif"])
-        if contr_status:
-            return contr_status
+        if self.formver < 4:
+            contr_status = self.get_contr_status(["probadif", "possadif", "alzdisif"])
+            if contr_status:
+                return contr_status
 
-        return 7
+            return 7
+
+        alzdisif = self.uds.get_value("alzdisif", int)
+        if alzdisif in [1, 2, 3]:
+            return alzdisif
+
+        if self.has_cognitive_impairment():
+            return 7
+
+        raise ValueError("Unable to determine NACCALZP")
 
     def _create_nacclbde(self) -> int:
         """From d1structrdd.sas.
@@ -65,7 +77,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if self.normcog == 1:
             return 8
 
-        if self.formver != 3:
+        if self.formver < 3:
             dlb = self.uds.get_value("dlb", int)
             park = self.uds.get_value("park", int)
 
@@ -91,7 +103,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return 8
 
         contr_status = None
-        if self.formver != 3:
+        if self.formver < 3:
             contr_status = self.get_contr_status(["dlbif", "parkif"])
         else:
             contr_status = self.get_contr_status(["lbdif"])
@@ -99,16 +111,149 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if contr_status:
             return contr_status
 
-        if self._create_nacclbde() == 0:
+        if self.formver < 4:
+            if self._create_nacclbde() == 0:
+                return 7
+        elif self.has_cognitive_impairment():
             return 7
 
         # TODO: raising error instead of returning None
         # I think in theory it seems it shouldn't ever get here
         # and nacclbdp should always be set to something
-        # (maybe use 7 as a default otherwise)
         raise ValueError("Unable to determine nacclbdp")
 
-    def _create_naccetpr(self) -> int:
+    def _create_naccalzd(self) -> int:
+        """Creates NACCALZD - Presumptive etiologic diagnosis of
+        the cognitive disorder - Alzheimer's disease.
+        """
+        if self.normcog == 1:
+            return 8
+
+        alzdis = self.uds.get_value("alzdis", int)
+
+        if self.formver < 4:
+            probad = self.uds.get_value("probad", int)
+            possad = self.uds.get_value("possad", int)
+
+            if any(x == 1 for x in [probad, possad, alzdis]):
+                return 1
+
+            if (probad == 0 and possad == 0) or alzdis == 0:
+                return 0
+
+        if alzdis is None:
+            return 0
+
+        return alzdis
+
+    def _create_naccadmu(self) -> int:
+        """Creates NACCADMU - Does the subject have a dominantly
+        inherited AD mutation?
+
+        Requires NPCHROM/NPPDXP from NP.
+        """
+        naccadmu = self.subject_derived.get_cross_sectional_value("naccadmu", int)
+        if naccadmu == 1:
+            return 1
+
+        if self.formver >= 4:
+            return 1 if self.uds.get_value("nppdxp", int) == 1 else 0
+
+        admut = self.uds.get_value("admut", int)
+        npchrom = self.working.get_cross_sectional_value("npchrom", int)
+        nppdxp = self.working.get_cross_sectional_value("nppdxp", int)
+
+        if admut == 1 or npchrom in [1, 2, 3] or nppdxp == 1:
+            return 1
+
+        return 0
+
+    def _create_naccftdm(self) -> int:
+        """Creates NACCFTDM - Does the subject have an hereditary
+        FTLD mutation?
+
+        Requires NPCHROM/NPPDXQ from NP.
+        """
+        naccftdm = self.subject_derived.get_cross_sectional_value("naccftdm", int)
+        if naccftdm == 1:
+            return 1
+
+        if self.formver >= 4:
+            return 1 if self.uds.get_value("nppdxq", int) == 1 else 0
+
+        ftldmut = self.uds.get_value("ftldmut", int)
+        npchrom = self.working.get_cross_sectional_value("npchrom", int)
+        nppdxq = self.working.get_cross_sectional_value("nppdxq", int)
+
+        if ftldmut == 1 or npchrom == 4 or nppdxq == 1:
+            return 1
+
+        return 0
+
+    def _create_naccwmhsev(self) -> Optional[int]:
+        """Creates NACCWMHSEV - White-matter hyperintensity severity.
+        Only in V3+
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        imagmwmh = self.uds.get_value("imagmwmh", int)  # V3
+        imagewmh = self.uds.get_value("imagewmh", int)  # V3
+        imagwmhsev = self.uds.get_value("imagwmhsev", int)  # V4
+        if imagwmhsev == 1 or imagmwmh == 1:
+            return 1
+        if imagwmhsev == 2 or imagewmh == 1:
+            return 2
+
+        imagwmh = self.uds.get_value("imagwmh", int)  # V4
+        if imagwmh == 0 or (imagmwmh == 0 and imagewmh == 0):
+            return 7
+        if imagwmh == 8 or (imagmwmh == 8 and imagewmh == 8):
+            return 8
+        if imagwmh == 9:
+            return 9
+
+        return INFORMED_MISSINGNESS
+
+    def has_primary_d1b(self) -> bool:
+        """Check if primary in D1b."""
+        all_attributes = self.uds.group_attributes(
+            [
+                "alzdisif",
+                "lbdif",
+                "msaif",
+                "pspif",
+                "cortif",
+                "ftldmoif",
+                "ftldnoif",
+                "cvdif",
+                "downsif",
+                "huntif",
+                "prionif",
+                "othcogif",
+                "cteif",
+                "caaif",
+                "lateif",
+            ],
+            int,
+        )
+
+        return not all(x == 0 or x is None for x in all_attributes)
+
+    def has_primary(self, attributes: List[str], check_primary: bool = False) -> bool:
+        """Returns true if any of the attributes == 1 (Primary).
+
+        False otherwise.
+        """
+
+        # For V4, some rules require PRIMDXD1B = False
+        if self.formver >= 4 and self.has_primary_d1b():
+            return False
+
+        overall_status = self.get_contr_status(attributes)
+        return self.is_target_int(overall_status, ContributionStatus.PRIMARY)
+
+    def _create_naccetpr(self) -> int:  # noqa: C901
         """From Create NACCETPR, PRIMDX, SYNMULT.R which in turn comes from
         getd1all.sas.
 
@@ -120,68 +265,79 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return 88
 
         # assuming normcog == 0 != 1 after this point
-        # get all statuses in a list, then return the first one that == 1 (Primary)
-        # result maps to position in list (start index 1)
-        all_status = [
-            self.get_contr_status(["probadif", "possadif", "alzdisif"]),
-            self.get_contr_status(["dlbif", "parkif"])
-            if self.formver != 3
-            else self.get_contr_status(["lbdif"]),
-            # could just grab directly for those with only 1 but this is more readable
-            self.get_contr_status(["msaif"]),
-            self.get_contr_status(["pspif"]),
-            self.get_contr_status(["cortif"]),
-            self.get_contr_status(["ftldmoif"]),
-            self.get_contr_status(["ftdif", "ppaphif", "ftldnoif"]),
-            self.get_contr_status(["cvdif", "vascif", "vascpsif", "strokif"]),
-            self.get_contr_status(["esstreif"]),
-            self.get_contr_status(["downsif"]),
-            self.get_contr_status(["huntif"]),
-            self.get_contr_status(["prionif"]),
-            self.get_contr_status(["brninjif"]),
-            self.get_contr_status(["hycephif"]),
-            self.get_contr_status(["epilepif"]),
-            self.get_contr_status(["neopif"]),
-            self.get_contr_status(["hivif"]),
-            self.get_contr_status(["othcogif"]),
-            self.get_contr_status(["depif"]),
-            self.get_contr_status(["bipoldif"]),
-            self.get_contr_status(["schizoif"]),
-            self.get_contr_status(["anxietif"]),
-            self.get_contr_status(["delirif"]),
-            self.get_contr_status(["ptsddxif"]),
-            self.get_contr_status(["othpsyif"]),
-            self.get_contr_status(["alcdemif"]),
-            self.get_contr_status(["impsubif"]),
-            self.get_contr_status(["dysillif"]),
-            self.get_contr_status(["medsif"]),
-            self.get_contr_status(["cogothif", "cogoth2f", "cogoth3f"]),
-        ]
+        # get all statuses in a list, evaluate each group in order
 
-        assert len(all_status) == 30
-        for i, status in enumerate(all_status):
-            if status and self.is_target_int(status, ContributionStatus.PRIMARY):
-                return i + 1
+        if self.has_primary(["probadif", "possadif", "alzdisif"]):
+            return 1
+        if self.formver < 3 and self.has_primary(["dlbif", "parkif"]):
+            return 2
+        if self.formver >= 3 and self.has_primary(["lbdif"]):
+            return 2
+        if self.has_primary(["msaif"]):
+            return 3
+        if self.has_primary(["pspif"]):
+            return 4
+        if self.has_primary(["cortif"]):
+            return 5
+        if self.has_primary(["ftldmoif"]):
+            return 6
+        if self.has_primary(["ftdif", "ppaphif", "ftldnoif"]):
+            return 7
+        if self.has_primary(["cvdif", "vascif", "vascpsif", "strokif"]):
+            return 8
+        if self.formver < 4 and self.has_primary(["esstreif"]):
+            return 9
+        if self.has_primary(["downsif"]):
+            return 10
+        if self.has_primary(["huntif"]):
+            return 11
+        if self.has_primary(["prionif"]):
+            return 12
+        if self.formver < 4 and self.has_primary(["brninjif"]):
+            return 13
+        if self.formver >= 4 and self.has_primary(["tbidxif"], check_primary=True):
+            return 13
+        if self.has_primary(["hycephif"], check_primary=True):
+            return 14
+        if self.has_primary(["epilepif"], check_primary=True):
+            return 15
+        if self.has_primary(["neopif"], check_primary=True):
+            return 16
+        if self.has_primary(["hivif"], check_primary=True):
+            return 17
+        if self.has_primary(["othcogif", "othcillif"], check_primary=True):
+            return 18
+        if self.has_primary(["depif"], check_primary=True):
+            return 19
+        if self.has_primary(["bipoldif"], check_primary=True):
+            return 20
+        if self.has_primary(["schizoif"], check_primary=True):
+            return 21
+        if self.has_primary(["anxietif"], check_primary=True):
+            return 22
+        if self.has_primary(["delirif"], check_primary=True):
+            return 23
+        if self.has_primary(["ptsddxif"], check_primary=True):
+            return 24
+        if self.has_primary(["othpsyif"], check_primary=True):
+            return 25
+        if self.has_primary(["alcdemif"], check_primary=True):
+            return 26
+        if self.has_primary(["impsubif"], check_primary=True):
+            return 27
+        if self.has_primary(["dysillif"], check_primary=True):
+            return 28
+        if self.has_primary(["medsif"], check_primary=True):
+            return 29
+        if self.has_primary(["cogothif", "cogoth2f", "cogoth3f"], check_primary=True):
+            return 30
+        if self.has_primary(["ndevdisif"], check_primary=True):
+            return 31
+        if self.has_primary(["cteif"]):
+            return 32
+        if self.has_primary(["caaif"]):
+            return 33
+        if self.has_primary(["lateif"]):
+            return 34
 
         return 99
-
-    def _create_naccalzd(self) -> int:
-        """Creates NACCALZD - Presumptive etiologic diagnosis of
-        the cognitive disorder - Alzheimer's disease.
-        """
-        if self.normcog == 1:
-            return 8
-
-        probad = self.uds.get_value("probad", int)
-        possad = self.uds.get_value("possad", int)
-        alzdis = self.uds.get_value("alzdis", int)
-
-        if any(x == 1 for x in [probad, possad, alzdis]):
-            return 1
-
-        if (probad == 0 and possad == 0) or alzdis == 0:
-            return 0
-
-        # the above are expected to always be defined, so throw
-        # error if we cannot determine it
-        raise AttributeDeriverError("Cannot determine NACCALZD")
