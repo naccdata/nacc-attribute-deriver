@@ -174,6 +174,13 @@ class UDSFormD1aMissingness(UDSMissingness):
 
         return self.__handle_normcog_gate("impsub")
 
+    def _missingness_ftldnos(self) -> Optional[int]:
+        """Handles missingness for FTLDNOS."""
+        if not self.check_applicable():
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_normcog_gate("ftldnos")
+
     def _missingness_meds(self) -> Optional[int]:
         """Handles missingness for MEDS."""
         return self.__handle_normcog_gate("meds")
@@ -189,6 +196,130 @@ class UDSFormD1aMissingness(UDSMissingness):
     def _missingness_cogoth3(self) -> Optional[int]:
         """Handles missingness for COGOTH3."""
         return self.__handle_normcog_gate("cogoth3")
+
+    def _missingness_probad(self) -> Optional[int]:
+        """Handles missingness for PROBAD"""
+        return self.__handle_normcog_gate("probad")
+
+    def _missingness_possad(self) -> Optional[int]:
+        """Handles missingness for POSSAD"""
+        return self.__handle_normcog_gate("possad")
+
+    def _missingness_probadif(self) -> Optional[int]:
+        """Handles missingness for PROBADIF"""
+        return self.__handle_normcog_gate("probadif")
+
+    def _missingness_possadif(self) -> Optional[int]:
+        """Handles missingness for POSSADIF"""
+        return self.__handle_normcog_gate("possadif")
+
+    def _missingness_msaif(self) -> Optional[int]:
+        """Handles missingness for MSAIF"""
+        return self.__handle_normcog_gate("msaif")
+
+    def _missingness_pspif(self) -> Optional[int]:
+        """Handles missingness for PSPIF"""
+        return self.__handle_normcog_gate("pspif")
+
+    def _missingness_ftldmoif(self) -> Optional[int]:
+        """Handles missingness for FTLDMOIF"""
+        return self.__handle_normcog_gate("ftldmoif")
+
+    def _missingness_ftldnoif(self) -> Optional[int]:
+        """Handles missingness for FTLDNOIF"""
+        return self.__handle_normcog_gate("ftldnoif")
+
+    def _missingness_ftd(self) -> Optional[int]:
+        """Handles missingness for FTD"""
+        return self.__handle_normcog_gate("ftd")
+
+    def _missingness_ftdif(self) -> Optional[int]:
+        """Handles missingness for FTDIF"""
+        return self.__handle_normcog_gate("ftdif")
+
+    def _missingness_ppaph(self) -> Optional[int]:
+        """Handles missingness for PPAPH"""
+        return self.__handle_normcog_gate("ppaph")
+
+    def _missingness_ppaphif(self) -> Optional[int]:
+        """Handles missingness for PPAPHIF"""
+        return self.__handle_normcog_gate("ppaphif")
+
+    def _missingness_ftldsubt(self) -> Optional[int]:
+        """Handles missingness for FTLDSUBT"""
+        return self.__handle_normcog_gate("ftldsubt")
+
+    def _missingness_cortif(self) -> Optional[int]:
+        """Handles missingness for CORTIF"""
+        return self.__handle_normcog_gate("cortif")
+
+    def _missingness_cvdif(self) -> Optional[int]:
+        """Handles missingness for CVDIF"""
+        return self.__handle_normcog_gate("cvdif")
+
+    def _missingness_vasc(self) -> Optional[int]:
+        """Handles missingness for VASC"""
+        return self.__handle_normcog_gate("vasc")
+
+    def _missingness_vascif(self) -> Optional[int]:
+        """Handles missingness for VASCIF"""
+        return self.__handle_normcog_gate("vascif")
+
+    def _missingness_vascps(self) -> Optional[int]:
+        """Handles missingness for VASCPS"""
+        return self.__handle_normcog_gate("vascps")
+
+    def _missingness_vascpsif(self) -> Optional[int]:
+        """Handles missingness for VASCPSIF"""
+        return self.__handle_normcog_gate("vascpsif")
+
+    def _missingness_strokif(self) -> Optional[int]:
+        """Handles missingness for STROKIF"""
+        return self.__handle_normcog_gate("strokif")
+
+    def _missingness_esstreif(self) -> Optional[int]:
+        """Handles missingness for ESSTREIF"""
+        return self.__handle_normcog_gate("esstreif")
+
+    def _missingness_downsif(self) -> Optional[int]:
+        """Handles missingness for DOWNSIF"""
+        return self.__handle_normcog_gate("downsif")
+
+    def _missingness_huntif(self) -> Optional[int]:
+        """Handles missingness for HUNTIF"""
+        return self.__handle_normcog_gate("huntif")
+
+    def _missingness_prionif(self) -> Optional[int]:
+        """Handles missingness for PRIONIF"""
+        return self.__handle_normcog_gate("prionif")
+
+    def _missingness_brninjif(self) -> Optional[int]:
+        """Handles missingness for BRNINJIF"""
+        return self.__handle_normcog_gate("brninjif")
+
+    def _missingness_othcogif(self) -> Optional[int]:
+        """Handles missingness for OTHCOGIF"""
+        return self.__handle_normcog_gate("othcogif")
+
+    def _missingness_depif(self) -> Optional[int]:
+        """Handles missingness for DEPIF"""
+        return self.__handle_normcog_gate("depif")
+
+    def _missingness_dysillif(self) -> Optional[int]:
+        """Handles missingness for DYSILLIF"""
+        return self.__handle_normcog_gate("dysillif")
+
+    def _missingness_demunif(self) -> Optional[int]:
+        """Handles missingness for DEMUNIF"""
+        return self.__handle_normcog_gate("demunif")
+
+    def _missingness_dysill(self) -> Optional[int]:
+        """Handles missingness for DYSILL"""
+        return self.__handle_normcog_gate("dysill")
+
+    def _missingness_demun(self) -> Optional[int]:
+        """Handles missingness for DEMUN"""
+        return self.__handle_normcog_gate("demun")
 
     ########################################
     # NORMCOG and DEMENTED-gated variables #
@@ -413,9 +544,8 @@ class UDSFormD1aMissingness(UDSMissingness):
 
         if (
             self.__normcog == 0
+            and (gate_value is None or gate_value == 0)
             and value is None
-            and gate_value is not None
-            and gate_value != 0
         ):
             return 7
 
@@ -549,6 +679,46 @@ class UDSFormD1aMissingness(UDSMissingness):
         """Handles missingness for COGOTH3F."""
         return self.__handle_normcog_with_additional_gate("cogoth3", "cogoth3f")
 
+    #######################
+    # CVD-gated variables #
+    #######################
+
+    def __handle_cvd_gate(self, field: str, return_value: int, evaluate_prevstk: bool = False) -> Optional[int]:
+        """Handles variables gated by CVD."""
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        cvd = self.uds.get_value("cvd", int)
+        if cvd == 0:
+            return return_value
+        if evaluate_prevstk and cvd == 1:
+            prevstk = self.uds.get_value("prevstk", int)
+            if prevstk == 0:
+                return return_value
+
+        return self.generic_missingness(field)
+
+    def _missingness_prevstk(self) -> Optional[int]:
+        """Handles missingness for PREVSTK."""
+        return self.__handle_cvd_gate("prevstk", 0)
+
+    def _missingness_infwmh(self) -> Optional[int]:
+        """Handles missingness for INFWMH."""
+        return self.__handle_cvd_gate("infwmh", 9)
+
+    def _missingness_infnetw(self) -> Optional[int]:
+        """Handles missingness for INFNETW."""
+        return self.__handle_cvd_gate("infnetw", 9)
+
+    def _missingness_strokdec(self) -> Optional[int]:
+        """Handles missingness for STROKDEC."""
+        return self.__handle_cvd_gate("strokdec", 8, evaluate_prevstk=True)
+
+    def _missingness_stkimag(self) -> Optional[int]:
+        """Handles missingness for STKIMAG."""
+        return self.__handle_cvd_gate("stkimag", 8, evaluate_prevstk=True)
+
+
     ###################
     # Other variables #
     ###################
@@ -594,6 +764,26 @@ class UDSFormD1aMissingness(UDSMissingness):
             return 0
 
         return self.generic_missingness("demented")
+
+    def _missingness_alcabuse(self) -> Optional[int]:
+        """Handles missingness for ALCABUSE."""
+        if self.uds.get_value("alcdem", int) == 0:
+            return 8
+
+        return self.generic_missingness("alcabuse")
+
+    def _missingness_deptreat(self) -> Optional[int]:
+        """Handles missingness for DEPTREAT."""
+        if self.uds.get_value("dep", int) == 0:
+            return 8
+
+        return self.generic_missingness("deptreat")
+
+    def _missingness_brnincte(self) -> Optional[int]:
+        if self.uds.get_value("brninj", int) == 0:
+            return 8
+
+        return self.generic_missingness("brnincte")
 
     ######################
     # Write-in variables #
