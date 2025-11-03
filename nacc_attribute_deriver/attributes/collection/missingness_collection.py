@@ -11,7 +11,11 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+    INFORMED_MISSINGNESS_FLOAT,
+)
 
 
 class FormMissingnessCollection(AttributeCollection):
@@ -21,9 +25,23 @@ class FormMissingnessCollection(AttributeCollection):
         self.__form = FormNamespace(table=table, required=required)
 
     def generic_missingness(self, field: str) -> Optional[int]:
-        """Generic missingness for internal calls."""
+        """Generic missingness; if missing set to -4."""
         if self.__form.get_value(field, str) is None:
             return INFORMED_MISSINGNESS
+
+        return None
+
+    def generic_float_missingness(self, field: str) -> Optional[float]:
+        """Generic float missingness; if missing set to -4.4."""
+        if self.__form.get_value(field, str) is None:
+            return INFORMED_MISSINGNESS_FLOAT
+
+        return None
+
+    def generic_writein(self, field: str) -> Optional[str]:
+        """Generic blankness (write-ins); if blank should remain blank."""
+        if self.__form.get_value(field, str) is None:
+            return INFORMED_BLANK
 
         return None
 

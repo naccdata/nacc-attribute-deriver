@@ -200,4 +200,4 @@ class TestCreateNACCCBD:
         set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 8)
         assert np_form_attribute._create_nacccbd() == 8
         set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 0)
-        assert np_form_attribute._create_nacccbd() is None
+        assert np_form_attribute._create_nacccbd() == -4

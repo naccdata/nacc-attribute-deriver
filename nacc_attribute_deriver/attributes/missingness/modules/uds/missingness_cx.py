@@ -160,19 +160,35 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_mocalanx(self) -> Optional[str]:
         """Handles missingness for MOCALANX."""
-        return self.handle_forbidden_gated_writein("mocalan", 3)
+        result = self.handle_forbidden_gated_writein("mocalan", 3)
+        if result is not None:
+            return result
+
+        return self.generic_writein("mocalanx")
 
     def _missingness_npsylanx(self) -> Optional[str]:
         """Handles missingness for NPSYLANX."""
-        return self.handle_forbidden_gated_writein("npsylan", 3)
+        result = self.handle_forbidden_gated_writein("npsylan", 3)
+        if result is not None:
+            return result
+
+        return self.generic_writein("npsylanx")
 
     def _missingness_respothx(self) -> Optional[str]:
         """Handles missingness for RESPOTHX."""
-        return self.handle_forbidden_gated_writein("respoth", 1)
+        result = self.handle_forbidden_gated_writein("respoth", 1)
+        if result is not None:
+            return result
+
+        return self.generic_writein("respothx")
 
     def _missingness_mmselanx(self) -> Optional[str]:
         """Handles missingness for MMSELANX."""
-        return self.handle_forbidden_gated_writein("mmselan", 3)
+        result = self.handle_forbidden_gated_writein("mmselan", 3)
+        if result is not None:
+            return result
+
+        return self.generic_writein("mmselanx")
 
     #######################################################
     # REYXREC gated variables - cascades across variables #

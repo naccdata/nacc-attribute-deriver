@@ -151,13 +151,9 @@ class UDSFormB9Missingness(UDSMissingness):
         )
 
     def _missingness_cogfluc(self) -> Optional[int]:
-        """Handles missingness for COGFLUC.
-
-        Only explicitly checked in 3.1 and 4.0
-        """
-        # raw_formver = self.uds.get_required("formver", float)
-        # if raw_formver != 3.1 and raw_formver < 4:
-        #     return 0
+        """Handles missingness for COGFLUC."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
 
         return self._handle_cascading_gates(["decclin", "decclcog"], "cogfluc", 0)
 
@@ -254,24 +250,16 @@ class UDSFormB9Missingness(UDSMissingness):
         )
 
     def _missingness_berem(self) -> Optional[int]:
-        # """Handles missingness for BEREM. Only explicitly checked 3.1 and 4.0"""
-        # raw_formver = self.uds.get_required("formver", float)
-        # if raw_formver != 3.1 and raw_formver < 4:
-        #     return 0
+        """Handles missingness for BEREM."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
 
         return self._handle_cascading_gates(["decclin", "decclbe"], "berem", 0)
 
     def _missingness_bevwell(self) -> Optional[int]:
-        """Handles missingness for BEVWELL.
-
-        Only explicitly checked in 3.1 and 4.0
-        """
-        # raw_formver = self.uds.get_required("formver", float)
-        # if raw_formver != 3.1 and raw_formver < 4:
-        #     return 0
-
-        # another case of the r-variables; I have no idea what this is so leave alone
-        # for now
+        """Handles missingness for BEVWELL."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
 
         return self._handle_cascading_gates(["decclin", "decclbe"], "bevwell", 0)
 
@@ -384,20 +372,16 @@ class UDSFormB9Missingness(UDSMissingness):
         return self._handle_cascading_gates(["decclin", "decclmot"], "mospeech", 0)
 
     def _missingness_momopark(self) -> Optional[int]:
-        """Handles missingness for MOMOPARK.
-
-        Only in 3.1 and 4.0.
-        """
-        # raw_formver = self.uds.get_required("formver", float)
-        # if raw_formver != 3.1 and raw_formver < 4:
-        #     return INFORMED_MISSINGNESS
+        """Handles missingness for MOMOPARK."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
 
         return self._handle_cascading_gates(["decclin", "decclmot"], "momopark", 0)
 
     def _missingness_momoals(self) -> Optional[int]:
         """Handles missingness for MOMOALS."""
-        # if self.formver < 3:
-        #     return INFORMED_MISSINGNESS
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
 
         return self._handle_cascading_gates(["decclin", "decclmot"], "momoals", 0)
 
@@ -417,8 +401,8 @@ class UDSFormB9Missingness(UDSMissingness):
         1. If DECCLIN = 0, VAR must be 8
         2. If VAR = 777, Var must be equal to
         """
-        # This V1 code makes no sense to me; if we can figure out what it
-        # was intending to do this could probably be greatly simplified
+        # # This V1 code makes no sense to me; if we can figure out what it
+        # # was intending to do this could probably be greatly simplified
         # if self.formver == 1 or self.uds.get_value("decclin", int) == 0:
         #     result = self._handle_cascading_gates(["decclin"], "frstchg", 8,
         #         run_v1=True, overall=True)
@@ -431,6 +415,12 @@ class UDSFormB9Missingness(UDSMissingness):
         #                 return p_frstchg
 
         #             return 9
+
+        result = self._handle_cascading_gates(
+            ["decclin"], "frstchg", 8, run_v1=True, overall=True
+        )
+        if result is not None:
+            return result
 
         return self.handle_prev_visit("frstchg", int, prev_code=777)
 
@@ -531,10 +521,10 @@ class UDSFormB9Missingness(UDSMissingness):
         """Handles missingness for OTHSUBUSE."""
         return self._handle_besubab_gate("othsubuse")
 
-    ###############################################################
-    # Derived variable-related fields
-    # variables we need to pull through for derived variable work #
-    ###############################################################
+    #######################################
+    # Derived variable-related fields and #
+    # variables we need to pull through   #
+    #######################################
 
     def _missingness_mofrst(self) -> Optional[int]:
         """Handles missingness for MOFRST."""
@@ -570,6 +560,62 @@ class UDSFormB9Missingness(UDSMissingness):
             return INFORMED_MISSINGNESS
 
         return self.handle_prev_visit("cogfrst", int)
+
+    def _missingness_decclin(self) -> Optional[int]:
+        """Handles missingness for DECCLIN."""
+        return self.handle_prev_visit("decclin", int)
+
+    #########
+    # Other #
+    #########
+
+    def _missingness_decage(self) -> Optional[int]:
+        """Handles missingness for DECAGE.
+
+        See b9structrdd.sas.
+        """
+        decage = self.uds.get_value("decage", int)
+
+        # SAS checks overall for DECAGE = 777, although not sure it could
+        # ever be 777?
+        if decage == 777:
+            return self.handle_prev_visit("decage", int, prev_code=777)
+
+        if decage is not None:
+            return None
+
+        if self.formver == 1 and not self.uds.is_initial():
+            b9chg = self.uds.get_value("b9chg", int)
+            p_decclin = None
+            p_decage = None
+
+            if self.prev_record:
+                p_decclin = self.prev_record.get_resolved_value("decclin", int)
+                p_decage = self.prev_record.get_resolved_value("decage", int)
+
+            if b9chg in [1, 3] and p_decclin == 1:
+                if p_decage is not None:
+                    return p_decage
+
+                return 999
+
+        cog_attr = self.uds.group_attributes(
+            [
+                "cogmem",
+                "cogori",
+                "cogjudg",
+                "coglang",
+                "cogvis",
+                "cogattn",
+                "cogfluc",
+                "cogothr",
+            ],
+            int,
+        )
+        if any(x != 1 for x in cog_attr):
+            return 888
+
+        return INFORMED_MISSINGNESS
 
     ###################
     # B9CHG Variables - variables related to B9CHG,

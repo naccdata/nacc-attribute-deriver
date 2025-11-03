@@ -2,6 +2,7 @@
 
 INVALID_TEXT = ["", ".", "`", "--", "-"]
 INFORMED_MISSINGNESS = -4
+INFORMED_MISSINGNESS_FLOAT = -4.4
 INFORMED_BLANK = "blank"  # will be translated to an overriding None
 
 DERIVE_TYPES = ["create", "missingness"]

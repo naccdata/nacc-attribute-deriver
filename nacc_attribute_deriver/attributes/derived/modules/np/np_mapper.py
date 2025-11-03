@@ -5,6 +5,9 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_MISSINGNESS,
+)
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
@@ -74,14 +77,14 @@ class NPMapper:
 
         return 9
 
-    def map_v10(self, old: int | None, gateway: int | None) -> Optional[int]:
+    def map_v10(self, old: int | None, gateway: int | None) -> int:
         if old is not None:
             return old
 
         if gateway in [8, 9]:
             return gateway
         if gateway == 0:
-            return None
+            return INFORMED_MISSINGNESS
 
         return 9
 

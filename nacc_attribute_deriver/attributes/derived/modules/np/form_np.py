@@ -345,14 +345,8 @@ class NPFormAttributeCollection(AttributeCollection):
         elif self.formver == 1:
             if npgross == 2 or npvasc == 2:
                 return 0
-            elif npgross == 9:
-                return 9
             elif npvasc == 3:
                 return 8
-            elif npvasc == 9:
-                return 9
-            else:
-                return 9
 
         return 9
 
