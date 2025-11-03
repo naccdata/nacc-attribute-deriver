@@ -24,6 +24,8 @@ class NIAGADSAttributeCollection(AttributeCollection):
                     "niagads_exomechip",
                     "niagads_wgs",
                     "niagads_wes",
+                    "exome_round",
+                    "gwas_round",
                 ]
             ),
         )
@@ -78,3 +80,11 @@ class NIAGADSAttributeCollection(AttributeCollection):
     def _create_ngdsweac(self) -> str:
         """NGDSWEAC - NIAGADS whole exome sequencing accession number."""
         return self._evaluate_accession("niagads_wes")
+
+    def _create_adgcrnd(self) -> str:
+        """ADGCRND -  ADGC data-selection round."""
+        return self.__niagads.get_required("gwas_round", str)
+
+    def _create_adgcexr(self) -> str:
+        """ADGCEXR -  ExomeChip genotyping round."""
+        return self.__niagads.get_required("exome_round", str)

@@ -179,81 +179,85 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # Relies on both VERBALTEST and an earlier variable   #
     #######################################################
 
-    def _handle_reyxrec_cascade(self, gate: str) -> Optional[int]:
+    def _handle_reyxrec_cascade(self, gate: str, field: str) -> Optional[int]:
         """Handle the REYXREC cascading rules, e.g:
 
         1. The VERBALTEST check (If VERBALTEST = 2 then FIELD should = 88)
         2. If GATE is 88 or 95-98 then FIELD should = GATE
         """
         result = self._handle_verbaltest_gate(verbal_value=2, set_value=888)
-        if result is None:
-            result = self.handle_set_to_gate(gate, check_values=[88, 95, 96, 97, 98])
+        if result is not None:
+            return result
 
-        return result
+        result = self.handle_set_to_gate(gate, check_values=[88, 95, 96, 97, 98])
+        if result is not None:
+            return result
+
+        return self.generic_missingness(field)
 
     def _missingness_reydint(self) -> Optional[int]:
         """Handles missingness for REYDINT."""
-        return self._handle_reyxrec_cascade("reydrec")
+        return self._handle_reyxrec_cascade("reydrec", "reydint")
 
     def _missingness_reytcor(self) -> Optional[int]:
         """Handles missingness for REYTCOR."""
-        return self._handle_reyxrec_cascade("reydrec")
+        return self._handle_reyxrec_cascade("reydrec", "reytcor")
 
     def _missingness_reyfpos(self) -> Optional[int]:
         """Handles missingness for REYFPOS."""
-        return self._handle_reyxrec_cascade("reydrec")
+        return self._handle_reyxrec_cascade("reydrec", "reyfpos")
 
     def _missingness_rey1int(self) -> Optional[int]:
         """Handles missingness for REY1INT."""
-        return self._handle_reyxrec_cascade("rey1rec")
+        return self._handle_reyxrec_cascade("rey1rec", "rey1int")
 
     def _missingness_rey2rec(self) -> Optional[int]:
         """Handles missingness for REY2REC."""
-        return self._handle_reyxrec_cascade("rey1rec")
+        return self._handle_reyxrec_cascade("rey1rec", "rey2rec")
 
     def _missingness_rey2int(self) -> Optional[int]:
         """Handles missingness for REY2INT."""
-        return self._handle_reyxrec_cascade("rey1rec")
+        return self._handle_reyxrec_cascade("rey1rec", "rey2int")
 
     def _missingness_rey3rec(self) -> Optional[int]:
         """Handles missingness for REY3REC."""
-        return self._handle_reyxrec_cascade("rey2rec")
+        return self._handle_reyxrec_cascade("rey2rec", "rey3rec")
 
     def _missingness_rey3int(self) -> Optional[int]:
         """Handles missingness for REY3INT."""
-        return self._handle_reyxrec_cascade("rey2rec")
+        return self._handle_reyxrec_cascade("rey2rec", "rey3int")
 
     def _missingness_rey4rec(self) -> Optional[int]:
         """Handles missingness for REY4REC."""
-        return self._handle_reyxrec_cascade("rey3rec")
+        return self._handle_reyxrec_cascade("rey3rec", "rey4rec")
 
     def _missingness_rey4int(self) -> Optional[int]:
         """Handles missingness for REY4INT."""
-        return self._handle_reyxrec_cascade("rey3rec")
+        return self._handle_reyxrec_cascade("rey3rec", "rey4int")
 
     def _missingness_rey5rec(self) -> Optional[int]:
         """Handles missingness for REY5REC."""
-        return self._handle_reyxrec_cascade("rey4rec")
+        return self._handle_reyxrec_cascade("rey4rec", "rey5rec")
 
     def _missingness_rey5int(self) -> Optional[int]:
         """Handles missingness for REY5INT."""
-        return self._handle_reyxrec_cascade("rey4rec")
+        return self._handle_reyxrec_cascade("rey4rec", "rey5int")
 
     def _missingness_reybrec(self) -> Optional[int]:
         """Handles missingness for REYBREC."""
-        return self._handle_reyxrec_cascade("rey5rec")
+        return self._handle_reyxrec_cascade("rey5rec", "reybrec")
 
     def _missingness_reybint(self) -> Optional[int]:
         """Handles missingness for REYBINT."""
-        return self._handle_reyxrec_cascade("rey5rec")
+        return self._handle_reyxrec_cascade("rey5rec", "reybint")
 
     def _missingness_rey6rec(self) -> Optional[int]:
         """Handles missingness for REY6REC."""
-        return self._handle_reyxrec_cascade("reybrec")
+        return self._handle_reyxrec_cascade("reybrec", "rey6rec")
 
     def _missingness_rey6int(self) -> Optional[int]:
         """Handles missingness for REY6INT."""
-        return self._handle_reyxrec_cascade("reybrec")
+        return self._handle_reyxrec_cascade("reybrec", "rey6int")
 
     ##########################
     # TRAILX gated variables #
@@ -313,111 +317,119 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # OTRAILX gated variables #
     ###########################
 
-    def _handle_otrailx_gate(self, gate: str) -> Optional[int]:
+    def _handle_otrailx_gate(self, gate: str, field: str) -> Optional[int]:
         """Generically handle:
 
         If GATE is 888 or 995-998 then FIELD should = GATE.
         """
-        return self.handle_set_to_gate(gate, check_values=[888, 995, 996, 997, 998])
+        result = self.handle_set_to_gate(gate, check_values=[888, 995, 996, 997, 998])
+        if result is not None:
+            return result
+
+        return self.generic_missingness(field)
 
     def _missingness_otrlarr(self) -> Optional[int]:
         """Handles missingness for OTRLARR."""
-        return self._handle_otrailx_gate("otraila")
+        return self._handle_otrailx_gate("otraila", "otrlarr")
 
     def _missingness_otrlali(self) -> Optional[int]:
         """Handles missingness for OTRLALI."""
-        return self._handle_otrailx_gate("otraila")
+        return self._handle_otrailx_gate("otraila", "otrlali")
 
     def _missingness_otrlbrr(self) -> Optional[int]:
         """Handles missingness for OTRLBRR."""
-        return self._handle_otrailx_gate("otrailb")
+        return self._handle_otrailx_gate("otrailb", "otrlbrr")
 
     def _missingness_otrlbli(self) -> Optional[int]:
         """Handles missingness for OTRLBLI."""
-        return self._handle_otrailx_gate("otrailb")
+        return self._handle_otrailx_gate("otrailb", "otrlbli")
 
     ################################
     # Non-optional gated variables #
     ################################
 
-    def _handle_non_optional_gate(self, gate: str) -> Optional[int]:
+    def _handle_non_optional_gate(self, gate: str, field: str) -> Optional[int]:
         """Generically handle:
 
         If GATE is 95-98 then FIELD should = GATE.
         """
-        return self.handle_set_to_gate(gate, check_values=[95, 96, 97, 98])
+        result = self.handle_set_to_gate(gate, check_values=[95, 96, 97, 98])
+        if result is not None:
+            return result
+
+        return self.generic_missingness(field)
 
     def _missingness_minttotw(self) -> Optional[int]:
         """Handles missingness for MINTTOTW."""
-        return self._handle_non_optional_gate("minttots")
+        return self._handle_non_optional_gate("minttots", "minttotw")
 
     def _missingness_mintscng(self) -> Optional[int]:
         """Handles missingness for MINTSCNG."""
-        return self._handle_non_optional_gate("minttots")
+        return self._handle_non_optional_gate("minttots", "mintscng")
 
     def _missingness_mintscnc(self) -> Optional[int]:
         """Handles missingness for MINTSCNC."""
-        return self._handle_non_optional_gate("minttots")
+        return self._handle_non_optional_gate("minttots", "mintscnc")
 
     def _missingness_mintpcng(self) -> Optional[int]:
         """Handles missingness for MINTPCNG."""
-        return self._handle_non_optional_gate("minttots")
+        return self._handle_non_optional_gate("minttots", "mintpcng")
 
     def _missingness_mintpcnc(self) -> Optional[int]:
         """Handles missingness for MINTPCNC."""
-        return self._handle_non_optional_gate("minttots")
+        return self._handle_non_optional_gate("minttots", "mintpcnc")
 
     def _missingness_digbacls(self) -> Optional[int]:
         """Handles missingness for DIGBACLS."""
-        return self._handle_non_optional_gate("digbacct")
+        return self._handle_non_optional_gate("digbacct", "digbacls")
 
     def _missingness_digforsl(self) -> Optional[int]:
         """Handles missingness for DIGFORSL."""
-        return self._handle_non_optional_gate("digforct")
+        return self._handle_non_optional_gate("digforct", "digforsl")
 
     def _missingness_crafturs(self) -> Optional[int]:
         """Handles missingness for CRAFTURS."""
-        return self._handle_non_optional_gate("craftvrs")
+        return self._handle_non_optional_gate("craftvrs", "crafturs")
 
     def _missingness_craftdre(self) -> Optional[int]:
         """Handles missingness for CRAFTDRE."""
-        return self._handle_non_optional_gate("craftdvr")
+        return self._handle_non_optional_gate("craftdvr", "craftdre")
 
     def _missingness_craftdti(self) -> Optional[int]:
         """Handles missingness for CRAFTDTI."""
-        return self._handle_non_optional_gate("craftdvr")
+        return self._handle_non_optional_gate("craftdvr", "craftdti")
 
     def _missingness_craftcue(self) -> Optional[int]:
         """Handles missingness for CRAFTCUE."""
-        return self._handle_non_optional_gate("craftdvr")
+        return self._handle_non_optional_gate("craftdvr", "craftcue")
 
     def _missingness_udsverfn(self) -> Optional[int]:
         """Handles missingness for UDSVERFN."""
-        return self._handle_non_optional_gate("udsverfc")
+        return self._handle_non_optional_gate("udsverfc", "udsverfn")
 
     def _missingness_udsvernf(self) -> Optional[int]:
         """Handles missingness for UDSVERNF."""
-        return self._handle_non_optional_gate("udsverfc")
+        return self._handle_non_optional_gate("udsverfc", "udsvernf")
 
     def _missingness_udsverlr(self) -> Optional[int]:
         """Handles missingness for UDSVERLR."""
-        return self._handle_non_optional_gate("udsverlc")
+        return self._handle_non_optional_gate("udsverlc", "udsverlr")
 
     def _missingness_udsverln(self) -> Optional[int]:
         """Handles missingness for UDSVERLN."""
-        return self._handle_non_optional_gate("udsverlc")
+        return self._handle_non_optional_gate("udsverlc", "udsverln")
 
     def _missingness_udsvertn(self) -> Optional[int]:
         """Handles missingness for UDSVERTN."""
-        return self._handle_non_optional_gate("udsverlc")
+        return self._handle_non_optional_gate("udsverlc", "udsvertn")
 
     def _missingness_udsverte(self) -> Optional[int]:
         """Handles missingness for UDSVERTE."""
-        return self._handle_non_optional_gate("udsverlc")
+        return self._handle_non_optional_gate("udsverlc", "udsverte")
 
     def _missingness_udsverti(self) -> Optional[int]:
         """Handles missingness for UDSVERTI."""
-        return self._handle_non_optional_gate("udsverlc")
+        return self._handle_non_optional_gate("udsverlc", "udsverti")
 
     ############################
     # LOGIPREV-gated variables #

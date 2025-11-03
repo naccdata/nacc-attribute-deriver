@@ -90,3 +90,27 @@ class UDSFormA2Missingness(UDSMissingness):
     def _missingness_ineduc(self) -> Optional[int]:
         """Handles missingness for INEDUC."""
         return self.__handle_newinf_gate("ineduc")
+
+    ######################
+    # Write-in variables #
+    ######################
+
+    def _missingness_inhispox(self) -> Optional[str]:
+        """Handles missingness for INHISPOX."""
+        return self.generic_writein("inhispox")
+
+    def _missingness_inracex(self) -> Optional[str]:
+        """Handles missingness for INRACEX."""
+        return self.generic_writein("inracex")
+
+    def _missingness_inrasecx(self) -> Optional[str]:
+        """Handles missingness for INRASECX."""
+        return self.generic_writein("inrasecx")
+
+    def _missingness_inraterx(self) -> Optional[str]:
+        """Handles missingness for INRATERX."""
+        return self.generic_writein("inraterx")
+
+    def _missingness_inreltox(self) -> Optional[str]:
+        """Handles missingness for INRELTOX."""
+        return self.generic_writein("inreltox")

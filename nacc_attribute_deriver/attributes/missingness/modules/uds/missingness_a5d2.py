@@ -895,3 +895,31 @@ class UDSFormA5D2Missingness(UDSMissingness):
     def _missingness_ncothrx(self) -> Optional[str]:
         """Handles missingness for NCOTHRX."""
         return self.generic_writein("ncothrx")
+
+    def _missingness_cancsite(self) -> Optional[str]:
+        """Handles missingness for CANCSITE.
+
+        Only from V3 and earlier, form D2.
+        """
+        return self.generic_writein("cancsite")
+
+    def _missingness_artypex(self) -> Optional[str]:
+        """Handles missingness for ARTYPEX.
+
+        Only from V3 and earlier, form D2.
+        """
+        return self.generic_writein("artypex")
+
+    def _missingness_sleepotx(self) -> Optional[str]:
+        """Handles missingness for SLEEPOTX.
+
+        Only from V3 and earlier, form D2.
+        """
+        return self.generic_writein("sleepotx")
+
+    def _missingness_antiencx(self) -> Optional[str]:
+        """Handles missingness for ANTIENCX.
+
+        Only from V3 and earlier, form D2.
+        """
+        return self.generic_writein("antiencx")

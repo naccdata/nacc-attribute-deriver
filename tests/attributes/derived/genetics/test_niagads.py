@@ -18,6 +18,8 @@ def attr() -> NIAGADSAttributeCollection:
                     "niagads_exomechip": "NG00000, NG00001",
                     "niagads_wgs": "0",
                     "niagads_wes": 0,
+                    "gwas_round": "ADC 0",
+                    "exome_round": "Exome1",
                 }
             }
         }
