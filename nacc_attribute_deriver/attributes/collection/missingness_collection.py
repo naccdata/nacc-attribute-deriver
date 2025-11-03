@@ -34,7 +34,13 @@ class SubjectMissingnessCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__derived = SubjectDerivedNamespace(table=table)
 
-    def handle_subject_missing(self, attribute: str, default: int) -> Optional[int]:
+    @property
+    def derived(self) -> SubjectDerivedNamespace:
+        return self.__derived
+
+    def handle_subject_missing(
+        self, attribute: str, default: Optional[int] = INFORMED_MISSINGNESS
+    ) -> Optional[int]:
         """Handle missing values at the subject level."""
         value = self.__derived.get_cross_sectional_value(attribute, str)
         if value is None:

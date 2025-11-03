@@ -18,6 +18,8 @@ def attr() -> NIAGADSAttributeCollection:
                     "niagads_exomechip": "NG00000, NG00001",
                     "niagads_wgs": "0",
                     "niagads_wes": 0,
+                    "adgc_gwas": 1,
+                    "adgc_exomechip": 0,
                     "gwas_round": "ADC 0",
                     "exome_round": "Exome1",
                 }
@@ -35,3 +37,7 @@ class TestNIAGADSAttribute:
         assert attr._create_ngdsexom() == 1
         assert attr._create_ngdswgs() == 0
         assert attr._create_ngdswes() == 0
+        assert attr._create_adgcgwas() == 1
+        assert attr._create_adgcexom() == 0
+        assert attr._create_adgcrnd() == "ADC 0"
+        assert attr._create_adgcexr() == "Exome1"

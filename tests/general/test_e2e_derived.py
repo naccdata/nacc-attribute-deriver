@@ -168,6 +168,8 @@ def test_niagads_investigator():
         "niagads_exomechip": "NG00000, NG00001",
         "niagads_wgs": "0",
         "niagads_wes": 0,
+        "adgc_gwas": 1,
+        "adgc_exomechip": 0,
         "gwas_round": "ADC 0",
         "exome_round": "Exome1",
     }
@@ -184,6 +186,8 @@ def test_niagads_investigator():
         "ngdsexac": "NG00000, NG00001",
         "ngdswgac": "88",
         "ngdsweac": "88",
+        "adgcgwas": 1,
+        "adgcexom": 0,
         "adgcrnd": "ADC 0",
         "adgcexr": "Exome1",
     }
