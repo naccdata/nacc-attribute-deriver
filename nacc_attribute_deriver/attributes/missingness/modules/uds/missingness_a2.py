@@ -21,7 +21,7 @@ class UDSFormA2Missingness(UDSMissingness):
         if inlivwth == 1:
             return 8
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_incntmod(self) -> Optional[int]:
         """Handles missingness for INCNTMOD."""
@@ -39,13 +39,6 @@ class UDSFormA2Missingness(UDSMissingness):
         """Handles missingness for INCALLS."""
         return self._handle_inlivwth_gate("incalls")
 
-    def _missingness_incntmdx(self) -> Optional[str]:
-        """Handles missingness for INCNTMDX.
-
-        If INCNTMDX is blank then INCNTMDX should remain blank
-        """
-        return self.generic_writein("incntmdx")
-
     ##########################
     # NEWINF-gated variables #
     ##########################
@@ -58,7 +51,7 @@ class UDSFormA2Missingness(UDSMissingness):
         if self.uds.get_value("newinf", int) == 0:
             return INFORMED_MISSINGNESS
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_inknown(self) -> Optional[int]:
         """Handles missingness for INKNOWN."""
@@ -90,27 +83,3 @@ class UDSFormA2Missingness(UDSMissingness):
     def _missingness_ineduc(self) -> Optional[int]:
         """Handles missingness for INEDUC."""
         return self.__handle_newinf_gate("ineduc")
-
-    ######################
-    # Write-in variables #
-    ######################
-
-    def _missingness_inhispox(self) -> Optional[str]:
-        """Handles missingness for INHISPOX."""
-        return self.generic_writein("inhispox")
-
-    def _missingness_inracex(self) -> Optional[str]:
-        """Handles missingness for INRACEX."""
-        return self.generic_writein("inracex")
-
-    def _missingness_inrasecx(self) -> Optional[str]:
-        """Handles missingness for INRASECX."""
-        return self.generic_writein("inrasecx")
-
-    def _missingness_inraterx(self) -> Optional[str]:
-        """Handles missingness for INRATERX."""
-        return self.generic_writein("inraterx")
-
-    def _missingness_inreltox(self) -> Optional[str]:
-        """Handles missingness for INRELTOX."""
-        return self.generic_writein("inreltox")

@@ -56,7 +56,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if carry_forward:
             return self.handle_prev_visit(field, int, prev_code=777)
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def handle_a5d2_carry_forward(
         self,
@@ -544,7 +544,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if apnea == 9:
             return 9
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_cpap(self) -> Optional[int]:
         """Handles missingness for CPAP."""
@@ -680,7 +680,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             if nomensage >= 10 and nomensage <= 70:
                 return 0
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_nomensnat(self) -> Optional[int]:
         """Handles missingness for NOMENSNAT."""
@@ -740,7 +740,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             if nacctbi == 9:
                 return INFORMED_MISSINGNESS
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_tbibrief(self) -> Optional[int]:
         """Handles missingness for TBIBRIEF."""
@@ -765,7 +765,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if tbiyear is None and nacctbi in [0, 9]:
             return 8888
 
-        return self.generic_missingness("tbiyear")
+        return self.generic_missingness("tbiyear", int)
 
     #########
     # OTHER #
@@ -790,7 +790,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if seizures == 9:
             return 9
 
-        return self.generic_missingness("seiznum")
+        return self.generic_missingness("seiznum", int)
 
     def _missingness_deprtreat(self) -> Optional[int]:
         """Handles missingness for DEPRTREAT."""
@@ -800,7 +800,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if majordep in [0, 2, 9] or otherdep in [0, 2, 9]:
             return 8
 
-        return self.generic_missingness("deprtreat")
+        return self.generic_missingness("deprtreat", int)
 
     def _missingness_pdyr(self) -> Optional[int]:
         """Handles missingness for PDYR.
@@ -813,7 +813,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if self.uds.get_value("pd", int) in [0, 9]:
             return 8888
 
-        return self.generic_missingness("pdyr")
+        return self.generic_missingness("pdyr", int)
 
     def _missingness_pdothryr(self) -> Optional[int]:
         """Handles missingness for PDOTHRYR.
@@ -826,7 +826,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if self.uds.get_value("pdothr", int) in [0, 9]:
             return 8888
 
-        return self.generic_missingness("pdothryr")
+        return self.generic_missingness("pdothryr", int)
 
     ###################
     # OTHER - WRITEIN #
@@ -859,67 +859,27 @@ class UDSFormA5D2Missingness(UDSMissingness):
     def _missingness_cvothrx(self) -> Optional[str]:
         """Handles missingness for CVOTHRX."""
         if self.formver < 4:
-            return self.generic_writein("cvothrx")
+            return self.generic_missingness("cvothrx", str)
 
         return self.handle_gated_writein("cvothr", [0, 9])
 
     def _missingness_arthtypx(self) -> Optional[str]:
         """Handles missingness for ARTHTYPX."""
         if self.formver < 4:
-            return self.generic_writein("arthtypx")
+            return self.generic_missingness("arthtypx", str)
 
         return self.handle_gated_writein("arthrothr", [0])
 
     def _missingness_othsleex(self) -> Optional[str]:
         """Handles missingness for OTHSLEEX."""
         if self.formver < 4:
-            return self.generic_writein("othsleex")
+            return self.generic_missingness("othsleex", str)
 
         return self.handle_gated_writein("othsleep", [0, 9])
 
     def _missingness_psycdisx(self) -> Optional[str]:
         """Handles missingness for PSYCDISX."""
         if self.formver < 4:
-            return self.generic_writein("psycdisx")
+            return self.generic_missingness("psycdisx", str)
 
         return self.handle_gated_writein("psycdis", [0, 9])
-
-    def _missingness_abusx(self) -> Optional[str]:
-        """Handles missingness for ABUSX."""
-        return self.generic_writein("abusx")
-
-    def _missingness_cbothrx(self) -> Optional[str]:
-        """Handles missingness for CBOTHRX."""
-        return self.generic_writein("cbothrx")
-
-    def _missingness_ncothrx(self) -> Optional[str]:
-        """Handles missingness for NCOTHRX."""
-        return self.generic_writein("ncothrx")
-
-    def _missingness_cancsite(self) -> Optional[str]:
-        """Handles missingness for CANCSITE.
-
-        Only from V3 and earlier, form D2.
-        """
-        return self.generic_writein("cancsite")
-
-    def _missingness_artypex(self) -> Optional[str]:
-        """Handles missingness for ARTYPEX.
-
-        Only from V3 and earlier, form D2.
-        """
-        return self.generic_writein("artypex")
-
-    def _missingness_sleepotx(self) -> Optional[str]:
-        """Handles missingness for SLEEPOTX.
-
-        Only from V3 and earlier, form D2.
-        """
-        return self.generic_writein("sleepotx")
-
-    def _missingness_antiencx(self) -> Optional[str]:
-        """Handles missingness for ANTIENCX.
-
-        Only from V3 and earlier, form D2.
-        """
-        return self.generic_writein("antiencx")

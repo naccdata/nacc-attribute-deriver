@@ -20,7 +20,7 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
         if self.uds.get_value("biomarkdx", int) == 0:
             return 0
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_fluidbiom(self) -> Optional[int]:
         """Handles missingness for FLUIDBIOM."""
@@ -162,7 +162,7 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
         if not ignore_normcog and self.normcog == 1:
             return 8
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_cteif(self) -> Optional[int]:
         """Handles missingness for CTEIF."""
@@ -182,6 +182,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_msaif(self) -> Optional[int]:
         """Handles missingness for MSAIF."""
+        if not self.check_applicable():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_cognitive_impairment_gate("msa", "msaif")
 
     def _missingness_pspif(self) -> Optional[int]:
@@ -194,6 +197,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_ftldmoif(self) -> Optional[int]:
         """Handles missingness for FTLDMOIF."""
+        if not self.check_applicable():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_cognitive_impairment_gate("ftldmo", "ftldmoif")
 
     def _missingness_ftldnoif(self) -> Optional[int]:
@@ -228,63 +234,3 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
     def _missingness_othcogif(self) -> Optional[int]:
         """Handles missingness for OTHCOGIF."""
         return self.__handle_cognitive_impairment_gate("othcog", "othcogif")
-
-    ######################
-    # Write-in variables #
-    ######################
-
-    def _missingness_ftldsubx(self) -> Optional[str]:
-        """Handles missingness for FTLDSUBX."""
-        return self.generic_writein("ftldsubx")
-
-    def _missingness_othcogx(self) -> Optional[str]:
-        """Handles missingness for OTHCOGX."""
-        return self.generic_writein("othcogx")
-
-    def _missingness_othmutx(self) -> Optional[str]:
-        """Handles missingness for OTHMUTX."""
-        return self.generic_writein("othmutx")
-
-    def _missingness_bloodothx(self) -> Optional[str]:
-        """Handles missingness for BLOODOTHX."""
-        return self.generic_writein("bloodothx")
-
-    def _missingness_csfothx(self) -> Optional[str]:
-        """Handles missingness for CSFOTHX."""
-        return self.generic_writein("csfothx")
-
-    def _missingness_fdgothx(self) -> Optional[str]:
-        """Handles missingness for FDGOTHX."""
-        return self.generic_writein("fdgothx")
-
-    def _missingness_tracothdxx(self) -> Optional[str]:
-        """Handles missingness for TRACOTHDXX."""
-        return self.generic_writein("tracothdxx")
-
-    def _missingness_tracerothx(self) -> Optional[str]:
-        """Handles missingness for TRACEROTHX."""
-        return self.generic_writein("tracerothx")
-
-    def _missingness_othbiomx1(self) -> Optional[str]:
-        """Handles missingness for OTHBIOMX1."""
-        return self.generic_writein("othbiomx1")
-
-    def _missingness_biomothx1(self) -> Optional[str]:
-        """Handles missingness for BIOMOTHX1."""
-        return self.generic_writein("biomothx1")
-
-    def _missingness_othbiomx2(self) -> Optional[str]:
-        """Handles missingness for OTHBIOMX2."""
-        return self.generic_writein("othbiomx2")
-
-    def _missingness_biomothx2(self) -> Optional[str]:
-        """Handles missingness for BIOMOTHX2."""
-        return self.generic_writein("biomothx2")
-
-    def _missingness_othbiomx3(self) -> Optional[str]:
-        """Handles missingness for OTHBIOMX3."""
-        return self.generic_writein("othbiomx3")
-
-    def _missingness_biomothx3(self) -> Optional[str]:
-        """Handles missingness for BIOMOTHX3."""
-        return self.generic_writein("biomothx3")

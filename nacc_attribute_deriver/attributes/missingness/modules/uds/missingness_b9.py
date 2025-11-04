@@ -87,7 +87,7 @@ class UDSFormB9Missingness(UDSMissingness):
             if self.uds.get_value(gate, int) == 0:
                 return missingness_value
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     ##################
     # DECCLCOG GATES #
@@ -424,34 +424,6 @@ class UDSFormB9Missingness(UDSMissingness):
 
         return self.handle_prev_visit("frstchg", int, prev_code=777)
 
-    ###############################################
-    # If VAR is blank, tn VAR should remain blank #
-    ###############################################
-
-    def _missingness_cogothrx(self) -> Optional[str]:
-        """Handles missingness for COGOTHRX."""
-        return self.generic_writein("cogothrx")
-
-    def _missingness_cogmodex(self) -> Optional[str]:
-        """Handles missingness for COGMODEX."""
-        return self.generic_writein("cogmodex")
-
-    def _missingness_othsubusex(self) -> Optional[str]:
-        """Handles missingness for OTHSUBUSEX."""
-        return self.generic_writein("othsubusex")
-
-    def _missingness_beothrx(self) -> Optional[str]:
-        """Handles missingness for BEOTHRX."""
-        return self.generic_writein("beothrx")
-
-    def _missingness_bemodex(self) -> Optional[str]:
-        """Handles missingness for BEMODEX."""
-        return self.generic_writein("bemodex")
-
-    def _missingness_momodex(self) -> Optional[str]:
-        """Handles missingness for MOMODEX."""
-        return self.generic_writein("momodex")
-
     ######################################################
     # If VAR = 777, then VAR = value from previous visit #
     ######################################################
@@ -495,7 +467,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if besubab == 1 and value is None:
             return 0
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_alcuse(self) -> Optional[int]:
         """Handles missingness for ALCUSE."""
@@ -631,7 +603,7 @@ class UDSFormB9Missingness(UDSMissingness):
     #     if self.uds.is_initial() and raw_formver == 1.0:
     #         return INFORMED_MISSINGNESS
 
-    #     return self.generic_missingness("b9chg")
+    #     return self.generic_missingness("b9chg", int)
 
     # def __missingness_decin(self) -> Optional[int]:
     #     """Handles missingness for DECIN."""
@@ -642,7 +614,7 @@ class UDSFormB9Missingness(UDSMissingness):
     #     if self.formver < 3:
     #         return 9
 
-    #     return self.generic_missingness("decin")
+    #     return self.generic_missingness("decin", int)
 
     # def __missingness_decsub(self) -> Optional[int]:
     #     """Handles missingness for DECSUB."""
@@ -650,7 +622,7 @@ class UDSFormB9Missingness(UDSMissingness):
     #     if self.formver == 1 and b9chg in [1, 3]:
     #         return 9
 
-    #     return self.generic_missingness("decsub")
+    #     return self.generic_missingness("decsub", int)
 
     # def __missingness_decclin(self) -> Optional[int]:
     #     """Handles missingness for DECCLIN."""
@@ -661,4 +633,4 @@ class UDSFormB9Missingness(UDSMissingness):
     #         if b9chg == 3:
     #             return 1
 
-    #     return self.generic_missingness("decclin")
+    #     return self.generic_missingness("decclin", int)

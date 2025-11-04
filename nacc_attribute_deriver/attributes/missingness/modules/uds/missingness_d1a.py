@@ -610,7 +610,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
             if prevstk == 0:
                 return return_value
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_prevstk(self) -> Optional[int]:
         """Handles missingness for PREVSTK."""
@@ -676,60 +676,24 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
         if self.uds.get_value("normcog", int) == 1:
             return 0
 
-        return self.generic_missingness("demented")
+        return self.generic_missingness("demented", int)
 
     def _missingness_alcabuse(self) -> Optional[int]:
         """Handles missingness for ALCABUSE."""
         if self.uds.get_value("alcdem", int) == 0:
             return 8
 
-        return self.generic_missingness("alcabuse")
+        return self.generic_missingness("alcabuse", int)
 
     def _missingness_deptreat(self) -> Optional[int]:
         """Handles missingness for DEPTREAT."""
         if self.uds.get_value("dep", int) == 0:
             return 8
 
-        return self.generic_missingness("deptreat")
+        return self.generic_missingness("deptreat", int)
 
     def _missingness_brnincte(self) -> Optional[int]:
         if self.uds.get_value("brninj", int) == 0:
             return 8
 
-        return self.generic_missingness("brnincte")
-
-    ######################
-    # Write-in variables #
-    ######################
-
-    def _missingness_impnomciox(self) -> Optional[str]:
-        """Handles missingness for IMPNOMCIOX."""
-        return self.generic_writein("impnomciox")
-
-    def _missingness_othsynx(self) -> Optional[str]:
-        """Handles missingness for OTHSYNX."""
-        return self.generic_writein("othsynx")
-
-    def _missingness_othanxdx(self) -> Optional[str]:
-        """Handles missingness for OTHANXDX."""
-        return self.generic_writein("othanxdx")
-
-    def _missingness_othcogillx(self) -> Optional[str]:
-        """Handles missingness for OTHCOGILLX."""
-        return self.generic_writein("othcogillx")
-
-    def _missingness_othpsyx(self) -> Optional[str]:
-        """Handles missingness for OTHPSYX."""
-        return self.generic_writein("othpsyx")
-
-    def _missingness_cogothx(self) -> Optional[str]:
-        """Handles missingness for COGOTHX."""
-        return self.generic_writein("cogothx")
-
-    def _missingness_cogoth2x(self) -> Optional[str]:
-        """Handles missingness for COGOTH2X."""
-        return self.generic_writein("cogoth2x")
-
-    def _missingness_cogoth3x(self) -> Optional[str]:
-        """Handles missingness for COGOTH3X."""
-        return self.generic_writein("cogoth3x")
+        return self.generic_missingness("brnincte", int)

@@ -30,7 +30,7 @@ class UDSFormB5Missingness(UDSMissingness):
         if gate_value == 9:
             return INFORMED_MISSINGNESS
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_delsev(self) -> Optional[int]:
         """Handles missingness for DELSEV."""

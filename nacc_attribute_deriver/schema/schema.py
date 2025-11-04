@@ -1,8 +1,13 @@
 """Defines the curation schema."""
 
-from typing import List, Optional
+from typing import List, Optional, Type
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    ValidationError,
+    field_validator,
+)
 
 from nacc_attribute_deriver.utils.scope import ScopeLiterals
 
@@ -47,6 +52,8 @@ class CurationRule(BaseModel):
 class RuleFileModel(BaseModel):
     """Model for loading serialized rule definitions."""
 
+    model_config = ConfigDict(extra="ignore")
+
     scope: ScopeLiterals
     function: str
     location: str
@@ -68,3 +75,26 @@ class RuleFileModel(BaseModel):
             operation=self.operation,  # type: ignore
             dated=self.dated,
         )
+
+
+class MissingnessFileModel(RuleFileModel):
+    """Model for loading serialized missingness rule definitions.
+
+    In the case of missingness, we do not define a rule for every
+    variable. In this case, we need to infer the default missingness
+    value from an attr_type. In most cases this is an int, but can also
+    be floats and strings.
+    """
+
+    attr_type: Type
+
+    @field_validator("attr_type", mode="before")
+    def cast_type(cls, value: Optional[str]) -> Type:
+        if value == "int":
+            return int
+        if value == "float":
+            return float
+        if value == "str":
+            return str
+
+        raise ValidationError(f"Unsupported attribute type: {value}")

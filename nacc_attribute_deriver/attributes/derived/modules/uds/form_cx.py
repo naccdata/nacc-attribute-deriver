@@ -4,8 +4,6 @@ Scores. In V4 these are the C2/C2T forms.
 One of form (C1 or C2)/(C2 or C2T) is expected to have been submitted.
 """
 
-from typing import Optional
-
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
@@ -43,7 +41,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
         return True
 
-    def __calculate_interval_from_a1(self, cmp_date: str) -> Optional[int]:
+    def __calculate_interval_from_a1(self, cmp_date: str) -> int:
         """Calculates discrepency between UDS Form A1 and Form C1/C2."""
         frmdate_a1 = date_from_form_date(self.uds.get_value("frmdatea1", str))
         frmdate_cx = date_from_form_date(cmp_date)
@@ -62,18 +60,18 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         # 0 if CX completed within 90 days of A1, 1 otherwise
         return 0 if interval <= 90 else 1
 
-    def _create_naccc1(self) -> Optional[int]:
+    def _create_naccc1(self) -> int:
         """Creates NACCC1, form data discrepancy between UDS Form A1 and Form
         C1.
 
         Only runs in V3 and earlier for form C1.
         """
         if self.__frmdatec1 is None:
-            return None
+            return INFORMED_MISSINGNESS
 
         return self.__calculate_interval_from_a1(self.__frmdatec1)
 
-    def _create_naccc2(self) -> Optional[int]:
+    def _create_naccc2(self) -> int:
         """Creates NACCC2, form data discrepancy between UDS Form A1 and Form
         C2.
 
@@ -81,7 +79,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         submitted.
         """
         if self.formver < 4 and self.__frmdatec2 is None:
-            return None
+            return INFORMED_MISSINGNESS
 
         cmp_date = self.__frmdatec2 if self.formver < 4 else self.__frmdatec2c2t
         if not cmp_date:
@@ -91,7 +89,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
         return self.__calculate_interval_from_a1(cmp_date)
 
-    def _create_naccmmse(self) -> Optional[int]:
+    def _create_naccmmse(self) -> int:
         """Creates NACCMMSE, Total MMSE score (using D-L-R-O-W).
 
         Only in V3 and earlier, but implicitly handled by these
@@ -103,15 +101,15 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         if mmse is None and mmsereas is not None:
             return mmsereas
 
-        return mmse
+        return mmse if mmse is not None else INFORMED_MISSINGNESS
 
-    def _create_naccmoca(self) -> Optional[int]:
+    def _create_naccmoca(self) -> int:
         """(V3+ only) Creates NACCMOCA.
 
         MoCA Total Score -- corrected for education
         """
         if self.formver < 3 or not self.submitted:
-            return None
+            return INFORMED_MISSINGNESS
 
         # In V4 only run for C2, -4 otherwise
         if self.formver >= 4 and self.__is_c2t:
@@ -132,18 +130,18 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
             return mocatots
 
-        return None
+        return INFORMED_MISSINGNESS
 
-    def _create_naccmocb(self) -> Optional[int]:
+    def _create_naccmocb(self) -> int:
         """(V3+ only) Creates NACCMOCB.
 
         MoCA-Blind Total Score -- corrected for education
         """
-        if self.formver >= 4 or not self.submitted:
-            return None
+        if self.formver < 3 or not self.submitted:
+            return INFORMED_MISSINGNESS
 
         # In V4 only run for C2T, -4 otherwise
-        if self.formver > 3 and not self.__is_c2t:
+        if self.formver >= 4 and not self.__is_c2t:
             return INFORMED_MISSINGNESS
 
         precise_formver = self.uds.get_required("formver", float)
@@ -166,4 +164,4 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
             return mocbtots
 
-        return None
+        return INFORMED_MISSINGNESS

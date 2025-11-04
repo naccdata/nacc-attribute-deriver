@@ -9,12 +9,12 @@ import datetime
 import logging
 from inspect import isfunction
 from types import FunctionType
-from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Type, Union
 
 from pydantic import BaseModel, ConfigDict
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import DERIVE_TYPES
+from nacc_attribute_deriver.utils.constants import CURATION_TYPE
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 log = logging.getLogger(__name__)
@@ -47,7 +47,10 @@ class AttributeExpression(BaseModel):
         return self.function(instance), instance.get_date()
 
     def apply_with_field(
-        self, table: SymbolTable, field: str
+        self,
+        table: SymbolTable,
+        field: str,
+        attr_type: Type,
     ) -> Tuple[Any, datetime.date | None]:
         """Apply the function on the instance with the field passed as a
         parameter.
@@ -60,7 +63,7 @@ class AttributeExpression(BaseModel):
             on the table
         """
         instance = self.attribute_class(table)
-        return self.function(instance, field), instance.get_date()
+        return self.function(instance, field, attr_type), instance.get_date()
 
 
 class AttributeCollectionRegistry(type):
@@ -112,7 +115,8 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
             if isfunction(attr) and any(
-                attr_name.startswith(f"_{derive_type}_") for derive_type in DERIVE_TYPES
+                attr_name.startswith(f"_{derive_type}_")
+                for derive_type in CURATION_TYPE
             ):
                 hook = attr_name.lstrip("_")
                 if hook in result:
@@ -139,7 +143,7 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                 isfunction(attr)
                 and any(
                     attr_name.startswith(f"_{derive_type}_")
-                    for derive_type in DERIVE_TYPES
+                    for derive_type in CURATION_TYPE
                 )
                 and attr_name.lstrip("_") == derive_name
             ):

@@ -1,7 +1,7 @@
 """Class to handle form missingness values that check subject-level derived
 variables."""
 
-from typing import Optional
+from typing import Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
@@ -9,6 +9,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
     SubjectDerivedNamespace,
+    T,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
@@ -16,6 +17,7 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class FormMissingnessCollection(AttributeCollection):
@@ -24,24 +26,26 @@ class FormMissingnessCollection(AttributeCollection):
     def __init__(self, table: SymbolTable, required=frozenset([])) -> None:
         self.__form = FormNamespace(table=table, required=required)
 
-    def generic_missingness(self, field: str) -> Optional[int]:
-        """Generic missingness; if missing set to -4."""
+    @property
+    def form(self) -> FormNamespace:
+        return self.__form
+
+    def generic_missingness(self, field: str, attr_type: Type[T]) -> Optional[T]:
+        """Generic missingness:
+
+        If FIELD is None, FIELD = -4 / -4.4 / blank
+        """
         if self.__form.get_value(field, str) is None:
-            return INFORMED_MISSINGNESS
+            if attr_type == int:  # noqa: E721
+                return INFORMED_MISSINGNESS  # type: ignore
+            if attr_type == str:  # noqa: E721
+                return INFORMED_BLANK  # type: ignore
+            if attr_type == float:  # noqa: E721
+                return INFORMED_MISSINGNESS_FLOAT  # type: ignore
 
-        return None
-
-    def generic_float_missingness(self, field: str) -> Optional[float]:
-        """Generic float missingness; if missing set to -4.4."""
-        if self.__form.get_value(field, str) is None:
-            return INFORMED_MISSINGNESS_FLOAT
-
-        return None
-
-    def generic_writein(self, field: str) -> Optional[str]:
-        """Generic blankness (write-ins); if blank should remain blank."""
-        if self.__form.get_value(field, str) is None:
-            return INFORMED_BLANK
+            raise AttributeDeriverError(
+                f"Unknown missingness attribute type: {attr_type}"
+            )
 
         return None
 

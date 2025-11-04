@@ -32,7 +32,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
                 return missing_value
 
-            return self.generic_writein(field)  # type: ignore
+            return self.generic_missingness(field, str)  # type: ignore
 
         return self.handle_prev_visit(field, attr_type)
 

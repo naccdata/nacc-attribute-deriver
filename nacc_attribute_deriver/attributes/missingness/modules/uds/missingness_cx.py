@@ -164,7 +164,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_writein("mocalanx")
+        return self.generic_missingness("mocalanx", str)
 
     def _missingness_npsylanx(self) -> Optional[str]:
         """Handles missingness for NPSYLANX."""
@@ -172,7 +172,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_writein("npsylanx")
+        return self.generic_missingness("npsylanx", str)
 
     def _missingness_respothx(self) -> Optional[str]:
         """Handles missingness for RESPOTHX."""
@@ -180,7 +180,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_writein("respothx")
+        return self.generic_missingness("respothx", str)
 
     def _missingness_mmselanx(self) -> Optional[str]:
         """Handles missingness for MMSELANX."""
@@ -188,7 +188,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_writein("mmselanx")
+        return self.generic_missingness("mmselanx", str)
 
     #######################################################
     # REYXREC gated variables - cascades across variables #
@@ -209,7 +209,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_reydint(self) -> Optional[int]:
         """Handles missingness for REYDINT."""
@@ -297,7 +297,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_trailarr(self) -> Optional[int]:
         """Handles missingness for TRAILARR."""
@@ -342,7 +342,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_otrlarr(self) -> Optional[int]:
         """Handles missingness for OTRLARR."""
@@ -373,7 +373,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_minttotw(self) -> Optional[int]:
         """Handles missingness for MINTTOTW."""
@@ -457,7 +457,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if logiprev is None or logiprev in [88, 99]:
             return INFORMED_MISSINGNESS
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_logiprev(self) -> Optional[int]:
         """Handles missingness for LOGIPREV."""

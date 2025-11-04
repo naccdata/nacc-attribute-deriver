@@ -5,7 +5,7 @@ INFORMED_MISSINGNESS = -4
 INFORMED_MISSINGNESS_FLOAT = -4.4
 INFORMED_BLANK = "blank"  # will be translated to an overriding None
 
-DERIVE_TYPES = ["create", "missingness"]
+CURATION_TYPE = ["create", "missingness"]
 
 # For form A4 derived variables
 COMBINATION_RX_CLASSES = [

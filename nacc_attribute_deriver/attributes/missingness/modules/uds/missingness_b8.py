@@ -22,7 +22,7 @@ class UDSFormB8Missingness(UDSMissingness):
         if self.uds.get_value("normnrexam", int) == 0:
             return 0
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_parksign(self) -> Optional[int]:
         """Handle missingness for PARKSIGN."""
@@ -50,7 +50,7 @@ class UDSFormB8Missingness(UDSMissingness):
         if normnrexam == 0 or gaitabn == 0:
             return 8
 
-        return self.generic_missingness("gaitfind")
+        return self.generic_missingness("gaitfind", int)
 
     ############################
     # B8-specific GATED VALUES #
@@ -78,7 +78,7 @@ class UDSFormB8Missingness(UDSMissingness):
         if gate_value == 8:
             return 8
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _missingness_slowingfm(self) -> Optional[int]:
         """Handles missingness for SLOWINGFM."""
@@ -222,7 +222,7 @@ class UDSFormB8Missingness(UDSMissingness):
         if self.uds.get_value("normexam", int) in [0, 2]:
             return 0
 
-        return self.generic_missingness("field")
+        return self.generic_missingness("field", int)
 
     def _missingness_resttrl(self) -> Optional[int]:
         """Handles missingness for RESTTRL."""
@@ -384,16 +384,4 @@ class UDSFormB8Missingness(UDSMissingness):
         if self.uds.get_value("normexam", int) == 0:
             return 0
 
-        return self.generic_missingness("othneur")
-
-    #############
-    # Write-ins #
-    #############
-
-    def _missingness_othneurx(self) -> Optional[str]:
-        """Handles missingness for OTHNEURX."""
-        return self.generic_writein("othneurx")
-
-    # there is recode logic for PARKQ, CVDQ, and PSPQ but these do not
-    # appear in the DED nor are they in the QAF, so can probably ignore?
-    # they seem to be write-in values for something
+        return self.generic_missingness("othneur", int)

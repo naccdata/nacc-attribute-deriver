@@ -20,7 +20,7 @@ class UDSFormA4Missingness(UDSMissingness):
         if self.formver < 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
             return INFORMED_BLANK
 
-        return self.generic_writein(field)
+        return self.generic_missingness(field, str)
 
     def __handle_drugx(self, field: str) -> Optional[str]:
         """V3 and earlier. Handles missingness for all DRUGX (1-40) values.
@@ -31,7 +31,7 @@ class UDSFormA4Missingness(UDSMissingness):
         if self.formver >= 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
             return INFORMED_BLANK
 
-        return self.generic_writein(field)
+        return self.generic_missingness(field, str)
 
     def _missingness_rxnormid1(self) -> Optional[str]:
         """Handles missingness for RXNORMID1."""

@@ -16,7 +16,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
+    INFORMED_MISSINGNESS_FLOAT,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class UDSMissingness(UDSAttributeCollection):
@@ -36,23 +38,22 @@ class UDSMissingness(UDSAttributeCollection):
     def prev_record(self) -> Optional[PreviousRecordNamespace]:
         return self.__prev_record
 
-    def generic_missingness(self, field: str) -> Optional[int]:
+    def generic_missingness(self, field: str, attr_type: Type[T]) -> Optional[T]:
         """Generic missingness:
 
-        If FIELD is None, FIELD = -4.
+        If FIELD is None, FIELD = -4 / -4.4 / blank
         """
         if self.uds.get_value(field, str) is None:
-            return INFORMED_MISSINGNESS
+            if attr_type == int:  # noqa: E721
+                return INFORMED_MISSINGNESS  # type: ignore
+            if attr_type == str:  # noqa: E721
+                return INFORMED_BLANK  # type: ignore
+            if attr_type == float:  # noqa: E721
+                return INFORMED_MISSINGNESS_FLOAT  # type: ignore
 
-        return None
-
-    def generic_writein(self, field: str) -> Optional[str]:
-        """Generic blankness (write-ins):
-
-        If FIELD is blank, FIELD should remain blank (INFORMED_BLANK)
-        """
-        if self.uds.get_value(field, str) is None:
-            return INFORMED_BLANK
+            raise AttributeDeriverError(
+                f"Unknown missingness attribute type: {attr_type}"
+            )
 
         return None
 
@@ -111,13 +112,9 @@ class UDSMissingness(UDSAttributeCollection):
         elif value is not None:
             return None
 
-        result = (
-            self.generic_writein(field)
-            if attr_type == str  # noqa: E721
-            else self.generic_missingness(field)
-        )
+        result = self.generic_missingness(field, attr_type)
         if result is not None:
-            return attr_type(result)  # type: ignore
+            return result  # type: ignore
 
         return None
 
@@ -126,6 +123,6 @@ class GenericUDSMissingness(UDSMissingness):
     """Defines generic missingness rule in its own subclass otherwise it gets
     inherited by all subclasses and imported multiple times."""
 
-    def _missingness_uds(self, field: str) -> Optional[int]:
+    def _missingness_uds(self, field: str, attr_type: Type[T]) -> Optional[T]:
         """Defines general missingness for UDS; -4 if missing."""
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, attr_type)

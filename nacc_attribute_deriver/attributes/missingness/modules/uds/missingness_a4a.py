@@ -22,7 +22,7 @@ class UDSFormA4aMissingness(UDSMissingness):
         if self.uds.get_value(gate, int) in [0, 9]:
             return 0
 
-        return self.generic_missingness(field)
+        return self.generic_missingness(field, int)
 
     def _handle_a4a_missingness(  # noqa: C901
         self, fvp_gates: List[str], field: str, writein: bool = False
@@ -63,7 +63,7 @@ class UDSFormA4aMissingness(UDSMissingness):
                         return 9
 
         if writein:
-            return self.generic_writein(field)
+            return self.generic_missingness(field, str)
 
         result = self.uds.get_value(field, int)
         if result is not None:

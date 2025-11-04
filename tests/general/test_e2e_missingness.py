@@ -18,7 +18,11 @@ def test_uds_form(uds_table):
 def test_np_form():
     """Test NP."""
     np_table = SymbolTable(
-        {"file": {"info": {"forms": {"json": {"visitdate": "2020-01-01"}}}}}
+        {
+            "file": {
+                "info": {"forms": {"json": {"visitdate": "2020-01-01", "formver": 11}}}
+            }
+        }
     )
     deriver = MissingnessDeriver(missingness_file="test_missingness.csv")
     deriver.curate(np_table, "np")

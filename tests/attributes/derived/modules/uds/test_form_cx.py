@@ -84,7 +84,7 @@ class TestUDSFormCXAttribute:
 
         # if packet IT, ignore
         set_attribute(table, form_prefix, "packet", "IT")
-        assert attr._create_naccmoca() is None
+        assert attr._create_naccmoca() == -4
 
     def test_create_naccmocb(self, table, form_prefix):
         """Tests creating NACCMOCB.
@@ -95,7 +95,7 @@ class TestUDSFormCXAttribute:
         attr = UDSFormCXAttribute(table)
 
         # default does not fulfill packet conditions, should return None
-        assert attr._create_naccmocb() is None
+        assert attr._create_naccmocb() == -4
 
         # set packet to IT, should run now
         set_attribute(table, form_prefix, "packet", "IT")
