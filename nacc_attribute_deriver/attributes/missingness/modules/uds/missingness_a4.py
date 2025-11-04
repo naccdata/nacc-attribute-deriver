@@ -2,15 +2,39 @@
 
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingDerivedNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 from .missingness_uds import UDSMissingness
 
 
 class UDSFormA4Missingness(UDSMissingness):
+    def __init__(self, table: SymbolTable):
+        super().__init__(table)
+        working = WorkingDerivedNamespace(table=table)
+
+        # grab corresponding drugs list, curated from MEDS file
+        if self.formver < 4:
+            form_date = self.uds.get_value("frmdatea4", str)
+            if not form_date:  # try visitdate
+                form_date = self.uds.get_value("visitdate", str)
+
+            if not form_date:
+                raise AttributeDeriverError("Cannot determine A4 form date")
+
+            self.__drugs = working.get_corresponding_longitudinal_value(  # type: ignore
+                form_date, "drugs-list", list
+            )
+        else:
+            self.__drugs = None
+
     def __handle_rxnormidx(self, field: str) -> Optional[str]:
         """V4+. Handles missingness for all RXNORMIDX (1-40) values.
 
@@ -18,17 +42,6 @@ class UDSFormA4Missingness(UDSMissingness):
         """
         anymeds = self.uds.get_value("anymeds", int)
         if self.formver < 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
-            return INFORMED_BLANK
-
-        return self.generic_missingness(field, str)
-
-    def __handle_drugx(self, field: str) -> Optional[str]:
-        """V3 and earlier. Handles missingness for all DRUGX (1-40) values.
-
-        If ANYMEDS is 0 or -4, then DRUG1-40 should be blank
-        """
-        anymeds = self.uds.get_value("anymeds", int)
-        if self.formver >= 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
             return INFORMED_BLANK
 
         return self.generic_missingness(field, str)
@@ -192,6 +205,31 @@ class UDSFormA4Missingness(UDSMissingness):
     def _missingness_rxnormid40(self) -> Optional[str]:
         """Handles missingness for RXNORMID40."""
         return self.__handle_rxnormidx("rxnormid40")
+
+    def __handle_drugx(self, field: str) -> Optional[str]:
+        """V3 and earlier. Handles missingness for all DRUGX (1-40) values.
+
+        If ANYMEDS is 0 or -4, then DRUG1-40 should be blank
+        """
+        anymeds = self.uds.get_value("anymeds", int)
+        if self.formver >= 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
+            return INFORMED_BLANK
+
+        # for now, pull the drug ID directly from drugs-list
+        # the QAF maps these to an actual name using UDSMEDS,
+        # which we'll probably need to store here as a CSV if
+        # we want to use. that being said, it's honestly not
+        # very accurate as there are also many name clashes,
+        # and V1 in particular as we know is suspect due to
+        # being purely write-in values.
+        # so for now, leave as ID, and then we can figure out
+        # what we want to do exactly with it later.
+        if self.__drugs:
+            index = int(field.replace("drug", "")) - 1
+            if len(self.__drugs) > index:
+                return self.__drugs[index]
+
+        return self.generic_missingness(field, str)
 
     def _missingness_drug1(self) -> Optional[str]:
         """Handles missingness for DRUG1."""

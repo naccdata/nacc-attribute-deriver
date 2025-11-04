@@ -26,7 +26,7 @@ class UDSFormB8Missingness(UDSMissingness):
 
     def _missingness_parksign(self) -> Optional[int]:
         """Handle missingness for PARKSIGN."""
-        if self.formver < 3:
+        if self.formver < 4:
             return self._handle_normexam_gate("parksign")
 
         return self._handle_normnrexam_gate("parksign")
@@ -126,7 +126,7 @@ class UDSFormB8Missingness(UDSMissingness):
 
     def _missingness_postinst(self) -> Optional[int]:
         """Handles missingness for POSTINST."""
-        if self.formver < 3:
+        if self.formver < 4:
             return self._handle_normexam_gate("postinst")
 
         return self._handle_b8_missingness(gate="parksign", field="postinst")
@@ -205,7 +205,7 @@ class UDSFormB8Missingness(UDSMissingness):
 
     def _missingness_apraxsp(self) -> Optional[int]:
         """Handles missingness for APRAXSP."""
-        if self.formver < 3:
+        if self.formver < 4:
             return self._handle_normexam_gate("apraxsp")
 
         return self._handle_b8_missingness(gate="othersign", field="apraxsp")

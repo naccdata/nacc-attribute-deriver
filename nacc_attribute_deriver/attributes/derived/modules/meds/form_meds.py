@@ -27,7 +27,7 @@ def load_normalized_drugs_list() -> Dict[str, str | None]:
     """Load the normalized drugs list. Done globally so it's only done once per
     execution.
 
-    In UDS V1 all the drugs were written in. Uses normalized_drug_ids.csv,
+    In UDS V1 all the drugs were written in. Uses normalized_drug_ids_v1.csv,
     which was manually generated with the following steps:
         1. Use Claude AI to "spellcheck" all misspelled/abbreviated entries
             - pulled from drugs.txt file found on server
@@ -44,7 +44,9 @@ def load_normalized_drugs_list() -> Dict[str, str | None]:
     smallest subset, but if regression tests still fail a bunch probably best to also
     include the UDSMEDS csv.
     """
-    normalized_drugs_file = resources.files(config).joinpath("normalized_drug_ids.csv")
+    normalized_drugs_file = resources.files(config).joinpath(
+        "normalized_drug_ids_v1.csv"
+    )
     drugs: Dict[str, str | None] = {}
 
     with normalized_drugs_file.open("r") as fh:

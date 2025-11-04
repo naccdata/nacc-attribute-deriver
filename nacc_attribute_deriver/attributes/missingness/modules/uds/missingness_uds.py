@@ -118,6 +118,21 @@ class UDSMissingness(UDSAttributeCollection):
 
         return None
 
+    def check_applicable_version(self, versions: List[float]) -> bool:
+        """Returns True if this variable is applicable to the specified
+        versions."""
+        raw_formver = self.uds.get_required("formver", float)
+        return raw_formver in versions
+
+    def check_applicable(self) -> bool:
+        """Check if applicable to V3+ (3.0, 3.2, 4.0+) and where 3.1 treated as
+        a separate case."""
+        return self.check_applicable_version([3.0, 3.2, 4.0])
+
+    def check_applicable_legacy(self) -> bool:
+        """Check if applicable to an old version or 3.1 (1.0, 2.0, 3.1)"""
+        return self.check_applicable_version([1.0, 2.0, 3.1])
+
 
 class GenericUDSMissingness(UDSMissingness):
     """Defines generic missingness rule in its own subclass otherwise it gets

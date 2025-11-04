@@ -259,7 +259,6 @@ uds,ethpolish,file.info.resolved.ethpolish,update,FALSE,int
 uds,ethscott,file.info.resolved.ethscott,update,FALSE,int
 uds,ethwhioth,file.info.resolved.ethwhioth,update,FALSE,int
 uds,ethwhiothx,file.info.resolved.ethwhiothx,update,FALSE,str
-uds,raceunkn,file.info.resolved.raceunkn,update,FALSE,int
 uds,genman,file.info.resolved.genman,update,FALSE,int
 uds,genwoman,file.info.resolved.genwoman,update,FALSE,int
 uds,gentrman,file.info.resolved.gentrman,update,FALSE,int
@@ -506,8 +505,6 @@ uds,targetotx8,file.info.resolved.targetotx8,update,FALSE,str
 uds,trttrial8,file.info.resolved.trttrial8,update,FALSE,str
 uds,nctnum8,file.info.resolved.nctnum8,update,FALSE,str
 uds,advevent,file.info.resolved.advevent,update,FALSE,int
-uds,newtreat,file.info.resolved.newtreat,update,FALSE,int
-uds,newadevent,file.info.resolved.newadevent,update,FALSE,int
 uds,ariae,file.info.resolved.ariae,update,FALSE,int
 uds,ariah,file.info.resolved.ariah,update,FALSE,int
 uds,adverseoth,file.info.resolved.adverseoth,update,FALSE,int
@@ -625,7 +622,6 @@ uds,hypertage,file.info.resolved.hypertage,update,FALSE,int
 uds,hyperchage,file.info.resolved.hyperchage,update,FALSE,int
 uds,cpap,file.info.resolved.cpap,update,FALSE,int
 uds,apneaoral,file.info.resolved.apneaoral,update,FALSE,int
-uds,othsleex,file.info.resolved.othsleex,update,FALSE,int
 uds,cancerprim,file.info.resolved.cancerprim,update,FALSE,int
 uds,cancermeta,file.info.resolved.cancermeta,update,FALSE,int
 uds,cancmetbr,file.info.resolved.cancmetbr,update,FALSE,int
@@ -833,7 +829,6 @@ uds,rigidl,file.info.resolved.rigidl,update,FALSE,int
 uds,rigidr,file.info.resolved.rigidr,update,FALSE,int
 uds,brady,file.info.resolved.brady,update,FALSE,int
 uds,parkgait,file.info.resolved.parkgait,update,FALSE,int
-uds,postinst,file.info.resolved.postinst,update,FALSE,int
 uds,cvdsigns,file.info.resolved.cvdsigns,update,FALSE,int
 uds,cortdef,file.info.resolved.cortdef,update,FALSE,int
 uds,sivdfind,file.info.resolved.sivdfind,update,FALSE,int
@@ -899,7 +894,6 @@ uds,opticatax,file.info.resolved.opticatax,update,FALSE,int
 uds,apraxgaze,file.info.resolved.apraxgaze,update,FALSE,int
 uds,vhgazepal,file.info.resolved.vhgazepal,update,FALSE,int
 uds,dysarth,file.info.resolved.dysarth,update,FALSE,int
-uds,apraxsp,file.info.resolved.apraxsp,update,FALSE,int
 uds,b9chg,file.info.resolved.b9chg,update,FALSE,int
 uds,decsub,file.info.resolved.decsub,update,FALSE,int
 uds,decin,file.info.resolved.decin,update,FALSE,int
@@ -1172,7 +1166,6 @@ uds,ftld,file.info.resolved.ftld,update,FALSE,int
 uds,cte,file.info.resolved.cte,update,FALSE,int
 uds,caa,file.info.resolved.caa,update,FALSE,int
 uds,late,file.info.resolved.late,update,FALSE,int
-uds,autdommut,file.info.resolved.autdommut,update,FALSE,int
 uds,bloodothx,file.info.resolved.bloodothx,update,FALSE,str
 uds,csfothx,file.info.resolved.csfothx,update,FALSE,str
 uds,fdgothx,file.info.resolved.fdgothx,update,FALSE,str

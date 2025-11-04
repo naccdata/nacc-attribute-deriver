@@ -2,6 +2,8 @@
 
 from typing import ClassVar, List, Optional
 
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+
 from .missingness_uds import UDSMissingness
 
 
@@ -49,9 +51,12 @@ class UDSFormB3Missingness(UDSMissingness):
         if any(x in [1, 2, 3, 4] for x in all_values):
             return 0
 
-        # all values are 0, 8, or blank, catch-all scenario (8 = unknown)
-        # in practice thanks to error checks if PDNORMAL is blank then
-        # none of the fields can be blank, so they must all be 0 or 8
+        # if all blank, likely form was not filled out
+        if all(x is None for x in all_values):
+            return INFORMED_MISSINGNESS
+
+        # all values are 0, 8, or blank at this point
+        # return 8 = unknown
         return 8
 
     def _handle_pdnormal_gate(self, field: str) -> Optional[int]:

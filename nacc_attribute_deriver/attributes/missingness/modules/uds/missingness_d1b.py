@@ -70,78 +70,85 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
     # FORMVER-gated variables #
     ###########################
 
-    def __handle_formver_v4_gate(self, field: str) -> Optional[int]:
-        """Handle variables gated by FORMVER = 4."""
+    def __handle_formver_gate(self, field: str) -> Optional[int]:
+        """Handle variables gated by form versions."""
         value = self.uds.get_value(field, int)
         if value is None:
             if self.formver >= 4:
                 return 0
+
             return INFORMED_MISSINGNESS
 
         return None
 
     def _missingness_ftld(self) -> Optional[int]:
         """Handles missingness for FTLD."""
-        return self.__handle_formver_v4_gate("ftld")
+        return self.__handle_formver_gate("ftld")
 
     def _missingness_cte(self) -> Optional[int]:
         """Handles missingness for CTE."""
-        return self.__handle_formver_v4_gate("cte")
+        return self.__handle_formver_gate("cte")
 
     def _missingness_caa(self) -> Optional[int]:
         """Handles missingness for CAA."""
-        return self.__handle_formver_v4_gate("caa")
+        return self.__handle_formver_gate("caa")
 
     def _missingness_late(self) -> Optional[int]:
         """Handles missingness for LATE."""
-        return self.__handle_formver_v4_gate("late")
+        return self.__handle_formver_gate("late")
 
     def _missingness_msa(self) -> Optional[int]:
         """Handles missingness for MSA."""
-        return self.__handle_formver_v4_gate("msa")
+        return self.__handle_formver_gate("msa")
 
-    def __handle_formver_v4_ftld_gate(self, field: str) -> Optional[int]:
-        """Handle variables gated by FORMVER = 4 and FTLD."""
+    def __handle_formver_ftld_gate(self, field: str) -> Optional[int]:
+        """Handle variables gated by FORMVER and FTLD."""
+        if self.uds.get_value(field, int) is not None:
+            return None
+
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
         if self.uds.get_value("ftld", int) is None:
             return 0
 
-        return self.__handle_formver_v4_gate(field)
+        return self.__handle_formver_gate(field)
 
     def _missingness_psp(self) -> Optional[int]:
         """Handles missingness for PSP."""
-        return self.__handle_formver_v4_ftld_gate("psp")
+        return self.__handle_formver_ftld_gate("psp")
 
     def _missingness_cort(self) -> Optional[int]:
         """Handles missingness for CORT."""
-        return self.__handle_formver_v4_ftld_gate("cort")
+        return self.__handle_formver_ftld_gate("cort")
 
     def _missingness_ftldmo(self) -> Optional[int]:
         """Handles missingness for FTLDMO."""
-        return self.__handle_formver_v4_ftld_gate("ftldmo")
+        return self.__handle_formver_ftld_gate("ftldmo")
 
     def _missingness_ftldnos(self) -> Optional[int]:
         """Handles missingness for FTLDNOS."""
-        return self.__handle_formver_v4_ftld_gate("ftldnos")
+        return self.__handle_formver_ftld_gate("ftldnos")
 
     def _missingness_cvd(self) -> Optional[int]:
         """Handles missingness for CVD."""
-        return self.__handle_formver_v4_ftld_gate("cvd")
+        return self.__handle_formver_ftld_gate("cvd")
 
     def _missingness_downs(self) -> Optional[int]:
         """Handles missingness for DOWNS."""
-        return self.__handle_formver_v4_ftld_gate("downs")
+        return self.__handle_formver_ftld_gate("downs")
 
     def _missingness_hunt(self) -> Optional[int]:
         """Handles missingness for HUNT."""
-        return self.__handle_formver_v4_ftld_gate("hunt")
+        return self.__handle_formver_ftld_gate("hunt")
 
     def _missingness_prion(self) -> Optional[int]:
         """Handles missingness for PRION."""
-        return self.__handle_formver_v4_ftld_gate("prion")
+        return self.__handle_formver_ftld_gate("prion")
 
     def _missingness_othcog(self) -> Optional[int]:
         """Handles missingness for OTHCOG."""
-        return self.__handle_formver_v4_ftld_gate("othcog")
+        return self.__handle_formver_ftld_gate("othcog")
 
     ####################################
     # Cognitive-status-gated variables #

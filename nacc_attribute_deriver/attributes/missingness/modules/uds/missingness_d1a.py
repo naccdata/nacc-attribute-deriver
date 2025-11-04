@@ -155,54 +155,93 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_probad(self) -> Optional[int]:
         """Handles missingness for PROBAD."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("probad")
 
     def _missingness_possad(self) -> Optional[int]:
         """Handles missingness for POSSAD."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("possad")
 
     def _missingness_probadif(self) -> Optional[int]:
         """Handles missingness for PROBADIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("probadif")
 
     def _missingness_possadif(self) -> Optional[int]:
         """Handles missingness for POSSADIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("possadif")
 
     def _missingness_ftd(self) -> Optional[int]:
         """Handles missingness for FTD."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("ftd")
 
     def _missingness_ftdif(self) -> Optional[int]:
         """Handles missingness for FTDIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("ftdif")
 
     def _missingness_ppaph(self) -> Optional[int]:
         """Handles missingness for PPAPH."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("ppaph")
 
     def _missingness_ppaphif(self) -> Optional[int]:
         """Handles missingness for PPAPHIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("ppaphif")
 
     def _missingness_vasc(self) -> Optional[int]:
         """Handles missingness for VASC."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("vasc")
 
     def _missingness_vascif(self) -> Optional[int]:
         """Handles missingness for VASCIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("vascif")
 
     def _missingness_vascps(self) -> Optional[int]:
         """Handles missingness for VASCPS."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("vascps")
 
     def _missingness_vascpsif(self) -> Optional[int]:
         """Handles missingness for VASCPSIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("vascpsif")
 
     def _missingness_strokif(self) -> Optional[int]:
         """Handles missingness for STROKIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("strokif")
 
     def _missingness_esstreif(self) -> Optional[int]:
@@ -223,6 +262,9 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_demunif(self) -> Optional[int]:
         """Handles missingness for DEMUNIF."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("demunif")
 
     def _missingness_dysill(self) -> Optional[int]:
@@ -231,6 +273,9 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_demun(self) -> Optional[int]:
         """Handles missingness for DEMUN."""
+        if not self.check_applicable_legacy():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_normcog_gate("demun")
 
     ########################################
@@ -677,6 +722,13 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
             return 0
 
         return self.generic_missingness("demented", int)
+
+    def _missingness_impnomci(self) -> Optional[int]:
+        """Handles missingness for IMPNOMCI."""
+        if self.impnomci is None or self.impnomci == 0:
+            return 0
+
+        return None
 
     def _missingness_alcabuse(self) -> Optional[int]:
         """Handles missingness for ALCABUSE."""

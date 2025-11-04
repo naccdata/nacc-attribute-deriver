@@ -373,7 +373,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_momopark(self) -> Optional[int]:
         """Handles missingness for MOMOPARK."""
-        if self.formver == 1:
+        if self.formver < 4:
             return INFORMED_MISSINGNESS
 
         return self._handle_cascading_gates(["decclin", "decclmot"], "momopark", 0)
@@ -383,7 +383,10 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.formver < 3:
             return INFORMED_MISSINGNESS
 
-        return self._handle_cascading_gates(["decclin", "decclmot"], "momoals", 0)
+        return_value = 8 if self.formver < 4 else 0
+        return self._handle_cascading_gates(
+            ["decclin", "decclmot"], "momoals", return_value
+        )
 
     ###########################################
     # If DECCLIN = 0, the following must be 8 #
@@ -440,16 +443,57 @@ class UDSFormB9Missingness(UDSMissingness):
         """Handles missingness for PERCHAGE."""
         return self.handle_prev_visit("perchage", int, prev_code=777)
 
-    def _missingness_beremago(self) -> Optional[int]:
-        """Handles missingness for BEREMAGO."""
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
-        return self.handle_prev_visit("beremago", int, prev_code=777)
-
     def _missingness_motorage(self) -> Optional[int]:
         """Handles missingness for MOTORAGE."""
         return self.handle_prev_visit("motorage", int, prev_code=777)
+
+    def __handle_prev_with_gate(self, gate: str, field: str) -> Optional[int]:
+        """From b9structrdd.sas.
+
+        If GATE = 1, return PREV_FIELD
+        If GATE is None, 0, 9, return 888
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        gate_value = self.uds.get_value(gate, int)
+        if gate_value == 1:
+            return self.handle_prev_visit(field, int, prev_code=777)
+        if gate_value is None or gate in [0, 9]:
+            return 888
+
+        return self.generic_missingness(field, int)
+
+    def _missingness_cogflago(self) -> Optional[int]:
+        """Handles missingness for COGFLAGO."""
+        return self.__handle_prev_with_gate("cogfluc", "cogflago")
+
+    def _missingness_bevhago(self) -> Optional[int]:
+        """Handles missingness for BEVHAGO."""
+        return self.__handle_prev_with_gate("bevhall", "bevhago")
+
+    def _missingness_beage(self) -> Optional[int]:
+        """Handles missingness for BEAGE."""
+        return self.__handle_prev_with_gate("decclbe", "beage")
+
+    def _missingness_parkage(self) -> Optional[int]:
+        """Handles missingness for PARKAGE."""
+        return self.__handle_prev_with_gate("momopark", "parkage")
+
+    def _missingness_alsage(self) -> Optional[int]:
+        """Handles missingness for ALSAGE."""
+        return self.__handle_prev_with_gate("momoals", "alsage")
+
+    def _missingness_moage(self) -> Optional[int]:
+        """Handles missingness for MOAGE."""
+        return self.__handle_prev_with_gate("decclmot", "moage")
+
+    def _missingness_beremago(self) -> Optional[int]:
+        """Handles missingness for BEREMAGO."""
+        if self.formver < 4:
+            return self.__handle_prev_with_gate("berem", "beremago")
+
+        return self.handle_prev_visit("beremago", int, prev_code=777)
 
     #######################################################
     # If BESUBAB =1 and VAR is blank, then VAR should = 0 #

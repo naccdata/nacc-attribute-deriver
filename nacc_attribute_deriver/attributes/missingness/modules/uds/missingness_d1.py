@@ -4,8 +4,6 @@ These are variables that only exist in V3 and earlier for D1; others
 will now be found in either D1a or D1b.
 """
 
-from typing import List, Optional
-
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 from .missingness_uds import UDSMissingness
@@ -20,19 +18,6 @@ class UDSFormD1Missingness(UDSMissingness):
         self.demented = self.uds.get_value("demented", int)
         self.impnomci = self.uds.get_value("impnomci", int)
         self.mci = self.generate_mci()
-
-    def check_applicable(self, versions: Optional[List[float]] = None) -> bool:
-        """Called by each variable; returns True if this variable is applicable
-        to the specified versions.
-
-        In general, a lot of variables are only calculated for version
-        3.0, 3.2, and 4.0.
-        """
-        if versions is None:
-            versions = [3.0, 3.2, 4.0]
-
-        raw_formver = self.uds.get_required("formver", float)
-        return raw_formver in versions
 
     def generate_mci(self) -> int:
         """(This is copied from the derived variable code; should probably

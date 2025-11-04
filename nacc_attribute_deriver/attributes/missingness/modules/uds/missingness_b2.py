@@ -14,11 +14,11 @@ from .missingness_uds import UDSMissingness
 
 class UDSFormB2Missingness(UDSMissingness):
     def __handle_cvdimag_gate(self, field: str) -> Optional[int]:
-        """Handles missingness for values gated by CVDIMG."""
+        """Handles missingness for values gated by CVDIMAG."""
         if self.formver != 2:
             return INFORMED_MISSINGNESS
 
-        if self.uds.get_value("cvdimg", int) in [0, 8]:
+        if self.uds.get_value("cvdimag", int) in [0, 8]:
             return 8
 
         return self.generic_missingness(field, int)
