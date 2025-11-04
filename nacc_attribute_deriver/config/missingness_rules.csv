@@ -1142,7 +1142,7 @@ uds,tpetftld,file.info.resolved.tpetftld,update,FALSE,int
 uds,mrftld,file.info.resolved.mrftld,update,FALSE,int
 uds,datscan,file.info.resolved.datscan,update,FALSE,int
 uds,othbiom,file.info.resolved.othbiom,update,FALSE,int
-uds,othbiomx,file.info.resolved.othbiomx,update,FALSE,int
+uds,othbiomx,file.info.resolved.othbiomx,update,FALSE,str
 uds,imaglinf,file.info.resolved.imaglinf,update,FALSE,int
 uds,imaglac,file.info.resolved.imaglac,update,FALSE,int
 uds,imagmach,file.info.resolved.imagmach,update,FALSE,int

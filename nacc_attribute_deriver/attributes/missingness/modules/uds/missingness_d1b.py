@@ -154,90 +154,79 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
     # Cognitive-status-gated variables #
     ####################################
 
-    def __handle_cognitive_impairment_gate(
-        self, gate: str, field: str, ignore_normcog: bool = False
-    ) -> Optional[int]:
-        """Handles variables gated by cognitive impairment.
-
-        If DEMENTED = 1 or MCI = 1 or IMPNOMCI = 1 (cognitively impaired)
-            and GATE is blank, FIELD = 7
-        If NORMCOG = 1 then FIELD = 8
-        """
-        gate_value = self.uds.get_value(gate, int)
-        if self.has_cognitive_impairment() and gate_value is None:
-            return 7
-        if not ignore_normcog and self.normcog == 1:
-            return 8
-
-        return self.generic_missingness(field, int)
-
     def _missingness_cteif(self) -> Optional[int]:
         """Handles missingness for CTEIF."""
-        return self.__handle_cognitive_impairment_gate("cte", "cteif")
+        return self.handle_cognitive_impairment_gate("cte", "cteif")
 
     def _missingness_ctecert(self) -> Optional[int]:
         """Handles missingness for CTECERT."""
-        return self.__handle_cognitive_impairment_gate("cte", "ctecert")
+        return self.handle_cognitive_impairment_gate("cte", "ctecert")
 
     def _missingness_caaif(self) -> Optional[int]:
         """Handles missingness for CAAIF."""
-        return self.__handle_cognitive_impairment_gate("caa", "caaif")
+        return self.handle_cognitive_impairment_gate("caa", "caaif")
 
     def _missingness_lateif(self) -> Optional[int]:
         """Handles missingness for LATEIF."""
-        return self.__handle_cognitive_impairment_gate("late", "lateif")
+        return self.handle_cognitive_impairment_gate("late", "lateif")
 
     def _missingness_msaif(self) -> Optional[int]:
         """Handles missingness for MSAIF."""
         if not self.check_applicable():
             return INFORMED_MISSINGNESS
 
-        return self.__handle_cognitive_impairment_gate("msa", "msaif")
+        return self.handle_cognitive_impairment_gate("msa", "msaif")
 
     def _missingness_pspif(self) -> Optional[int]:
         """Handles missingness for PSPIF."""
-        return self.__handle_cognitive_impairment_gate("psp", "pspif")
+        return self.handle_cognitive_impairment_gate("psp", "pspif")
 
     def _missingness_cortif(self) -> Optional[int]:
         """Handles missingness for CORTIF."""
-        return self.__handle_cognitive_impairment_gate("cort", "cortif")
+        return self.handle_cognitive_impairment_gate("cort", "cortif")
 
     def _missingness_ftldmoif(self) -> Optional[int]:
         """Handles missingness for FTLDMOIF."""
         if not self.check_applicable():
             return INFORMED_MISSINGNESS
 
-        return self.__handle_cognitive_impairment_gate("ftldmo", "ftldmoif")
+        return self.handle_cognitive_impairment_gate("ftldmo", "ftldmoif")
 
     def _missingness_ftldnoif(self) -> Optional[int]:
         """Handles missingness for FTLDNOIF."""
         if not self.check_applicable():
             return INFORMED_MISSINGNESS
 
-        return self.__handle_cognitive_impairment_gate("ftldnos", "ftldnoif")
+        return self.handle_cognitive_impairment_gate("ftldnos", "ftldnoif")
 
     def _missingness_ftldsubt(self) -> Optional[int]:
         """Handles missingness for FTLDSUBT."""
-        return self.__handle_cognitive_impairment_gate(
-            "ftld", "ftldsubt", ignore_normcog=True
+        return self.handle_cognitive_impairment_gate(
+            "ftld", "ftldsubt", ignore_normcog_0=True
         )
 
     def _missingness_cvdif(self) -> Optional[int]:
         """Handles missingness for CVDIF."""
-        return self.__handle_cognitive_impairment_gate("cvd", "cvdif")
+        if not self.check_applicable():
+            return INFORMED_MISSINGNESS
+
+        return self.handle_cognitive_impairment_gate("cvd", "cvdif")
 
     def _missingness_downsif(self) -> Optional[int]:
         """Handles missingness for DOWNSIF."""
-        return self.__handle_cognitive_impairment_gate("downs", "downsif")
+        return self.handle_cognitive_impairment_gate("downs", "downsif")
 
     def _missingness_huntif(self) -> Optional[int]:
         """Handles missingness for HUNTIF."""
-        return self.__handle_cognitive_impairment_gate("hunt", "huntif")
+        return self.handle_cognitive_impairment_gate("hunt", "huntif")
 
     def _missingness_prionif(self) -> Optional[int]:
         """Handles missingness for PRIONIF."""
-        return self.__handle_cognitive_impairment_gate("prion", "prionif")
+        return self.handle_cognitive_impairment_gate("prion", "prionif")
 
     def _missingness_othcogif(self) -> Optional[int]:
         """Handles missingness for OTHCOGIF."""
-        return self.__handle_cognitive_impairment_gate("othcog", "othcogif")
+        if not self.check_applicable():
+            return INFORMED_MISSINGNESS
+
+        return self.handle_cognitive_impairment_gate("othcog", "othcogif")
