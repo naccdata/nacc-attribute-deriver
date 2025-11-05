@@ -2,10 +2,6 @@
 
 from typing import Optional
 
-from nacc_attribute_deriver.utils.constants import (
-    INFORMED_MISSINGNESS,
-)
-
 from .missingness_uds import UDSMissingness
 
 
@@ -378,9 +374,6 @@ class UDSFormB8Missingness(UDSMissingness):
         V3 and earlier only. For some reason the SAS code separates this
         out (NORMEXAM only == 0 instead of 0 and 2 like the others).
         """
-        if self.formver >= 4:
-            return INFORMED_MISSINGNESS
-
         if self.uds.get_value("normexam", int) == 0:
             return 0
 

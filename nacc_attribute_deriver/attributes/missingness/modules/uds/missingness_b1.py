@@ -18,9 +18,6 @@ class UDSFormB1Missingness(UDSMissingness):
 
         Only in V3 and earlier - see b1structrdd.sas
         """
-        if self.formver >= 4:
-            return INFORMED_MISSINGNESS
-
         viscorr = self.uds.get_value("viscorr", int)
         if viscorr == 0:
             return 8
@@ -34,9 +31,6 @@ class UDSFormB1Missingness(UDSMissingness):
 
         Only in V3 and earlier - see b1structrdd.sas
         """
-        if self.formver >= 4:
-            return INFORMED_MISSINGNESS
-
         hearaid = self.uds.get_value("hearaid", int)
         if hearaid == 0:
             return 8

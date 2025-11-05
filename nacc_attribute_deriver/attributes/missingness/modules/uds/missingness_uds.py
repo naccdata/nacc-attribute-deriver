@@ -38,12 +38,17 @@ class UDSMissingness(UDSAttributeCollection):
     def prev_record(self) -> Optional[PreviousRecordNamespace]:
         return self.__prev_record
 
-    def generic_missingness(self, field: str, attr_type: Type[T]) -> Optional[T]:
+    def generic_missingness(
+        self, field: str, attr_type: Type[T], default: Optional[T] = None
+    ) -> Optional[T]:
         """Generic missingness:
 
         If FIELD is None, FIELD = -4 / -4.4 / blank
         """
         if self.uds.get_value(field, str) is None:
+            if default is not None:
+                return default
+
             if attr_type == int:  # noqa: E721
                 return INFORMED_MISSINGNESS  # type: ignore
             if attr_type == str:  # noqa: E721
@@ -119,21 +124,6 @@ class UDSMissingness(UDSAttributeCollection):
             return result  # type: ignore
 
         return None
-
-    def check_applicable_version(self, versions: List[float]) -> bool:
-        """Returns True if this variable is applicable to the specified
-        versions."""
-        raw_formver = self.uds.get_required("formver", float)
-        return raw_formver in versions
-
-    def check_applicable(self) -> bool:
-        """Check if applicable to V3+ (3.0, 3.2, 4.0+) and where 3.1 treated as
-        a separate case."""
-        return self.check_applicable_version([3.0, 3.2, 4.0])
-
-    def check_applicable_legacy(self) -> bool:
-        """Check if applicable to an old version or 3.1 (1.0, 2.0, 3.1)"""
-        return self.check_applicable_version([1.0, 2.0, 3.1])
 
 
 class GenericUDSMissingness(UDSMissingness):

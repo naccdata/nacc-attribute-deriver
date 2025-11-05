@@ -54,9 +54,6 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_epilep(self) -> Optional[int]:
         """Handles missingness for EPILEP."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("epilep")
 
     def _missingness_neop(self) -> Optional[int]:
@@ -65,44 +62,26 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_hiv(self) -> Optional[int]:
         """Handles missingness for HIV."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("hiv")
 
     def _missingness_bipoldx(self) -> Optional[int]:
         """Handles missingness for BIPOLDX."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("bipoldx")
 
     def _missingness_schizop(self) -> Optional[int]:
         """Handles missingness for SCHIZOP."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("schizop")
 
     def _missingness_anxiet(self) -> Optional[int]:
         """Handles missingness for ANXIET."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("anxiet")
 
     def _missingness_delir(self) -> Optional[int]:
         """Handles missingness for DELIR."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("delir")
 
     def _missingness_ptsddx(self) -> Optional[int]:
         """Handles missingness for PTSDDX."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("ptsddx")
 
     def _missingness_othpsy(self) -> Optional[int]:
@@ -115,9 +94,6 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_impsub(self) -> Optional[int]:
         """Handles missingness for IMPSUB."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("impsub")
 
     def _missingness_meds(self) -> Optional[int]:
@@ -130,16 +106,10 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_cogoth2(self) -> Optional[int]:
         """Handles missingness for COGOTH2."""
-        if self.formver == 1:
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("cogoth2")
 
     def _missingness_cogoth3(self) -> Optional[int]:
         """Handles missingness for COGOTH3."""
-        if self.formver == 1:
-            return INFORMED_MISSINGNESS
-
         return self.handle_normcog_gate("cogoth3")
 
     ########################################
@@ -277,23 +247,14 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_amndem(self) -> Optional[int]:
         """Handles missingness for AMNDEM."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "amndem")
 
     def _missingness_pca(self) -> Optional[int]:
         """Handles missingness for PCA."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "pca")
 
     def _missingness_namndem(self) -> Optional[int]:
         """Handles missingness for NAMNDEM."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "namndem")
 
     def _missingness_dyexecsyn(self) -> Optional[int]:
@@ -398,9 +359,6 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_epilepif(self) -> Optional[int]:
         """Handles missingness for EPILEPIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("epilep", "epilepif")
 
     def _missingness_neopif(self) -> Optional[int]:
@@ -409,44 +367,26 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_hivif(self) -> Optional[int]:
         """Handles missingness for HIVIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("hiv", "hivif")
 
     def _missingness_bipoldif(self) -> Optional[int]:
         """Handles missingness for BIPOLDIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("bipoldx", "bipoldif")
 
     def _missingness_schizoif(self) -> Optional[int]:
         """Handles missingness for SCHIZOIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("schizop", "schizoif")
 
     def _missingness_anxietif(self) -> Optional[int]:
         """Handles missingness for ANXIETIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("anxiet", "anxietif")
 
     def _missingness_delirif(self) -> Optional[int]:
         """Handles missingness for DELIRIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("delir", "delirif")
 
     def _missingness_ptsddxif(self) -> Optional[int]:
         """Handles missingness for PTSDDXIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("ptsddx", "ptsddxif")
 
     def _missingness_othpsyif(self) -> Optional[int]:
@@ -459,9 +399,6 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_impsubif(self) -> Optional[int]:
         """Handles missingness for IMPSUBIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("impsub", "impsubif")
 
     def _missingness_medsif(self) -> Optional[int]:
@@ -474,16 +411,10 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_cogoth2f(self) -> Optional[int]:
         """Handles missingness for COGOTH2F."""
-        if self.formver == 1:
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("cogoth2", "cogoth2f")
 
     def _missingness_cogoth3f(self) -> Optional[int]:
         """Handles missingness for COGOTH3F."""
-        if self.formver == 1:
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("cogoth3", "cogoth3f")
 
     ###################
@@ -513,9 +444,6 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_neopstat(self) -> Optional[int]:
         """Handles missingness for NEOPSTAT."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         neop = self.uds.get_value("neop", int)
         if self.uds.get_value("neopstat", int) is None:
             if neop is None or neop == 0:

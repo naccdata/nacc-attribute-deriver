@@ -39,12 +39,14 @@ class CurationRule(BaseModel):
     and an expression for computing the value.
     This rule defines the update of several derived attributes by one expression:
 
+    - `name` is the name of the rule/attribute
     - `function` is the name of a method of an AttributeCollection that
        implements an attribute expression.
     - `assignments` is the list of AttributeAssignments that indicate how the
        value should be assigned to each target attribute.
     """
 
+    name: str
     function: str  # Name of the attribute function
     assignments: List[AttributeAssignment]
 

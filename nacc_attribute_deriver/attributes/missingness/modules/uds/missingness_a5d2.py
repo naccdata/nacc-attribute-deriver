@@ -217,36 +217,23 @@ class UDSFormA5D2Missingness(UDSMissingness):
         return self.__handle_a5d2_gate("anxiety", "othanxdis")
 
     def _missingness_angiocp(self) -> Optional[int]:
-        """Handles missingness for ANGIOCP.
-
-        Only V3+.
-        """
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for ANGIOCP."""
         return self.__handle_a5d2_gate("cbstroke", "angiocp")
 
-    # the following have logic from V3 and earlier and brought
-    # over from SAS recode logic
     def _missingness_strokmul(self) -> Optional[int]:
-        """Handles missingness for STROKMUL.
-
-        V3+ only
-        """
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for STROKMUL."""
         return self.__handle_a5d2_gate("cbstroke", "strokmul")
 
     def _missingness_ocd(self) -> Optional[int]:
-        """Handles missingness for OCD.
-
-        Only V3+
-        """
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for OCD."""
         return self.__handle_a5d2_gate("anxiety", "ocd")
+
+    def _missingness_tiamult(self) -> Optional[int]:
+        """Handles missingness for TIAMULT."""
+        return self.__handle_a5d2_gate("cbtia", "tiamult")
+
+    # the following have unique logic from V3 and earlier so
+    # brought over from SAS recode logic
 
     def _missingness_diabtype(self) -> Optional[int]:
         """Handles missingness for DIABTYPE."""
@@ -258,24 +245,11 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
         return self.__handle_a5d2_gate("diabetes", "diabtype")
 
-    def _missingness_tiamult(self) -> Optional[int]:
-        """Handles missingness for TIAMULT.
-
-        V3 only.
-        """
-        if self.formver != 3:
-            return INFORMED_MISSINGNESS
-
-        return self.__handle_a5d2_gate("cbtia", "tiamult")
-
     def _missingness_alcfreq(self) -> Optional[int]:
         """Only V3.
 
         Handles missingness for ALCFREQ.
         """
-        if self.formver != 3:
-            return INFORMED_MISSINGNESS
-
         return self.__handle_a5d2_gate(
             "alcoccas",
             "alcfreq",
@@ -288,9 +262,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
         Only V3.
         """
-        if self.formver != 3:
-            return INFORMED_MISSINGNESS
-
         return self.__handle_a5d2_gate(
             "cvhatt",
             "hattmult",
@@ -303,9 +274,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
         Only V3
         """
-        if self.formver != 3:
-            return INFORMED_MISSINGNESS
-
         return self.__handle_a5d2_gate(
             "cvhatt",
             "hattyear",
@@ -476,53 +444,23 @@ class UDSFormA5D2Missingness(UDSMissingness):
         return None
 
     def _missingness_arthupex(self) -> Optional[int]:
-        """Handles missingness for ARTHUPEX.
-
-        Only V3+
-        """
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for ARTHUPEX."""
         return self.__handle_arthritis_gate("arthupex")
 
     def _missingness_arthloex(self) -> Optional[int]:
-        """Handles missingness for ARTHLOEX.
-
-        Only V3+
-        """
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for ARTHLOEX."""
         return self.__handle_arthritis_gate("arthloex")
 
     def _missingness_arthspin(self) -> Optional[int]:
-        """Handles missingness for ARTHSPIN.
-
-        Only V3+
-        """
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for ARTHSPIN."""
         return self.__handle_arthritis_gate("arthspin")
 
     def _missingness_arthunk(self) -> Optional[int]:
-        """Handles missingness for ARTHUNK.
-
-        Only V3+
-        """
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for ARTHUNK."""
         return self.__handle_arthritis_gate("arthunk")
 
     def _missingness_arthtype(self) -> Optional[int]:
-        """Handles missingness for ARTHTYPE.
-
-        V3 only.
-        """
-        if self.formver != 3:
-            return INFORMED_MISSINGNESS
-
+        """Handles missingness for ARTHTYPE."""
         arthrit = self.uds.get_value("arthrit", int)
         arthtype = self.uds.get_value("arthtype", int)
 
@@ -735,9 +673,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
         Since this is derived before missingness, assumes it can find it
         under file.info.derived.nacctbi
         """
-        if self.formver != 3:
-            return INFORMED_MISSINGNESS
-
         value = self.uds.get_value(field, int)
         if value is None:
             nacctbi = self.__derived.get_value("nacctbi", int)
@@ -762,9 +697,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_tbiyear(self) -> Optional[int]:
         """Handles missingness for TBIYEAR."""
-        if self.formver != 3:
-            return INFORMED_MISSINGNESS
-
         tbiyear = self.uds.get_value("tbiyear", int)
         nacctbi = self.__derived.get_value("nacctbi", int)
 
@@ -813,9 +745,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
         From V3 and earlier SAS recode logic
         """
-        if self.formver >= 4:
-            return INFORMED_MISSINGNESS
-
         if self.uds.get_value("pd", int) in [0, 9]:
             return 8888
 
@@ -826,9 +755,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
         From V3 and earlier SAS recode logic
         """
-        if self.formver >= 4:
-            return INFORMED_MISSINGNESS
-
         if self.uds.get_value("pdothr", int) in [0, 9]:
             return 8888
 

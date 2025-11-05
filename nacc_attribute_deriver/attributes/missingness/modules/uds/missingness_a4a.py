@@ -5,8 +5,6 @@
 
 from typing import Any, List, Optional
 
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
-
 from .missingness_uds import UDSMissingness
 
 
@@ -24,7 +22,7 @@ class UDSFormA4aMissingness(UDSMissingness):
 
         return self.generic_missingness(field, int)
 
-    def _handle_a4a_missingness(  # noqa: C901
+    def _handle_a4a_missingness(
         self, fvp_gates: List[str], field: str, writein: bool = False
     ) -> Optional[Any]:
         """Handle A4a missingness, which is generally:
@@ -43,9 +41,6 @@ class UDSFormA4aMissingness(UDSMissingness):
 
         Else default missingness (-4)
         """
-        if self.formver < 4:
-            return INFORMED_MISSINGNESS
-
         if not self.uds.is_initial():
             for gate in fvp_gates:
                 gate_value = self.uds.get_value(gate, int)

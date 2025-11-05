@@ -3,7 +3,6 @@
 from typing import Optional, Type
 
 from nacc_attribute_deriver.attributes.namespace.namespace import T
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 from .missingness_uds import UDSMissingness
 
@@ -20,10 +19,11 @@ class UDSFormA1Missingness(UDSMissingness):
 
         If FORMVER=4 and VAR is blank, VAR should = MISSING_VALUE
         else if FORMVER < 4, VAR should be -4
-        """
-        if self.formver < 4:
-            return attr_type(INFORMED_MISSINGNESS)  # type: ignore
 
+        Formver is handled at the attribute_deriver level by checking if
+        the variable is applicable at all to the version. These variables
+        only exist in V4, so will return -4 for the others.
+        """
         if self.uds.is_initial():
             if isinstance(attr_type, int):
                 result = self.uds.get_value(field, int)

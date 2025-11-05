@@ -2,8 +2,6 @@
 
 from typing import Optional
 
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
-
 from .missingness_d1 import UDSFormD1Missingness
 
 
@@ -71,15 +69,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
     ###########################
 
     def __handle_formver_gate(self, field: str) -> Optional[int]:
-        """Handle variables gated by form versions."""
-        value = self.uds.get_value(field, int)
-        if value is None:
-            if self.formver >= 4:
-                return 0
-
-            return INFORMED_MISSINGNESS
-
-        return None
+        """Handle where the missingness value depends on the form version."""
+        default = None if self.formver < 4 else 0
+        return self.generic_missingness(field, int, default=default)
 
     def _missingness_ftld(self) -> Optional[int]:
         """Handles missingness for FTLD."""
@@ -105,9 +97,6 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
         """Handle variables gated by FORMVER and FTLD."""
         if self.uds.get_value(field, int) is not None:
             return None
-
-        if self.formver < 3:
-            return INFORMED_MISSINGNESS
 
         if self.uds.get_value("ftld", int) is None:
             return 0
@@ -172,9 +161,6 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_msaif(self) -> Optional[int]:
         """Handles missingness for MSAIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("msa", "msaif")
 
     def _missingness_pspif(self) -> Optional[int]:
@@ -187,32 +173,20 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_ftldmoif(self) -> Optional[int]:
         """Handles missingness for FTLDMOIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("ftldmo", "ftldmoif")
 
     def _missingness_ftldnoif(self) -> Optional[int]:
         """Handles missingness for FTLDNOIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("ftldnos", "ftldnoif")
 
     def _missingness_ftldsubt(self) -> Optional[int]:
         """Handles missingness for FTLDSUBT."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate(
             "ftld", "ftldsubt", ignore_normcog_0=True
         )
 
     def _missingness_cvdif(self) -> Optional[int]:
         """Handles missingness for CVDIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("cvd", "cvdif")
 
     def _missingness_downsif(self) -> Optional[int]:
@@ -229,7 +203,4 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_othcogif(self) -> Optional[int]:
         """Handles missingness for OTHCOGIF."""
-        if not self.check_applicable():
-            return INFORMED_MISSINGNESS
-
         return self.handle_cognitive_impairment_gate("othcog", "othcogif")

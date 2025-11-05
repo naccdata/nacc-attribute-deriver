@@ -1,7 +1,5 @@
 """Derived variables from form A3: Family History."""
 
-from typing import Optional
-
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
