@@ -130,10 +130,16 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_cogoth2(self) -> Optional[int]:
         """Handles missingness for COGOTH2."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
+
         return self.handle_normcog_gate("cogoth2")
 
     def _missingness_cogoth3(self) -> Optional[int]:
         """Handles missingness for COGOTH3."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
+
         return self.handle_normcog_gate("cogoth3")
 
     ########################################
@@ -468,10 +474,16 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_cogoth2f(self) -> Optional[int]:
         """Handles missingness for COGOTH2F."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
+
         return self.handle_cognitive_impairment_gate("cogoth2", "cogoth2f")
 
     def _missingness_cogoth3f(self) -> Optional[int]:
         """Handles missingness for COGOTH3F."""
+        if self.formver == 1:
+            return INFORMED_MISSINGNESS
+
         return self.handle_cognitive_impairment_gate("cogoth3", "cogoth3f")
 
     ###################

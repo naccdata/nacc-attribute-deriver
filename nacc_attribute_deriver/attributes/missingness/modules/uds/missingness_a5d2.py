@@ -200,10 +200,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
         """Handles missingness for STROKSTAT."""
         return self.__handle_a5d2_gate("cbstroke", "strokstat")
 
-    def _missingness_angiocp(self) -> Optional[int]:
-        """Handles missingness for ANGIOCP."""
-        return self.__handle_a5d2_gate("cbstroke", "angiocp")
-
     def _missingness_covidhosp(self) -> Optional[int]:
         """Handles missingness for COVIDHOSP."""
         return self.__handle_a5d2_gate("covid19", "covidhosp")
@@ -219,6 +215,16 @@ class UDSFormA5D2Missingness(UDSMissingness):
     def _missingness_othanxdis(self) -> Optional[int]:
         """Handles missingness for OTHANXDIS."""
         return self.__handle_a5d2_gate("anxiety", "othanxdis")
+
+    def _missingness_angiocp(self) -> Optional[int]:
+        """Handles missingness for ANGIOCP.
+
+        Only V3+.
+        """
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
+        return self.__handle_a5d2_gate("cbstroke", "angiocp")
 
     # the following have logic from V3 and earlier and brought
     # over from SAS recode logic
@@ -834,52 +840,40 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_impotherx(self) -> Optional[str]:
         """Handles missingness for IMPOTHERX."""
-        return self.handle_gated_writein("impother", [0])
+        return self.handle_gated_writein("impother", "impotherx", [0])
 
     def _missingness_cancotherx(self) -> Optional[str]:
         """Handles missingness for CANCOTHERX."""
-        return self.handle_gated_writein("cancother", [0])
+        return self.handle_gated_writein("cancother", "cancotherx", [0])
 
     def _missingness_canctrothx(self) -> Optional[str]:
         """Handles missingness for CANCTROTHX."""
-        return self.handle_gated_writein("canctroth", [0])
+        return self.handle_gated_writein("canctroth", "canctrothx", [0])
 
     def _missingness_othcondx(self) -> Optional[str]:
         """Handles missingness for OTHCONDX."""
-        return self.handle_gated_writein("othercond", [0, 9])
+        return self.handle_gated_writein("othercond", "othcondx", [0, 9])
 
     def _missingness_othanxdisx(self) -> Optional[str]:
         """Handles missingness for OTHANXDISX."""
-        return self.handle_gated_writein("othanxdis", [0, 9])
+        return self.handle_gated_writein("othanxdis", "othanxdisx", [0, 9])
 
     def _missingness_nomensothx(self) -> Optional[str]:
         """Handles missingness for NOMENSOTHX."""
-        return self.handle_gated_writein("nomensoth", [0])
+        return self.handle_gated_writein("nomensoth", "nomensothx", [0])
 
     def _missingness_cvothrx(self) -> Optional[str]:
         """Handles missingness for CVOTHRX."""
-        if self.formver < 4:
-            return self.generic_missingness("cvothrx", str)
-
-        return self.handle_gated_writein("cvothr", [0, 9])
+        return self.handle_gated_writein("cvothr", "cvothrx", [0, 9])
 
     def _missingness_arthtypx(self) -> Optional[str]:
         """Handles missingness for ARTHTYPX."""
-        if self.formver < 4:
-            return self.generic_missingness("arthtypx", str)
-
-        return self.handle_gated_writein("arthrothr", [0])
+        return self.handle_gated_writein("arthrothr", "arthtypx", [0])
 
     def _missingness_othsleex(self) -> Optional[str]:
         """Handles missingness for OTHSLEEX."""
-        if self.formver < 4:
-            return self.generic_missingness("othsleex", str)
-
-        return self.handle_gated_writein("othsleep", [0, 9])
+        return self.handle_gated_writein("othsleep", "othsleex", [0, 9])
 
     def _missingness_psycdisx(self) -> Optional[str]:
         """Handles missingness for PSYCDISX."""
-        if self.formver < 4:
-            return self.generic_missingness("psycdisx", str)
-
-        return self.handle_gated_writein("psycdis", [0, 9])
+        return self.handle_gated_writein("psycdis", "psycdisx", [0, 9])

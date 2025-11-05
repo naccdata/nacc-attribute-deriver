@@ -201,6 +201,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_ftldsubt(self) -> Optional[int]:
         """Handles missingness for FTLDSUBT."""
+        if not self.check_applicable():
+            return INFORMED_MISSINGNESS
+
         return self.handle_cognitive_impairment_gate(
             "ftld", "ftldsubt", ignore_normcog_0=True
         )

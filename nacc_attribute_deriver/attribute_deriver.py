@@ -42,11 +42,11 @@ class BaseAttributeDeriver(ABC):
         self._rules_filename = rules_filename
         self._curation_type = curation_type
 
-        self._rule_map = self.__load_rules()
+        self._rule_map = self._load_rules()
         # collect all attributes beforehand so they're easily hashable
         self._instance_collections = AttributeCollectionRegistry.get_attribute_methods()
 
-    def __load_rules(self) -> Dict[str, List[CurationRule]]:
+    def _load_rules(self) -> Dict[str, List[CurationRule]]:
         """Load rules from the given path. All forms called through curate will
         have these rules applied to them.
 

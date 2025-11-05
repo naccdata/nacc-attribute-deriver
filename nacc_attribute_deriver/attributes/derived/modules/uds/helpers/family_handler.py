@@ -159,7 +159,7 @@ class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
         super().__init__(uds, prev_record)
 
     def determine_naccparent(
-        self, member: LegacyFamilyMemberHandler, known_value: int | None
+        self, member: LegacyFamilyMemberHandler, known_value: int
     ) -> int:
         """Determine V1-V3 NACCPARENT (NACCMOM or NACCDAD).
 
@@ -174,7 +174,7 @@ class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
         status = member.cognitive_impairment_status()
         return self.determine_member_status(status, known_value)
 
-    def determine_naccfam(self, known_value: int | None) -> int:
+    def determine_naccfam(self, known_value: int) -> int:
         """Determine V1-V3 NACCFAM."""
 
         # if all have no data, then fallback to known value
@@ -212,7 +212,7 @@ class FamilyHandler(BaseFamilyHandler[FamilyMemberHandler]):
         super().__init__(uds, prev_record)
 
     def determine_naccparent(
-        self, member: FamilyMemberHandler, known_value: int | None
+        self, member: FamilyMemberHandler, known_value: int
     ) -> int:
         """Determine NACCPARENT (NACCMOM or NACCDAD)."""
         status = member.determine_etpr_status(prev_record=self.prev_record)
@@ -237,7 +237,7 @@ class FamilyHandler(BaseFamilyHandler[FamilyMemberHandler]):
 
         return self.determine_group_status(group_status, known_value=None)
 
-    def determine_naccfam(self, known_value: int | None) -> int:
+    def determine_naccfam(self, known_value: int) -> int:
         """Determine NACCFAM for V4+."""
         family_status = [
             self.__determine_parent_status(),

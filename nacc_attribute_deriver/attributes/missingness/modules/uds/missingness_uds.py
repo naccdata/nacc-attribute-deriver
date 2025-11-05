@@ -57,16 +57,18 @@ class UDSMissingness(UDSAttributeCollection):
 
         return None
 
-    def handle_gated_writein(self, gate: str, values: List[int]) -> Optional[str]:
+    def handle_gated_writein(
+        self, gate: str, field: str, values: List[int], include_none: bool = False
+    ) -> Optional[str]:
         """Handles generic write-in logic in the form:
 
         If GATE is in GATE_VALUES, then FIELD should be blank
         """
         gate_value = self.uds.get_value(gate, int)
-        if gate_value is None or gate_value in values:
+        if gate_value in values or (include_none and gate_value is None):
             return INFORMED_BLANK
 
-        return None
+        return self.generic_missingness(field, str)
 
     def handle_forbidden_gated_writein(self, gate: str, value: int) -> Optional[str]:
         """Handles write-in blanks that rely on a gate variable in the form: If

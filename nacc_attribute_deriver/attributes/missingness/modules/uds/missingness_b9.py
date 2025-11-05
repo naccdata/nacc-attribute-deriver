@@ -152,10 +152,8 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_cogfluc(self) -> Optional[int]:
         """Handles missingness for COGFLUC."""
-        if self.formver == 1:
-            return INFORMED_MISSINGNESS
-
-        return self._handle_cascading_gates(["decclin", "decclcog"], "cogfluc", 0)
+        gate_list = ["decclcog"] if self.formver < 4 else ["decclin", "decclcog"]
+        return self._handle_cascading_gates(gate_list, "cogfluc", 0)
 
     def _missingness_cogori(self) -> Optional[int]:
         """Handles missingness for COGORI."""
@@ -251,17 +249,13 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_berem(self) -> Optional[int]:
         """Handles missingness for BEREM."""
-        if self.formver == 1:
-            return INFORMED_MISSINGNESS
-
-        return self._handle_cascading_gates(["decclin", "decclbe"], "berem", 0)
+        gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
+        return self._handle_cascading_gates(gate_list, "berem", 0)
 
     def _missingness_bevwell(self) -> Optional[int]:
         """Handles missingness for BEVWELL."""
-        if self.formver == 1:
-            return INFORMED_MISSINGNESS
-
-        return self._handle_cascading_gates(["decclin", "decclbe"], "bevwell", 0)
+        gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
+        return self._handle_cascading_gates(gate_list, "bevwell", 0)
 
     def _missingness_beanx(self) -> Optional[int]:
         """Handles missingness for BEANX."""
