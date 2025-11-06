@@ -40,7 +40,7 @@ class UDSAttributeCollection(AttributeCollection):
     def prev_record(self) -> Optional[PreviousRecordNamespace]:
         return self.__prev_record
 
-    def get_propogated_value(
+    def get_propagated_value(
         self, attribute: str, attr_type: Type[T], default: Optional[T] = None
     ) -> Optional[T]:
         """Several values are only provided on IVP and need to be propogated

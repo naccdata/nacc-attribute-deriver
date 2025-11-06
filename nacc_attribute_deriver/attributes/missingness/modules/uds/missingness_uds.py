@@ -102,7 +102,7 @@ class UDSMissingness(UDSAttributeCollection):
     def handle_prev_visit(
         self, field: str, attr_type: Type[T], prev_code: Optional[T] = None
     ) -> Optional[T]:
-        """Handle when the value is provided by the previous visit.
+        """Handle when the value could be provided by the previous visit.
 
         If VAR == PREV_CODE, VAR = PREV_VISIT.
         ELIF VAR is not blank, return None (do not override)
@@ -116,14 +116,7 @@ class UDSMissingness(UDSAttributeCollection):
             if prev_value is not None:
                 return prev_value
 
-        elif value is not None:
-            return None
-
-        result = self.generic_missingness(field, attr_type)
-        if result is not None:
-            return result  # type: ignore
-
-        return None
+        return self.generic_missingness(field, attr_type)
 
 
 class GenericUDSMissingness(UDSMissingness):

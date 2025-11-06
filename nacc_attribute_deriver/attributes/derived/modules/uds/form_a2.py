@@ -43,7 +43,12 @@ class UDSFormA2Attribute(UDSAttributeCollection):
 
         newinf = self.uds.get_value("newinf", int)
         if not self.uds.is_initial() and newinf != 1:
-            return INFORMED_MISSINGNESS
+            # may need to carry forward from previous record
+            naccninr = None
+            if self.prev_record:
+                naccninr = self.prev_record.get_derived_value("naccninr", int)
+
+            return naccninr if naccninr is not None else INFORMED_MISSINGNESS
 
         return generate_race_v3(
             race=self.uds.get_value("inrace", int),

@@ -1381,3 +1381,7 @@ uds,adgcgwas,subject.info.derived.cross-sectional.adgcgwas,update,FALSE,int
 uds,adgcexom,subject.info.derived.cross-sectional.adgcexom,update,FALSE,int
 uds,adgcrnd,subject.info.derived.cross-sectional.adgcrnd,update,FALSE,int
 uds,adgcexr,subject.info.derived.cross-sectional.adgcexr,update,FALSE,int
+uds,naccmrsa,subject.info.derived.cross-sectional.naccmrsa,update,false,int
+uds,naccnmri,subject.info.derived.cross-sectional.naccnmri,update,false,int
+uds,naccapsa,subject.info.derived.cross-sectional.naccapsa,update,false,int
+uds,naccnapa,subject.info.derived.cross-sectional.naccnapa,update,false,int

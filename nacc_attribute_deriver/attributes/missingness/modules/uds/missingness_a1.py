@@ -345,11 +345,10 @@ class UDSFormA1Missingness(UDSMissingness):
         return self._handle_a1_missingness("priocc", int, missing_value=999)
 
     ############################################################
-    # Need to pull through the following. Used both for derived
-    # variable work, and per RDD: "Note that although this
-    # variable is not collected at follow-up visits, the value
-    # from the initial visit will be shown at all follow-up
-    # visits"
+    # Need to pull through the following from IVP.
+    # Per RDD: "Note that although this variable is not collected
+    # at follow-up visits, the value from the initial visit will
+    # be shown at all follow-up visits"
     ############################################################
 
     def _missingness_sex(self) -> Optional[int]:
@@ -366,7 +365,8 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_hispor(self) -> Optional[int]:
         """Handles missingness for HISPOR."""
-        if self.uds.get_value("hispanic", int) != 1:
+        hispanic = self.uds.get_value("hispanic", int)
+        if self.uds.is_initial() and hispanic != 1:
             return 88
 
         return self.handle_prev_visit("hispor", int)

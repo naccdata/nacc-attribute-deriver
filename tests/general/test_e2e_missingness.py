@@ -10,9 +10,16 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def test_uds_form(uds_table):
     """Test UDS."""
     deriver = MissingnessDeriver(missingness_file="test_missingness.csv")
+
+    uds_table["file.info.forms.json"].update({"height": "53.1", "heigdec": "5"})
+
     deriver.curate(uds_table, "uds")
 
-    assert uds_table["file.info.resolved"] == {"npiqinf": -4, "npiqinfx": None}
+    assert uds_table["file.info.resolved"] == {
+        "npiqinf": -4,
+        "npiqinfx": None,
+        "height": 53.6,
+    }
 
 
 def test_np_form():

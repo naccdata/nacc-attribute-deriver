@@ -9,6 +9,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import RawNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 
 
 class NIAGADSAttributeCollection(AttributeCollection):
@@ -26,8 +27,6 @@ class NIAGADSAttributeCollection(AttributeCollection):
                     "niagads_wes",
                     "adgc_gwas",
                     "adgc_exomechip",
-                    "exome_round",
-                    "gwas_round",
                 ]
             ),
         )
@@ -92,9 +91,11 @@ class NIAGADSAttributeCollection(AttributeCollection):
         return self.__niagads.get_required("adgc_exomechip", int)
 
     def _create_adgcrnd(self) -> str:
-        """ADGCRND - ADGC data-selection round."""
-        return self.__niagads.get_required("gwas_round", str)
+        """ADGCRND - ADGC data-selection round. Can be blank."""
+        value = self.__niagads.get_value("gwas_round", str)
+        return value if value else INFORMED_BLANK
 
     def _create_adgcexr(self) -> str:
-        """ADGCEXR - ExomeChip genotyping round."""
-        return self.__niagads.get_required("exome_round", str)
+        """ADGCEXR - ExomeChip genotyping round. Can be blank."""
+        value = self.__niagads.get_value("exome_round", str)
+        return value if value else INFORMED_BLANK

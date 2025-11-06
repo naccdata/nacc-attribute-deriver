@@ -226,7 +226,7 @@ class MissingnessDeriver(BaseAttributeDeriver):
             for row in reader:
                 for version in matrix:
                     if row[version]:
-                        matrix[version][row["variable"]] = 1
+                        matrix[version][row["variable"]] = int(row[version])
 
         return matrix
 
@@ -239,7 +239,6 @@ class MissingnessDeriver(BaseAttributeDeriver):
         defined for it, use the generic scope missingness definition.
         """
         applicable = True
-        method = None
 
         # if UDS, determine if the field/rule is applicable to the current
         # version/packet combo. default to True
@@ -248,20 +247,19 @@ class MissingnessDeriver(BaseAttributeDeriver):
             packet = table.get("file.info.forms.json.packet")
             if formver and packet:
                 key = f"v{float(formver):.1f}_{packet.upper()}"
-                if not self.__applicable_attributes.get(key, {}).get(key):
+                if not self.__applicable_attributes.get(key, {}).get(rule.name):
                     applicable = False
 
         # if applicable, try to see if this attribute has a specific
         # rule function attached to it, and call that
-        if applicable:
-            method = self._instance_collections.get(rule.function, None)
-            if method:
-                try:
-                    return method.apply(table)
-                except Exception as e:
-                    raise AttributeDeriverError(
-                        f"Failed to derive rule {rule.function}: {e}"
-                    ) from e
+        method = self._instance_collections.get(rule.function, None)
+        if applicable and method:
+            try:
+                return method.apply(table)
+            except Exception as e:
+                raise AttributeDeriverError(
+                    f"Failed to derive rule {rule.function}: {e}"
+                ) from e
 
         # otherwise, use generic scope missingness function
         method = self._instance_collections.get(f"{self._curation_type}_{scope}", None)

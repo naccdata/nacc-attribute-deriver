@@ -120,7 +120,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
         if (self.formver >= 4) or (precise_formver == 3 and packet != "IT"):
             mocatots = self.uds.get_value("mocatots", int)
-            educ = self.get_propogated_value("educ", int)
+            educ = self.get_propagated_value("educ", int)
             if mocatots is None or mocatots == 88:
                 return 88
             if educ is None or educ == 99:
@@ -154,7 +154,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         ):
             mocbtots = self.uds.get_value("mocbtots", int)
             mocacomp = self.uds.get_value("mocacomp", int)
-            educ = self.get_propogated_value("educ", int)
+            educ = self.get_propagated_value("educ", int)
             if mocbtots is None or mocbtots == 88 or mocacomp == 0:
                 return 88
             if educ is None or educ == 99:

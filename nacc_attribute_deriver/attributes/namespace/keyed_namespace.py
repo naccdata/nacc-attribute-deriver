@@ -65,6 +65,15 @@ class PreviousRecordNamespace(FormNamespace):
 
         return raw_value
 
+    def get_derived_value(
+        self,
+        attribute: str,
+        attr_type: Type[T],
+        default: Optional[T] = None,
+    ) -> Optional[T]:
+        """Returns the derived variable of the previous record."""
+        return self.get_value(f"derived.{attribute}", attr_type, default)
+
 
 class RxClassNamespace(BaseNamespace):
     """Namespace for RxClass members.

@@ -292,8 +292,8 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             return True
 
         # check source == 4 or sourcenw == 2; propagated from IVP
-        source = self.get_propogated_value("source", int)
-        sourcenw = self.get_propogated_value("sourcenw", int)
+        source = self.get_propagated_value("source", int)
+        sourcenw = self.get_propagated_value("sourcenw", int)
 
         return source == 4 or sourcenw == 2
 
