@@ -15,11 +15,18 @@ from typing import List, Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    SubjectDerivedNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormA5D2Attribute(UDSAttributeCollection):
     """Class to collect UDS A5/D2 attributes."""
+    def __init__(self, table: SymbolTable):
+        super().__init__(table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def calculate_mrsyear(self, prefix: str, max_index: int = 6) -> Optional[int]:
         """Calculate mrsyear, which is the maximum of all {PREFIX}{I}YR
@@ -42,10 +49,15 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         """Creates NACCSTYR - Most recently reported year of stroke
         as of the initial visit.
 
-        Only computed in V3 and earlier from form A5.
+        Only computed in V3 and earlier from form A5; if now V3 but
+        had previous V3 values, carry forward.
         """
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "naccstyr", int
+        )
+
         if self.formver >= 4:
-            return INFORMED_MISSINGNESS
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
 
         if not self.uds.is_initial():
             return None
@@ -70,10 +82,15 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         """Creates NACCTIYR - Most recently reported year of TIA as of
         the Initial Visit.
 
-        Only computed in V3 and earlier from form A5.
+        Only computed in V3 and earlier from form A5; if now V3 but
+        had previous V3 values, carry forward.
         """
+        known_value = self.__subject_derived.get_cross_sectional_value(
+            "nacctiyr", int
+        )
+
         if self.formver >= 4:
-            return INFORMED_MISSINGNESS
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
 
         if not self.uds.is_initial():
             return None

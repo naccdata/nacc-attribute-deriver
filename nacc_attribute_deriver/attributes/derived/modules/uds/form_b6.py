@@ -5,7 +5,10 @@ import math
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import (
+    GDS_VARS,
+    INFORMED_MISSINGNESS,
+)
 
 
 class UDSFormB6Attribute(UDSAttributeCollection):
@@ -21,26 +24,6 @@ class UDSFormB6Attribute(UDSAttributeCollection):
             return self.uds.get_value("b6sub", int) == 1
 
         return self.uds.get_value("modeb6", int) in [1, 2]
-
-    GDS_VARS: frozenset[str] = frozenset(
-        [
-            "satis",
-            "dropact",
-            "empty",
-            "bored",
-            "spirits",
-            "afraid",
-            "happy",
-            "helpless",
-            "stayhome",
-            "memprob",
-            "wondrful",
-            "wrthless",
-            "energy",
-            "hopeless",
-            "better",
-        ]
-    )
 
     def _create_naccgds(self) -> int:
         """Create NACCGDS, total GDS score.
@@ -58,7 +41,7 @@ class UDSFormB6Attribute(UDSAttributeCollection):
         completed_score = 0
         unanswered = 0
 
-        for field in self.GDS_VARS:
+        for field in GDS_VARS:
             value = self.uds.get_value(field, int)
             if value in [0, 1]:
                 num_completed += 1

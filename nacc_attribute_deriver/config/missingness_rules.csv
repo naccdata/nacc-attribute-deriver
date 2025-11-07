@@ -670,7 +670,7 @@ uds,hrtendage,file.info.resolved.hrtendage,update,FALSE,int
 uds,bcpillsyr,file.info.resolved.bcpillsyr,update,FALSE,int
 uds,bcstartage,file.info.resolved.bcstartage,update,FALSE,int
 uds,bcendage,file.info.resolved.bcendage,update,FALSE,int
-uds,height,file.info.resolved.height,update,FALSE,int
+uds,height,file.info.resolved.height,update,FALSE,float
 uds,weight,file.info.resolved.weight,update,FALSE,int
 uds,bpsys,file.info.resolved.bpsys,update,FALSE,int
 uds,bpdias,file.info.resolved.bpdias,update,FALSE,int
@@ -1379,8 +1379,8 @@ uds,ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE,int
 uds,ngdsweac,subject.info.derived.cross-sectional.ngdsweac,update,FALSE,int
 uds,adgcgwas,subject.info.derived.cross-sectional.adgcgwas,update,FALSE,int
 uds,adgcexom,subject.info.derived.cross-sectional.adgcexom,update,FALSE,int
-uds,adgcrnd,subject.info.derived.cross-sectional.adgcrnd,update,FALSE,int
-uds,adgcexr,subject.info.derived.cross-sectional.adgcexr,update,FALSE,int
+uds,adgcrnd,subject.info.derived.cross-sectional.adgcrnd,update,FALSE,str
+uds,adgcexr,subject.info.derived.cross-sectional.adgcexr,update,FALSE,str
 uds,naccmrsa,subject.info.derived.cross-sectional.naccmrsa,update,false,int
 uds,naccnmri,subject.info.derived.cross-sectional.naccnmri,update,false,int
 uds,naccapsa,subject.info.derived.cross-sectional.naccapsa,update,false,int

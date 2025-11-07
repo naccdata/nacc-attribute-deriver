@@ -150,7 +150,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         """Creates NACCADMU - Does the subject have a dominantly
         inherited AD mutation?
 
-        Requires NPCHROM/NPPDXP from NP.
+        Requires NPCHROM/NPPDXP from NP. Stays at 1 if ever set to 1.
         """
         naccadmu = self.subject_derived.get_cross_sectional_value("naccadmu", int)
         if naccadmu == 1:
@@ -172,7 +172,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         """Creates NACCFTDM - Does the subject have an hereditary
         FTLD mutation?
 
-        Requires NPCHROM/NPPDXQ from NP.
+        Requires NPCHROM/NPPDXQ from NP. Stays at 1 if ever set to 1.
         """
         naccftdm = self.subject_derived.get_cross_sectional_value("naccftdm", int)
         if naccftdm == 1:

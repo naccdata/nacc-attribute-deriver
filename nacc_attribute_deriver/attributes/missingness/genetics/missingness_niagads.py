@@ -5,7 +5,6 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     SubjectMissingnessCollection,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 
 
 class NIAGADSMissingness(SubjectMissingnessCollection):
@@ -54,13 +53,13 @@ class NIAGADSMissingness(SubjectMissingnessCollection):
     def _missingness_adgcrnd(self) -> Optional[str]:
         """Handles ADGCRND."""
         if self.derived.get_cross_sectional_value("adgcrnd", str) is None:
-            return INFORMED_BLANK
+            return "88"
 
         return None
 
     def _missingness_adgcexr(self) -> Optional[str]:
         """Handles ADGCEXR."""
         if self.derived.get_cross_sectional_value("adgcexr", str) is None:
-            return INFORMED_BLANK
+            return "88"
 
         return None

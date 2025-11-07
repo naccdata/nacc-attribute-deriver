@@ -90,11 +90,16 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         """Creates NACCFADM - In this family, is there evidence
         of dominantly inherited AD?
 
-        Only really defined for V3. Explicitly removed in V4.
+        Only really defined for V3. Explicitly removed in V4, but
+        if had been defined before then carry forward.
         """
+        known_value = self.__subject_derived.get_cross_sectional_value(  # type: ignore
+            "naccfadm", int
+        )
+
         # removed in V4
         if self.formver >= 4:
-            return INFORMED_MISSINGNESS
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
 
         if not self.submitted or self.formver < 3:
             return 0
@@ -102,9 +107,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if self.uds.get_value("fadmut", int) in [1, 2, 3, 8]:
             return 1
 
-        return self.__subject_derived.get_cross_sectional_value(  # type: ignore
-            "naccfadm", int, default=0
-        )
+        return known_value if known_value is not None else 0
 
     def _create_naccfftd(self) -> int:
         """Creates NACCFFTD - In this family, is there evidence for

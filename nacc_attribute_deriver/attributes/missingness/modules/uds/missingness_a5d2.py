@@ -31,6 +31,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         no_return_value: int = 8,
         unknown_return_value: int = 9,
         carry_forward: bool = False,
+        skip_gate_on_legacy: bool = True,
     ) -> Optional[int]:
         """Handle generic A5D2 when there is both a gate and potentially a
         carryforward (777) situation:
@@ -47,11 +48,12 @@ class UDSFormA5D2Missingness(UDSMissingness):
         If GATE = 9, then FIELD should be 9
         Else generic missingness
         """
-        gate_value = self.uds.get_value(gate, int)
-        if gate_value == 0:
-            return no_return_value
-        if gate_value == 9:
-            return unknown_return_value
+        if self.formver >= 4 or not skip_gate_on_legacy:
+            gate_value = self.uds.get_value(gate, int)
+            if gate_value == 0:
+                return no_return_value
+            if gate_value == 9:
+                return unknown_return_value
 
         if carry_forward:
             return self.handle_prev_visit(field, int, prev_code=777)
@@ -64,6 +66,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         field: str,
         no_return_value: int = 888,
         unknown_return_value: int = 999,
+        skip_gate_on_legacy: bool = False,
     ) -> Optional[int]:
         """Handle generic A5D2 gate with carry forward."""
         return self.__handle_a5d2_gate(
@@ -72,12 +75,17 @@ class UDSFormA5D2Missingness(UDSMissingness):
             no_return_value=no_return_value,
             unknown_return_value=unknown_return_value,
             carry_forward=True,
+            skip_gate_on_legacy=skip_gate_on_legacy,
         )
 
     def _missingness_smokyrs(self) -> Optional[int]:
         """Handles missingness for SMOKYRS."""
         return self.handle_a5d2_carry_forward(
-            "tobac100", "smokyrs", no_return_value=88, unknown_return_value=99
+            "tobac100",
+            "smokyrs",
+            no_return_value=88,
+            unknown_return_value=99,
+            skip_gate_on_legacy=False,
         )
 
     ########################
@@ -86,7 +94,9 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_quitsmok(self) -> Optional[int]:
         """Handles missingness for QUITSMOK."""
-        return self.handle_a5d2_carry_forward("tobac100", "quitsmok")
+        return self.handle_a5d2_carry_forward(
+            "tobac100", "quitsmok", skip_gate_on_legacy=False
+        )
 
     def _missingness_hrtattage(self) -> Optional[int]:
         """Handles missingness for HRTATTAGE."""
@@ -178,7 +188,9 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_packsper(self) -> Optional[int]:
         """Handles missingness for PACKSPER."""
-        return self.__handle_a5d2_gate("tobac100", "packsper")
+        return self.__handle_a5d2_gate(
+            "tobac100", "packsper", skip_gate_on_legacy=False
+        )
 
     def _missingness_tobac30(self) -> Optional[int]:
         """Handles missingness for TOBAC30."""
@@ -222,7 +234,9 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_strokmul(self) -> Optional[int]:
         """Handles missingness for STROKMUL."""
-        return self.__handle_a5d2_gate("cbstroke", "strokmul")
+        return self.__handle_a5d2_gate(
+            "cbstroke", "strokmul", skip_gate_on_legacy=False
+        )
 
     def _missingness_ocd(self) -> Optional[int]:
         """Handles missingness for OCD."""
@@ -230,7 +244,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_tiamult(self) -> Optional[int]:
         """Handles missingness for TIAMULT."""
-        return self.__handle_a5d2_gate("cbtia", "tiamult")
+        return self.__handle_a5d2_gate("cbtia", "tiamult", skip_gate_on_legacy=False)
 
     # the following have unique logic from V3 and earlier so
     # brought over from SAS recode logic
@@ -255,6 +269,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             "alcfreq",
             no_return_value=8,
             unknown_return_value=INFORMED_MISSINGNESS,
+            skip_gate_on_legacy=False,
         )
 
     def _missingness_hattmult(self) -> Optional[int]:
@@ -267,6 +282,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             "hattmult",
             no_return_value=8,
             unknown_return_value=INFORMED_MISSINGNESS,
+            skip_gate_on_legacy=False,
         )
 
     def _missingness_hattyear(self) -> Optional[int]:
@@ -277,8 +293,9 @@ class UDSFormA5D2Missingness(UDSMissingness):
         return self.__handle_a5d2_gate(
             "cvhatt",
             "hattyear",
-            no_return_value=888,
+            no_return_value=8888,
             unknown_return_value=INFORMED_MISSINGNESS,
+            skip_gate_on_legacy=False,
         )
 
     #############################
@@ -803,3 +820,35 @@ class UDSFormA5D2Missingness(UDSMissingness):
     def _missingness_psycdisx(self) -> Optional[str]:
         """Handles missingness for PSYCDISX."""
         return self.handle_gated_writein("psycdis", "psycdisx", [0, 9])
+
+    ############################
+    # Legacy D2-only variables #
+    ############################
+
+    def __handle_arth_gate(self, field: str) -> Optional[int]:
+        """Handles variables gated by ARTH."""
+        arth = self.uds.get_value("arth", int)
+        if arth is None or arth == 0:
+            return 8
+
+        return self.generic_missingness(field, int)
+
+    def _missingness_artype(self) -> Optional[int]:
+        """Handles missingness for ARTYPE."""
+        return self.__handle_arth_gate("artype")
+
+    def _missingness_artupex(self) -> Optional[int]:
+        """Handles missingness for ARTUPEX."""
+        return self.__handle_arth_gate("artupex")
+
+    def _missingness_artloex(self) -> Optional[int]:
+        """Handles missingness for ARTLOEX."""
+        return self.__handle_arth_gate("artloex")
+
+    def _missingness_artspin(self) -> Optional[int]:
+        """Handles missingness for ARTSPIN."""
+        return self.__handle_arth_gate("artspin")
+
+    def _missingness_artunkn(self) -> Optional[int]:
+        """Handles missingness for ARTUNKN."""
+        return self.__handle_arth_gate("artunkn")

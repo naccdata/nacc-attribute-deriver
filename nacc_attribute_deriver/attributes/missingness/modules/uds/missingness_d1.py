@@ -85,14 +85,6 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
     # NORMCOG-gated variables #
     ###########################
 
-    def _missingness_esstreif(self) -> Optional[int]:
-        """Handles missingness for ESSTREIF."""
-        return self.handle_normcog_gate("esstreif")
-
-    def _missingness_dysillif(self) -> Optional[int]:
-        """Handles missingness for DYSILLIF."""
-        return self.handle_normcog_gate("dysillif")
-
     def _missingness_dysill(self) -> Optional[int]:
         """Handles missingness for DYSILL."""
         return self.handle_normcog_gate("dysill")
@@ -101,53 +93,61 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
         """Handles missingness for PROBAD."""
         return self.handle_normcog_gate("probad")
 
-    def _missingness_probadif(self) -> Optional[int]:
-        """Handles missingness for PROBADIF."""
-        return self.handle_normcog_gate("probadif")
-
     def _missingness_ftd(self) -> Optional[int]:
         """Handles missingness for FTD."""
         return self.handle_normcog_gate("ftd")
-
-    def _missingness_ftdif(self) -> Optional[int]:
-        """Handles missingness for FTDIF."""
-        return self.handle_normcog_gate("ftdif")
 
     def _missingness_ppaph(self) -> Optional[int]:
         """Handles missingness for PPAPH."""
         return self.handle_normcog_gate("ppaph")
 
-    def _missingness_ppaphif(self) -> Optional[int]:
-        """Handles missingness for PPAPHIF."""
-        return self.handle_normcog_gate("ppaphif")
-
     def _missingness_vasc(self) -> Optional[int]:
         """Handles missingness for VASC."""
         return self.handle_normcog_gate("vasc")
-
-    def _missingness_vascif(self) -> Optional[int]:
-        """Handles missingness for VASCIF."""
-        return self.handle_normcog_gate("vascif")
 
     def _missingness_stroke(self) -> Optional[int]:
         """Handles missingness for STROKE."""
         return self.handle_normcog_gate("stroke")
 
-    def _missingness_strokif(self) -> Optional[int]:
-        """Handles missingness for STROKIF."""
-        return self.handle_normcog_gate("strokif")
-
     def _missingness_demun(self) -> Optional[int]:
         """Handles missingness for DEMUN."""
         return self.handle_normcog_gate("demun")
 
-    def _missingness_demunif(self) -> Optional[int]:
-        """Handles missingness for DEMUNIF."""
-        return self.handle_normcog_gate("demunif")
-
     ########################################
     # Cognitive impairment-gated variables #
     ########################################
+
+    def _missingness_esstreif(self) -> Optional[int]:
+        """Handles missingness for ESSTREIF."""
+        return self.handle_cognitive_impairment_gate("esstrem", "esstreif")
+
+    def _missingness_dysillif(self) -> Optional[int]:
+        """Handles missingness for DYSILLIF."""
+        return self.handle_cognitive_impairment_gate("dysill", "dysillif")
+
+    def _missingness_probadif(self) -> Optional[int]:
+        """Handles missingness for PROBADIF."""
+        return self.handle_cognitive_impairment_gate("probad", "probadif")
+
+    def _missingness_ftdif(self) -> Optional[int]:
+        """Handles missingness for FTDIF."""
+        return self.handle_cognitive_impairment_gate("ftd", "ftdif")
+
+    def _missingness_ppaphif(self) -> Optional[int]:
+        """Handles missingness for PPAPHIF."""
+        return self.handle_cognitive_impairment_gate("ppaph", "ppaphif")
+
+    def _missingness_vascif(self) -> Optional[int]:
+        """Handles missingness for VASCIF."""
+        return self.handle_cognitive_impairment_gate("vasc", "vascif")
+
+    def _missingness_strokif(self) -> Optional[int]:
+        """Handles missingness for STROKIF."""
+        return self.handle_cognitive_impairment_gate("stroke", "strokif")
+
+    def _missingness_demunif(self) -> Optional[int]:
+        """Handles missingness for DEMUNIF."""
+        return self.handle_cognitive_impairment_gate("demun", "demunif")
 
     def _missingness_depif(self) -> Optional[int]:
         """Handles missingness for DEPIF."""

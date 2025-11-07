@@ -429,13 +429,16 @@ class UDSFormB9Missingness(UDSMissingness):
         gate_value = self.uds.get_value(gate, int)
         if gate_value == 1:
             return self.handle_prev_visit(field, int, prev_code=777)
-        if gate_value is None or gate in [0, 9]:
+        if gate_value is None or gate_value in [0, 9]:
             return 888
 
         return self.generic_missingness(field, int)
 
     def _missingness_cogflago(self) -> Optional[int]:
         """Handles missingness for COGFLAGO."""
+        # # TODO: extra recode logic in SAS - do we need?
+        # if self.uds.get_value("decclcog", int) == 0:
+        #     return 888
         return self.__handle_prev_with_gate("cogfluc", "cogflago")
 
     def _missingness_bevhago(self) -> Optional[int]:

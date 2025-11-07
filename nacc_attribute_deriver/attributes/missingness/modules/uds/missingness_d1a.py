@@ -14,11 +14,19 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_scd(self) -> Optional[int]:
         """Handles missingness for SCD."""
-        return self.handle_normcog_gate("scd", ignore_normcog_0=True)
+        scd = self.uds.get_value("scd", int)
+        if scd is None and self.normcog == 0:
+            return 8
+
+        return self.generic_missingness("scd", int)
 
     def _missingness_predomsyn(self) -> Optional[int]:
         """Handles missingness for PREDOMSYN."""
-        return self.handle_normcog_gate("predomsyn", ignore_normcog_0=True)
+        predomsyn = self.uds.get_value("predomsyn", int)
+        if predomsyn is None and self.normcog == 0:
+            return 8
+
+        return self.generic_missingness("predomsyn", int)
 
     def _missingness_majdepdx(self) -> Optional[int]:
         """Handles missingness for MAJDEPDX."""
@@ -247,14 +255,25 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_amndem(self) -> Optional[int]:
         """Handles missingness for AMNDEM."""
+        if self.formver < 4 and self.demented == 0:
+            return 8
+
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "amndem")
 
     def _missingness_pca(self) -> Optional[int]:
         """Handles missingness for PCA."""
+        if self.formver < 4 and self.demented == 0:
+            return 8
+
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "pca")
 
     def _missingness_namndem(self) -> Optional[int]:
         """Handles missingness for NAMNDEM."""
+        if self.formver == 3 and (self.demented == 0 or self.normcog == 1):
+            namndem = self.uds.get_value("namndem", int)
+            if namndem is None or namndem == 0:
+                return 8
+
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "namndem")
 
     def _missingness_dyexecsyn(self) -> Optional[int]:
@@ -425,7 +444,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
         """Handles missingness for SCDDXCONF."""
         if self.uds.get_value("scddxconf", int) is None:
             scd = self.uds.get_value("scd", int)
-            if self.normcog == 1 and scd == 0:
+            if self.normcog == 0 and scd == 0:
                 return 8
 
             return INFORMED_MISSINGNESS

@@ -7,6 +7,25 @@ INFORMED_BLANK = "blank"  # will be translated to an overriding None
 
 CURATION_TYPE = ["create", "missingness"]
 
+# For form B6
+GDS_VARS = [
+    "satis",
+    "dropact",
+    "empty",
+    "bored",
+    "spirits",
+    "afraid",
+    "happy",
+    "helpless",
+    "stayhome",
+    "memprob",
+    "wondrful",
+    "wrthless",
+    "energy",
+    "hopeless",
+    "better",
+]
+
 # For form A4 derived variables
 COMBINATION_RX_CLASSES = [
     "C02L",

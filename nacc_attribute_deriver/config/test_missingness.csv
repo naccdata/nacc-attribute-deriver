@@ -1,6 +1,6 @@
 scope,function,location,operation,dated,attr_type
 uds,npiqinf,file.info.resolved.npiqinf,update,FALSE,int
 uds,npiqinfx,file.info.resolved.npiqinfx,update,FALSE,str
-uds,height,file.info.resolved.height,update,FALSE,int
+uds,height,file.info.resolved.height,update,FALSE,float
 np,npsex,file.info.resolved.npsex,update,FALSE,int
 np,nppmih,file.info.resolved.nppmih,update,FALSE,int

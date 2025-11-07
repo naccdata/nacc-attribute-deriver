@@ -2,6 +2,8 @@
 
 from typing import Optional
 
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+
 from .missingness_d1 import UDSFormD1Missingness
 
 
@@ -181,6 +183,15 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_ftldsubt(self) -> Optional[int]:
         """Handles missingness for FTLDSUBT."""
+        ftldsubt = self.uds.get_value("ftldsubt", int)
+        if self.formver < 4 and ftldsubt is None:
+            gates = self.uds.group_attributes(["psp", "cort", "ftldmo", "ftldnos"], int)
+            if all(x == 0 for x in gates):
+                return INFORMED_MISSINGNESS
+
+            if self.normcog == 0:
+                return 7
+
         return self.handle_cognitive_impairment_gate(
             "ftld", "ftldsubt", ignore_normcog_0=True
         )
