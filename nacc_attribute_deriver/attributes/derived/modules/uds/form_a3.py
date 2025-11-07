@@ -1,5 +1,7 @@
 """Derived variables from form A3: Family History."""
 
+from typing import Callable, Optional
+
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
@@ -13,6 +15,7 @@ from nacc_attribute_deriver.utils.constants import (
 )
 
 from .helpers.family_handler import FamilyHandler, LegacyFamilyHandler
+from .helpers.family_member_handler import FamilyMemberHandler
 
 
 class UDSFormA3Attribute(UDSAttributeCollection):
@@ -37,54 +40,71 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         # required in V4
         return True
 
+    def __handle_parents(self, derived_var: str, parent: FamilyMemberHandler) -> int:
+        """Handles NACCDAD and NACCMOM."""
+        known_value = self.__subject_derived.get_cross_sectional_value(derived_var, int)
+        if not self.submitted:
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
+
+        return self.__family.determine_naccparent(  # type: ignore
+            parent, known_value if known_value is not None else 9
+        )
+
     def _create_naccdad(self) -> int:
         """Creates NACCDAD - Indicator of father with cognitive
         impariment.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccdad", int, default=9
-        )
-
-        if not self.submitted:
-            return known_value
-
-        return self.__family.determine_naccparent(  # type: ignore
-            self.__family.dad,  # type: ignore
-            known_value,
-        )
+        return self.__handle_parents("naccdad", self.__family.dad)  # type: ignore
 
     def _create_naccmom(self) -> int:
         """Creates NACCMOM - Indicator of mother with cognitive
         impairment.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccmom", int, default=9
-        )
-
-        if not self.submitted:
-            return known_value
-
-        return self.__family.determine_naccparent(  # type: ignore
-            self.__family.mom,  # type: ignore
-            known_value,
-        )
+        return self.__handle_parents("naccmom", self.__family.mom)  # type: ignore
 
     def _create_naccfam(self) -> int:
         """Creates NACCFAM - Indicator of first-degree family
         member with cognitive impariment.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccfam", int, default=9
-        )
+        known_value = self.__subject_derived.get_cross_sectional_value("naccfam", int)
 
         if not self.submitted:
-            return known_value
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
 
-        return self.__family.determine_naccfam(known_value)  # type: ignore
+        return self.__family.determine_naccfam(  # type: ignore
+            known_value if known_value is not None else 9
+        )
 
-    #######################
-    # V3 AND EARLIER ONLY #
-    #######################
+    ###########
+    # V3 ONLY #
+    ###########
+
+    def __handle_a3_derived_logic(
+        self,
+        logic: Callable,
+        derived_var: str,
+        default: int = 9,
+        missingness_value: int = INFORMED_MISSINGNESS,
+    ) -> int:
+        """All of these legacy A3 derived variables work the same:
+
+        - Get the known derived value.
+        - If the form was not submitted, or isn't in V3, return the
+          known value if it was already set, else -4/missingness value
+        - Execute core logic
+        - If none of the core logic is satisfied, return the known
+          value if it was already set, otherwise the default, usually 0 or 9
+        """
+        known_value = self.__subject_derived.get_cross_sectional_value(derived_var, int)
+
+        if not self.submitted or self.formver != 3:
+            return known_value if known_value is not None else missingness_value
+
+        result = logic(self, known_value)
+        if result is not None:
+            return result
+
+        return known_value if known_value is not None else default
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence
@@ -93,21 +113,38 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         Only really defined for V3. Explicitly removed in V4, but
         if had been defined before then carry forward.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(  # type: ignore
-            "naccfadm", int
+
+        def __naccfadm_logic(self, known_value: int) -> Optional[int]:
+            if self.uds.get_value("fadmut", int) in [1, 2, 3, 8]:
+                return 1
+
+            return None
+
+        # TODO: for whatever reason, the missingness value was 0 and not
+        # -4 in older versions. should it be changed to -4?
+        return self.__handle_a3_derived_logic(
+            __naccfadm_logic,
+            "naccfadm",
+            default=0,
+            missingness_value=0 if self.formver != 4 else INFORMED_MISSINGNESS,
         )
 
-        # removed in V4
-        if self.formver >= 4:
-            return known_value if known_value is not None else INFORMED_MISSINGNESS
+        # this technically worked before so keeping just in case
+        # known_value = self.__subject_derived.get_cross_sectional_value(  # type: ignore
+        #     "naccfadm", int
+        # )
 
-        if not self.submitted or self.formver < 3:
-            return 0
+        # # removed in V4
+        # if self.formver >= 4:
+        #     return known_value if known_value is not None else INFORMED_MISSINGNESS
 
-        if self.uds.get_value("fadmut", int) in [1, 2, 3, 8]:
-            return 1
+        # if not self.submitted or self.formver < 3:
+        #     return 0
 
-        return known_value if known_value is not None else 0
+        # if self.uds.get_value("fadmut", int) in [1, 2, 3, 8]:
+        #     return 1
+
+        # return known_value if known_value is not None else 0
 
     def _create_naccfftd(self) -> int:
         """Creates NACCFFTD - In this family, is there evidence for
@@ -115,18 +152,38 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        if not self.submitted or self.formver != 3:
-            return 0
 
-        if (
-            self.uds.get_value("fftdmut", int) in [1, 2, 3, 4, 8]
-            or self.uds.get_value("ftdmutat", int) == 1
-        ):
-            return 1
+        def __naccfftd_logic(self, known_value: int) -> Optional[int]:
+            if (
+                self.uds.get_value("fftdmut", int) in [1, 2, 3, 4, 8]
+                or self.uds.get_value("ftdmutat", int) == 1
+            ):
+                return 1
 
-        return self.__subject_derived.get_cross_sectional_value(  # type: ignore
-            "naccfftd", int, default=0
+            return None
+
+        # TODO: for whatever reason, the missingness value was 0 and not
+        # -4 in older versions. should it be changed to -4?
+        return self.__handle_a3_derived_logic(
+            __naccfftd_logic,
+            "naccfftd",
+            default=0,
+            missingness_value=0 if self.formver != 4 else INFORMED_MISSINGNESS,
         )
+
+        # this also worked before, so keeping just in case
+        # if not self.submitted or self.formver != 3:
+        #     return 0
+
+        # if (
+        #     self.uds.get_value("fftdmut", int) in [1, 2, 3, 4, 8]
+        #     or self.uds.get_value("ftdmutat", int) == 1
+        # ):
+        #     return 1
+
+        # return self.__subject_derived.get_cross_sectional_value(  # type: ignore
+        #     "naccfftd", int, default=0
+        # )
 
     def _create_naccam(self) -> int:
         """Creates NACCAM - In this family, is there evidence
@@ -137,22 +194,37 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         be overwritten (e.g. change from 2 -> 8 -> 3 -> etc.) so
         will ultimately report the last one since its cross-sectional.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccam", int, default=9
-        )
-        if not self.submitted or self.formver != 3:
-            return known_value
 
-        fadmut = self.uds.get_value("fadmut", int)
-        if fadmut in [1, 2, 3, 8]:
-            return fadmut
-        if fadmut == 0:
-            # a non-zero known value should supersede
-            if known_value in [1, 2, 3, 8]:
-                return known_value
-            return fadmut
+        def __naccam_logic(self, known_value: int) -> Optional[int]:
+            fadmut = self.uds.get_value("fadmut", int)
+            if fadmut in [1, 2, 3, 8]:
+                return fadmut
+            if fadmut == 0:
+                # a non-zero known value should supersede
+                if known_value in [1, 2, 3, 8]:
+                    return known_value
+                return fadmut
 
-        return known_value
+            return None
+
+        return self.__handle_a3_derived_logic(__naccam_logic, "naccam")
+
+        # known_value = self.__subject_derived.get_cross_sectional_value(
+        #     "naccam", int
+        # )
+        # if not self.submitted or self.formver != 3:
+        #     return known_value if known_value is not None else INFORMED_MISSINGNESS
+
+        # fadmut = self.uds.get_value("fadmut", int)
+        # if fadmut in [1, 2, 3, 8]:
+        #     return fadmut
+        # if fadmut == 0:
+        #     # a non-zero known value should supersede
+        #     if known_value in [1, 2, 3, 8]:
+        #         return known_value
+        #     return fadmut
+
+        # return known_value if known_value is not None else 9
 
     def _create_naccams(self) -> int:
         """Creates NACCAMS - Source of evidence for AD
@@ -163,26 +235,43 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         is unknown at all visits (all == 9) then NACCAMS is 9.
         If not reported at any (NACCAM == 0) than -4.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccams", int, default=9
-        )
 
-        if not self.submitted or self.formver != 3:
-            return known_value
+        def __naccams_logic(self, known_value: int) -> Optional[int]:
+            if self._create_naccam() == 0:
+                return INFORMED_MISSINGNESS
 
-        if self._create_naccam() == 0:
-            return INFORMED_MISSINGNESS
+            fadmuso = self.uds.get_value("fadmuso", int)
+            if fadmuso in [1, 2, 3, 8]:
+                return fadmuso
 
-        fadmuso = self.uds.get_value("fadmuso", int)
-        if fadmuso in [1, 2, 3, 8]:
-            return fadmuso
+            # for NACCAMS to be 9, it must be 9 at ALL visits, return None otherwise
+            if fadmuso == 9 and (self.uds.is_initial() or known_value == 9):
+                return 9
 
-        # for NACCAMS to be 9, it must be 9 at ALL visits, return None otherwise
-        if fadmuso == 9 and (self.uds.is_initial() or known_value == 9):
-            return 9
+            return None
 
-        # if fadmuso is None, also return 9 or the known value
-        return known_value
+        return self.__handle_a3_derived_logic(__naccams_logic, "naccams")
+
+        # known_value = self.__subject_derived.get_cross_sectional_value(
+        #     "naccams", int
+        # )
+
+        # if not self.submitted or self.formver != 3:
+        #     return known_value if known_value is not None else INFORMED_MISSINGNESS
+
+        # if self._create_naccam() == 0:
+        #     return INFORMED_MISSINGNESS
+
+        # fadmuso = self.uds.get_value("fadmuso", int)
+        # if fadmuso in [1, 2, 3, 8]:
+        #     return fadmuso
+
+        # # for NACCAMS to be 9, it must be 9 at ALL visits, return None otherwise
+        # if fadmuso == 9 and (self.uds.is_initial() or known_value == 9):
+        #     return 9
+
+        # # if fadmuso is None, also return 9 or the known value
+        # return known_value if known_value is not None else 9
 
     def _create_naccfm(self) -> int:
         """Creates NACCFM - In this family, is there evidence for an
@@ -190,24 +279,40 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccfm", int, default=9
-        )
 
-        if not self.submitted or self.formver != 3:
-            return known_value
+        def __naccfm_logic(self, known_value: int) -> Optional[int]:
+            fftdmut = self.uds.get_value("fftdmut", int)
+            if fftdmut in [1, 2, 3, 4, 8]:
+                return fftdmut
 
-        fftdmut = self.uds.get_value("fftdmut", int)
-        if fftdmut in [1, 2, 3, 4, 8]:
-            return fftdmut
+            if fftdmut == 0:
+                # a non-zero known value should supersede
+                if known_value in [1, 2, 3, 4, 8]:
+                    return known_value
+                return fftdmut
 
-        if fftdmut == 0:
-            # a non-zero known value should supersede
-            if known_value in [1, 2, 3, 4, 8]:
-                return known_value
-            return fftdmut
+            return None
 
-        return known_value
+        return self.__handle_a3_derived_logic(__naccfm_logic, "naccfm")
+
+        # known_value = self.__subject_derived.get_cross_sectional_value(
+        #     "naccfm", int, default=9
+        # )
+
+        # if not self.submitted or self.formver != 3:
+        #     return known_value
+
+        # fftdmut = self.uds.get_value("fftdmut", int)
+        # if fftdmut in [1, 2, 3, 4, 8]:
+        #     return fftdmut
+
+        # if fftdmut == 0:
+        #     # a non-zero known value should supersede
+        #     if known_value in [1, 2, 3, 4, 8]:
+        #         return known_value
+        #     return fftdmut
+
+        # return known_value
 
     def _create_naccfms(self) -> int:
         """Creates NACCFMS - Source of evidence for FTLD
@@ -215,26 +320,43 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccfms", int, default=9
-        )
 
-        if not self.submitted or self.formver != 3:
-            return known_value
+        def __naccfms_logic(self, known_value: int) -> Optional[int]:
+            if self._create_naccfm() == 0:
+                return INFORMED_MISSINGNESS
 
-        if self._create_naccfm() == 0:
-            return INFORMED_MISSINGNESS
+            fftdmusu = self.uds.get_value("fftdmuso", int)
+            if fftdmusu in [0, 1, 2, 3, 8]:
+                return fftdmusu
 
-        fftdmusu = self.uds.get_value("fftdmuso", int)
-        if fftdmusu in [0, 1, 2, 3, 8]:
-            return fftdmusu
+            # for NACCFMS to be 9, it must be 9 at ALL visits, return None otherwise
+            if fftdmusu == 9 and (self.uds.is_initial() or known_value == 9):
+                return 9
 
-        # for NACCFMS to be 9, it must be 9 at ALL visits, return None otherwise
-        if fftdmusu == 9 and (self.uds.is_initial() or known_value == 9):
-            return 9
+            return None
 
-        # if fftdmusu is None, also return 9 or the known value
-        return known_value
+        return self.__handle_a3_derived_logic(__naccfms_logic, "naccfms")
+
+        # known_value = self.__subject_derived.get_cross_sectional_value(
+        #     "naccfms", int, default=9
+        # )
+
+        # if not self.submitted or self.formver != 3:
+        #     return known_value
+
+        # if self._create_naccfm() == 0:
+        #     return INFORMED_MISSINGNESS
+
+        # fftdmusu = self.uds.get_value("fftdmuso", int)
+        # if fftdmusu in [0, 1, 2, 3, 8]:
+        #     return fftdmusu
+
+        # # for NACCFMS to be 9, it must be 9 at ALL visits, return None otherwise
+        # if fftdmusu == 9 and (self.uds.is_initial() or known_value == 9):
+        #     return 9
+
+        # # if fftdmusu is None, also return 9 or the known value
+        # return known_value
 
     def _create_naccom(self) -> int:
         """Creates NACCOM - In this family, is there evidence for
@@ -242,22 +364,36 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccom", int, default=9
-        )
 
-        if not self.submitted or self.formver != 3:
-            return known_value
+        def __naccom_logic(self, known_value: int) -> Optional[int]:
+            # known value 1 always supersedes
+            if known_value == 1:
+                return 1
 
-        # known value 1 always supersedes
-        if known_value == 1:
-            return 1
+            fothmut = self.uds.get_value("fothmut", int)
+            if fothmut in [0, 1]:
+                return fothmut
 
-        fothmut = self.uds.get_value("fothmut", int)
-        if fothmut in [0, 1]:
-            return fothmut
+            return None
 
-        return known_value
+        return self.__handle_a3_derived_logic(__naccom_logic, "naccom")
+
+        # known_value = self.__subject_derived.get_cross_sectional_value(
+        #     "naccom", int, default=9
+        # )
+
+        # if not self.submitted or self.formver != 3:
+        #     return known_value
+
+        # # known value 1 always supersedes
+        # if known_value == 1:
+        #     return 1
+
+        # fothmut = self.uds.get_value("fothmut", int)
+        # if fothmut in [0, 1]:
+        #     return fothmut
+
+        # return known_value
 
     def _create_naccoms(self) -> int:
         """Creates NACCOMS - Source of evidence for other
@@ -265,26 +401,43 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccoms", int, default=9
-        )
 
-        if not self.submitted or self.formver != 3:
-            return known_value
+        def __naccoms_logic(self, known_value: int) -> Optional[int]:
+            if self._create_naccom() == 0:
+                return INFORMED_MISSINGNESS
 
-        if self._create_naccom() == 0:
-            return INFORMED_MISSINGNESS
+            fothmuso = self.uds.get_value("fothmuso", int)
+            if fothmuso in [0, 1, 2, 3, 8]:
+                return fothmuso
 
-        fothmuso = self.uds.get_value("fothmuso", int)
-        if fothmuso in [0, 1, 2, 3, 8]:
-            return fothmuso
+            # for NACCOMS to be 9, it must be 9 at ALL visits, return None otherwise
+            if fothmuso == 9 and (self.uds.is_initial() or known_value == 9):
+                return 9
 
-        # for NACCOMS to be 9, it must be 9 at ALL visits, return None otherwise
-        if fothmuso == 9 and (self.uds.is_initial() or known_value == 9):
-            return 9
+            return None
 
-        # if fothmuso is None, also return 9 or the known value
-        return known_value
+        return self.__handle_a3_derived_logic(__naccoms_logic, "naccoms")
+
+        # known_value = self.__subject_derived.get_cross_sectional_value(
+        #     "naccoms", int, default=9
+        # )
+
+        # if not self.submitted or self.formver != 3:
+        #     return known_value
+
+        # if self._create_naccom() == 0:
+        #     return INFORMED_MISSINGNESS
+
+        # fothmuso = self.uds.get_value("fothmuso", int)
+        # if fothmuso in [0, 1, 2, 3, 8]:
+        #     return fothmuso
+
+        # # for NACCOMS to be 9, it must be 9 at ALL visits, return None otherwise
+        # if fothmuso == 9 and (self.uds.is_initial() or known_value == 9):
+        #     return 9
+
+        # # if fothmuso is None, also return 9 or the known value
+        # return known_value
 
     #############
     # Write-ins #

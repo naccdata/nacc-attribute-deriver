@@ -173,6 +173,8 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
         if self.uds.get_value("probad", int) == 1:
             return 0
 
+        # TODO: not sure why this one doesn't use the cognitive impairment
+        # gate in legacy SAS code?
         return self.handle_normcog_gate("possadif")
 
     def _missingness_vascps(self) -> Optional[int]:
@@ -187,7 +189,7 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
         if self.uds.get_value("vasc", int) == 1:
             return 0
 
-        return self.handle_normcog_gate("vascpsif")
+        return self.handle_cognitive_impairment_gate("vascps", "vascpsif")
 
     #######################
     # CVD-gated variables #

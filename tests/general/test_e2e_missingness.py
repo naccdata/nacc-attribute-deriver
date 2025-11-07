@@ -9,7 +9,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 def test_uds_form(uds_table):
     """Test UDS."""
-    deriver = MissingnessDeriver(missingness_file="test_missingness.csv")
+    deriver = MissingnessDeriver(missingness_level="test")
 
     uds_table["file.info.forms.json"].update({"height": "53.1", "heigdec": "5"})
 
@@ -31,7 +31,30 @@ def test_np_form():
             }
         }
     )
-    deriver = MissingnessDeriver(missingness_file="test_missingness.csv")
+    deriver = MissingnessDeriver(missingness_level="test")
     deriver.curate(np_table, "np")
 
     assert np_table["file.info.resolved"] == {"npsex": -4, "nppmih": -4}
+
+
+def test_csf_subject():
+    """Test CSF missingness at the subject level."""
+    form = SymbolTable()
+    form["subject.info.derived.cross-sectional"] = {
+        "naccacsf": 1,
+        "naccpcsf": 0,
+        #  NACCTCSF should be filled in by missingness
+    }
+
+    deriver = MissingnessDeriver(missingness_level="subject")
+    deriver.curate(form, "csf")
+
+    assert form.to_dict() == {
+        "subject": {
+            "info": {
+                "derived": {
+                    "cross-sectional": {"naccacsf": 1, "naccpcsf": 0, "nacctcsf": 0}
+                }
+            }
+        },
+    }

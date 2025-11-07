@@ -21,7 +21,11 @@ from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class FormMissingnessCollection(AttributeCollection):
-    """Class to handle missingness values at the form level."""
+    """Class to handle missingness values at the form level.
+
+    These generally expect that the form DOES exist, but may have
+    missing values.
+    """
 
     def __init__(self, table: SymbolTable, required=frozenset([])) -> None:
         self.__form = FormNamespace(table=table, required=required)
@@ -51,7 +55,11 @@ class FormMissingnessCollection(AttributeCollection):
 
 
 class SubjectMissingnessCollection(AttributeCollection):
-    """Class to handle missingness values at the subject level."""
+    """Class to handle missingness values at the subject level.
+
+    These generally expect that the form/data does not exist at all, so
+    can only write things to the subject level.
+    """
 
     def __init__(self, table: SymbolTable):
         self.__derived = SubjectDerivedNamespace(table=table)

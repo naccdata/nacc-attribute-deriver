@@ -4,9 +4,10 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    RawNamespace,
+    FormNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 
 class CSFAttributeCollection(AttributeCollection):
@@ -14,7 +15,12 @@ class CSFAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
-        self.__csf = RawNamespace(table)
+        self.__csf = FormNamespace(table=table, required=frozenset(["module"]))
+
+        module = self.__csf.get_required("module", str)
+        if module.upper() != "CSF":
+            msg = f"Current file is not a CSF form: found {module}"
+            raise InvalidFieldError(msg)
 
     def __concentration_within_range(
         self, field: str, min_value: float, max_value: float
@@ -22,7 +28,7 @@ class CSFAttributeCollection(AttributeCollection):
         """Returns whether the given concentration field is within the
         specified range."""
         value = self.__csf.get_value(field, float)
-        if not value:
+        if value is None:
             return 0
 
         if value >= min_value and value <= max_value:

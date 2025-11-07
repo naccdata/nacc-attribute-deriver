@@ -84,6 +84,7 @@ class UDSFormB9Missingness(UDSMissingness):
             #     if result is not None:
             #         return result
 
+            gate_value = self.uds.get_value(gate, int)
             if self.uds.get_value(gate, int) == 0:
                 return missingness_value
 

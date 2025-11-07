@@ -173,8 +173,14 @@ class AttributeDeriver(BaseAttributeDeriver):
 
 
 class MissingnessDeriver(BaseAttributeDeriver):
-    def __init__(self, missingness_file: str = "missingness_rules.csv") -> None:
-        super().__init__(missingness_file, "missingness")
+    def __init__(self, missingness_level: str) -> None:
+        # For missingness, need to split out by level
+        if missingness_level not in ["file", "subject", "test"]:
+            raise AttributeDeriverError(
+                f"Unknown missingness level: {missingness_level}"
+            )
+
+        super().__init__(f"{missingness_level}_missingness.csv", "missingness")
         # the way we deal with/use these two could probably be improved,
         # really brute forcing stuff for now
         self.__attribute_types = self.__get_attribute_types()

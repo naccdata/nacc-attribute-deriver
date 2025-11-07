@@ -1,7 +1,10 @@
 """Class to handle A4-specific missingness values."""
 
-from typing import Optional
+import csv
+from importlib import resources
+from typing import Dict, Optional
 
+from nacc_attribute_deriver import config
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingDerivedNamespace,
 )
@@ -13,6 +16,29 @@ from nacc_attribute_deriver.utils.constants import (
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 from .missingness_uds import UDSMissingness
+
+
+def load_udsmeds() -> Dict[str, str]:
+    """Load UDSMEDS table to map drug ID to drug name."""
+    udsmeds_file = resources.files(config).joinpath("UDSMEDS.csv")
+    udsmeds: Dict[str, str] = {}
+
+    with udsmeds_file.open("r") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            drug_id = row["DRUG_ID"]
+
+            # there are many clashes; only use first one found
+            if drug_id in udsmeds:
+                continue
+
+            udsmeds[drug_id] = row["DRUG_NAME_UCASE"]
+
+    return udsmeds
+
+
+# load this globally so it's only done once per execution
+UDSMEDS = load_udsmeds()
 
 
 class UDSFormA4Missingness(UDSMissingness):
@@ -215,19 +241,13 @@ class UDSFormA4Missingness(UDSMissingness):
         if self.formver >= 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
             return INFORMED_BLANK
 
-        # for now, pull the drug ID directly from drugs-list
-        # the QAF maps these to an actual name using UDSMEDS,
-        # which we'll probably need to store here as a CSV if
-        # we want to use. that being said, it's honestly not
-        # very accurate as there are also many name clashes,
-        # and V1 in particular as we know is suspect due to
-        # being purely write-in values.
-        # so for now, leave as ID, and then we can figure out
-        # what we want to do exactly with it later.
         if self.__drugs:
             index = int(field.replace("drug", "")) - 1
             if len(self.__drugs) > index:
-                return self.__drugs[index]
+                drug_id = self.__drugs[index]
+
+                # if drug ID doesn't map to a name leave as-is
+                return UDSMEDS.get(drug_id, drug_id)
 
         return self.generic_missingness(field, str)
 

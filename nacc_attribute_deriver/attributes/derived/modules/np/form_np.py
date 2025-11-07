@@ -33,6 +33,13 @@ class NPFormAttributeCollection(AttributeCollection):
         self.mapper = NPMapper(self.__np)
         self.form_evaluator = NPFormWideEvaluator(self.__np, self.mapper)
 
+    def _create_npformver(self) -> int:
+        """Form verison.
+
+        Required.
+        """
+        return self.formver
+
     def _create_naccamy(self) -> int:
         """Create the NACCAMY variable.
 

@@ -96,6 +96,7 @@ def test_np_form():
                     "naccprio": 9,
                     "naccprog": 9,
                     "naccvasc": 9,
+                    "npformver": 11,
                 },
             }
         },
@@ -122,6 +123,7 @@ def test_np_form():
                         "naccprio": 9,
                         "naccprog": 9,
                         "naccvasc": 9,
+                        "npformver": 11,
                     },
                 },
                 "working": {
@@ -398,7 +400,8 @@ def test_cls():
                         "awrispan": 7,
                         "aundspan": 3,
                     }
-                }
+                },
+                "derived": {"naccengl": 3.0, "naccspnl": 3.8},
             }
         },
         "subject": {
@@ -450,4 +453,43 @@ def test_lbd():
             }
         },
         "subject": {"info": {"derived": {"cross-sectional": {"nacclbdm": 1}}}},
+    }
+
+
+def test_csf():
+    """Test against minimal CSF data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {
+        "module": "CSF",
+        "visitdate": "2025-01-01",
+        "csfabeta": 1,
+        "csfptau": -123,
+        "csfttau": 2500,
+    }
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "csf")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "CSF",
+                        "visitdate": "2025-01-01",
+                        "csfabeta": 1,
+                        "csfptau": -123,
+                        "csfttau": 2500,
+                    }
+                },
+                "derived": {"naccacsf": 1, "naccpcsf": 0, "nacctcsf": 1},
+            }
+        },
+        "subject": {
+            "info": {
+                "derived": {
+                    "cross-sectional": {"naccacsf": 1, "naccpcsf": 0, "nacctcsf": 1}
+                }
+            }
+        },
     }

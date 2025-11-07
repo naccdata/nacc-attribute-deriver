@@ -98,6 +98,8 @@ np,naccvasc,file.info.derived.naccvasc,update,FALSE
 np,naccwri1,file.info.derived.naccwri1,update,FALSE
 np,naccwri2,file.info.derived.naccwri2,update,FALSE
 np,naccwri3,file.info.derived.naccwri3,update,FALSE
+np,npformver,subject.info.derived.cross-sectional.npformver,update,FALSE
+np,npformver,file.info.derived.npformver,update,FALSE
 np,np_death_age,subject.info.working.cross-sectional.np-death-age,update,FALSE
 np,np_death_date,subject.info.working.cross-sectional.np-death-date,update,FALSE
 np,npchrom,subject.info.working.cross-sectional.npchrom,update,FALSE
@@ -109,6 +111,11 @@ cls,naccspnl,subject.info.derived.cross-sectional.naccspnl,update,FALSE
 csf,naccacsf,subject.info.derived.cross-sectional.naccacsf,update,FALSE
 csf,naccpcsf,subject.info.derived.cross-sectional.naccpcsf,update,FALSE
 csf,nacctcsf,subject.info.derived.cross-sectional.nacctcsf,update,FALSE
+cls,naccengl,file.info.derived.naccengl,update,FALSE
+cls,naccspnl,file.info.derived.naccspnl,update,FALSE
+csf,naccacsf,file.info.derived.naccacsf,update,FALSE
+csf,naccpcsf,file.info.derived.naccpcsf,update,FALSE
+csf,nacctcsf,file.info.derived.nacctcsf,update,FALSE
 scan_mri_sbm,scan_volume_analysis_indicator,subject.info.imaging.mri.scan.t1.brain-volume,max,FALSE
 scan_mri_sbm,scan_flair_wmh_indicator,subject.info.imaging.mri.scan.flair.wmh,max,FALSE
 scan_mri_sbm,mri_scan_analysis_types,subject.info.imaging.mri.scan.analysis-types,set,FALSE
@@ -399,3 +406,13 @@ pet_dicom,naccnapa,subject.info.derived.cross-sectional.naccnapa,update,FALSE
 pet_dicom,naccapnm,subject.info.derived.longitudinal.naccapnm,dated-set,TRUE
 pet_dicom,naccaptd,subject.info.derived.longitudinal.naccaptd,dated-set,TRUE
 pet_dicom,naccapsa,subject.info.derived.cross-sectional.naccapsa,update,FALSE
+mri_dicom,naccdico,file.info.derived.naccdico,update,FALSE
+mri_nifti,naccnift,file.info.derived.naccnift,update,FALSE
+mri_dicom,naccmria,file.info.derived.naccmria,update,FALSE
+mri_dicom,naccmrfi,file.info.derived.naccmrfi,update,FALSE
+mri_dicom,naccmnum,file.info.derived.naccmnum,update,FALSE
+mri_dicom,naccmrdy,file.info.derived.naccmrdy,update,FALSE
+pet_dicom,naccapta,file.info.derived.naccapta,update,FALSE
+pet_dicom,naccaptf,file.info.derived.naccaptf,update,FALSE
+pet_dicom,naccapnm,file.info.derived.naccapnm,update,FALSE
+pet_dicom,naccaptd,file.info.derived.naccaptd,update,FALSE

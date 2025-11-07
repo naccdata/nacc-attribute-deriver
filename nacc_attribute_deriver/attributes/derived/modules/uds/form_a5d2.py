@@ -24,6 +24,7 @@ from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 class UDSFormA5D2Attribute(UDSAttributeCollection):
     """Class to collect UDS A5/D2 attributes."""
+
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
@@ -52,9 +53,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         Only computed in V3 and earlier from form A5; if now V3 but
         had previous V3 values, carry forward.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "naccstyr", int
-        )
+        known_value = self.__subject_derived.get_cross_sectional_value("naccstyr", int)
 
         if self.formver >= 4:
             return known_value if known_value is not None else INFORMED_MISSINGNESS
@@ -85,9 +84,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         Only computed in V3 and earlier from form A5; if now V3 but
         had previous V3 values, carry forward.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "nacctiyr", int
-        )
+        known_value = self.__subject_derived.get_cross_sectional_value("nacctiyr", int)
 
         if self.formver >= 4:
             return known_value if known_value is not None else INFORMED_MISSINGNESS

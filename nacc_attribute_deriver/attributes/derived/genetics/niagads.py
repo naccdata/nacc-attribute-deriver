@@ -93,9 +93,9 @@ class NIAGADSAttributeCollection(AttributeCollection):
     def _create_adgcrnd(self) -> str:
         """ADGCRND - ADGC data-selection round. Can be blank."""
         value = self.__niagads.get_value("gwas_round", str)
-        return value if value else INFORMED_BLANK
+        return value if value else "88"
 
     def _create_adgcexr(self) -> str:
         """ADGCEXR - ExomeChip genotyping round. Can be blank."""
         value = self.__niagads.get_value("exome_round", str)
-        return value if value else INFORMED_BLANK
+        return value if value else "88"

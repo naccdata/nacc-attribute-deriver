@@ -66,7 +66,8 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if self.has_cognitive_impairment():
             return 7
 
-        raise ValueError("Unable to determine NACCALZP")
+        # TODO: ASKING RT ABOUT THE MBI CASE - FOR NOW RETURN 0
+        return 0
 
     def _create_nacclbde(self) -> int:
         """From d1structrdd.sas.
@@ -117,10 +118,8 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         elif self.has_cognitive_impairment():
             return 7
 
-        # TODO: raising error instead of returning None
-        # I think in theory it seems it shouldn't ever get here
-        # and nacclbdp should always be set to something
-        raise ValueError("Unable to determine nacclbdp")
+        # TODO: ASKING RT ABOUT MBI - FOR NOW RETURN 0 (NO)
+        return 0
 
     def _create_naccalzd(self) -> int:
         """Creates NACCALZD - Presumptive etiologic diagnosis of

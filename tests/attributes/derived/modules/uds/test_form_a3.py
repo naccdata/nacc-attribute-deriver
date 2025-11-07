@@ -334,10 +334,22 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "fothmut", 9)
         assert attr._create_naccom() == 9
 
+        # check V2 case - should be -4 since no known value
+        set_attribute(table, form_prefix, "formver", 2)
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccom() == -4
+
         # test superseded cases
+        set_attribute(table, form_prefix, "formver", 3)
+        attr = UDSFormA3Attribute(table)
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 9)
         assert attr._create_naccom() == 9
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 0)
         assert attr._create_naccom() == 0
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 1)
+        assert attr._create_naccom() == 1
+
+        # check V2 case - should use known value
+        set_attribute(table, form_prefix, "formver", 2)
+        attr = UDSFormA3Attribute(table)
         assert attr._create_naccom() == 1

@@ -1,5 +1,17 @@
 resources(
     name="rules",
-    sources=["curation_rules.csv", "missingness_rules.csv", "test_missingness.csv"],
+    sources=[
+        "curation_rules.csv",
+        "file_missingness.csv",
+        "subject_missingness.csv",
+        "test_missingness.csv",
+    ],
 )
-resources(name="data", sources=["normalized_drug_ids_v1.csv", "uds_ded_matrix.csv"])
+resources(
+    name="data",
+    sources=[
+        "normalized_drug_ids_v1.csv",
+        "UDSMEDS.csv",
+        "uds_ded_matrix.csv",
+    ],
+)
