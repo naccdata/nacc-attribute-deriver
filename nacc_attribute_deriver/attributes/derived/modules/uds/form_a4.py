@@ -36,20 +36,24 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     @property
     def submitted(self) -> bool:
         """In V4, form completion dependent on ANYMEDS variable.
-
         For earlier versions, see A4SUB.
+
+        Note not being completed is NOT the same as ANYMEDS = 0.
+        If not submitted, these derived variables are -4; if
+        ANYMEDS = 0, they are typically set to 0.
         """
-        anymeds = self.uds.get_value("anymeds", int)
-        if anymeds is not None:
-            return anymeds == 1
+        if self.formver >= 4:
+            return self.uds.get_value("anymeds", int) is not None
 
         return self.uds.get_value("a4sub", int) == 1
 
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
         subject.info.derived.drugs_list.<visitdate>."""
-        if not self.submitted:
+        anymeds = self.uds.get_value("anymeds", int)
+        if not self.submitted or anymeds == 0:
             return []
+
         drugs = []
 
         # V4+ uses RXNORM 1-40 values directly from A4 form
@@ -79,15 +83,6 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             return []
 
         return [x.strip().lower() for x in drugs]
-
-    def _create_naccamd(self) -> int:
-        """Creates NACCAMD - Total number of medications reported at
-        each visit.
-        """
-        if not self.submitted:
-            return INFORMED_MISSINGNESS
-
-        return len(self.__meds)
 
     def check_drugs(self, target_codes: List[str]) -> int:
         """Check if any of the 40 write-in drugs match the target codes.
@@ -119,6 +114,40 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             members.extend(self.__rxclass.get_members(rxclass))
 
         return 1 if any(x in members for x in self.__meds) else 0
+
+    def _create_naccamd(self) -> int:
+        """Creates NACCAMD - Total number of medications reported at
+        each visit.
+        """
+        if not self.submitted:
+            return INFORMED_MISSINGNESS
+
+        return len(self.__meds)
+
+    def _create_naccahtn(self) -> Optional[int]:
+        """Creates NACCAHTN - Reported current use of any type of
+        antihypertensive or blood pressure medication.
+        """
+        if not self.submitted:
+            return INFORMED_MISSINGNESS
+
+        return (
+            1
+            if any(
+                x > 0 for x in
+                [
+                    self._create_naccacei(),
+                    self._create_naccaaas(),
+                    self._create_naccbeta(),
+                    self._create_naccccbs(),
+                    self._create_naccdiur(),
+                    self._create_naccvasd(),
+                    self._create_nacchtnc(),
+                    self._create_naccangi(),
+                ]
+            )
+            else 0
+        )
 
     def _create_naccaaas(self) -> Optional[int]:
         """Creates NACCAAAS - Reported current use of an antiadenergic agent."""
@@ -330,27 +359,6 @@ class UDSFormA4Attribute(UDSAttributeCollection):
                 "d04750",
                 "d04899",
             ]
-        )
-
-    def _create_naccahtn(self) -> Optional[int]:
-        """Creates NACCAHTN - Reported current use of any type of
-        antihypertensive or blood pressure medication.
-        """
-        return (
-            1
-            if any(
-                [
-                    self._create_naccacei(),
-                    self._create_naccaaas(),
-                    self._create_naccbeta(),
-                    self._create_naccccbs(),
-                    self._create_naccdiur(),
-                    self._create_naccvasd(),
-                    self._create_nacchtnc(),
-                    self._create_naccangi(),
-                ]
-            )
-            else 0
         )
 
     def _create_naccangi(self) -> Optional[int]:
