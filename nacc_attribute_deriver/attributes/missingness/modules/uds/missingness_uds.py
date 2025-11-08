@@ -31,7 +31,7 @@ class UDSMissingness(UDSAttributeCollection):
         # prev record should exist for non-initial visits, and contain:
         #   raw form info under info.forms.json.x
         #   missingness info under info.forms.missingness.x
-        if not self.uds.is_initial():
+        if not self.uds.is_initial() or self.uds.is_i4():
             self.__prev_record = PreviousRecordNamespace(table=table)
 
     @property
@@ -100,7 +100,11 @@ class UDSMissingness(UDSAttributeCollection):
         return None
 
     def handle_prev_visit(
-        self, field: str, attr_type: Type[T], prev_code: Optional[T] = None
+        self,
+        field: str,
+        attr_type: Type[T],
+        prev_code: Optional[T] = None,
+        default: Optional[T] = None
     ) -> Optional[T]:
         """Handle when the value could be provided by the previous visit.
 
@@ -108,15 +112,17 @@ class UDSMissingness(UDSAttributeCollection):
         ELIF VAR is not blank, return None (do not override)
         ELSE generic missingness
         """
-        value = self.uds.get_value(field, attr_type)
-        if value == prev_code and self.__prev_record is not None:
-            prev_value = self.__prev_record.get_resolved_value(
-                field, attr_type, prev_code=prev_code
-            )
-            if prev_value is not None:
-                return prev_value
+        # no prev record expected if true initial packet (I4 does not count)
+        if not self.uds.is_initial() or self.uds.is_i4():
+            value = self.uds.get_value(field, attr_type)
+            if value == prev_code and self.__prev_record is not None:
+                prev_value = self.__prev_record.get_resolved_value(
+                    field, attr_type, prev_code=prev_code, default=default
+                )
+                if prev_value is not None:
+                    return prev_value
 
-        return self.generic_missingness(field, attr_type)
+        return self.generic_missingness(field, attr_type, default=default)
 
 
 class GenericUDSMissingness(UDSMissingness):
