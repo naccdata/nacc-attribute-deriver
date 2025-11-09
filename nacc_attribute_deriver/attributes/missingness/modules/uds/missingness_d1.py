@@ -170,11 +170,11 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_possadif(self) -> Optional[int]:
         """Handles missingness for POSSADIF."""
-        if self.uds.get_value("probad", int) == 1:
-            return 0
+        if self.uds.get_value("possad", int) != 1:
+            return 7
 
         # TODO: not sure why this one doesn't use the cognitive impairment
-        # gate in legacy SAS code?
+        # gate in legacy SAS code? should it just do so?
         return self.handle_normcog_gate("possadif")
 
     def _missingness_vascps(self) -> Optional[int]:

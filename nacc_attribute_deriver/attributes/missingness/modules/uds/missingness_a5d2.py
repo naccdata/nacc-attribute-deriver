@@ -80,12 +80,26 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_smokyrs(self) -> Optional[int]:
         """Handles missingness for SMOKYRS."""
+        # works a little different in legacy
+        # TODO - should this be updated to the V4 version?
+        # the original logic doesn't make much sense
+        if self.formver < 4:
+            smokyrs = self.uds.get_value("smokyrs", int)
+            tobac100 = self.uds.get_value("tobac100", int)
+
+            if (smokyrs is None or smokyrs in [88, 99]) and tobac100 == 0:
+                return 0
+
+            if smokyrs is None and tobac100 == 9:
+                return 88
+
+            # Fall back to V4 case
+
         return self.handle_a5d2_carry_forward(
             "tobac100",
             "smokyrs",
             no_return_value=88,
             unknown_return_value=99,
-            skip_gate_on_legacy=False,
         )
 
     ########################
@@ -188,9 +202,29 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_packsper(self) -> Optional[int]:
         """Handles missingness for PACKSPER."""
-        return self.__handle_a5d2_gate(
-            "tobac100", "packsper", skip_gate_on_legacy=False
-        )
+        # works a little different in legacy
+        # TODO - should this be updated to the V4 version?
+        if self.formver < 4:
+            packsper = self.uds.get_value("packsper", int)
+            tobac100 = self.uds.get_value("tobac100", int)
+
+            # smokyr's own missingness gets used in the following
+            # logic, so use/call that directly. better way to clea
+            # this up?
+            smokyrs = self._missingness_smokyrs()  # type: ignore
+
+            if tobac100 == 0 and smokyrs == 0:
+                return 0
+
+            if packsper is None or packsper in [8, 9]:
+                if tobac100 in [0, 8, 9]:
+                    return 8
+                if smokyrs == 0:
+                    return 8
+
+            # Fall back to V4 case
+
+        return self.__handle_a5d2_gate("tobac100", "packsper")
 
     def _missingness_tobac30(self) -> Optional[int]:
         """Handles missingness for TOBAC30."""

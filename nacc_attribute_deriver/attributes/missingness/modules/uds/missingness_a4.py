@@ -11,7 +11,6 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
-    INFORMED_MISSINGNESS,
 )
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
@@ -61,13 +60,21 @@ class UDSFormA4Missingness(UDSMissingness):
         else:
             self.__drugs = None
 
-    def __handle_rxnormidx(self, field: str) -> Optional[str]:
-        """V4+. Handles missingness for all RXNORMIDX (1-40) values.
+    def _missingness_anymeds(self) -> Optional[int]:
+        """Handles missingness for ANYMEDS."""
+        # it seems in older versions, they could submit MEDS but
+        # still set ANYMEDS to 0, so legacy code would update/fix it
+        if self.formver < 4 and self.__drugs:
+            return 1
 
-        If ANYMEDS ir 0 or -4, then RXNORMID1-40 should be blank
+        return self.generic_missingness("anymeds", int)
+
+    def __handle_rxnormidx(self, field: str) -> Optional[str]:
+        """V4+.
+
+        Handles missingness for all RXNORMIDX (1-40) values.
         """
-        anymeds = self.uds.get_value("anymeds", int)
-        if self.formver < 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
+        if self.formver < 4:
             return INFORMED_BLANK
 
         return self.generic_missingness(field, str)
@@ -235,10 +242,9 @@ class UDSFormA4Missingness(UDSMissingness):
     def __handle_drugx(self, field: str) -> Optional[str]:
         """V3 and earlier. Handles missingness for all DRUGX (1-40) values.
 
-        If ANYMEDS is 0 or -4, then DRUG1-40 should be blank
+        Need to map over from the drug list.
         """
-        anymeds = self.uds.get_value("anymeds", int)
-        if self.formver >= 4 or anymeds in [None, 0, INFORMED_MISSINGNESS]:
+        if self.formver >= 4:
             return INFORMED_BLANK
 
         if self.__drugs:

@@ -8,7 +8,7 @@ NOTE: Derived variable are only supposed to reflect the last 2 weeks, so
     for that visit, the derived variable is -4/None).
 """
 
-from typing import List, Optional
+from typing import List
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
@@ -35,12 +35,15 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        """In V4, form completion dependent on ANYMEDS variable.
-        For earlier versions, see A4SUB.
+        """In V4, form completion dependent on ANYMEDS variable. For earlier
+        versions, see A4SUB.
 
         Note not being completed is NOT the same as ANYMEDS = 0.
         If not submitted, these derived variables are -4; if
-        ANYMEDS = 0, they are typically set to 0.
+        ANYMEDS = 0, they are typically set to 0. Additionally,
+        ANYMEDS doesn't seem to correspond to whether or not there
+        is actually a MEDS file with meds in it, so not reliable
+        (at least for V1 - V3).
         """
         if self.formver >= 4:
             return self.uds.get_value("anymeds", int) is not None
@@ -50,8 +53,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
         subject.info.derived.drugs_list.<visitdate>."""
-        anymeds = self.uds.get_value("anymeds", int)
-        if not self.submitted or anymeds == 0:
+        if not self.submitted:
             return []
 
         drugs = []
@@ -124,7 +126,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         return len(self.__meds)
 
-    def _create_naccahtn(self) -> Optional[int]:
+    def _create_naccahtn(self) -> int:
         """Creates NACCAHTN - Reported current use of any type of
         antihypertensive or blood pressure medication.
         """
@@ -134,8 +136,8 @@ class UDSFormA4Attribute(UDSAttributeCollection):
         return (
             1
             if any(
-                x > 0 for x in
-                [
+                x > 0
+                for x in [
                     self._create_naccacei(),
                     self._create_naccaaas(),
                     self._create_naccbeta(),
@@ -149,7 +151,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             else 0
         )
 
-    def _create_naccaaas(self) -> Optional[int]:
+    def _create_naccaaas(self) -> int:
         """Creates NACCAAAS - Reported current use of an antiadenergic agent."""
         if self.formver >= 4:
             return self.check_rxclass(["C02A", "C02B", "C02C"])
@@ -176,7 +178,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccaanx(self) -> Optional[int]:
+    def _create_naccaanx(self) -> int:
         """Creates NACCAANX - Reported current use of an anxiolytic,
         sedative, or hypnotic agent
         """
@@ -233,7 +235,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccac(self) -> Optional[int]:
+    def _create_naccac(self) -> int:
         """Creates NACCAC - Reported current use of an anticoagulant
         or antiplatelet agent.
         """
@@ -278,7 +280,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccacei(self) -> Optional[int]:
+    def _create_naccacei(self) -> int:
         """Creates NACCACEI - Reported current use of an angiotensin
         converting enzyme (ACE) inhibitor.
         """
@@ -300,7 +302,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccadep(self) -> Optional[int]:
+    def _create_naccadep(self) -> int:
         """Creates NACCADEP - Reported current use of an antidepressant."""
         if self.formver >= 4:
             return self.check_rxclass(["N06A"])
@@ -344,7 +346,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccadmd(self) -> Optional[int]:
+    def _create_naccadmd(self) -> int:
         """Creates NACCADMD - Reported current use of a FDA-approved
         medication for Alzheimer's disease symptoms.
         """
@@ -361,7 +363,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccangi(self) -> Optional[int]:
+    def _create_naccangi(self) -> int:
         """Creates NACCANGI - Reported current use of an angiotensin
         II inhibitor.
         """
@@ -381,7 +383,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccapsy(self) -> Optional[int]:
+    def _create_naccapsy(self) -> int:
         """Creates NACCAPSY - Reported current use of an antipsychotic
         agent.
         """
@@ -422,7 +424,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccbeta(self) -> Optional[int]:
+    def _create_naccbeta(self) -> int:
         """Creates NACCBETA - Reported current use of a beta-adrenergic
         blocking agent (beta-blocker).
         """
@@ -450,7 +452,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccccbs(self) -> Optional[int]:
+    def _create_naccccbs(self) -> int:
         """Creates NACCCCBS - Reported current use of a calcium channel
         blocking agent.
         """
@@ -474,7 +476,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccdbmd(self) -> Optional[int]:
+    def _create_naccdbmd(self) -> int:
         """Creates NACCDBMD - Reported current use of a diabetes medication."""
         if self.formver >= 4:
             return self.check_rxclass(["A10"])
@@ -532,7 +534,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccdiur(self) -> Optional[int]:
+    def _create_naccdiur(self) -> int:
         """Creates NACCDIUR - Reported current use of a diuretic."""
         if self.formver >= 4:
             return self.check_rxclass(["C03"])
@@ -565,7 +567,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccemd(self) -> Optional[int]:
+    def _create_naccemd(self) -> int:
         """Creates NACCEMD - Reported current use of estrogen hormone
         therapy.
         """
@@ -583,7 +585,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccepmd(self) -> Optional[int]:
+    def _create_naccepmd(self) -> int:
         """Creates NACCEPMD - Reported current use of estrogen + progestin
         hormone therapy.
         """
@@ -600,7 +602,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_nacchtnc(self) -> Optional[int]:
+    def _create_nacchtnc(self) -> int:
         """Creates NACCHTNC - Reported current use of antihypertensive
         combination therapy.
         """
@@ -664,7 +666,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_nacclipl(self) -> Optional[int]:
+    def _create_nacclipl(self) -> int:
         """Creates NACCLIPL - Reported current use of lipid lowering
         medication.
         """
@@ -703,7 +705,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccnsd(self) -> Optional[int]:
+    def _create_naccnsd(self) -> int:
         """Creates NACCNSD - Reported current use of nonsteroidal
         anti-inflammatory medication.
         """
@@ -772,7 +774,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccpdmd(self) -> Optional[int]:
+    def _create_naccpdmd(self) -> int:
         """Creates NACCPDMD - Reported current use of an antiparkinson
         agent.
         """
@@ -805,7 +807,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
             ]
         )
 
-    def _create_naccvasd(self) -> Optional[int]:
+    def _create_naccvasd(self) -> int:
         """Creates NACCVASD - Reported current use of a vasodilator."""
         if self.formver >= 4:
             return self.check_rxclass(["C01D", "C02D"])

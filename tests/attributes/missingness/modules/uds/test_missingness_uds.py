@@ -20,14 +20,11 @@ class TestUDSMissingness:
         assert attr.handle_prev_visit("testval", int, default=0) == 0
 
         # Case 2: FVP visit - pull from prev_record
-        uds_table["file.info.forms.json"].update({
-            "packet": "F",
-            "testval": None
-        })
+        uds_table["file.info.forms.json"].update({"packet": "F", "testval": None})
         uds_table["_prev_record.info.forms.json"] = {
             "visitdate": "1900-01-01",
             "packet": "I",
-            "testval": 3
+            "testval": 3,
         }
         attr = UDSMissingness(uds_table)
         assert attr.handle_prev_visit("testval", int) == 3
@@ -36,13 +33,15 @@ class TestUDSMissingness:
         assert attr.handle_prev_visit("testval", int, default=0) == 0
 
         # Case 3: I4 visit (same as FVP) - pull from resolved
-        uds_table["file.info.forms.json"].update({
-            "packet": "I4",  # I4 should be treated identically to FVP
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "packet": "I4",  # I4 should be treated identically to FVP
+            }
+        )
         uds_table["_prev_record.info.forms.json"] = {
             "visitdate": "1900-01-01",
             "packet": "F",
-            "testval": None
+            "testval": None,
         }
         uds_table["_prev_record.info.resolved.testval"] = 5
         attr = UDSMissingness(uds_table)
@@ -50,4 +49,3 @@ class TestUDSMissingness:
         uds_table["_prev_record.info.resolved.testval"] = None
         assert attr.handle_prev_visit("testval", int) == INFORMED_MISSINGNESS
         assert attr.handle_prev_visit("testval", int, default=0) == 0
-

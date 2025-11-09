@@ -8,11 +8,7 @@ from typing import List, Optional, Type
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
-from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace,
-)
 from nacc_attribute_deriver.attributes.namespace.namespace import T
-from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
@@ -23,20 +19,6 @@ from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 class UDSMissingness(UDSAttributeCollection):
     """Class to handle UDS missingness values."""
-
-    def __init__(self, table: SymbolTable) -> None:
-        super().__init__(table)
-        self.__prev_record = None
-
-        # prev record should exist for non-initial visits, and contain:
-        #   raw form info under info.forms.json.x
-        #   missingness info under info.forms.missingness.x
-        if not self.uds.is_initial() or self.uds.is_i4():
-            self.__prev_record = PreviousRecordNamespace(table=table)
-
-    @property
-    def prev_record(self) -> Optional[PreviousRecordNamespace]:
-        return self.__prev_record
 
     def generic_missingness(
         self, field: str, attr_type: Type[T], default: Optional[T] = None
@@ -104,7 +86,7 @@ class UDSMissingness(UDSAttributeCollection):
         field: str,
         attr_type: Type[T],
         prev_code: Optional[T] = None,
-        default: Optional[T] = None
+        default: Optional[T] = None,
     ) -> Optional[T]:
         """Handle when the value could be provided by the previous visit.
 
@@ -115,8 +97,9 @@ class UDSMissingness(UDSAttributeCollection):
         # no prev record expected if true initial packet (I4 does not count)
         if not self.uds.is_initial() or self.uds.is_i4():
             value = self.uds.get_value(field, attr_type)
-            if value == prev_code and self.__prev_record is not None:
-                prev_value = self.__prev_record.get_resolved_value(
+
+            if value == prev_code:
+                prev_value = self.get_prev_value(
                     field, attr_type, prev_code=prev_code, default=default
                 )
                 if prev_value is not None:

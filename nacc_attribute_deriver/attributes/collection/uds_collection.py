@@ -33,7 +33,8 @@ class UDSAttributeCollection(AttributeCollection):
             raise InvalidFieldError(msg)
 
         self.__prev_record = None
-        if not self.uds.is_initial():
+        # prev record should exist for non-initial visits
+        if not self.uds.is_initial() or self.uds.is_i4():
             self.__prev_record = PreviousRecordNamespace(table=table)
 
     @property
@@ -74,3 +75,18 @@ class UDSAttributeCollection(AttributeCollection):
             raise AttributeDeriverError("Cannot determine visitdate for UDS visit")
 
         return visitdate
+
+    def get_prev_value(
+        self,
+        field: str,
+        attr_type: Type[T],
+        prev_code: Optional[T] = None,
+        default: Optional[T] = None,
+    ) -> Optional[T]:
+        """Get the previous value."""
+        if self.__prev_record is not None:
+            return self.__prev_record.get_resolved_value(
+                field, attr_type, prev_code=prev_code, default=default
+            )
+
+        return None

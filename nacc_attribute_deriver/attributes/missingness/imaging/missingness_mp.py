@@ -3,21 +3,24 @@
 from typing import Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
+    FormMissingnessCollection,
     SubjectMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
 
 
-class MPMissingness(SubjectMissingnessCollection):
-    """Class to handle MP missingness values."""
-
+class MPMissingness(FormMissingnessCollection):
     def _missingness_mri_dicom(self, field: str, attr_type: Type[T]) -> Optional[T]:
-        """Defines general missingness for MRI DICOM"""
+        """Defines general missingness for MRI DICOM."""
         return self.generic_missingness(field, attr_type)
 
     def _missingness_pet_dicom(self, field: str, attr_type: Type[T]) -> Optional[T]:
-        """Defines general missingness for PET DICOM"""
+        """Defines general missingness for PET DICOM."""
         return self.generic_missingness(field, attr_type)
+
+
+class MPSubjectMissingness(SubjectMissingnessCollection):
+    """Class to handle MP missingness values."""
 
     def _missingness_naccmrsa(self) -> Optional[int]:
         """Handles NACCMRSA."""

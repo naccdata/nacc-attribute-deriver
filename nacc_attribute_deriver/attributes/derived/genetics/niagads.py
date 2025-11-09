@@ -9,7 +9,6 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import RawNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 
 
 class NIAGADSAttributeCollection(AttributeCollection):

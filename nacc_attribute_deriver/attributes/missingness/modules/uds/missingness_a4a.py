@@ -46,8 +46,8 @@ class UDSFormA4aMissingness(UDSMissingness):
                 gate_value = self.uds.get_value(gate, int)
 
                 if gate in ["newtreat", "newadevent"]:
-                    if gate_value in [0, 9] and self.prev_record:
-                        return self.prev_record.get_resolved_value(
+                    if gate_value in [0, 9]:
+                        return self.get_prev_value(
                             field, attr_type=str if writein else int
                         )
 

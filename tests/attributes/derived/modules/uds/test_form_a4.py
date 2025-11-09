@@ -108,9 +108,11 @@ class TestUDSFormA4Attribute:
         assert attr._create_naccahtn() == 1  # based on others
         assert attr._create_naccadmd() == 0
 
-    def __check_derived_values(self, attr: UDSFormA4Attribute, expected_value: int) -> None:
-        """Check all derived values return the expected value based on
-        the submitted property."""
+    def __check_derived_values(
+        self, attr: UDSFormA4Attribute, expected_value: int
+    ) -> None:
+        """Check all derived values return the expected value based on the
+        submitted property."""
         assert attr._create_naccamd() == expected_value
         assert attr._create_naccaaas() == expected_value
         assert attr._create_naccaanx() == expected_value
@@ -144,10 +146,9 @@ class TestUDSFormA4Attribute:
     def test_submitted_property(self, uds_table):
         """Test the submitted property works as expected."""
         # For V1 - V3, use anysub, for V4 use anymeds
-        uds_table['file.info.forms.json'].update({
-            'formver': random.choice([1.0, 2.0, 3.0, 3.2]),
-            'a4sub': 1
-        })
+        uds_table["file.info.forms.json"].update(
+            {"formver": random.choice([1.0, 2.0, 3.0, 3.2]), "a4sub": 1}
+        )
         attr = UDSFormA4Attribute(uds_table)
 
         # submitted, but no drugs, so should all return 0
@@ -155,24 +156,21 @@ class TestUDSFormA4Attribute:
         self.__check_derived_values(attr, 0)
 
         # NOT submitted, should return -4
-        uds_table['file.info.forms.json.a4sub'] = 0
+        uds_table["file.info.forms.json.a4sub"] = 0
         assert not attr.submitted
         self.__check_derived_values(attr, -4)
 
         # For V4, use ANYMEDS. Only -4 if ANYMEDS is missing
-        uds_table['file.info.forms.json'].update({
-            'formver': 4.0,
-            'anymeds': 0
-        })
+        uds_table["file.info.forms.json"].update({"formver": 4.0, "anymeds": 0})
         attr = UDSFormA4Attribute(uds_table)
 
         assert attr.submitted
         self.__check_derived_values(attr, 0)
 
-        uds_table['file.info.forms.json.anymeds'] = 1
+        uds_table["file.info.forms.json.anymeds"] = 1
         assert attr.submitted
         self.__check_derived_values(attr, 0)
 
-        uds_table['file.info.forms.json.anymeds'] = None
+        uds_table["file.info.forms.json.anymeds"] = None
         assert not attr.submitted
         self.__check_derived_values(attr, -4)

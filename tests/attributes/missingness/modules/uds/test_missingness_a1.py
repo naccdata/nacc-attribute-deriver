@@ -9,10 +9,7 @@ from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 class TestUDSFormA1Missingness:
     def test_missingness_residenc(self, uds_table):
         """Test missing RESIDENC - expect recode on 5 for V1/V2"""
-        uds_table["file.info.forms.json"].update({
-            "formver": 1.0,
-            "residenc": 5
-        })
+        uds_table["file.info.forms.json"].update({"formver": 1.0, "residenc": 5})
         attr = UDSFormA1Missingness(uds_table)
         assert attr._missingness_residenc() == 9
 
@@ -24,10 +21,7 @@ class TestUDSFormA1Missingness:
 
     def test_missingness_maristat(self, uds_table):
         """Test missing MARISTAT - expect recode on 8 for V1/V2"""
-        uds_table["file.info.forms.json"].update({
-            "formver": 2.0,
-            "maristat": 8
-        })
+        uds_table["file.info.forms.json"].update({"formver": 2.0, "maristat": 8})
         attr = UDSFormA1Missingness(uds_table)
         assert attr._missingness_maristat() == 9
 

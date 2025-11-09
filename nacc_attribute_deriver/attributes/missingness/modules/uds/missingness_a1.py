@@ -1,14 +1,11 @@
 """Class to handle A1-specific missingness values."""
 
-from typing import Optional, Type
-
-from nacc_attribute_deriver.attributes.namespace.namespace import T
+from typing import Optional
 
 from .missingness_uds import UDSMissingness
 
 
 class UDSFormA1Missingness(UDSMissingness):
-
     ###################################################
     # Other / variables with unique missingness logic #
     ###################################################
@@ -44,7 +41,7 @@ class UDSFormA1Missingness(UDSMissingness):
     ############################################################
 
     def __handle_generic_a1_missingness(self, field: str) -> Optional[int]:
-        """For most variables the default is 0, so generalize.""" 
+        """For most variables the default is 0, so generalize."""
         return self.handle_prev_visit(field, int, default=0)
 
     def _missingness_raceaian(self) -> Optional[int]:
