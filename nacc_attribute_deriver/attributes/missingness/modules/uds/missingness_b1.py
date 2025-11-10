@@ -7,7 +7,6 @@ from typing import Optional
 
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
-    INFORMED_MISSINGNESS_FLOAT,
 )
 
 from .missingness_uds import UDSMissingness
@@ -22,9 +21,9 @@ class UDSFormB1Missingness(UDSMissingness):
         """
         height = self.uds.get_value("height", float)
         if height is None:
-            return INFORMED_MISSINGNESS_FLOAT
+            return INFORMED_MISSINGNESS
 
-        if height == 99.9:
+        if height == 99.9 or height == 99:
             return 88.8
 
         heigdec = self.uds.get_value("heigdec", float)

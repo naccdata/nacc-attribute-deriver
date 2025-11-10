@@ -35,10 +35,9 @@ class UDSFormA2Attribute(UDSAttributeCollection):
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
         co-participant).
 
-        NOTE: After discussing with RT, we want to return whatever is on the current
-        form and don't carry forward. If not specified, return -4.
+        May need to carry forward value.
         """
-        if not self.submitted or self.formver == 4:
+        if self.formver == 4:
             return INFORMED_MISSINGNESS
 
         newinf = self.uds.get_value("newinf", int)

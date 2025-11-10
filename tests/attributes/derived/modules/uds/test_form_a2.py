@@ -12,19 +12,6 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 @pytest.fixture(scope="function")
 def table(uds_table) -> SymbolTable:
     """Create dummy base table."""
-    uds_table.update(
-        {
-            "subject": {
-                "info": {
-                    "derived": {
-                        "longitudinal": {
-                            "naccninr": [{"date": "2026-05-28", "value": 1}]
-                        }
-                    }
-                }
-            }
-        }
-    )
     uds_table["file.info.forms.json"].update(
         {"packet": "T", "newinf": "0", "invisits": "3", "incalls": "6", "a2sub": 0}
     )
@@ -36,9 +23,18 @@ class TestUDSFormA2Attribute:
         """Test NACCNINR over longitudinal values."""
         # V3 and earlier
         attr = UDSFormA2Attribute(table)
-        # does NOT carry forward
+        # not submitted/newinf != 1, no previous value to carry forward
         assert attr._create_naccninr() == INFORMED_MISSINGNESS
 
+        # newinf != 1 and carry forward from previous visit
+        table["_prev_record.info"] = {
+            "forms": {"json": {"visitdate": "2020-01-01"}},
+            "derived": {"naccninr": 3},
+        }
+        attr = UDSFormA2Attribute(table)
+        assert attr._create_naccninr() == 3
+
+        # newinf = 1, so generate
         table["file.info.forms.json.a2sub"] = 1
         table["file.info.forms.json.newinf"] = 1
         assert attr._create_naccninr() == 99

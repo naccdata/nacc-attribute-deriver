@@ -93,7 +93,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             if smokyrs is None and tobac100 == 9:
                 return 88
 
-            # Fall back to V4 case
+            return self.generic_missingness("smokyrs", int)
 
         return self.handle_a5d2_carry_forward(
             "tobac100",
@@ -209,17 +209,20 @@ class UDSFormA5D2Missingness(UDSMissingness):
             tobac100 = self.uds.get_value("tobac100", int)
 
             # smokyr's own missingness gets used in the following
-            # logic, so use/call that directly. better way to clea
+            # logic, so use/call that directly. better way to clean
             # this up?
-            smokyrs = self._missingness_smokyrs()  # type: ignore
+            missingness_smokyrs = self._missingness_smokyrs()  # type: ignore
+            current_smokyrs = self.uds.get_value("smokyrs", int)
 
-            if tobac100 == 0 and smokyrs == 0:
+            # we care about if SMOKYRS is 0 through being explicitly
+            # set or through a missingness result
+            resolved_smokyrs = missingness_smokyrs == 0 or current_smokyrs == 0
+
+            if tobac100 == 0 and resolved_smokyrs:
                 return 0
 
-            if packsper is None or packsper in [8, 9]:
-                if tobac100 in [0, 8, 9]:
-                    return 8
-                if smokyrs == 0:
+            if packsper is None or packsper in [8, 9]:  # noqa: SIM102
+                if tobac100 in [0, 8, 9] or resolved_smokyrs:
                     return 8
 
             # Fall back to V4 case

@@ -55,8 +55,9 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         # submitted on initial visit, -4/None otherwise
         if not self.submitted:
             if self.uds.is_initial():
-                return INFORMED_MISSINGNESS
-            return None
+                return 888.8
+
+            return INFORMED_MISSINGNESS
 
         height = self.get_height()
         weight = self.get_weight()

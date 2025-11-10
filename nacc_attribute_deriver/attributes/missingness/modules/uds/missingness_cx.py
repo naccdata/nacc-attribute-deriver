@@ -195,19 +195,37 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # Relies on both VERBALTEST and an earlier variable   #
     #######################################################
 
-    def _handle_reyxrec_cascade(self, gate: str, field: str) -> Optional[int]:
+    def _handle_reyxrec_cascade(
+        self, gate: str, field: str, gate_mresult: Optional[int] = None
+    ) -> Optional[int]:
         """Handle the REYXREC cascading rules, e.g:
 
         1. The VERBALTEST check (If VERBALTEST = 2 then FIELD should = 88)
         2. If GATE is 88 or 95-98 then FIELD should = GATE
+
+        The FIELD = GATE effect may cascade through missingness, so also
+        need to evaluate the missingness of the gate value,
+        e.g. if REY1REC is 88, that sets the missingness of REY2REC to 88,
+        which needs to set the missingness of REY3REC to 88, and so on until
+        the end.
+
+        However, since this is happening somewhat dynamically (e.g. not the raw
+        form values), each variable needs to call the missingness of its gate
+        (unless the gate itself does not rely on something), which ends up
+        cascading in a somewhat recursive manner to store the final value
+        in gate_mresult.
         """
         result = self._handle_verbaltest_gate(verbal_value=2, set_value=888)
         if result is not None:
             return result
 
-        result = self.handle_set_to_gate(gate, check_values=[88, 95, 96, 97, 98])
+        check_values = [88, 95, 96, 97, 98]
+        result = self.handle_set_to_gate(gate, check_values=check_values)
         if result is not None:
             return result
+
+        if gate_mresult is not None and gate_mresult in check_values:
+            return gate_mresult
 
         return self.generic_missingness(field, int)
 
@@ -237,43 +255,63 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_rey3rec(self) -> Optional[int]:
         """Handles missingness for REY3REC."""
-        return self._handle_reyxrec_cascade("rey2rec", "rey3rec")
+        return self._handle_reyxrec_cascade(
+            "rey2rec", "rey3rec", gate_mresult=self._missingness_rey2rec()
+        )
 
     def _missingness_rey3int(self) -> Optional[int]:
         """Handles missingness for REY3INT."""
-        return self._handle_reyxrec_cascade("rey2rec", "rey3int")
+        return self._handle_reyxrec_cascade(
+            "rey2rec", "rey3int", gate_mresult=self._missingness_rey2rec()
+        )
 
     def _missingness_rey4rec(self) -> Optional[int]:
         """Handles missingness for REY4REC."""
-        return self._handle_reyxrec_cascade("rey3rec", "rey4rec")
+        return self._handle_reyxrec_cascade(
+            "rey3rec", "rey4rec", gate_mresult=self._missingness_rey3rec()
+        )
 
     def _missingness_rey4int(self) -> Optional[int]:
         """Handles missingness for REY4INT."""
-        return self._handle_reyxrec_cascade("rey3rec", "rey4int")
+        return self._handle_reyxrec_cascade(
+            "rey3rec", "rey4int", gate_mresult=self._missingness_rey3rec()
+        )
 
     def _missingness_rey5rec(self) -> Optional[int]:
         """Handles missingness for REY5REC."""
-        return self._handle_reyxrec_cascade("rey4rec", "rey5rec")
+        return self._handle_reyxrec_cascade(
+            "rey4rec", "rey5rec", gate_mresult=self._missingness_rey4rec()
+        )
 
     def _missingness_rey5int(self) -> Optional[int]:
         """Handles missingness for REY5INT."""
-        return self._handle_reyxrec_cascade("rey4rec", "rey5int")
+        return self._handle_reyxrec_cascade(
+            "rey4rec", "rey5int", gate_mresult=self._missingness_rey4rec()
+        )
 
     def _missingness_reybrec(self) -> Optional[int]:
         """Handles missingness for REYBREC."""
-        return self._handle_reyxrec_cascade("rey5rec", "reybrec")
+        return self._handle_reyxrec_cascade(
+            "rey5rec", "reybrec", gate_mresult=self._missingness_rey5rec()
+        )
 
     def _missingness_reybint(self) -> Optional[int]:
         """Handles missingness for REYBINT."""
-        return self._handle_reyxrec_cascade("rey5rec", "reybint")
+        return self._handle_reyxrec_cascade(
+            "rey5rec", "reybint", gate_mresult=self._missingness_rey5rec()
+        )
 
     def _missingness_rey6rec(self) -> Optional[int]:
         """Handles missingness for REY6REC."""
-        return self._handle_reyxrec_cascade("reybrec", "rey6rec")
+        return self._handle_reyxrec_cascade(
+            "reybrec", "rey6rec", gate_mresult=self._missingness_reybrec()
+        )
 
     def _missingness_rey6int(self) -> Optional[int]:
         """Handles missingness for REY6INT."""
-        return self._handle_reyxrec_cascade("reybrec", "rey6int")
+        return self._handle_reyxrec_cascade(
+            "reybrec", "rey6int", gate_mresult=self._missingness_reybrec()
+        )
 
     ##########################
     # TRAILX gated variables #

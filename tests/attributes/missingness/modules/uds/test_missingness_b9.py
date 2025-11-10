@@ -1,5 +1,7 @@
 """Tests UDS Form B9 missingness attributes."""
 
+import random
+
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_b9 import (
     UDSFormB9Missingness,
 )
@@ -76,3 +78,92 @@ class TestUDSFormB9Missingness:
         }
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_frstchg() == 1
+
+    def test_carry_forward_777(self, uds_table):
+        """Test when 777 is specified and a value must be carried through."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 2.3,
+                "packet": "T",
+                "decclmot": 1,
+                "moage": 777,
+            }
+        )
+        uds_table["_prev_record.info.forms.json"] = {
+            "visitdate": "2000-01-01",
+            "formver": 1.0,
+            "packet": "I",
+            "decclin": 1,
+            "frstchg": 1,
+        }
+
+    def test_cognitive_ivp(self, uds_table):
+        """Test missingness of cognitive variables on an initial.
+
+        packet - version should not matter here.
+        """
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": random.choice([1.0, 2.0, 3.0, 4.0]),
+                "packet": "I",
+                "b9chg": None,
+                "decclin": 0,
+                "decclcog": None,
+            }
+        )
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_cogmem() == 0
+        assert attr._missingness_cogjudg() == 0
+        assert attr._missingness_coglang() == 0
+        assert attr._missingness_cogvis() == 0
+        assert attr._missingness_cogattn() == 0
+        assert attr._missingness_cogothr() == 0
+
+    def test_behavior_ivp(self, uds_table):
+        """Test missingness of behavior variables on an initial.
+
+        packet - version should not matter here.
+        """
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": random.choice([1.0, 2.0, 3.0, 4.0]),
+                "packet": "I",
+                "b9chg": None,
+                "decclin": 0,
+                "decclbe": None,
+            }
+        )
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_beapathy() == 0
+        assert attr._missingness_bedep() == 0
+        assert attr._missingness_beirrit() == 0
+        assert attr._missingness_beagit() == 0
+        assert attr._missingness_bevhall() == 0
+        assert attr._missingness_beahall() == 0
+        assert attr._missingness_bedel() == 0
+        assert attr._missingness_bedisin() == 0
+        assert attr._missingness_beperch() == 0
+        assert attr._missingness_beothr() == 0
+
+    def test_motor_ivp(self, uds_table):
+        """Test missingness of cognitive variables on an initial.
+
+        packet - version should not matter here.
+        """
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": random.choice([1.0, 2.0, 3.0, 4.0]),
+                "packet": "I",
+                "b9chg": None,
+                "decclin": 0,
+                "decclmot": None,
+            }
+        )
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_mogait() == 0
+        assert attr._missingness_mofalls() == 0
+        assert attr._missingness_moslow() == 0
+        assert attr._missingness_motrem() == 0
