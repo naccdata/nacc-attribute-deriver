@@ -185,6 +185,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
         """Handles missingness for FTLDSUBT."""
         ftldsubt = self.uds.get_value("ftldsubt", int)
         if self.formver < 4 and ftldsubt is None:
+            if self.normcog == 1:
+                return 8
+
             gates = self.uds.group_attributes(["psp", "cort", "ftldmo", "ftldnos"], int)
             if all(x == 0 for x in gates):
                 return INFORMED_MISSINGNESS

@@ -385,7 +385,7 @@ class FamilyMemberHandler(BaseFamilyMemberHandler):
         prev_initial = False
 
         if prev_record:
-            prev_etpr = prev_record.get_resolved_value(field, str, prev_code="66")
+            prev_etpr = prev_record.get_resolved_value(field, str)
             prev_initial = prev_record.is_initial()
 
         if self.is_parent():

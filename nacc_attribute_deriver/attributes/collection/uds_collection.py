@@ -80,13 +80,12 @@ class UDSAttributeCollection(AttributeCollection):
         self,
         field: str,
         attr_type: Type[T],
-        prev_code: Optional[T] = None,
         default: Optional[T] = None,
     ) -> Optional[T]:
         """Get the previous value."""
         if self.__prev_record is not None:
             return self.__prev_record.get_resolved_value(
-                field, attr_type, prev_code=prev_code, default=default
+                field, attr_type, default=default
             )
 
         return None

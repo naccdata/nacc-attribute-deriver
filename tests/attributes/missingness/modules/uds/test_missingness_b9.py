@@ -5,6 +5,7 @@ import random
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_b9 import (
     UDSFormB9Missingness,
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormB9Missingness:
@@ -58,8 +59,8 @@ class TestUDSFormB9Missingness:
         assert attr._handle_recodecbm("testvar") is None
         assert attr._handle_recodecbm("testvar", overall=True) == 13  # prev value
 
-    def test_recoded_frstchg(self, uds_table):
-        """Handle recoded FRSTCHG case."""
+    def test_frstchg_v1(self, uds_table):
+        """Handle V1 recoded FRSTCHG case."""
         uds_table["file.info.forms.json"].update(
             {
                 "formver": 1.0,
@@ -77,6 +78,35 @@ class TestUDSFormB9Missingness:
             "frstchg": 1,
         }
         attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_frstchg() == 1
+
+    def test_frstchg_v3(self, uds_table):
+        """Test V3 FRSTCHG missingness case."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.2,
+                "packet": "T",
+                "frstchg": 0,
+            }
+        )
+        uds_table["_prev_record.info.forms.json"] = {
+            "visitdate": "2000-01-01",
+            "formver": 3.2,
+            "packet": "T",
+            "frstchg": 1,
+        }
+        attr = UDSFormB9Missingness(uds_table)
+
+        # prev is not None, expect prev_frstchg (1)
+        assert attr._missingness_frstchg() == 1
+
+        # prev is None, expect 9
+        uds_table["_prev_record.info.forms.json.frstchg"] = None
+        assert attr._missingness_frstchg() == 9
+
+        # from resolved
+        uds_table["_prev_record.info.forms.json.frstchg"] = 0
+        uds_table["_prev_record.info.resolved.frstchg"] = 1
         assert attr._missingness_frstchg() == 1
 
     def test_carry_forward_777(self, uds_table):
@@ -167,3 +197,33 @@ class TestUDSFormB9Missingness:
         assert attr._missingness_mofalls() == 0
         assert attr._missingness_moslow() == 0
         assert attr._missingness_motrem() == 0
+
+    def test_bevwell(self, uds_table):
+        """Tests BEVWELL."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 2.0,
+                "packet": "I",
+                "b9chg": None,
+                "decclin": 1,
+                "decclbe": None,
+            }
+        )
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_bevwell() == INFORMED_MISSINGNESS
+
+    def test_beagit(self, uds_table):
+        """Tests BEAGIT."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "b9chg": None,
+                "decclin": 0,
+                "decclbe": None,
+                "beagit": None,
+            }
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_beagit() == 0

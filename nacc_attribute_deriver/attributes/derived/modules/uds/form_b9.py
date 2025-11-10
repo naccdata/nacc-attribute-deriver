@@ -103,9 +103,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         p_decclin = self.get_prev_value("decclin", int)
         p_befrst = self.get_prev_value("befrst", int)
-        p_befpred = self.get_prev_value(
-            "befpred", int, prev_code=0 if self.formver == 3 else None
-        )
+        p_befpred = self.get_prev_value("befpred", int)
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccbehf = 0
@@ -195,9 +193,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         p_decclin = self.get_prev_value("decclin", int)
         p_cogfrst = self.get_prev_value("cogfrst", int)
-        p_cogfpred = self.get_prev_value(
-            "cogfpred", int, prev_code=0 if self.formver == 3 else None
-        )
+        p_cogfpred = self.get_prev_value("cogfpred", int)
 
         # see note in _create_naccbehf; same situation
         if cogfrst is None and cogfpred is None:
@@ -247,9 +243,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         naccmotf = None
         p_decclin = self.get_prev_value("decclin", int)
-        p_mofrst = self.get_prev_value(
-            "mofrst", int, prev_code=0 if self.formver == 3 else None
-        )
+        p_mofrst = self.get_prev_value("mofrst", int)
 
         if mofrst and mofrst not in [0, 88]:
             naccmotf = mofrst

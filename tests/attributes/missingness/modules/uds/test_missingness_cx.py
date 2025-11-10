@@ -5,6 +5,7 @@ import random
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_cx import (
     UDSFormC1C2Missingness,
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormC1C2Missingness:
@@ -44,3 +45,25 @@ class TestUDSFormC1C2Missingness:
         assert attr._missingness_reybint() == cascade_value
         assert attr._missingness_rey6rec() == cascade_value
         assert attr._missingness_rey6int() == cascade_value
+
+    def test_memtime(self, uds_table):
+        """Tests missingness for MEMTIME."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "memtime": 88,
+                "memunits": 97
+            }
+        )
+        attr = UDSFormC1C2Missingness(uds_table)
+        assert attr._missingness_memtime() == INFORMED_MISSINGNESS
+
+        uds_table["file.info.forms.json"].update(
+            {
+                "memtime": 88,
+                "memunits": 0
+            }
+        )
+        attr = UDSFormC1C2Missingness(uds_table)
+        assert attr._missingness_memtime() == 99

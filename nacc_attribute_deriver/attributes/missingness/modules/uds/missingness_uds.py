@@ -99,9 +99,7 @@ class UDSMissingness(UDSAttributeCollection):
             value = self.uds.get_value(field, attr_type)
 
             if value == prev_code:
-                prev_value = self.get_prev_value(
-                    field, attr_type, prev_code=prev_code, default=default
-                )
+                prev_value = self.get_prev_value(field, attr_type, default=default)
                 if prev_value is not None:
                     return prev_value
 

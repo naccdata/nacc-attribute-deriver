@@ -109,6 +109,10 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_cogfluc(self) -> Optional[int]:
         """Handles missingness for COGFLUC."""
+        # this explicitly checks for blanks, not just 0 like the usual
+        if self.formver < 4 and self.uds.get_value("decclcog", int) is None:
+            return INFORMED_MISSINGNESS
+
         gate_list = ["decclcog"] if self.formver < 4 else ["decclin", "decclcog"]
         default = 0 if self.formver < 4 else None
 
@@ -190,6 +194,10 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_berem(self) -> Optional[int]:
         """Handles missingness for BEREM."""
+        # this explicitly checks for blanks, not just 0 like the usual
+        if self.formver < 4 and self.uds.get_value("decclbe", int) is None:
+            return INFORMED_MISSINGNESS
+
         gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
         default = 0 if self.formver < 4 else None
 
@@ -202,6 +210,10 @@ class UDSFormB9Missingness(UDSMissingness):
         RDECCLBE. Not clear what this is, is it different from P_X vars
         (prev)?
         """
+        # this explicitly checks for blanks, not just 0 like the usual
+        if self.formver < 4 and self.uds.get_value("decclbe", int) is None:
+            return INFORMED_MISSINGNESS
+        
         gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
         default = 0 if self.formver < 4 else None
         return self._handle_cascading_gates(gate_list, "bevwell", 0, default=default)
@@ -326,9 +338,12 @@ class UDSFormB9Missingness(UDSMissingness):
     def _missingness_course(self) -> Optional[int]:
         """Handles missingness for COURSE."""
         if self.formver < 4:
-            result = self._handle_recodecbm("course", overall=True)
-            if result is not None:
-                return result
+            course = None
+            if self.formver == 1:
+                course = self._handle_recodecbm("course", overall=True)
+
+            if course is not None:
+                return course
             if self.__b9chg in [1, 3]:
                 return 9
 
@@ -345,8 +360,9 @@ class UDSFormB9Missingness(UDSMissingness):
         # could be handled differently, but trying to make it match
         # once things are more stable we can rework this
         if self.formver < 4:
-            frstchg = self._handle_recodecbm("frstchg", overall=True)
-            p_frstchg = self.get_prev_value("frstchg", int)
+            frstchg = None
+            if self.formver == 1:
+                frstchg = self._handle_recodecbm("frstchg", overall=True)
 
             if frstchg is None:
                 frstchg = self.uds.get_value("frstchg", int)
@@ -354,6 +370,7 @@ class UDSFormB9Missingness(UDSMissingness):
                     frstchg = 9
 
             if frstchg == 0:
+                p_frstchg = self.get_prev_value("frstchg", int)
                 if p_frstchg is not None:
                     return p_frstchg
                 return 9

@@ -42,14 +42,11 @@ class PreviousRecordNamespace(FormNamespace):
         self,
         attribute: str,
         attr_type: Type[T],
-        prev_code: Optional[T] = None,
         default: Optional[T] = None,
     ) -> Optional[T]:
-        """Returns the value of the resolved attribute key in the table. First.
+        """Returns the value of the resolved attribute key in the table.
 
-        looks at the raw value - if a prev_visit code (e.g. 777) or None,
-        looks at the missingness/resolved value already stored at
-        file.info.resolved instead.
+        Looks at resolved value first, then raw value.
 
         Args:
           attribute: the attribute name
@@ -59,11 +56,11 @@ class PreviousRecordNamespace(FormNamespace):
         Returns:
           the value for the attribute in the table
         """
-        raw_value = self.get_value(f"forms.json.{attribute}", attr_type, default)
-        if raw_value is None or raw_value == prev_code:
-            return self.get_value(f"resolved.{attribute}", attr_type, default)
+        resolved = self.get_value(f"resolved.{attribute}", attr_type, default)
+        if resolved is None:
+            return self.get_value(f"forms.json.{attribute}", attr_type, default)
 
-        return raw_value
+        return resolved
 
     def get_derived_value(
         self,

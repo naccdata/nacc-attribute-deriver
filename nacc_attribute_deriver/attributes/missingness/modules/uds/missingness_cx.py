@@ -158,14 +158,6 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # Write-in variables that rely on a gate #
     ##########################################
 
-    def _missingness_mocalanx(self) -> Optional[str]:
-        """Handles missingness for MOCALANX."""
-        result = self.handle_forbidden_gated_writein("mocalan", 3)
-        if result is not None:
-            return result
-
-        return self.generic_missingness("mocalanx", str)
-
     def _missingness_npsylanx(self) -> Optional[str]:
         """Handles missingness for NPSYLANX."""
         result = self.handle_forbidden_gated_writein("npsylan", 3)
@@ -174,13 +166,25 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
         return self.generic_missingness("npsylanx", str)
 
+    def _missingness_mocalanx(self) -> Optional[str]:
+        """Handles missingness for MOCALANX."""
+        result = self.handle_forbidden_gated_writein("mocalan", 3)
+        if result is not None:
+            return result
+
+        # REGRESSION - SETTING DEFAULT TO -4 TO MATCH REGRESSION, CLEAN
+        # UP AND CHANGE ONCE DONE TESTING
+        return self.generic_missingness("mocalanx", str, default="-4")
+
     def _missingness_respothx(self) -> Optional[str]:
         """Handles missingness for RESPOTHX."""
         result = self.handle_forbidden_gated_writein("respoth", 1)
         if result is not None:
             return result
 
-        return self.generic_missingness("respothx", str)
+        # REGRESSION - SETTING DEFAULT TO -4 TO MATCH REGRESSION, CLEAN
+        # UP AND CHANGE ONCE DONE TESTING
+        return self.generic_missingness("respothx", str, default="-4")
 
     def _missingness_mmselanx(self) -> Optional[str]:
         """Handles missingness for MMSELANX."""
@@ -512,3 +516,23 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_logiyr(self) -> Optional[int]:
         """Handles missingness for LOGIYR."""
         return self.__handle_logiprev_gate("logiyr")
+
+    #########
+    # Other #
+    #########
+
+    def _missingness_memtime(self) -> Optional[int]:
+        """Handles missingness for MEMTIME."""
+        memtime = self.uds.get_value("memtime", int)
+        memunits = self.uds.get_value("memunits", int)
+
+        if (memtime in [88, 99] and
+            memunits is not None and
+            memunits >= 0 and memunits <= 25):
+            return 99
+
+        if ((memtime in [88, 99] or memtime is None) and
+            memunits in [95, 96, 97, 98]):
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness("memtime", int)

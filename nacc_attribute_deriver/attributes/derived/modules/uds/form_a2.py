@@ -37,7 +37,7 @@ class UDSFormA2Attribute(UDSAttributeCollection):
 
         May need to carry forward value.
         """
-        if self.formver == 4:
+        if self.formver == 4 or (not self.submitted and self.uds.is_initial()):
             return INFORMED_MISSINGNESS
 
         newinf = self.uds.get_value("newinf", int)
