@@ -199,7 +199,7 @@ class TestUDSFormB9Missingness:
         assert attr._missingness_motrem() == 0
 
     def test_bevwell(self, uds_table):
-        """Tests BEVWELL."""
+        """Tests missingness for BEVWELL."""
         uds_table["file.info.forms.json"].update(
             {
                 "formver": 2.0,
@@ -214,7 +214,7 @@ class TestUDSFormB9Missingness:
         assert attr._missingness_bevwell() == INFORMED_MISSINGNESS
 
     def test_beagit(self, uds_table):
-        """Tests BEAGIT."""
+        """Tests missingness for BEAGIT."""
         uds_table["file.info.forms.json"].update(
             {
                 "formver": 1.0,
@@ -227,3 +227,72 @@ class TestUDSFormB9Missingness:
         )
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_beagit() == 0
+
+    def test_beothr(self, uds_table):
+        """Tests missingness for BEOTHR."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "decclin": 1,
+                "decclbe": None,
+                "beothr": 9  # should recode to 0
+            }
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_beothr() == 0
+
+    def test_momopark(self, uds_table):
+        """Tests missingness for BEOTHR."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "decclin": 1,
+                "decclmot": None,
+                "momopark": 88  # should recode to 8
+            }
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_momopark() == 8
+
+    def test_berem(self, uds_table):
+        """Tests missingness for BEREM."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "decclin": 1,
+                "decclbe": None,
+                "berem": 1  # should use this
+            }
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_berem() is None
+
+    def test_bevwell(self, uds_table):
+        """Tests missingness for BEVWELL."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "decclin": 1,
+                "decclbe": None,
+                "bevwell": 0  # should use this
+            }
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_bevwell() is None
+
+    def test_bevhago(self, uds_table):
+        """Tests missingness for BEVHAGO."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "I",
+                "bevhall": 1,
+                "bevhago": None
+            }
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_bevhago() == 888

@@ -255,14 +255,16 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_amndem(self) -> Optional[int]:
         """Handles missingness for AMNDEM."""
-        if self.formver < 4 and self.demented == 0:
+        amndem = self.uds.get_value("amndem", int)
+        if self.formver < 4 and self.demented == 0 and amndem is None:
             return 8
 
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "amndem")
 
     def _missingness_pca(self) -> Optional[int]:
         """Handles missingness for PCA."""
-        if self.formver < 4 and self.demented == 0:
+        pca = self.uds.get_value("pca", int)
+        if self.formver < 4 and self.demented == 0 and pca is None:
             return 8
 
         return self.__handle_predomsyn_anxiet_gate("predomsyn", "pca")

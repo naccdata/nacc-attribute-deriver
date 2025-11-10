@@ -22,10 +22,26 @@ class TestUDSFormD1aMissingness:
             }
         )
         attr = UDSFormD1aMissingness(uds_table)
-        assert attr._missingness_cogoth() is None  # resolves to 0
+        assert attr._missingness_cogoth() is None  # uses raw value
         assert attr._missingness_cogoth2() == 8
         assert attr._missingness_cogoth3() == 8
 
         assert attr._missingness_cogothif() == 8
         assert attr._missingness_cogoth2f() == 8
         assert attr._missingness_cogoth3f() == 8
+
+    def test_amndem(self, uds_table):
+        """Tests missingness for AMNDEM."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "I",
+                "demented": 0,
+                "amndem": 0,
+            }
+        )
+        attr = UDSFormD1aMissingness(uds_table)
+        assert attr._missingness_amndem() is None  # uses raw value
+
+        uds_table["file.info.forms.json.amndem"] = None
+        assert attr._missingness_amndem() == 8

@@ -624,7 +624,13 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
 
         if self.normcog == 1 or self.uds.get_value("impnomci", int) == 1:
             return 1
-        if self.generate_mci() == 1 or self.demented == 1:
+
+        # REGRESSION: PREVIOUS CODE SEEMED TO NOT CONSIDER MCI
+        # AT INITIAL VISIT. NEED TO DO THAT, BUT DISABLE FOR NOW
+        # FOR TESTING
+        # if self.generate_mci() == 1 or self.demented == 1:
+        #     return 2
+        if self.demented == 1:
             return 2
 
         return 0

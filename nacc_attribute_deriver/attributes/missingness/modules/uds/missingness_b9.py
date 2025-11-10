@@ -54,6 +54,9 @@ class UDSFormB9Missingness(UDSMissingness):
 
         MUST BE HANDLED FIRST
         """
+        if self.__check_v3_distinction("decclcog"):
+            return INFORMED_MISSINGNESS
+
         return self._handle_cascading_gates(["decclin"], "decclcog", 0)
 
     def __handle_cognitive_variables(
@@ -110,7 +113,9 @@ class UDSFormB9Missingness(UDSMissingness):
     def _missingness_cogfluc(self) -> Optional[int]:
         """Handles missingness for COGFLUC."""
         # this explicitly checks for blanks, not just 0 like the usual
-        if self.formver < 4 and self.uds.get_value("decclcog", int) is None:
+        cogfluc = self.uds.get_value("cogfluc", int)
+        decclcog = self.uds.get_value("decclcog", int)
+        if self.formver < 4 and decclcog is None and cogfluc is None:
             return INFORMED_MISSINGNESS
 
         gate_list = ["decclcog"] if self.formver < 4 else ["decclin", "decclcog"]
@@ -120,6 +125,9 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_cogori(self) -> Optional[int]:
         """Handles missingness for COGORI."""
+        if self.__check_v3_distinction("cogori"):
+            return INFORMED_MISSINGNESS
+
         return self._handle_cascading_gates(["decclin", "decclcog"], "cogori", 0)
 
     ######################################
@@ -131,6 +139,9 @@ class UDSFormB9Missingness(UDSMissingness):
 
         MUST BE HANDLED FIRST.
         """
+        if self.__check_v3_distinction("decclbe"):
+            return INFORMED_MISSINGNESS
+
         return self._handle_cascading_gates(["decclin"], "decclbe", 0)
 
     def __handle_behavior_variables(
@@ -181,7 +192,12 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_beothr(self) -> Optional[int]:
         """Handles missingness for BEOTHR."""
-        return self.__handle_behavior_variables(["decclin", "decclbe"], "beothr", 0)
+        result = self.__handle_behavior_variables(["decclin", "decclbe"], "beothr", 0)
+        if result is None:
+            if self.uds.get_value("beothr", int) == 9:
+                return 0
+
+        return result
 
     def _missingness_bemode(self) -> Optional[int]:
         """Handles missingness for BEMODE."""
@@ -195,7 +211,9 @@ class UDSFormB9Missingness(UDSMissingness):
     def _missingness_berem(self) -> Optional[int]:
         """Handles missingness for BEREM."""
         # this explicitly checks for blanks, not just 0 like the usual
-        if self.formver < 4 and self.uds.get_value("decclbe", int) is None:
+        berem = self.uds.get_value("berem", int)
+        decclbe = self.uds.get_value("decclbe", int)
+        if self.formver < 4 and decclbe is None and berem is None:
             return INFORMED_MISSINGNESS
 
         gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
@@ -211,7 +229,9 @@ class UDSFormB9Missingness(UDSMissingness):
         (prev)?
         """
         # this explicitly checks for blanks, not just 0 like the usual
-        if self.formver < 4 and self.uds.get_value("decclbe", int) is None:
+        bevwell = self.uds.get_value("bevwell", int)
+        decclbe = self.uds.get_value("decclbe", int)
+        if self.formver < 4 and decclbe is None and bevwell is None:
             return INFORMED_MISSINGNESS
         
         gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
@@ -220,6 +240,9 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_beanx(self) -> Optional[int]:
         """Handles missingness for BEANX."""
+        if self.__check_v3_distinction("beanx"):
+            return INFORMED_MISSINGNESS
+
         return self._handle_cascading_gates(["decclin", "decclbe"], "beanx", 0)
 
     def _missingness_bevpatt(self) -> Optional[int]:
@@ -271,6 +294,9 @@ class UDSFormB9Missingness(UDSMissingness):
 
         MUST BE HANDLED FIRST.
         """
+        if self.__check_v3_distinction("decclmot"):
+            return INFORMED_MISSINGNESS
+
         return self._handle_cascading_gates(["decclin"], "decclmot", 0)
 
     def __handle_motor_variables(
@@ -322,10 +348,18 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_momopark(self) -> Optional[int]:
         """Handles missingness for MOMOPARK."""
-        return self._handle_cascading_gates(["decclin", "decclmot"], "momopark", 0)
+        result = self._handle_cascading_gates(["decclin", "decclmot"], "momopark", 0)
+        if result is None:
+            if self.uds.get_value("momopark", int) == 88:
+                return 8
+
+        return result
 
     def _missingness_momoals(self) -> Optional[int]:
         """Handles missingness for MOMOALS."""
+        if self.__check_v3_distinction("momoals"):
+            return INFORMED_MISSINGNESS
+
         return_value = 8 if self.formver < 4 else 0
         return self._handle_cascading_gates(
             ["decclin", "decclmot"], "momoals", return_value
@@ -412,13 +446,22 @@ class UDSFormB9Missingness(UDSMissingness):
         If GATE = 1, return PREV_FIELD
         If GATE is None, 0, 9, return 888
         """
+        if self.__check_v3_distinction(field):
+            return INFORMED_MISSINGNESS
+
+        # it seems these specific variables are
+        # set to 888 if the below conditions aren't fulfilled,
+        # they are are blank, and it's V3
+        default = 888 if self.formver == 3 else None
+
         gate_value = self.uds.get_value(gate, int)
         if gate_value == 1:
-            return self.handle_prev_visit(field, int, prev_code=777)
+            return self.handle_prev_visit(
+                field, int, prev_code=777, default=default)
         if gate_value is None or gate_value in [0, 9]:
             return 888
 
-        return self.generic_missingness(field, int)
+        return self.generic_missingness(field, int, default=default)
 
     def _missingness_cogflago(self) -> Optional[int]:
         """Handles missingness for COGFLAGO."""
@@ -508,11 +551,17 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_befpred(self) -> Optional[int]:
         """Handles missingness for BEFPRED."""
+        if self.__check_v3_distinction("befpred"):
+            return INFORMED_MISSINGNESS
+
         prev_code = 0 if self.formver == 3 else None
         return self.handle_prev_visit("befpred", int, prev_code=prev_code)
 
     def _missingness_cogfpred(self) -> Optional[int]:
         """Handles missingness for COGFPRED."""
+        if self.__check_v3_distinction("cogfpred"):
+            return INFORMED_MISSINGNESS
+
         prev_code = 0 if self.formver == 3 else None
         return self.handle_prev_visit("cogfpred", int, prev_code=prev_code)
 
@@ -695,3 +744,20 @@ class UDSFormB9Missingness(UDSMissingness):
             return 9
 
         return self.generic_missingness("decsub", int)
+
+
+    def __check_v3_distinction(self, field: str) -> bool:
+        """REGRESSION: I think this check is a bug in the legacy
+        SAS code, as it treats 3.2 differently from 3.0 in a
+        weird way since these variables DO exist in 3.2. But
+        done so it isn't flagged so much in regression testing.
+        Once verified, this behavior should probably be
+        fixed/removed.
+
+        Basically - if in 3.2 and blank, return -4. So this
+        method returns True if it's in 3.2 and blank, else False.
+        """
+
+        raw_formver = self.uds.get_required("formver", float)
+        value = self.uds.get_value(field, int)
+        return raw_formver == 3.2 and value is None
