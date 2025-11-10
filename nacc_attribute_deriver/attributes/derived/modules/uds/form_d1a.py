@@ -557,7 +557,9 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         # if initial visit (true initial, not I4) also set to 8
         # however, NACCMCII may not stay here
         if self.uds.is_initial() and not self.uds.is_i4():
-            return 8
+            # REGRESSION - SHOULD RETURN 8, BUT LEGACY RETURNS 0; FIX LATER
+            # return 8
+            return 0
 
         # okay now we know we're on an FVP form, that they weren't MCI/demented at
         # the initial visit, and that they haven't progressed directly to demented

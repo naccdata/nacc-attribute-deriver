@@ -213,6 +213,19 @@ class TestUDSFormB9Missingness:
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_bevwell() == INFORMED_MISSINGNESS
 
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "decclin": 1,
+                "decclbe": None,
+                "bevwell": 0  # should use this
+            }
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_bevwell() is None
+
+
     def test_beagit(self, uds_table):
         """Tests missingness for BEAGIT."""
         uds_table["file.info.forms.json"].update(
@@ -269,20 +282,6 @@ class TestUDSFormB9Missingness:
         )
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_berem() is None
-
-    def test_bevwell(self, uds_table):
-        """Tests missingness for BEVWELL."""
-        uds_table["file.info.forms.json"].update(
-            {
-                "formver": 1.0,
-                "packet": "I",
-                "decclin": 1,
-                "decclbe": None,
-                "bevwell": 0  # should use this
-            }
-        )
-        attr = UDSFormB9Missingness(uds_table)
-        assert attr._missingness_bevwell() is None
 
     def test_bevhago(self, uds_table):
         """Tests missingness for BEVHAGO."""

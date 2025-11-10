@@ -5,6 +5,9 @@ from importlib import resources
 from typing import Dict, Optional
 
 from nacc_attribute_deriver import config
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
+    UDSMissingness
+)
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingDerivedNamespace,
 )
@@ -13,8 +16,6 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
 )
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
-
-from .missingness_uds import UDSMissingness
 
 
 def load_udsmeds() -> Dict[str, str]:

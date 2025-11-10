@@ -2,11 +2,12 @@
 
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
+    UDSMissingness
+)
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
-
-from .missingness_uds import UDSMissingness
 
 
 class UDSFormB5Missingness(UDSMissingness):

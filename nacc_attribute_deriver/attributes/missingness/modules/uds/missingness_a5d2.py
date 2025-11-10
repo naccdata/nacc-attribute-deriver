@@ -6,6 +6,9 @@ code, so there are some version differences.
 
 from typing import Optional
 
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
+    UDSMissingness
+)
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     DerivedNamespace,
 )
@@ -13,8 +16,6 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
-
-from .missingness_uds import UDSMissingness
 
 
 class UDSFormA5D2Missingness(UDSMissingness):

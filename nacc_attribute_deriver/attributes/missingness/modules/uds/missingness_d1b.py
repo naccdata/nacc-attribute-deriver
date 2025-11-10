@@ -4,7 +4,7 @@ from typing import Optional
 
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
-from .missingness_d1 import UDSFormD1Missingness
+from .helpers.d1_base import UDSFormD1Missingness
 
 
 class UDSFormD1bMissingness(UDSFormD1Missingness):

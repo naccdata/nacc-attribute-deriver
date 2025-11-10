@@ -2,12 +2,20 @@
 
 from typing import Optional
 
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
-from .missingness_d1 import UDSFormD1Missingness
+from .helpers.d1_base import UDSFormD1Missingness
+from .helpers.d1a_cogothx_helper import D1aCOGOTHXHelper
 
 
 class UDSFormD1aMissingness(UDSFormD1Missingness):
+    def __init__(self, table: SymbolTable) -> None:
+        super().__init__(table)
+
+        # may need to be reordered, so pre-compute
+        self.__cogothx_attributes = D1aCOGOTHXHelper(table)
+
     ###########################
     # NORMCOG-gated variables #
     ###########################
@@ -110,15 +118,15 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_cogoth(self) -> Optional[int]:
         """Handles missingness for COGOTH."""
-        return self.handle_normcog_gate("cogoth")
+        return self.__cogothx_attributes.get("cogoth", int)
 
     def _missingness_cogoth2(self) -> Optional[int]:
         """Handles missingness for COGOTH2."""
-        return self.handle_normcog_gate("cogoth2")
+        return self.__cogothx_attributes.get("cogoth2", int)
 
     def _missingness_cogoth3(self) -> Optional[int]:
         """Handles missingness for COGOTH3."""
-        return self.handle_normcog_gate("cogoth3")
+        return self.__cogothx_attributes.get("cogoth3", int)
 
     ########################################
     # NORMCOG and DEMENTED-gated variables #
@@ -428,15 +436,15 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_cogothif(self) -> Optional[int]:
         """Handles missingness for COGOTHIF."""
-        return self.handle_cognitive_impairment_gate("cogoth", "cogothif")
+        return self.__cogothx_attributes.get("cogothif", int)
 
     def _missingness_cogoth2f(self) -> Optional[int]:
         """Handles missingness for COGOTH2F."""
-        return self.handle_cognitive_impairment_gate("cogoth2", "cogoth2f")
+        return self.__cogothx_attributes.get("cogoth2f", int)
 
     def _missingness_cogoth3f(self) -> Optional[int]:
         """Handles missingness for COGOTH3F."""
-        return self.handle_cognitive_impairment_gate("cogoth3", "cogoth3f")
+        return self.__cogothx_attributes.get("cogoth3f", int)
 
     ###################
     # Other variables #
@@ -487,3 +495,15 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
             return 0
 
         return None
+
+    def _missingness_cogothx(self) -> Optional[str]:
+        """Handles missingness for COGOTHX."""
+        return self.__cogothx_attributes.get("cogothx", str)
+
+    def _missingness_cogoth2x(self) -> Optional[str]:
+        """Handles missingness for COGOTH2X."""
+        return self.__cogothx_attributes.get("cogoth2x", str)
+
+    def _missingness_cogoth3x(self) -> Optional[str]:
+        """Handles missingness for COGOTH3X."""
+        return self.__cogothx_attributes.get("cogoth3x", str)

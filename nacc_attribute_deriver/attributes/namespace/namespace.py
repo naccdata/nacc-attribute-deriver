@@ -176,6 +176,18 @@ class BaseNamespace:
         """
         return [self.get_value(x, attr_type) for x in attributes]
 
+    def map_attributes(
+        self, attributes: List[str], attr_type: Type[T]
+    ) -> Dict[str, T | None]:
+        """Group attributes into a mapping, from key to value.
+        Assumes all are the same type.
+
+        Args:
+            attributes: List of attributes to grab
+            attr_type: Expected attribute type for all attributes in list
+        """
+        return {x: self.get_value(x, attr_type) for x in attributes}
+
 
 class FormNamespace(BaseNamespace):
     """Base class for attributes over file.info.forms.json."""

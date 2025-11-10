@@ -6,12 +6,13 @@ in particular is extremely odd.
 
 from typing import List, Optional
 
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
+    UDSMissingness
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
-
-from .missingness_uds import UDSMissingness
 
 
 class UDSFormB9Missingness(UDSMissingness):

@@ -10,9 +10,10 @@ here to make sure we aren't accidentally missing or duplicating any.
 
 from typing import Optional
 
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK, INFORMED_MISSINGNESS
-
-from .missingness_uds import UDSMissingness
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
+    UDSMissingness
+)
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormC1C2Missingness(UDSMissingness):
@@ -170,26 +171,17 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """Handles missingness for MOCALANX."""
         result = self.handle_forbidden_gated_writein("mocalan", 3)
         if result is not None:
-            # REGRESSION: JUST RETURN RESULT INSTEAD OF THIS
-            if result == INFORMED_BLANK:
-                return "-4"
             return result
 
-
-        # REGRESSION: SET DEFAULT BACK TO NORMAL ONCE DONE
-        return self.generic_missingness("mocalanx", str, defualt="-4")
+        return self.generic_missingness("mocalanx", str)
 
     def _missingness_respothx(self) -> Optional[str]:
         """Handles missingness for RESPOTHX."""
         result = self.handle_forbidden_gated_writein("respoth", 1)
         if result is not None:
-            # REGRESSION: JUST RETURN RESULT INSTEAD OF THIS
-            if result == INFORMED_BLANK:
-                return "-4"
             return result
 
-        # REGRESSION: SET DEFAULT BACK TO NORMAL ONCE DONE
-        return self.generic_missingness("respothx", str, default="-4")
+        return self.generic_missingness("respothx", str)
 
     def _missingness_mmselanx(self) -> Optional[str]:
         """Handles missingness for MMSELANX."""
