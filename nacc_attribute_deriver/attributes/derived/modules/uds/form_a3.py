@@ -93,7 +93,8 @@ class UDSFormA3Attribute(UDSAttributeCollection):
           known value if it was already set, else -4/missingness value
         - Execute core logic
         - If none of the core logic is satisfied, return the known
-          value if it was already set, otherwise the default, usually 0 or 9
+          value if it was already set (not None and not the missingness value),
+          otherwise the default, usually 0 or 9
         """
         known_value = self.__subject_derived.get_cross_sectional_value(derived_var, int)
 
@@ -104,7 +105,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if result is not None:
             return result
 
-        return known_value if known_value is not None else default
+        if known_value is not None and known_value != missingness_value:
+            return known_value
+
+        return default
 
     def _create_naccfadm(self) -> int:
         """Creates NACCFADM - In this family, is there evidence

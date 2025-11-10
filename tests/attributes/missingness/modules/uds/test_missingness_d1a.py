@@ -42,13 +42,13 @@ class TestUDSFormD1aMissingness:
                 "packet": "F",
                 "normcog": 1,
                 "cogoth": 0,
-                "cogothif": None,
-                "cogothx": None,
                 "cogoth2": 0,
-                "cogoth2f": None,
-                "cogoth2x": None,
                 "cogoth3": 1,
-                "cogoth3f": None,
+                "cogothif": None,
+                "cogoth2f": None,
+                "cogoth3f": 1,
+                "cogothx": None,
+                "cogoth2x": None,
                 "cogoth3x": "some text"
             }
         )
@@ -57,7 +57,7 @@ class TestUDSFormD1aMissingness:
         assert attr._missingness_cogoth2() == 0
         assert attr._missingness_cogoth3() == 0
 
-        assert attr._missingness_cogothif() == 8
+        assert attr._missingness_cogothif() == 1
         assert attr._missingness_cogoth2f() == 8
         assert attr._missingness_cogoth3f() == 8
 
