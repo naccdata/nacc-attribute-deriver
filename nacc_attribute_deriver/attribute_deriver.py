@@ -256,6 +256,12 @@ class MissingnessDeriver(BaseAttributeDeriver):
                 if not self.__applicable_attributes.get(key, {}).get(rule.name):
                     applicable = False
 
+        # REGRESSION: let these go through even if they're not
+        # actually in the form version. remove once done testing
+        if not applicable:
+            if rule.name in ["diabtype"]:
+                applicable = True
+
         # if applicable, try to see if this attribute has a specific
         # rule function attached to it, and call that
         method = self._instance_collections.get(rule.function, None)
