@@ -5,6 +5,7 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSMissingness
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormB8Missingness(UDSMissingness):
@@ -142,7 +143,14 @@ class UDSFormB8Missingness(UDSMissingness):
     def _missingness_postinst(self) -> Optional[int]:
         """Handles missingness for POSTINST."""
         if self.formver < 4:
-            return self._handle_normexam_gate("postinst")
+            # REGRSSION: this checks normexam first?
+            result = self._handle_normexam_gate("postinst")
+
+            # REGRESSION:
+            # if the above returns informed missingness, fall to below case
+            # which will evaluate parksign
+            if result != INFORMED_MISSINGNESS:
+                return result
 
         return self._handle_normnrexam_with_gate("parksign", "postinst")
 

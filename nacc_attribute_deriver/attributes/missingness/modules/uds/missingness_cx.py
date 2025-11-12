@@ -332,8 +332,14 @@ class UDSFormC1C2Missingness(UDSMissingness):
         #     if value is None or value == 88:
         #         return INFORMED_MISSINGNESS
 
-        result = self.handle_set_to_gate(gate, check_values=[995, 996, 997, 998])
+        check_values = [995, 996, 997, 998]
+        result = self.handle_set_to_gate(gate, check_values=check_values)
         if result is not None:
+            # REGRESSION:
+            # older versions subtracted 900 to make it two digits
+            if self.formver < 4 and result in check_values:
+                return result - 900
+
             return result
 
         return self.generic_missingness(field, int)
@@ -403,12 +409,18 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # Non-optional gated variables #
     ################################
 
-    def _handle_non_optional_gate(self, gate: str, field: str) -> Optional[int]:
+    def _handle_non_optional_gate(self, gate: str, field: str, set_to_missingness: int = False) -> Optional[int]:
         """Generically handle:
 
         If GATE is 95-98 then FIELD should = GATE.
         """
-        result = self.handle_set_to_gate(gate, check_values=[95, 96, 97, 98])
+        check_values = [95, 96, 97, 98]
+
+        # REGRESSION - most should set to gate, not informed missingness
+        if set_to_missingness and self.uds.get_value(gate, int) in check_values:
+            return INFORMED_MISSINGNESS
+
+        result = self.handle_set_to_gate(gate, check_values=check_values)
         if result is not None:
             return result
 
@@ -452,11 +464,21 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_craftdti(self) -> Optional[int]:
         """Handles missingness for CRAFTDTI."""
-        return self._handle_non_optional_gate("craftdvr", "craftdti")
+        # REGRESSION: in legacy, we set it to -4 if the condition
+        # passes, not the gate
+        return self._handle_non_optional_gate("craftdvr", "craftdti", set_to_missingness=self.formver < 4)
 
     def _missingness_craftcue(self) -> Optional[int]:
         """Handles missingness for CRAFTCUE."""
-        return self._handle_non_optional_gate("craftdvr", "craftcue")
+        # REGRESSION: in legacy, we set it to -4 if the condition
+        # passes, not the gate
+        return self._handle_non_optional_gate("craftdvr", "craftcue", set_to_missingness=self.formver < 4)
+
+    def _missingness_udsbenrs(self) -> Optional[int]:
+        """Handles missingness for UDSBENRS."""
+        # REGRESSION: in legacy, we set it to -4 if the condition
+        # passes, not the gate. Not in V4 so always set to missingness
+        return self._handle_non_optional_gate("craftdvr", "craftcue", set_to_missingness=True)
 
     def _missingness_udsverfn(self) -> Optional[int]:
         """Handles missingness for UDSVERFN."""

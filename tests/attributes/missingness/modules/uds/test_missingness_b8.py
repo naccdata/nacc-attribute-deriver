@@ -84,3 +84,37 @@ class TestUDSFormB8Missingness:
             {"normnrexam": None, "gate": None, "somevar": 5}
         )
         assert attr._handle_normnrexam_with_gate("gate", "somevar") is None
+
+    def test_postinst(self, uds_table):
+        """Tests postinst."""
+
+        # V3 - falls to normexam case
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "I",
+                "postinst": None,
+                "normexam": 2,
+            }
+        )
+
+        attr = UDSFormB8Missingness(uds_table)
+        assert attr._missingness_postinst() == 0
+
+        # V3 - falls to parksign case
+        uds_table["file.info.forms.json"].update(
+            {
+                "normexam": 1,
+                "parksign": 0
+            }
+        )
+        assert attr._missingness_postinst() == 0
+
+        # V3 - falls to neither case
+        uds_table["file.info.forms.json"].update(
+            {
+                "normexam": None,
+                "parksign": None
+            }
+        )
+        assert attr._missingness_postinst() == INFORMED_MISSINGNESS
