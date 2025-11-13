@@ -107,6 +107,11 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_quitsmok(self) -> Optional[int]:
         """Handles missingness for QUITSMOK."""
+        # REGRESSION: if quitsmok already set, keep it
+        quitsmok = self.uds.get_value("quitsmok", int)
+        if self.formver < 4 and quitsmok is not None:
+            return quitsmok
+
         return self.handle_a5d2_carry_forward(
             "tobac100", "quitsmok", skip_gate_on_legacy=False
         )

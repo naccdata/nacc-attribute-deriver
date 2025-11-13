@@ -131,8 +131,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
         if cvd == 0:
             return return_value
         if evaluate_prevstk and cvd == 1:
+            value = self.uds.get_value(field, int)
             prevstk = self.uds.get_value("prevstk", int)
-            if prevstk == 0:
+            if value is not None and prevstk == 0:
                 return return_value
 
         return self.generic_missingness(field, int)
