@@ -291,11 +291,13 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if affiliate:
             return True
 
-        # check source == 4 or sourcenw == 2; propagated from IVP
-        source = self.get_propagated_value("source", int)
-        sourcenw = self.get_propagated_value("sourcenw", int)
+        # only provided in IVP
+        if self.uds.is_initial():
+            source = self.uds.get_value("source", int)
+            sourcenw = self.uds.get_value("sourcenw", int)
+            return source == 4 or sourcenw == 2
 
-        return source == 4 or sourcenw == 2
+        return False
 
     def _create_naccpaff(self) -> int:
         """Creates NACCPAFF - Previously affiliated subject.
@@ -309,9 +311,9 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         return 1 if self._create_affiliate() else 0
 
     def _create_educ(self) -> Optional[int]:
-        """UDS education level - this rule is used by MQT, since it also
-        needs to know the latest. Other derived variables looking for educ
-        should use the get_propagated_value method instead."""
+        """UDS education level - this rule is used by MQT, since it
+        needs to know the latest at the global level. Other derived variables
+        looking for educ should use the get_prev_value method instead."""
         return self.uds.get_value("educ", int)
 
     def _create_uds_date_of_birth(self) -> date:

@@ -3,6 +3,7 @@ Scores. In V4 these are the C2/C2T forms.
 
 One of form (C1 or C2)/(C2 or C2T) is expected to have been submitted.
 """
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
@@ -103,6 +104,13 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
         return mmse if mmse is not None else INFORMED_MISSINGNESS
 
+    def __get_educ(self) -> Optional[int]:
+        """Educ only explicitly provided at initial visit."""
+        if self.uds.is_initial():
+            return self.uds.get_value("educ", int)
+
+        return self.get_prev_value("educ", int)
+
     def _create_naccmoca(self) -> int:
         """(V3+ only) Creates NACCMOCA.
 
@@ -120,7 +128,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
         if (self.formver >= 4) or (precise_formver == 3 and packet != "IT"):
             mocatots = self.uds.get_value("mocatots", int)
-            educ = self.get_propagated_value("educ", int)
+            educ = self.__get_educ()
             if mocatots is None or mocatots == 88:
                 return 88
             if educ is None or educ == 99:
@@ -154,7 +162,8 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         ):
             mocbtots = self.uds.get_value("mocbtots", int)
             mocacomp = self.uds.get_value("mocacomp", int)
-            educ = self.get_propagated_value("educ", int)
+            educ = self.__get_educ()
+
             if mocbtots is None or mocbtots == 88 or mocacomp == 0:
                 return 88
             if educ is None or educ == 99:

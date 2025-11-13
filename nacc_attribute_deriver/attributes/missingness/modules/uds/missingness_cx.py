@@ -161,6 +161,11 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_npsylanx(self) -> Optional[str]:
         """Handles missingness for NPSYLANX."""
+        # REGRESSION: if there was something there, legacy seems to
+        # just keep it
+        if self.formver < 4 and self.uds.get_value("npsylanx", str) is not None:
+            return None
+
         result = self.handle_forbidden_gated_writein("npsylan", 3)
         if result is not None:
             return result
@@ -324,16 +329,9 @@ class UDSFormC1C2Missingness(UDSMissingness):
         For V4: If GATE is 995-998 then FIELD should = GATE.
         For V3 and earlier: see SAS code
         """
-        # if self.uds.get_value(gate, int) == 999:
-        #     return 99
-
-        # if self.formver < 3:
-        #     value = self.uds.get_value(field, int)
-        #     if value is None or value == 88:
-        #         return INFORMED_MISSINGNESS
-
         check_values = [995, 996, 997, 998]
         result = self.handle_set_to_gate(gate, check_values=check_values)
+
         if result is not None:
             # REGRESSION:
             # older versions subtracted 900 to make it two digits
@@ -341,6 +339,13 @@ class UDSFormC1C2Missingness(UDSMissingness):
                 return result - 900
 
             return result
+
+        # REGRESSION: if V1/V2 and any of these variables were set to 88,
+        # this would be recoded to -4. For v1 also returned -4 if it was None
+        if self.formver < 3:
+            value = self.uds.get_value(field, int)
+            if value == 88 or (self.formver < 2 and value is None):
+                return INFORMED_MISSINGNESS
 
         return self.generic_missingness(field, int)
 
@@ -360,20 +365,6 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """Handles missingness for TRAILBLI."""
         return self._handle_trailx_gate("trailb", "trailbli")
 
-    # def _missingness_traila(self) -> Optional[int]:
-    #     """Handles missingness for TRAILA."""
-    #     if self.uds.get_value("traila", int) is None:
-    #         return 999
-
-    #     return None
-
-    # def _missingness_trailb(self) -> Optional[int]:
-    #     """Handles missingness for TRAILB."""
-    #     if self.uds.get_value("trailb", int) is None:
-    #         return 999
-
-    #     return None
-
     ###########################
     # OTRAILX gated variables #
     ###########################
@@ -386,6 +377,16 @@ class UDSFormC1C2Missingness(UDSMissingness):
         result = self.handle_set_to_gate(gate, check_values=[888, 995, 996, 997, 998])
         if result is not None:
             return result
+
+        check_values = [888, 995, 996, 997, 998]
+        result = self.handle_set_to_gate(gate, check_values=check_values)
+        if result is not None:
+            # REGRESSION:
+            # older versions subtracted 800/900 to make it two digits
+            if self.formver < 4 and result in check_values:
+                if result == 888:
+                    return result - 800
+                return result - 900
 
         return self.generic_missingness(field, int)
 
@@ -535,6 +536,116 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_logiyr(self) -> Optional[int]:
         """Handles missingness for LOGIYR."""
         return self.__handle_logiprev_gate("logiyr")
+
+    ############################
+    # MOCACOMP-gated variables #
+    ############################
+
+    def _missingness_mocatots(self) -> Optional[int]:
+        """Handles missingness for MOCATOTS."""
+        if self.uds.get_value("mocacomp", int) == 0:
+            return 88
+
+        return self.generic_missingness("mocacomp", int)
+
+    def __handle_mocacomp_gate(self, field: str) -> Optional[int]:
+        """Handle variables gated by MOCACOMP.
+
+        If MOCACOMP = 0, then FIELD = MOCAREAS
+        """
+        if self.uds.get_value("mocacomp", int) == 0:
+            mocareas = self.uds.get_value("mocareas", int)
+            return mocareas if mocareas is not None else INFORMED_MISSINGNESS
+
+        return self.generic_missingness(field, int)
+
+    def _missingness_mocatrai(self) -> Optional[int]:
+        """Handles missingness for MOCATRAI."""
+        return self.__handle_mocacomp_gate("mocatrai")
+
+    def _missingness_mocacube(self) -> Optional[int]:
+        """Handles missingness for MOCACUBE."""
+        return self.__handle_mocacomp_gate("mocacube")
+
+    def _missingness_mocacloc(self) -> Optional[int]:
+        """Handles missingness for MOCACLOC."""
+        return self.__handle_mocacomp_gate("mocacloc")
+
+    def _missingness_mocaclon(self) -> Optional[int]:
+        """Handles missingness for MOCACLON."""
+        return self.__handle_mocacomp_gate("mocaclon")
+
+    def _missingness_mocacloh(self) -> Optional[int]:
+        """Handles missingness for MOCACLOH."""
+        return self.__handle_mocacomp_gate("mocacloh")
+
+    def _missingness_mocanami(self) -> Optional[int]:
+        """Handles missingness for MOCANAMI."""
+        return self.__handle_mocacomp_gate("mocanami")
+
+    def _missingness_mocaregi(self) -> Optional[int]:
+        """Handles missingness for MOCAREGI."""
+        return self.__handle_mocacomp_gate("mocaregi")
+
+    def _missingness_mocadigi(self) -> Optional[int]:
+        """Handles missingness for MOCADIGI."""
+        return self.__handle_mocacomp_gate("mocadigi")
+
+    def _missingness_mocalett(self) -> Optional[int]:
+        """Handles missingness for MOCALETT."""
+        return self.__handle_mocacomp_gate("mocalett")
+
+    def _missingness_mocaser7(self) -> Optional[int]:
+        """Handles missingness for MOCASER7."""
+        return self.__handle_mocacomp_gate("mocaser7")
+
+    def _missingness_mocarepe(self) -> Optional[int]:
+        """Handles missingness for MOCAREPE."""
+        return self.__handle_mocacomp_gate("mocarepe")
+
+    def _missingness_mocaflue(self) -> Optional[int]:
+        """Handles missingness for MOCAFLUE."""
+        return self.__handle_mocacomp_gate("mocaflue")
+
+    def _missingness_mocaabst(self) -> Optional[int]:
+        """Handles missingness for MOCAABST."""
+        return self.__handle_mocacomp_gate("mocaabst")
+
+    def _missingness_mocarecn(self) -> Optional[int]:
+        """Handles missingness for MOCARECN."""
+        return self.__handle_mocacomp_gate("mocarecn")
+
+    def _missingness_mocarecc(self) -> Optional[int]:
+        """Handles missingness for MOCARECC."""
+        return self.__handle_mocacomp_gate("mocarecc")
+
+    def _missingness_mocarecr(self) -> Optional[int]:
+        """Handles missingness for MOCARECR."""
+        return self.__handle_mocacomp_gate("mocarecr")
+
+    def _missingness_mocaordt(self) -> Optional[int]:
+        """Handles missingness for MOCAORDT."""
+        return self.__handle_mocacomp_gate("mocaordt")
+
+    def _missingness_mocaormo(self) -> Optional[int]:
+        """Handles missingness for MOCAORMO."""
+        return self.__handle_mocacomp_gate("mocaormo")
+
+    def _missingness_mocaoryr(self) -> Optional[int]:
+        """Handles missingness for MOCAORYR."""
+        return self.__handle_mocacomp_gate("mocaoryr")
+
+    def _missingness_mocaordy(self) -> Optional[int]:
+        """Handles missingness for MOCAORDY."""
+        return self.__handle_mocacomp_gate("mocaordy")
+
+    def _missingness_mocaorpl(self) -> Optional[int]:
+        """Handles missingness for MOCAORPL."""
+        return self.__handle_mocacomp_gate("mocaorpl")
+
+    def _missingness_mocaorct(self) -> Optional[int]:
+        """Handles missingness for MOCAORCT."""
+        return self.__handle_mocacomp_gate("mocaorct")
 
     #########
     # Other #

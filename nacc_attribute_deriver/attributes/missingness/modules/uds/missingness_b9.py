@@ -603,8 +603,7 @@ class UDSFormB9Missingness(UDSMissingness):
         """
         decage = self.uds.get_value("decage", int)
 
-        # SAS checks overall for DECAGE = 777, although not sure it could
-        # ever be 777?
+        # SAS checks overall for DECAGE = 777
         if decage == 777:
             return self.handle_prev_visit("decage", int, prev_code=777)
 

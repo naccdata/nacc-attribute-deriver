@@ -46,21 +46,6 @@ class UDSAttributeCollection(AttributeCollection):
     def prev_record(self) -> Optional[PreviousRecordNamespace]:
         return self.__prev_record
 
-    def get_propagated_value(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
-    ) -> Optional[T]:
-        """Several values are only provided on IVP and need to be propogated
-        through for calculations on FVP forms.
-
-        Need to resolve from current and previous records.
-        """
-        if self.__uds.is_initial() or not self.__prev_record:
-            return self.__uds.get_value(attribute, attr_type, default=default)
-
-        return self.__prev_record.get_resolved_value(
-            attribute, attr_type, default=default
-        )
-
     @property
     def uds(self) -> UDSNamespace:
         return self.__uds
@@ -166,6 +151,7 @@ class UDSMissingness(UDSAttributeCollection):
         attr_type: Type[T],
         prev_code: Optional[T] = None,
         default: Optional[T] = None,
+        cross_sectional: bool = False
     ) -> Optional[T]:
         """Handle when the value could be provided by the previous visit.
 
@@ -178,7 +164,11 @@ class UDSMissingness(UDSAttributeCollection):
             value = self.uds.get_value(field, attr_type)
 
             if value == prev_code:
-                prev_value = self.get_prev_value(field, attr_type, default=default)
+                prev_value = self.get_prev_value(
+                    field,
+                    attr_type,
+                    default=default,
+                    cross_sectional=cross_sectional)
                 if prev_value is not None:
                     return prev_value
 

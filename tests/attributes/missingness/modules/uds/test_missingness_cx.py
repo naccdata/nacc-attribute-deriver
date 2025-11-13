@@ -67,3 +67,20 @@ class TestUDSFormC1C2Missingness:
         )
         attr = UDSFormC1C2Missingness(uds_table)
         assert attr._missingness_memtime() == 99
+
+    def test_trailbx(self, uds_table):
+        """Tests TRAILBX variables."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "I",
+                "trailb": "996",
+                "trailbrr": None,
+                "trailbli": None
+            }
+        )
+        attr = UDSFormC1C2Missingness(uds_table)
+
+        # REGRESSION - should NOT subtract 900 in new version
+        assert attr._missingness_trailbrr() == 96
+        assert attr._missingness_trailbli() == 96

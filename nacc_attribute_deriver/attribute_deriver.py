@@ -23,7 +23,7 @@ from .schema.schema import (
     RuleFileModel,
 )
 from .symbol_table import SymbolTable
-from .utils.constants import CURATION_TYPE
+from .utils.constants import CURATION_TYPE, REGRESSION_VARIABLES
 from .utils.errors import AttributeDeriverError, OperationError
 from .utils.scope import FormScope, ScopeLiterals
 
@@ -259,7 +259,7 @@ class MissingnessDeriver(BaseAttributeDeriver):
         # REGRESSION: let these go through even if they're not
         # actually in the form version. remove once done testing
         if not applicable:
-            if rule.name in ["diabtype"]:
+            if rule.name in REGRESSION_VARIABLES:
                 applicable = True
 
         # if applicable, try to see if this attribute has a specific
