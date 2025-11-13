@@ -758,6 +758,11 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_decin(self) -> Optional[int]:
         """Handles missingness for DECIN."""
+        # recodes to 9 on v1/v2 if blank
+        decin = self.uds.get_value("decin", int)
+        if self.formver < 3 and decin is None:
+            return 9
+
         if self.formver == 1 and self.__b9chg in [1, 3]:
             return 9
 

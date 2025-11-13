@@ -76,8 +76,6 @@ ALL_RX_CLASSES = COMBINATION_RX_CLASSES + NON_COMBINATION_RX_CLASSES
 REGRESSION_VARIABLES = [
     "diabtype",
     "height",
-    "cogoth2f",
-    "cogoth3f",
     "trailarr",
     "trailali",
     "trailbrr",

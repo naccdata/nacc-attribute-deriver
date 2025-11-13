@@ -12,6 +12,7 @@ from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.date import parse_unknown_dates
 
 
 class UDSFormC1C2Missingness(UDSMissingness):
@@ -515,13 +516,34 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # LOGIPREV-gated variables #
     ############################
 
+    # REGRESSION - should these be kept as logidate_c1?
+
     def __handle_logiprev_gate(self, field: str) -> Optional[int]:
         """Handles variables gated by LOGIPREV."""
         logiprev = self.uds.get_value("logiprev", int)
         if logiprev is None or logiprev in [88, 99]:
             return INFORMED_MISSINGNESS
 
-        return self.generic_missingness(field, int)
+        # Looks liike LOGIMO, LOGIDAY, and LOGIYR are actually parsed
+        # from logidate_c1
+        value = self.uds.get_value(field, int)
+        if value is None:
+            logiyr, logimo, logiday = parse_unknown_dates(
+                self.uds.get_value("logidate_c1", str))
+            if field == "logiyr":
+                value = logiyr
+            elif field == "logimo":
+                value = logimo
+            elif field == "logiday":
+                value = logiday
+
+        if (field == "logiyr") and (value is None or value == 9999):
+            return 8888
+
+        if (field != "logiyr") and (value is None or value == 99):
+            return 88
+
+        return None
 
     def _missingness_logiprev(self) -> Optional[int]:
         """Handles missingness for LOGIPREV."""

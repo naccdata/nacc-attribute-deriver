@@ -74,3 +74,30 @@ class TestUDSFormC1C2Missingness:
         # REGRESSION - should NOT subtract 900 in new version
         assert attr._missingness_trailbrr() == 96
         assert attr._missingness_trailbli() == 96
+
+    def test_logidate(self, uds_table):
+        """Tests LOGIDATE (LOGINO, LOGIDAY, LOGIYR) variables.
+        Should parse from logidate_c1."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "logidate_c1": "2025-06-09",
+                "logiprev": 8
+            }
+        )
+        attr = UDSFormC1C2Missingness(uds_table)
+
+        # real date, expect None to return as-is
+        assert attr._missingness_logiyr() is None
+        assert attr._missingness_logimo() is None
+        assert attr._missingness_logiday() is None
+
+        # need to parse invalid date
+        uds_table["file.info.forms.json"].update(
+            {
+                "logidate_c1": "9999-99-99",
+            }
+        )
+        # convert to 88/88/8888
+        assert attr._missingness_logiyr() == 8888
+        assert attr._missingness_logimo() == 88
+        assert attr._missingness_logiday() == 88

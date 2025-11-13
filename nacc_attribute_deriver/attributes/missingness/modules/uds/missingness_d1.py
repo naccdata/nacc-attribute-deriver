@@ -128,13 +128,15 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
     ) -> Optional[int]:
         """Handles variables gated by CVD."""
         cvd = self.uds.get_value("cvd", int)
-        if cvd == 0:
-            return return_value
-        if evaluate_prevstk and cvd == 1:
-            value = self.uds.get_value(field, int)
-            prevstk = self.uds.get_value("prevstk", int)
-            if value is not None and prevstk == 0:
+        value = self.uds.get_value(field, int)
+
+        if value is None:
+            if cvd == 0:
                 return return_value
+            if evaluate_prevstk and cvd == 1:
+                prevstk = self.uds.get_value("prevstk", int)
+                if prevstk == 0:
+                    return return_value
 
         return self.generic_missingness(field, int)
 
@@ -182,3 +184,10 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
             return 8
 
         return self.generic_missingness("brnincte", int)
+
+    def _missingness_park(self) -> Optional[int]:
+        """Handles missingness for PARK."""
+        if self.uds.get_value("lbdis", int) == 0:
+            return 0
+
+        return self.generic_missingness("park", int)

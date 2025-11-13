@@ -42,19 +42,29 @@ class UDSFormB3Missingness(UDSMissingness):
 
         - If at least 1 FIELD is 1-4, then PDNORMAL should be 0
         - If all fields are 0 or 8, then PDNORMAL should be 8
+
+        REGRESSION/LEGACY:
+            - If they're ALL 0, PDNORMAL = 1. I think in V4, error
+                checks ensure this = 1 so this situation doesn't
+                happen
         """
-        if self.uds.get_value("pdnormal", int) is not None:
-            return None
+        # V4 checks this and it should be right, but I think in older
+        # versions we can't really trust this
+        # if self.uds.get_value("pdnormal", int) is not None:
+        #     return None
 
         all_values = [self.uds.get_value(x, int) for x in self.ALL_B3_FIELDS]
         if any(x in [1, 2, 3, 4] for x in all_values):
             return 0
 
+        if all(x == 0 for x in all_values):
+            return 1
+
         # if all blank, likely form was not filled out
         if all(x is None for x in all_values):
             return INFORMED_MISSINGNESS
 
-        # all values are 0, 8, or blank at this point
+        # all values are mix of 0, 8, or blank at this point
         # return 8 = unknown
         return 8
 
