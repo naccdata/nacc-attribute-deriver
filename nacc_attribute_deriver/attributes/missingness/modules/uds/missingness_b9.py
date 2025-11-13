@@ -1,3 +1,4 @@
+# ruff: noqa: SIM114
 """Class to handle B9-specific missingness values.
 
 This form has a lot of weird legacy recode logic. Stuff related to B9CHG
@@ -6,9 +7,8 @@ in particular is extremely odd.
 
 from typing import List, Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_collection import (
-    UDSMissingness
-)
+from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.attributes.namespace.namespace import WorkingNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
@@ -19,8 +19,21 @@ class UDSFormB9Missingness(UDSMissingness):
     def __init__(self, table: SymbolTable) -> None:
         super().__init__(table=table)
 
+        # to grab the last time a variable was ever set,
+        # not necessarily previous form
+        self.__working = WorkingNamespace(table=table)
+
         # b9chg is used extensively in V1 missingness logic
         self.__b9chg = self.uds.get_value("b9chg", int)
+
+    def __handle_b9_prev_value(
+        self, field: str, prev_code: int = 777, default: Optional[int] = None
+    ) -> Optional[int]:
+        """B9 potentially pulls across multiple visits to get the last time the
+        field was ever set, so need to pass the working namespace."""
+        return self.handle_prev_visit(
+            field, int, prev_code=prev_code, default=default, working=self.__working
+        )
 
     def _handle_cascading_gates(
         self,
@@ -234,7 +247,7 @@ class UDSFormB9Missingness(UDSMissingness):
         decclbe = self.uds.get_value("decclbe", int)
         if self.formver < 4 and decclbe is None and bevwell is None:
             return INFORMED_MISSINGNESS
-        
+
         gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
         default = 0 if self.formver < 4 else None
         return self._handle_cascading_gates(gate_list, "bevwell", 0, default=default)
@@ -413,7 +426,7 @@ class UDSFormB9Missingness(UDSMissingness):
                     frstchg = 9
 
             if frstchg == 0:
-                p_frstchg = self.get_prev_value("frstchg", int)
+                p_frstchg = self.__get_last_set("frstchg")
                 if p_frstchg is not None:
                     return p_frstchg
                 return 9
@@ -427,7 +440,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if result is not None:
             return result
 
-        return self.handle_prev_visit("frstchg", int, prev_code=777)
+        return self.__handle_b9_prev_value("frstchg")
 
     ######################################################
     # If VAR = 777, then VAR = value from previous visit #
@@ -435,19 +448,19 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_behage(self) -> Optional[int]:
         """Handles missingness for BEHAGE."""
-        return self.handle_prev_visit("behage", int, prev_code=777)
+        return self.__handle_b9_prev_value("behage")
 
     def _missingness_psychage(self) -> Optional[int]:
         """Handles missingness for PSYCHAGE."""
-        return self.handle_prev_visit("psychage", int, prev_code=777)
+        return self.__handle_b9_prev_value("psychage")
 
     def _missingness_perchage(self) -> Optional[int]:
         """Handles missingness for PERCHAGE."""
-        return self.handle_prev_visit("perchage", int, prev_code=777)
+        return self.__handle_b9_prev_value("perchage")
 
     def _missingness_motorage(self) -> Optional[int]:
         """Handles missingness for MOTORAGE."""
-        return self.handle_prev_visit("motorage", int, prev_code=777)
+        return self.__handle_b9_prev_value("motorage")
 
     def __handle_prev_with_gate(self, gate: str, field: str) -> Optional[int]:
         """From b9structrdd.sas.
@@ -465,8 +478,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
         gate_value = self.uds.get_value(gate, int)
         if gate_value == 1:
-            return self.handle_prev_visit(
-                field, int, prev_code=777, default=default)
+            return self.__handle_b9_prev_value(field, default=default)
         if gate_value is None or gate_value in [0, 9]:
             return 888
 
@@ -504,7 +516,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.formver < 4:
             return self.__handle_prev_with_gate("berem", "beremago")
 
-        return self.handle_prev_visit("beremago", int, prev_code=777)
+        return self.__handle_b9_prev_value("beremago")
 
     #######################################################
     # If BESUBAB =1 and VAR is blank, then VAR should = 0 #
@@ -596,6 +608,11 @@ class UDSFormB9Missingness(UDSMissingness):
     # Other #
     #########
 
+    def __get_last_set(self, field: str) -> Optional[int]:
+        """B9 potentially pulls across multiple visits to get the last time the
+        field was ever set, so need to pass the working namespace."""
+        return self.get_prev_value(field, int, working=self.__working)
+
     def _missingness_decage(self) -> Optional[int]:
         """Handles missingness for DECAGE.
 
@@ -605,7 +622,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
         # SAS checks overall for DECAGE = 777
         if decage == 777:
-            return self.handle_prev_visit("decage", int, prev_code=777)
+            return self.__handle_b9_prev_value("decage")
 
         if decage is not None:
             return None
@@ -616,8 +633,8 @@ class UDSFormB9Missingness(UDSMissingness):
             p_decage = None
 
             if self.prev_record:
-                p_decclin = self.get_prev_value("decclin", int)
-                p_decage = self.get_prev_value("decage", int)
+                p_decclin = self.__get_last_set("decclin")
+                p_decage = self.__get_last_set("decage")
 
             if b9chg in [1, 3] and p_decclin == 1:
                 if p_decage is not None:
@@ -656,8 +673,8 @@ class UDSFormB9Missingness(UDSMissingness):
         Returns None of the value was not recoded, otherwise the recoded
         value.
         """
-        p_decclin = self.get_prev_value("decclin", int)
-        p_value = self.get_prev_value(field, int)
+        p_decclin = self.__get_last_set("decclin")
+        p_value = self.__get_last_set(field)
 
         decclin = self.uds.get_value("decclin", int)
         value = self.uds.get_value(field, int)
@@ -690,8 +707,8 @@ class UDSFormB9Missingness(UDSMissingness):
             return value
 
         if value is None and not skip_prev_check:
-            p_decclin = self.get_prev_value("decclin", int)
-            p_field = self.get_prev_value(field, int)
+            p_decclin = self.__get_last_set("decclin")
+            p_field = self.__get_last_set(field)
 
             if p_decclin == 1 and p_field == 9:
                 return 9
@@ -704,7 +721,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if value is not None:
             return value
 
-        p_decclin = self.get_prev_value("decclin", int)
+        p_decclin = self.__get_last_set("decclin")
         if p_decclin == 1 and self.__b9chg == 1:
             return 9
 
@@ -726,12 +743,12 @@ class UDSFormB9Missingness(UDSMissingness):
             return 0
 
         if self.__b9chg in [1, 3] and value is None:
-            p_decclin = self.get_prev_value("decclin", int)
+            p_decclin = self.__get_last_set("decclin")
             if p_decclin == 0:
                 return 0
 
             elif p_decclin == 1:
-                p_value = self.get_prev_value(field, int)
+                p_value = self.__get_last_set(field)
                 if p_value == 88:
                     return 0
                 if p_value is not None:
@@ -752,7 +769,6 @@ class UDSFormB9Missingness(UDSMissingness):
             return 9
 
         return self.generic_missingness("decsub", int)
-
 
     def __check_v3_distinction(self, field: str) -> bool:
         """REGRESSION: I think this check is a bug in the legacy

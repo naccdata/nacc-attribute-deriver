@@ -6,9 +6,6 @@ will now be found in either D1a or D1b.
 
 from typing import Optional
 
-from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
-
 from .helpers.d1_base import UDSFormD1Missingness
 
 

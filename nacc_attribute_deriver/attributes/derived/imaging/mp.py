@@ -26,7 +26,7 @@ from nacc_attribute_deriver.attributes.namespace.image_namespace import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
@@ -41,7 +41,7 @@ class MPAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable) -> None:
         self.__mp = MixedProtocolNamespace(table=table)
-        self.__working = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
         self.__subject = SubjectDerivedNamespace(table=table)
 
     @property
@@ -49,7 +49,7 @@ class MPAttributeCollection(AttributeCollection):
         return self.__mp
 
     @property
-    def working(self) -> WorkingDerivedNamespace:
+    def working(self) -> WorkingNamespace:
         return self.__working
 
     def get_date(self) -> Optional[date]:

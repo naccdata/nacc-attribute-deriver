@@ -8,8 +8,8 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     PreviousRecordNamespace,
-    T,
 )
+from nacc_attribute_deriver.attributes.namespace.namespace import T, WorkingNamespace
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
@@ -68,14 +68,37 @@ class UDSAttributeCollection(AttributeCollection):
 
     def get_prev_value(
         self,
-        field: str,
+        attribute: str,
         attr_type: Type[T],
         default: Optional[T] = None,
+        working: Optional[WorkingNamespace] = None,
     ) -> Optional[T]:
-        """Get the previous value."""
+        """Get the previous value.
+
+        REGRESSION: It seems in some cases (namely on B9), the 777/prev code
+        can actually pull across several visits. So it needs to actually
+        consider the last time the value was set at all, not necessarily the
+        previous visit.
+
+        Basically, if this is passed a working namespace, try to grab from
+        there first. Then try to pull from the previous record. Especially
+        because previous record might resolve to a missingness value that
+        we don't necessarily want.
+
+        (TODO: maybe conflating that too much. Those looking at working want
+        the RAW value whereas all others want the RESOLVED value, which is
+        after missingness is applied).
+        """
+        if working:
+            result = working.get_cross_sectional_value(
+                attribute, attr_type, default=default
+            )
+            if result is not None:
+                return result
+
         if self.__prev_record is not None:
             return self.__prev_record.get_resolved_value(
-                field, attr_type, default=default
+                attribute, attr_type, default=default
             )
 
         return None
@@ -85,13 +108,13 @@ class UDSMissingness(UDSAttributeCollection):
     """Class to handle UDS missingness values."""
 
     def generic_missingness(
-        self, field: str, attr_type: Type[T], default: Optional[T] = None
+        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
     ) -> Optional[T]:
         """Generic missingness:
 
         If FIELD is None, FIELD = -4 / -4.4 / blank
         """
-        if self.uds.get_value(field, str) is None:
+        if self.uds.get_value(attribute, str) is None:
             if default is not None:
                 return default
 
@@ -109,7 +132,7 @@ class UDSMissingness(UDSAttributeCollection):
         return None
 
     def handle_gated_writein(
-        self, gate: str, field: str, values: List[int], include_none: bool = False
+        self, gate: str, attribute: str, values: List[int], include_none: bool = False
     ) -> Optional[str]:
         """Handles generic write-in logic in the form:
 
@@ -119,7 +142,7 @@ class UDSMissingness(UDSAttributeCollection):
         if gate_value in values or (include_none and gate_value is None):
             return INFORMED_BLANK
 
-        return self.generic_missingness(field, str)
+        return self.generic_missingness(attribute, str)
 
     def handle_forbidden_gated_writein(self, gate: str, value: int) -> Optional[str]:
         """Handles write-in blanks that rely on a gate variable in the form: If
@@ -147,11 +170,11 @@ class UDSMissingness(UDSAttributeCollection):
 
     def handle_prev_visit(
         self,
-        field: str,
+        attribute: str,
         attr_type: Type[T],
         prev_code: Optional[T] = None,
         default: Optional[T] = None,
-        cross_sectional: bool = False
+        working: Optional[WorkingNamespace] = None,
     ) -> Optional[T]:
         """Handle when the value could be provided by the previous visit.
 
@@ -161,15 +184,13 @@ class UDSMissingness(UDSAttributeCollection):
         """
         # no prev record expected if true initial packet (I4 does not count)
         if not self.uds.is_initial() or self.uds.is_i4():
-            value = self.uds.get_value(field, attr_type)
+            value = self.uds.get_value(attribute, attr_type)
 
             if value == prev_code:
                 prev_value = self.get_prev_value(
-                    field,
-                    attr_type,
-                    default=default,
-                    cross_sectional=cross_sectional)
+                    attribute, attr_type, default=default, working=working
+                )
                 if prev_value is not None:
                     return prev_value
 
-        return self.generic_missingness(field, attr_type, default=default)
+        return self.generic_missingness(attribute, attr_type, default=default)

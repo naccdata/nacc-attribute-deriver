@@ -5,9 +5,7 @@ Only in V2.
 
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_collection import (
-    UDSMissingness
-)
+from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 
 
 class UDSFormB2Missingness(UDSMissingness):

@@ -18,6 +18,7 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
@@ -32,11 +33,17 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
 
         # if b9chg == 1 was selected in version 1.2 of UDS (no meaningful changes),
         # indicates NACC has brought forward data from previous visit
         self.__b9_changes = self.uds.get_value("b9chg", int) in [1, 3]
         self.__decclin = self.uds.get_value("decclin", int)
+
+    def __get_last_set(self, field: str) -> Optional[int]:
+        """B9 potentially pulls across multiple visits to get the last time the
+        field was ever set, so need to pass the working namespace."""
+        return self.get_prev_value(field, int, working=self.__working)
 
     def harmonize_befrst(self) -> Optional[int]:
         """Updates BEFRST for NACCBEHF harmonization.
@@ -59,7 +66,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         value = self.uds.get_value(target_var, int)
         if value == 777:
-            value = self.get_prev_value(target_var, int)
+            value = self.__get_last_set(target_var)
 
         if value is None:
             return INFORMED_MISSINGNESS
@@ -101,9 +108,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             elif self.__decclin == 0:
                 return 0
 
-        p_decclin = self.get_prev_value("decclin", int)
-        p_befrst = self.get_prev_value("befrst", int)
-        p_befpred = self.get_prev_value("befpred", int)
+        p_decclin = self.__get_last_set("decclin")
+        p_befrst = self.__get_last_set("befrst")
+        p_befpred = self.__get_last_set("befpred")
 
         if befrst == 88 or (self.__b9_changes and p_decclin == 0):
             naccbehf = 0
@@ -191,9 +198,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         cogfpred = self.uds.get_value("cogfpred", int)
         nacccogf = None
 
-        p_decclin = self.get_prev_value("decclin", int)
-        p_cogfrst = self.get_prev_value("cogfrst", int)
-        p_cogfpred = self.get_prev_value("cogfpred", int)
+        p_decclin = self.__get_last_set("decclin")
+        p_cogfrst = self.__get_last_set("cogfrst")
+        p_cogfpred = self.__get_last_set("cogfpred")
 
         # see note in _create_naccbehf; same situation
         if cogfrst is None and cogfpred is None:
@@ -242,8 +249,8 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 return 0
 
         naccmotf = None
-        p_decclin = self.get_prev_value("decclin", int)
-        p_mofrst = self.get_prev_value("mofrst", int)
+        p_decclin = self.__get_last_set("decclin")
+        p_mofrst = self.__get_last_set("mofrst")
 
         if mofrst and mofrst not in [0, 88]:
             naccmotf = mofrst

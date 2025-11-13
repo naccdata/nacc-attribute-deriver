@@ -219,12 +219,11 @@ class TestUDSFormB9Missingness:
                 "packet": "I",
                 "decclin": 1,
                 "decclbe": None,
-                "bevwell": 0  # should use this
+                "bevwell": 0,  # should use this
             }
         )
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_bevwell() is None
-
 
     def test_beagit(self, uds_table):
         """Tests missingness for BEAGIT."""
@@ -249,7 +248,7 @@ class TestUDSFormB9Missingness:
                 "packet": "I",
                 "decclin": 1,
                 "decclbe": None,
-                "beothr": 9  # should recode to 0
+                "beothr": 9,  # should recode to 0
             }
         )
         attr = UDSFormB9Missingness(uds_table)
@@ -263,7 +262,7 @@ class TestUDSFormB9Missingness:
                 "packet": "I",
                 "decclin": 1,
                 "decclmot": None,
-                "momopark": 88  # should recode to 8
+                "momopark": 88,  # should recode to 8
             }
         )
         attr = UDSFormB9Missingness(uds_table)
@@ -277,7 +276,7 @@ class TestUDSFormB9Missingness:
                 "packet": "I",
                 "decclin": 1,
                 "decclbe": None,
-                "berem": 1  # should use this
+                "berem": 1,  # should use this
             }
         )
         attr = UDSFormB9Missingness(uds_table)
@@ -286,12 +285,53 @@ class TestUDSFormB9Missingness:
     def test_bevhago(self, uds_table):
         """Tests missingness for BEVHAGO."""
         uds_table["file.info.forms.json"].update(
-            {
-                "formver": 3.0,
-                "packet": "I",
-                "bevhall": 1,
-                "bevhago": None
-            }
+            {"formver": 3.0, "packet": "I", "bevhall": 1, "bevhago": None}
         )
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_bevhago() == 888
+
+    def test_decage_get_last_set(self, uds_table):
+        """Tests DECAGE when the last set value was several visits ago."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "F",
+                "decage": "777",
+            }
+        )
+
+        # set prev record but these should be ignored in favor
+        # of the working namespace
+        uds_table["_prev_record.info.forms.json"].update(
+            {
+                "decage": None,
+            }
+        )
+
+        # set working namespace, which is where it should
+        # actually be grabbing values
+        uds_table["subject.info.working.cross-sectional"] = {"decage": "78"}
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_decage() == 78
+
+    def test_decage_prev_visit(self, uds_table):
+        """Tests DECAGE from previous visit."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "F",
+                "decage": "777",
+            }
+        )
+
+        uds_table["_prev_record.info.forms.json"].update(
+            {
+                "decage": 65,
+            }
+        )
+
+        uds_table["subject.info.working.cross-sectional"] = {"decage": None}
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_decage() == 65

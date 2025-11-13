@@ -5,11 +5,9 @@ from importlib import resources
 from typing import Dict, Optional
 
 from nacc_attribute_deriver import config
-from nacc_attribute_deriver.attributes.collection.uds_collection import (
-    UDSMissingness
-)
+from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
@@ -44,7 +42,7 @@ UDSMEDS = load_udsmeds()
 class UDSFormA4Missingness(UDSMissingness):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        working = WorkingDerivedNamespace(table=table)
+        working = WorkingNamespace(table=table)
 
         # grab corresponding drugs list, curated from MEDS file
         if self.formver < 4:

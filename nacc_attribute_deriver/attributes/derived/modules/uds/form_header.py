@@ -8,7 +8,7 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
@@ -26,7 +26,7 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__working = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def get_current_visitdate(self) -> datetime.date:

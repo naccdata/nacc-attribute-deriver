@@ -179,8 +179,8 @@ class BaseNamespace:
     def map_attributes(
         self, attributes: List[str], attr_type: Type[T]
     ) -> Dict[str, T | None]:
-        """Group attributes into a mapping, from key to value.
-        Assumes all are the same type.
+        """Group attributes into a mapping, from key to value. Assumes all are
+        the same type.
 
         Args:
             attributes: List of attributes to grab
@@ -424,7 +424,7 @@ class SubjectDerivedNamespace(BaseNamespace):
         return None if prev_record is None else prev_record.value
 
 
-class WorkingDerivedNamespace(SubjectDerivedNamespace):
+class WorkingNamespace(SubjectDerivedNamespace):
     """Similar to SubjectDerivedNamespace but specifically for
     working/temporary variables."""
 

@@ -102,19 +102,9 @@ class TestUDSFormB8Missingness:
         assert attr._missingness_postinst() == 0
 
         # V3 - falls to parksign case
-        uds_table["file.info.forms.json"].update(
-            {
-                "normexam": 1,
-                "parksign": 0
-            }
-        )
+        uds_table["file.info.forms.json"].update({"normexam": 1, "parksign": 0})
         assert attr._missingness_postinst() == 0
 
         # V3 - falls to neither case
-        uds_table["file.info.forms.json"].update(
-            {
-                "normexam": None,
-                "parksign": None
-            }
-        )
+        uds_table["file.info.forms.json"].update({"normexam": None, "parksign": None})
         assert attr._missingness_postinst() == INFORMED_MISSINGNESS

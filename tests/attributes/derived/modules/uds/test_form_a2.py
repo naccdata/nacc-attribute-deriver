@@ -46,12 +46,9 @@ class TestUDSFormA2Attribute:
 
     def test_create_naccninr_initial(self, table):
         """Tests NACCNINR behavior on initial visit."""
-        table["file.info.forms.json"].update({
-            "packet": "I",
-            "formver": 1.0,
-            "a2sub": 0,
-            "newinf": None
-        })
+        table["file.info.forms.json"].update(
+            {"packet": "I", "formver": 1.0, "a2sub": 0, "newinf": None}
+        )
         attr = UDSFormA2Attribute(table)
 
         # if initial but not submitted, should return -4

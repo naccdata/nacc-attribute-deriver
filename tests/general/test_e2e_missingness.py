@@ -11,7 +11,9 @@ def test_uds_form(uds_table):
     """Test UDS."""
     deriver = MissingnessDeriver(missingness_level="test")
 
-    uds_table["file.info.forms.json"].update({"height": "53.1", "heigdec": "5", "trailb": "996"})
+    uds_table["file.info.forms.json"].update(
+        {"height": "53.1", "heigdec": "5", "trailb": "996"}
+    )
 
     deriver.curate(uds_table, "uds")
 
@@ -19,7 +21,7 @@ def test_uds_form(uds_table):
         "npiqinf": -4,
         "npiqinfx": None,
         "height": 53.6,
-        "trailbrr": 96
+        "trailbrr": 96,
     }
 
 

@@ -8,7 +8,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
@@ -38,7 +38,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
     ) -> None:
         """Override initializer to set other module prefixes."""
         self.__uds = UDSNamespace(table)
-        self.__working = WorkingDerivedNamespace(
+        self.__working = WorkingNamespace(
             table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
         self.__subject_derived = SubjectDerivedNamespace(table=table)

@@ -3,6 +3,7 @@ Scores. In V4 these are the C2/C2T forms.
 
 One of form (C1 or C2)/(C2 or C2T) is expected to have been submitted.
 """
+
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (

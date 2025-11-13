@@ -355,8 +355,11 @@ class TestUDSFormA3Attribute:
         assert attr._create_naccom() == 1
 
     def test_create_naccam_v3_case(self, table, form_prefix, subject_derived_prefix):
-        """Test create NACCAM when there are a pile of V2 visits before
-        a V3 one. Starts at -4 and expected to change to 9 once we get to V3."""
+        """Test create NACCAM when there are a pile of V2 visits before a V3
+        one.
+
+        Starts at -4 and expected to change to 9 once we get to V3.
+        """
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", -4)
         set_attribute(table, form_prefix, "formver", 2)
         attr = UDSFormA3Attribute(table)

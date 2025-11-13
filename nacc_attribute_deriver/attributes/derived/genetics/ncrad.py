@@ -14,7 +14,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     RawNamespace,
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -40,7 +40,7 @@ class NCRADAPOEAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Override initializer to set prefix to NCRAD-specific data."""
         self.__apoe = RawNamespace(table, required=frozenset(["a1", "a2"]))
-        self.__working = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
 
     def _create_naccapoe(self) -> int:
         """Comes from derive.sas and derivenew.sas (same code)

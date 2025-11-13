@@ -416,3 +416,15 @@ pet_dicom,naccapta,file.info.derived.naccapta,update,FALSE
 pet_dicom,naccaptf,file.info.derived.naccaptf,update,FALSE
 pet_dicom,naccapnm,file.info.derived.naccapnm,update,FALSE
 pet_dicom,naccaptd,file.info.derived.naccaptd,update,FALSE
+uds,frstchg,subject.info.working.cross-sectional.frstchg,update,FALSE
+uds,cogfpred,subject.info.working.cross-sectional.cogfpred,update,FALSE
+uds,befpred,subject.info.working.cross-sectional.befpred,update,FALSE
+uds,mofrst,subject.info.working.cross-sectional.mofrst,update,FALSE
+uds,decage,subject.info.working.cross-sectional.decage,update,FALSE
+uds,cogflago,subject.info.working.cross-sectional.cogflago,update,FALSE
+uds,bevhago,subject.info.working.cross-sectional.bevhago,update,FALSE
+uds,arkage,subject.info.working.cross-sectional.arkage,update,FALSE
+uds,alsage,subject.info.working.cross-sectional.alsage,update,FALSE
+uds,moage,subject.info.working.cross-sectional.moage,update,FALSE
+uds,beremago,subject.info.working.cross-sectional.beremago,update,FALSE
+uds,beage,subject.info.working.cross-sectional.beage,update,FALSE

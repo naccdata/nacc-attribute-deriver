@@ -1,5 +1,4 @@
-"""
-Handles COGOTH reordering in form D1a.
+"""Handles COGOTH reordering in form D1a.
 
 See end of d1structrdd.sas for original reordering code. Essentially,
 we may need to move groups of variables up, for example:
@@ -12,21 +11,19 @@ basis the way attributes are usually handled, and will always force-resolve.
 This helper does this on instantiation instead, and the missingness rules
 will pull directly from the results.
 """
+
 from typing import Optional, Type
 
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     T,
 )
-
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 from .d1_base import UDSFormD1Missingness
 
 
 class D1aCOGOTHXHelper(UDSFormD1Missingness):
-
     def __init__(self, table: SymbolTable) -> None:
         super().__init__(table)
 
@@ -40,7 +37,7 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
             "cogoth3f": self.handle_cognitive_impairment_gate("cogoth3", "cogoth3f"),
             "cogothx": self.generic_missingness("cogothx", str),
             "cogoth2x": self.generic_missingness("cogoth2x", str),
-            "cogoth3x": self.generic_missingness("cogoth3x", str)
+            "cogoth3x": self.generic_missingness("cogoth3x", str),
         }
 
         # resolve as needed - missingness may be None
@@ -76,30 +73,36 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
         attributes = self.__attributes
         if attributes["cogoth"] == 0:
             if attributes["cogoth2"] == 1:
-                attributes.update({
-                    "cogoth": attributes["cogoth2"],
-                    "cogothif": attributes["cogoth2f"],
-                    "cogothx": attributes["cogoth2x"],
-                    "cogoth2": attributes["cogoth"],
-                    "cogoth2f": attributes["cogothif"],
-                    "cogoth2x": attributes["cogothx"]
-                })
+                attributes.update(
+                    {
+                        "cogoth": attributes["cogoth2"],
+                        "cogothif": attributes["cogoth2f"],
+                        "cogothx": attributes["cogoth2x"],
+                        "cogoth2": attributes["cogoth"],
+                        "cogoth2f": attributes["cogothif"],
+                        "cogoth2x": attributes["cogothx"],
+                    }
+                )
 
             if attributes["cogoth3"] == 1:
-                attributes.update({
-                    "cogoth": attributes["cogoth3"],
-                    "cogothif": attributes["cogoth3f"],
-                    "cogothx": attributes["cogoth3x"],
-                    "cogoth3": attributes["cogoth"],
-                    "cogoth3f": attributes["cogothif"],
-                    "cogoth3x": attributes["cogothx"]
-                })
+                attributes.update(
+                    {
+                        "cogoth": attributes["cogoth3"],
+                        "cogothif": attributes["cogoth3f"],
+                        "cogothx": attributes["cogoth3x"],
+                        "cogoth3": attributes["cogoth"],
+                        "cogoth3f": attributes["cogothif"],
+                        "cogoth3x": attributes["cogothx"],
+                    }
+                )
         if attributes["cogoth3"] == 1 and attributes["cogoth2"] != 1:
-            attributes.update({
-                "cogoth2": attributes["cogoth3"],
-                "cogoth2f": attributes["cogoth3f"],
-                "cogoth2x": attributes["cogoth3x"],
-                "cogoth3": attributes["cogoth2"],
-                "cogoth3f": attributes["cogoth2f"],
-                "cogoth3x": attributes["cogoth2x"],
-            })
+            attributes.update(
+                {
+                    "cogoth2": attributes["cogoth3"],
+                    "cogoth2f": attributes["cogoth3f"],
+                    "cogoth2x": attributes["cogoth3x"],
+                    "cogoth3": attributes["cogoth2"],
+                    "cogoth3f": attributes["cogoth2f"],
+                    "cogoth3x": attributes["cogoth2x"],
+                }
+            )

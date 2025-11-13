@@ -1,15 +1,12 @@
-"""
-Handles core D1 functionality.
+"""Handles core D1 functionality.
 
-In V4, form D1 was split into D1a and D1b. However they still
-share a lot of core functionality, so extract base class for
-them to use.
+In V4, form D1 was split into D1a and D1b. However they still share a
+lot of core functionality, so extract base class for them to use.
 """
+
 from typing import Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_collection import (
-    UDSMissingness
-)
+from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 

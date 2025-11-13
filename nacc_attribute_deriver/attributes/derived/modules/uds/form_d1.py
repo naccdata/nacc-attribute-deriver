@@ -13,7 +13,7 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -24,7 +24,7 @@ class UDSFormDxAttribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table, uds_required=frozenset(["normcog"]))
         self.subject_derived = SubjectDerivedNamespace(table=table)
-        self.working = WorkingDerivedNamespace(table=table)
+        self.working = WorkingNamespace(table=table)
         self.normcog = self.uds.get_required("normcog", int)
         self.demented = self.uds.get_value("demented", int)
 

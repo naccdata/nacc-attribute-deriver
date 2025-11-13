@@ -16,7 +16,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
     SubjectDerivedNamespace,
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import create_death_date
@@ -29,7 +29,7 @@ from nacc_attribute_deriver.utils.errors import (
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
         self.__milestone = FormNamespace(table=table, required=frozenset(["module"]))
-        self.__working = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         self.__deceased = self.__milestone.get_value("deceased", int)

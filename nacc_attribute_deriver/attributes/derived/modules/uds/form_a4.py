@@ -17,7 +17,7 @@ from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     RxClassNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
@@ -29,7 +29,7 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     def __init__(self, table: SymbolTable):
         super().__init__(table)
-        self.__working = WorkingDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
         self.__rxclass = RxClassNamespace(table=table)
         self.__meds = self.__load_drugs_list()
 

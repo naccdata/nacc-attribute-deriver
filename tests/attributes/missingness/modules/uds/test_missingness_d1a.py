@@ -34,6 +34,7 @@ class TestUDSFormD1aMissingness:
 
     def test_cogothx_reordering(self, uds_table):
         """Tests when we need to reorder the COGOTH variables.
+
         3 needs to move up to 1
         """
         uds_table["file.info.forms.json"].update(
@@ -49,7 +50,7 @@ class TestUDSFormD1aMissingness:
                 "cogoth3f": 1,
                 "cogothx": None,
                 "cogoth2x": None,
-                "cogoth3x": "some text"
+                "cogoth3x": "some text",
             }
         )
         attr = UDSFormD1aMissingness(uds_table)

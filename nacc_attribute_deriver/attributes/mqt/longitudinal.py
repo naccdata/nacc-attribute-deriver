@@ -9,7 +9,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import get_unique_years
@@ -19,7 +19,7 @@ class LongitudinalAttributeCollection(AttributeCollection):
     """Class to collect longitudinal attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__working = WorkingDerivedNamespace(
+        self.__working = WorkingNamespace(
             table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
 

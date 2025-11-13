@@ -5,9 +5,7 @@
 
 from typing import Any, List, Optional
 
-from nacc_attribute_deriver.attributes.collection.uds_collection import (
-    UDSMissingness
-)
+from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 
 
 class UDSFormA4aMissingness(UDSMissingness):

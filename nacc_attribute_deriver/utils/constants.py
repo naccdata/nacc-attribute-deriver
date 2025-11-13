@@ -81,5 +81,5 @@ REGRESSION_VARIABLES = [
     "trailarr",
     "trailali",
     "trailbrr",
-    "trailbli"
+    "trailbli",
 ]

@@ -49,22 +49,12 @@ class TestUDSFormC1C2Missingness:
     def test_memtime(self, uds_table):
         """Tests missingness for MEMTIME."""
         uds_table["file.info.forms.json"].update(
-            {
-                "formver": 1.0,
-                "packet": "I",
-                "memtime": 88,
-                "memunits": 97
-            }
+            {"formver": 1.0, "packet": "I", "memtime": 88, "memunits": 97}
         )
         attr = UDSFormC1C2Missingness(uds_table)
         assert attr._missingness_memtime() == INFORMED_MISSINGNESS
 
-        uds_table["file.info.forms.json"].update(
-            {
-                "memtime": 88,
-                "memunits": 0
-            }
-        )
+        uds_table["file.info.forms.json"].update({"memtime": 88, "memunits": 0})
         attr = UDSFormC1C2Missingness(uds_table)
         assert attr._missingness_memtime() == 99
 
@@ -76,7 +66,7 @@ class TestUDSFormC1C2Missingness:
                 "packet": "I",
                 "trailb": "996",
                 "trailbrr": None,
-                "trailbli": None
+                "trailbli": None,
             }
         )
         attr = UDSFormC1C2Missingness(uds_table)

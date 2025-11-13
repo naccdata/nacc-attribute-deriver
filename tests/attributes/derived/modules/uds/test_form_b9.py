@@ -157,3 +157,32 @@ class TestUDSFormB9Attribute:
         # out of range
         base_table["_prev_record.info.forms.json.cogfrst"] = 15
         assert attr._create_nacccogf() == 15
+
+    def test_nacccogf_get_last_set(self, base_table):
+        """Tests NACCCOGF when the last set value was several visits ago."""
+        base_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "F",
+                "decclin": None,
+                "cogfrst": None,
+                "cogfpred": "0",
+            }
+        )
+
+        # set prev record but these should be ignored in favor
+        # of the working namespace
+        base_table["_prev_record.info.forms.json"].update(
+            {"decclin": None, "cogfrst": None, "cogfpred": None}
+        )
+
+        # set working namespace, which is where it should
+        # actually be grabbing values
+        base_table["subject.info.working.cross-sectional"] = {
+            "decclin": None,
+            "cogfrst": None,
+            "cogfpred": "1",
+        }
+
+        attr = UDSFormB9Attribute(base_table)
+        assert attr._create_nacccogf() == 1
