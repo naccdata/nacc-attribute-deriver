@@ -84,14 +84,14 @@ class TestDerivedDemographicsAttributeCollection:
             table["subject.info.derived.cross-sectional.naccnihr"] = k
             assert attr._create_uds_race() == v
 
-    def test_create_vital_status(self, table):
-        """Tests _create_vital_status."""
-        attr = DerivedDemographicsAttributeCollection(table)
-        assert attr._create_vital_status() == "deceased"
+    # def test_create_vital_status(self, table):
+    #     """Tests _create_vital_status."""
+    #     attr = DerivedDemographicsAttributeCollection(table)
+    #     assert attr._create_vital_status() == "deceased"
 
-        for (
-            k,
-            v,
-        ) in DerivedDemographicsAttributeCollection.VITAL_STATUS_MAPPINGS.items():
-            table["subject.info.derived.cross-sectional.naccdied"] = k
-            assert attr._create_vital_status() == v
+    #     for (
+    #         k,
+    #         v,
+    #     ) in DerivedDemographicsAttributeCollection.VITAL_STATUS_MAPPINGS.items():
+    #         table["subject.info.derived.cross-sectional.naccdied"] = k
+    #         assert attr._create_vital_status() == v

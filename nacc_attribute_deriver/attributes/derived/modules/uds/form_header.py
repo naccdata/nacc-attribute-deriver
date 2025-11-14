@@ -122,6 +122,10 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         (MDS) and Uniform Data Set (UDS)
 
         This is more cross-form, but we are setting it additively.
+
+        1: In the UDS and MDS
+        2: In MDS only
+        3: In UDS only
         """
         status = self.__subject_derived.get_cross_sectional_value("naccmdss", int)
 

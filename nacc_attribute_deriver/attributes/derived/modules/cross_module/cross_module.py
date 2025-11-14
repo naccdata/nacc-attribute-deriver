@@ -38,7 +38,6 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """Initializer."""
         self.__subject_derived = SubjectDerivedNamespace(table=table)
         self.__working = WorkingNamespace(table=table)
-        self.__table = table
 
     def __working_value(self, attribute: str, attribute_type: Type[T]) -> Optional[T]:
         """Grab cross-sectional working value."""
@@ -78,6 +77,26 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         sorted_visitdates = sorted(list(visitdates))
         return date_from_form_date(sorted_visitdates[-1])
+
+    def __determine_prespart(self) -> int:
+        """Generally, PRESPART = 1 means initial visit only. However,
+        if they ended up having more UDS visits, that means they are
+        effectively ignoring/changing that and the participant is
+        actually active, so override the value of PRESPART.
+
+        Returns:
+            1: If PRESPART == 1 and only the initial visit exists
+            0: If PRESPART != 1 or multiple UDS visits (indicating follow-ups)
+        """
+        prespart = self.__working_value("prespart", int)
+        if prespart == 1:
+            # check if they really only had an initial visit by looking at
+            # number of uds visits
+            uds_visitdates = self.__working_value("uds-visitdates", list)
+            if uds_visitdates and len(uds_visitdates) > 1:
+                return 0
+
+        return prespart if prespart is not None else 0
 
     ########################
     # NP DERIVED VARIABLES #
@@ -166,10 +185,11 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         Month of death. In Milestone and MDS, the month can be unknown
         (99) so need to inspect directly.
+
+        REGRESSION: RDD only mentions NP/MLST. Ignore MDS?
         """
         # check vital status
-        naccdied = self._create_naccdied()
-        if not naccdied:
+        if not self._create_naccdied():
             return 88
 
         # NP will always have a known month
@@ -184,9 +204,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return milestone_mo
 
         # MDS death month may be 99
-        mds_mo = self.__working_value("mds-death-month", int)
-        if mds_mo is not None and mds_mo != 99:
-            return mds_mo
+        # mds_mo = self.__working_value("mds-death-month", int)
+        # if mds_mo is not None and mds_mo != 99:
+        #     return mds_mo
 
         return 99
 
@@ -195,8 +215,15 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """Create the NACCYOD variable.
 
         Year of death.
+
+        REGRESSION: RDD only mentions NP/MLST. Ignore MDS?
         """
-        # year always defined if death date exists, even for MDS
+        # check vital status
+        if not self._create_naccdied():
+            return 8888
+
+        # year always defined if death date exists
+        # note MDS will not trigger the NACCDIED case
         deathdate = self.__determine_death_date()
 
         # Explicitly states in rdd-np that this shouldn't precede 1970.
@@ -204,10 +231,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if deathdate:
             return deathdate.year if (deathdate.year >= 1970) else 9999
 
-        if self._create_naccdied() == 1:
-            return 9999
-
-        return 8888
+        return 9999
 
     def uds_came_after(self, target_date: date | None) -> bool:
         """Compares UDS and given target dates.
@@ -258,7 +282,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
                     UDS visits after the date of the discontinued MLST form
             2: Minimal contact with ADC but still enrolled
         """
-        # if dead, return 0
+        # if dead (from NP/MLST), return 0
         if self._create_naccdied() == 1:
             return 0
 
@@ -273,7 +297,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 0
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
-        if self.__working_value("prespart", int) == 1:
+        if self.__determine_prespart() == 1:
             return 0
 
         # 5 used for affiliates in SAS/R code
@@ -290,10 +314,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if protocol == 2:
             return 2
 
-        # protocol == 1 or 3, or just using 1 by default since this is an UDS
-        # visit and we didn't hit any of the above non-active conditions
-        # This also handles the case where they had prespart == 1 at initial
-        # visits but then continued to have followup visits
+        # protocol == 1 or 3, or just using 1 by default
         return 1
 
     def _create_naccnovs(self) -> int:
@@ -305,7 +326,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # otherwise purely based on MLST
         recent_mlst = self.__get_latest_visitdate("milestone-visitdates")
         if recent_mlst:
-            prespart = self.__working_value("prespart", int)
+            prespart = self.__determine_prespart()
             if self.uds_came_after(recent_mlst) and prespart == 1:
                 return 8
 
@@ -324,7 +345,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         Looks at both Milestone and Form A1.
 
         NOTE: After discussion with RT, this is the agreed-upon behavior:
-            By default always 0
+            By default always 0 (did not permenantly move to nursing home)
             Can only change (become 1) through an MLST form indicating PERMANENT move
             to a nursing home (RENURSE == 1)
                 This can become a 0 if a later UDS has

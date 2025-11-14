@@ -12,6 +12,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
@@ -87,9 +88,10 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(
             table=table,
             required=frozenset(
-                [f"cross-sectional.{x}" for x in ["naccnihr", "naccdied"]]
+                [f"cross-sectional.{x}" for x in ["naccnihr"]]
             ),
         )
+        self.__working = WorkingNamespace(table=table)
 
     def get_date(self) -> Optional[datetime.date]:
         return self.__uds.get_date()
@@ -121,8 +123,21 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> str:
-        """Creates subject.info.demographics.uds.vital-status.latest."""
-        naccdied = self.__subject_derived.get_cross_sectional_value("naccdied", int)
+        """Creates subject.info.demographics.uds.vital-status.latest.
+
+        Same logic as NACCDIED, however we cannot rely on cross-module derived
+        variables for MQT as it is tied to the UDS scope. At some point need to
+        clean this up.
+        """
+        naccdied = 0
+        death_age = self.__working.get_cross_sectional_value("np-death-age", int)
+        if death_age is not None:
+            naccdied = 1
+        else:
+            deceased = self.__working.get_cross_sectional_value("milestone-deceased", int)
+            if deceased == 1:
+                naccdied = 1 
+
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)  # type: ignore
 
         if not mapped_naccdied:
