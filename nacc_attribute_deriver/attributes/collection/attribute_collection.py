@@ -9,7 +9,7 @@ import datetime
 import logging
 from inspect import isfunction
 from types import FunctionType
-from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Type
 
 from pydantic import BaseModel, ConfigDict
 
@@ -150,23 +150,6 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                 return attr
 
         return None
-
-    @staticmethod
-    def is_target_int(value: Union[int, str, None], target: int) -> bool:
-        """Check whether the value is the specified target int. This might be
-        overkill but wanted it to handle str/int comparisons.
-
-        Args:
-            value: Field to check
-            target: Target to check against
-        """
-        if not value:
-            return False
-
-        try:
-            return int(value) == target
-        except ValueError:
-            return False
 
     def get_date(self) -> Optional[datetime.date]:
         """Get date corresponding to this attribute collection from a specific

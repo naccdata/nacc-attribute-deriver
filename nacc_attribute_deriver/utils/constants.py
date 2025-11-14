@@ -80,4 +80,6 @@ REGRESSION_VARIABLES = [
     "trailali",
     "trailbrr",
     "trailbli",
+    "cogoth2f",
+    "cogoth3f",
 ]

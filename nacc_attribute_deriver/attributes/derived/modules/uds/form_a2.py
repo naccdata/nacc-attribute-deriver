@@ -37,31 +37,41 @@ class UDSFormA2Attribute(UDSAttributeCollection):
 
         May need to carry forward value.
         """
-        if self.formver == 4 or (not self.submitted and self.uds.is_initial()):
+        # if self.formver == 4 or (not self.submitted and self.uds.is_initial()):
+        # REGRESSION: seems A2SUB not reliable?
+        if self.formver == 4:
             return INFORMED_MISSINGNESS
 
+        # newinf = self.uds.get_value("newinf", int)
+        # if not self.uds.is_initial() and newinf != 1:
+        #     # may need to carry forward from previous record
+        #     naccninr = None
+        #     if self.prev_record:
+        #         naccninr = self.prev_record.get_derived_value("naccninr", int)
+
+        #     return naccninr if naccninr is not None else INFORMED_MISSINGNESS
+
         newinf = self.uds.get_value("newinf", int)
-        if not self.uds.is_initial() and newinf != 1:
-            # may need to carry forward from previous record
-            naccninr = None
-            if self.prev_record:
-                naccninr = self.prev_record.get_derived_value("naccninr", int)
+        if self.uds.is_initial() or newinf == 1:
+            return generate_race_v3(
+                race=self.uds.get_value("inrace", int),
+                racex=self.uds.get_value("inracex", str),
+                racesec=self.uds.get_value("inrasec", int),
+                racesecx=self.uds.get_value("inrasecx", str),
+                raceter=self.uds.get_value("inrater", int),
+                raceterx=self.uds.get_value("inraterx", str),
+            )
 
-            return naccninr if naccninr is not None else INFORMED_MISSINGNESS
+        # otherwise may need to pull forward
+        if self.prev_record:
+            naccninr = self.prev_record.get_derived_value("naccninr", int)
 
-        return generate_race_v3(
-            race=self.uds.get_value("inrace", int),
-            racex=self.uds.get_value("inracex", str),
-            racesec=self.uds.get_value("inrasec", int),
-            racesecx=self.uds.get_value("inrasecx", str),
-            raceter=self.uds.get_value("inrater", int),
-            raceterx=self.uds.get_value("inraterx", str),
-        )
+        return naccninr if naccninr is not None else INFORMED_MISSINGNESS
 
     def _create_naccincntfq(self) -> int:
         """Creates NACCINCNTFQ - frequency of contact."""
-        if not self.submitted:
-            return INFORMED_MISSINGNESS
+        # if not self.submitted:
+        #     return INFORMED_MISSINGNESS
 
         if self.formver == 4:
             inlivwth = self.uds.get_value("inlivwth", int)

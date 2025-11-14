@@ -132,3 +132,5 @@ class NPSubjectMissingness(SubjectMissingnessCollection):
 
     def _missingness_npformver(self) -> Optional[int]:
         return self.handle_subject_missing("npformver")
+
+    # this is actually curated in the context of an UDS visit

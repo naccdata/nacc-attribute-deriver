@@ -48,17 +48,18 @@ class UDSFormB3Missingness(UDSMissingness):
                 checks ensure this = 1 so this situation doesn't
                 happen
         """
-        # V4 checks this and it should be right, but I think in older
-        # versions we can't really trust this
-        # if self.uds.get_value("pdnormal", int) is not None:
-        #     return None
+        all_values = [self.uds.get_value(x, int) for x in self.ALL_B3_FIELDS]
+        if all(x == 0 for x in all_values):
+            return 1
 
         all_values = [self.uds.get_value(x, int) for x in self.ALL_B3_FIELDS]
         if any(x in [1, 2, 3, 4] for x in all_values):
             return 0
 
-        if all(x == 0 for x in all_values):
-            return 1
+        # REGRESSION: this needs to be checked after the above
+        # but before the below
+        if self.uds.get_value("pdnormal", int) is not None:
+            return None
 
         # if all blank, likely form was not filled out
         if all(x is None for x in all_values):

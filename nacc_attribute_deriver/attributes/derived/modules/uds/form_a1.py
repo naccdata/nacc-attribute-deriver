@@ -3,7 +3,6 @@
 From derive.sas and a1structrdd.sas
 """
 
-from datetime import date
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
@@ -278,6 +277,17 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
         return lvleduc
 
+    def _create_naccpaff(self) -> int:
+        """Creates NACCPAFF - Previously affiliated subject.
+
+        Always set as long as being an affiliate is ever true.
+        """
+        naccpaff = self.__subject_derived.get_cross_sectional_value("naccpaff", int)
+        if naccpaff == 1:
+            return 1
+
+        return 1 if self._create_affiliate() else 0
+
     def _create_affiliate(self) -> bool:
         """Returns whether or not the participant is an affiliate.
 
@@ -298,24 +308,3 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             return source == 4 or sourcenw == 2
 
         return False
-
-    def _create_naccpaff(self) -> int:
-        """Creates NACCPAFF - Previously affiliated subject.
-
-        Always set as long as being an affiliate is ever true.
-        """
-        naccpaff = self.__subject_derived.get_cross_sectional_value("naccpaff", int)
-        if naccpaff == 1:
-            return 1
-
-        return 1 if self._create_affiliate() else 0
-
-    def _create_educ(self) -> Optional[int]:
-        """UDS education level - this rule is used by MQT, since it
-        needs to know the latest at the global level. Other derived variables
-        looking for educ should use the get_prev_value method instead."""
-        return self.uds.get_value("educ", int)
-
-    def _create_uds_date_of_birth(self) -> date:
-        """UDS date of birth."""
-        return self.uds.generate_uds_dob()

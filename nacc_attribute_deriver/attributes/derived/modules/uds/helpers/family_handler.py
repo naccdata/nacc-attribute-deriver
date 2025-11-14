@@ -182,12 +182,12 @@ class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
             return known_value if known_value is not None else INFORMED_MISSINGNESS
 
         # if V3 and all 8, return 9
-        # TODO - I really don't think this is the correct behavior;
+        # REGRESSION - really not sure about this behavior;
         # see comments under check_neur_is_8
-        # if self.formver >= 3:
-        #     all_8s = [member.check_neur_is_8() for member in self.all_members]
-        #     if all(all_8s):
-        #         return 9
+        if self.uds.normalized_formver() >= 3:
+            all_8s = [member.check_neur_is_8() for member in self.all_members]
+            if all(all_8s):
+                return 9
 
         # get cognitive status for each family member
         family_status = [

@@ -127,7 +127,7 @@ class CognitiveAttributeCollection(AttributeCollection):
             if not value:
                 continue
 
-            if not self.is_target_int(value, expected_value):
+            if not value == expected_value:
                 continue
 
             attribute_list.append(attribute)

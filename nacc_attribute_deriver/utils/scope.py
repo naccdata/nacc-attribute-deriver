@@ -19,6 +19,7 @@ class FormScope(Scope):
     UDS = "uds"
     FTLD = "ftld"
     LBD = "lbd"
+    CROSS_MODULE = "cross_module"
 
 
 class GeneticsScope(Scope):
@@ -62,6 +63,7 @@ ScopeLiterals = Literal[
     FormScope.UDS,
     FormScope.FTLD,
     FormScope.LBD,
+    FormScope.CROSS_MODULE,
     GeneticsScope.APOE,
     GeneticsScope.HISTORIC_APOE,
     GeneticsScope.NIAGADS_AVAILABILITY,

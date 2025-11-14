@@ -43,6 +43,11 @@ class UDSFormA3Attribute(UDSAttributeCollection):
     def __handle_parents(self, derived_var: str, parent: FamilyMemberHandler) -> int:
         """Handles NACCDAD and NACCMOM."""
         known_value = self.__subject_derived.get_cross_sectional_value(derived_var, int)
+        # REGRESSION: we are now allowing these values to flip/flop, but
+        # to match regression make it stay 1 if its ever 1
+        if known_value == 1:
+            return known_value
+
         if not self.submitted:
             return known_value if known_value is not None else INFORMED_MISSINGNESS
 
@@ -67,6 +72,11 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         member with cognitive impariment.
         """
         known_value = self.__subject_derived.get_cross_sectional_value("naccfam", int)
+
+        # REGRESSION: we are now allowing these values to flip/flop, but
+        # to match regression make it stay 1 if its ever 1
+        if known_value == 1:
+            return known_value
 
         if not self.submitted:
             return known_value if known_value is not None else INFORMED_MISSINGNESS

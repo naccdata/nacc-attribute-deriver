@@ -178,28 +178,28 @@ class TestUDSFormD1aAttribute:
         attr = UDSFormD1aAttribute(table)
         assert attr._create_ivcstat() is None
 
-    def test_fvmci(self, table, form_prefix, working_derived_prefix):
-        """Tests fvmci - helper variable for naccmcii."""
-        # should return None on initial visits
-        attr = UDSFormD1aAttribute(table)
-        assert attr._create_fvmci() is None
+    # def test_fvmci(self, table, form_prefix, working_derived_prefix):
+    #     """Tests fvmci - helper variable for naccmcii."""
+    #     # should return None on initial visits
+    #     attr = UDSFormD1aAttribute(table)
+    #     assert attr._create_fvmci() is None
 
-        set_attribute(table, form_prefix, "packet", "f")
+    #     set_attribute(table, form_prefix, "packet", "f")
 
-        # should return 1 when mci == 1 and fvmci is None
-        set_attribute(table, form_prefix, "mcinon1", 1)
-        attr = UDSFormD1aAttribute(table)
-        assert attr._create_fvmci() == 1
+    #     # should return 1 when mci == 1 and fvmci is None
+    #     set_attribute(table, form_prefix, "mcinon1", 1)
+    #     attr = UDSFormD1aAttribute(table)
+    #     assert attr._create_fvmci() == 1
 
-        # test when fvmci == 1 and ivcstat == 1
-        set_attribute(table, working_derived_prefix, "cross-sectional.fvmci", 0)
-        set_attribute(table, working_derived_prefix, "cross-sectional.ivcstat", 1)
-        set_attribute(table, form_prefix, "mcinon1", 0)
-        set_attribute(table, form_prefix, "demented", 1)
-        attr = UDSFormD1aAttribute(table)
-        assert attr._create_fvmci() == 2
+    #     # test when fvmci == 1 and ivcstat == 1
+    #     set_attribute(table, working_derived_prefix, "cross-sectional.fvmci", 0)
+    #     set_attribute(table, working_derived_prefix, "cross-sectional.ivcstat", 1)
+    #     set_attribute(table, form_prefix, "mcinon1", 0)
+    #     set_attribute(table, form_prefix, "demented", 1)
+    #     attr = UDSFormD1aAttribute(table)
+    #     assert attr._create_fvmci() == 2
 
-        # mci == 1, return fvmci
-        set_attribute(table, working_derived_prefix, "cross-sectional.fvmci", 1)
-        set_attribute(table, form_prefix, "mcinon2", 1)
-        assert attr._create_fvmci() == 1
+    #     # mci == 1, return fvmci
+    #     set_attribute(table, working_derived_prefix, "cross-sectional.fvmci", 1)
+    #     set_attribute(table, form_prefix, "mcinon2", 1)
+    #     assert attr._create_fvmci() == 1

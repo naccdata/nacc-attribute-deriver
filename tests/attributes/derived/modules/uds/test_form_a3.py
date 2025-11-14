@@ -271,19 +271,36 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "kidsdem", 9)
         assert attr._create_naccfam() == 1
 
-    # def test_create_naccfam_superseded(
-    #     self, table, form_prefix, subject_derived_prefix
-    # ):
-    #     """Test NACCFAM superseded case."""
-    #     attr = UDSFormA3Attribute(table)
-    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 9)
-    #     assert attr._create_naccfam() == 9
+    def test_create_naccfam_momneur(self, table, form_prefix):
+        """Tests creating NACCFAM when mom triggers event."""
+        set_attribute(table, form_prefix, "formver", 3)
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, form_prefix, "momneur", 1)
+        set_attribute(table, form_prefix, "momprdx", 80)
+        set_attribute(table, form_prefix, "dadneur", 4)
+        set_attribute(table, form_prefix, "dadprdx", 280)
+        set_attribute(table, form_prefix, "sibs", 0)
+        set_attribute(table, form_prefix, "kids", 1)
+        set_attribute(table, form_prefix, "kid1neu", 8)
+        assert attr._create_naccfam() == 1
 
-    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 0)
-    #     assert attr._create_naccfam() == 9
+    def test_create_naccfam_superseded(
+        self, table, form_prefix, subject_derived_prefix
+    ):
+        """Test NACCFAM superseded case."""
+        # start with nothing is set
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccfam() == 9
 
-    #     set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 1)
-    #     assert attr._create_naccfam() == 1
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 9)
+        assert attr._create_naccfam() == 9
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 0)
+        assert attr._create_naccfam() == 0
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 1)
+        assert attr._create_naccfam() == 1
 
     def test_create_naccam(self, table, form_prefix, subject_derived_prefix):
         """Tests creating NACCAM."""

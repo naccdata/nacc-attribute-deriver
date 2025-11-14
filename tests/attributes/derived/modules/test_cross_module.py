@@ -8,9 +8,9 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def table(uds_table) -> SymbolTable:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
-    uds_table.update(
+    return SymbolTable(
         {
             "subject": {
                 "info": {
@@ -22,6 +22,7 @@ def table(uds_table) -> SymbolTable:
                             "mds-death-date": "2030-01-01",
                             "milestone-deceased": 1,
                             "milestone-death-date": "2050-02-02",
+                            "uds-date-of-birth": "1990-03-01",
                             "uds-visitdates": [
                                 "1980-05-06",
                                 "1980-10-10",
@@ -49,8 +50,6 @@ def table(uds_table) -> SymbolTable:
             },
         }
     )
-
-    return uds_table
 
 
 class TestCrossModuleAttribute:
@@ -90,16 +89,10 @@ class TestCrossModuleAttribute:
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccdage() == 40
 
-        # in MDS, deathyr can be 9999, in which case
-        # naccdage should be unknown
+        # date not reported
         table["subject.info.working.cross-sectional.mds-death-date"] = None
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccdage() == 999
-
-        # test death not reported
-        # table["subject.info.working.cross-sectional.mds-death-date"] = None
-        # attr = CrossModuleAttributeCollection(table)
-        # assert attr._create_naccdage() == 888
 
     def test_create_naccdied(self, table):
         """Tests _create_naccdied."""
@@ -172,7 +165,7 @@ class TestCrossModuleAttribute:
         assert attr._create_naccdsyr() == 2050
 
         # pretend UDS came after, should return 8888-88-88
-        table["file.info.forms.json.visitdate"] = "4000-01-01"
+        table["subject.info.working.cross-sectional.uds-visitdates"] = ["4000-01-01"]
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccdsdy() == 88
         assert attr._create_naccdsmo() == 88
@@ -187,21 +180,21 @@ class TestCrossModuleAttribute:
         assert attr._create_naccdsyr() == 2050
 
         # pretend UDS came after in the same year, should return 8888-88-88
-        table["file.info.forms.json.visitdate"] = "2050-05-01"
+        table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-05-01"]
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccdsdy() == 88
         assert attr._create_naccdsmo() == 88
         assert attr._create_naccdsyr() == 8888
 
         # pretend UDS came the day after, should return 8888-88-88
-        table["file.info.forms.json.visitdate"] = "2050-03-02"
+        table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-03-02"]
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccdsdy() == 88
         assert attr._create_naccdsmo() == 88
         assert attr._create_naccdsyr() == 8888
 
         # pretend UDS came the day before, should return 2050-03-01
-        table["file.info.forms.json.visitdate"] = "2050-02-28"
+        table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-02-28"]
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccdsdy() == 1
         assert attr._create_naccdsmo() == 3
@@ -214,9 +207,8 @@ class TestCrossModuleAttribute:
 
         # if UDS has residenc == 4 or 9 and came later,
         # set to 0
-        table["file.info.forms.json.visitdate"] = "2025-01-02"
         for value in [4, 9]:
-            table["file.info.forms.json.residenc"] = value
+            table["subject.info.working.cross-sectional.residenc"] = value
             assert attr._create_naccnurp() == 0
 
         # if MLST explicitly sets to 0, should be 0

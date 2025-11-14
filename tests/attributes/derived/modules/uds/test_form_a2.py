@@ -51,12 +51,25 @@ class TestUDSFormA2Attribute:
         )
         attr = UDSFormA2Attribute(table)
 
-        # if initial but not submitted, should return -4
-        assert attr._create_naccninr() == INFORMED_MISSINGNESS
+        # # if initial but not submitted, should return -4
+        # assert attr._create_naccninr() == INFORMED_MISSINGNESS
 
         # submitted, computes 99
         table["file.info.forms.json.a2sub"] = 1
         assert attr._create_naccninr() == 99
+
+        # specific case that computes 2
+        table["file.info.forms.json"].update(
+            {
+                "inrace": 2,
+                "inracex": None,
+                "inrasec": 88,
+                "inrasecx": None,
+                "inrater": 88,
+                "inraterx": None,
+            }
+        )
+        assert attr._create_naccninr() == 2
 
     def test_create_naccincntfq(self, table):
         """Tests NACCINCNTFQ."""
@@ -91,6 +104,6 @@ class TestUDSFormA2Attribute:
         table["file.info.forms.json"].update({"inlivwth": "0", "incntfrq": "6"})
         assert attr._create_naccincntfq() == 6
 
-        # not submitted
-        table["file.info.forms.json.modea2"] = 0
-        assert attr._create_naccincntfq() == INFORMED_MISSINGNESS
+        # # not submitted
+        # table["file.info.forms.json.modea2"] = 0
+        # assert attr._create_naccincntfq() == INFORMED_MISSINGNESS

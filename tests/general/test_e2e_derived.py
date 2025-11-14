@@ -97,6 +97,9 @@ def test_np_form():
                     "naccprog": 9,
                     "naccvasc": 9,
                     "npformver": 11,
+                    "naccwri1": None,
+                    "naccwri2": None,
+                    "naccwri3": None,
                 },
             }
         },
@@ -124,6 +127,9 @@ def test_np_form():
                         "naccprog": 9,
                         "naccvasc": 9,
                         "npformver": 11,
+                        "naccwri1": None,
+                        "naccwri2": None,
+                        "naccwri3": None,
                     },
                 },
                 "working": {

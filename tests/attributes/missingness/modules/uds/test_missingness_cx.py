@@ -77,12 +77,11 @@ class TestUDSFormC1C2Missingness:
 
     def test_logidate(self, uds_table):
         """Tests LOGIDATE (LOGINO, LOGIDAY, LOGIYR) variables.
-        Should parse from logidate_c1."""
+
+        Should parse from logidate_c1.
+        """
         uds_table["file.info.forms.json"].update(
-            {
-                "logidate_c1": "2025-06-09",
-                "logiprev": 8
-            }
+            {"logidate_c1": "2025-06-09", "logiprev": 8}
         )
         attr = UDSFormC1C2Missingness(uds_table)
 

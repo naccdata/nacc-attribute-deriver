@@ -10,6 +10,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 from nacc_attribute_deriver.utils.date import create_death_date
 from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
@@ -507,7 +508,7 @@ class NPFormAttributeCollection(AttributeCollection):
         elif self.formver in [1, 7, 8, 9]:
             naccwrix = npmpathx
 
-        return naccwrix if naccwrix else None
+        return naccwrix if naccwrix else INFORMED_BLANK
 
     def _create_naccwri1(self) -> Optional[str]:
         """Create the NACCWRI1 variable.

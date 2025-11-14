@@ -498,10 +498,10 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         Deserves a refactor at some point though.
         """
         naccidem = self.subject_derived.get_cross_sectional_value("naccidem", int)
-        if naccidem == 1:
-            return 1
+        if naccidem in [1, 8]:
+            return naccidem
 
-        # requires followup visit, so if initial return 0/9 - visits
+        # requires followup visit, so if initial return 0/8 - visits
         # should be curated in order anyways
         if self.uds.is_initial():
             if self.demented == 1:
@@ -627,13 +627,11 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         if self.normcog == 1 or self.uds.get_value("impnomci", int) == 1:
             return 1
 
-        # REGRESSION: PREVIOUS CODE SEEMED TO NOT CONSIDER MCI
+        # REGRESSION: PREVIOUS CODE SEEMED TO NOT CONSIDER MCI OR DEMENTED
         # AT INITIAL VISIT. NEED TO DO THAT, BUT DISABLE FOR NOW
         # FOR TESTING
         # if self.generate_mci() == 1 or self.demented == 1:
         #     return 2
-        if self.demented == 1:
-            return 2
 
         return 0
 
@@ -674,8 +672,9 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             return 1
 
         # if demented, means we progressed here directly; return 2
-        if self.demented == 1:
-            return 2
+        # REGRESSION: seems to not consider this either?
+        # if self.demented == 1:
+        #     return 2
 
         # if this form does not give us any new information, return whatever
         # FVMCI was; default 0 for no MCI or demented at followup visit

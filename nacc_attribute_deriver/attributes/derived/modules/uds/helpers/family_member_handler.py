@@ -169,10 +169,12 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
             return any(x is not None for x in [self._dem(), self._neur(), self._prdx()])
 
         num_total = self.uds.get_value(f"{self.prefix}s", int)
-        if num_total is None:
+        if (
+            num_total is None or num_total == 0
+        ):  # REGRESSION: how is no sibs/kids considered?
             return False
-        elif num_total == 0:  # if 0, not expecting any data
-            return True
+        # elif num_total == 0:  # if 0, not expecting any data
+        #     return True
 
         if self.formver == 1:
             return self.uds.get_value(f"{self.prefix}sdem", int) is not None
@@ -275,24 +277,24 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
 
         return 0
 
-    # def check_neur_is_8(self) -> bool:
-    #     """TODO: This method was added to match SAS behavior but I do not think
-    #     it's correct/makes sense, hence making it its own method for easy
-    #     removal in the future.
+    def check_neur_is_8(self) -> bool:
+        """REGRESSION: This method was added to match SAS behavior but am not sure
+        it's correct/makes sense, hence making it its own method for easy
+        removal in the future.
 
-    #     But in V3, it seems if all first-degree members are coded as
-    #     XNEUR == 8 (N/A, no neurological problem or psychiatric condition)
-    #     then NACCFAM = 9 (Unknown), instead of 0 (No). So keep track of if
-    #     everything is 8.
-    #     """
-    #     if self.is_parent():
-    #         return self._neur() == 8
+        But in V3, it seems if all first-degree members are coded as
+        XNEUR == 8 (N/A, no neurological problem or psychiatric condition)
+        then NACCFAM = 9 (Unknown), instead of 0 (No). So keep track of if
+        everything is 8.
+        """
+        if self.is_parent():
+            return self._neur() == 8
 
-    #     for i in range(1, self.get_bound()):
-    #         if self._neur(i) != 8:
-    #             return False
+        for i in range(1, self.get_bound()):
+            if self._neur(i) != 8:
+                return False
 
-    #     return True
+        return True
 
 
 class FamilyMemberHandler(BaseFamilyMemberHandler):

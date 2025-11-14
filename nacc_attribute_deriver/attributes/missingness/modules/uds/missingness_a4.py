@@ -62,9 +62,11 @@ class UDSFormA4Missingness(UDSMissingness):
     def _missingness_anymeds(self) -> Optional[int]:
         """Handles missingness for ANYMEDS."""
         # it seems in older versions, they could submit MEDS but
-        # still set ANYMEDS to 0, so legacy code would update/fix it
-        if self.formver < 4 and self.__drugs:
-            return 1
+        # still set ANYMEDS to 0, or vice versa, so legacy code
+        # fixes it by checking if there are actually drugs and
+        # basing ANYMEDS off of that
+        if self.formver < 4 and self.__drugs is not None:
+            return 1 if self.__drugs else 0
 
         return self.generic_missingness("anymeds", int)
 

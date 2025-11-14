@@ -529,7 +529,8 @@ class UDSFormC1C2Missingness(UDSMissingness):
         value = self.uds.get_value(field, int)
         if value is None:
             logiyr, logimo, logiday = parse_unknown_dates(
-                self.uds.get_value("logidate_c1", str))
+                self.uds.get_value("logidate_c1", str)
+            )
             if field == "logiyr":
                 value = logiyr
             elif field == "logimo":

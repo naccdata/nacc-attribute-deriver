@@ -1,18 +1,23 @@
-"""Derived variables that rely on multiple modules."""
+"""Derived variables that rely on multiple modules/forms.
+
+This belongs to the cross_module scope and is intended to run last on
+global data. As such, it does not rely on a specific form, but instead
+information stored in subject.info, usually typically
+subject.info.working.cross-sectional
+"""
 
 from datetime import date
-from typing import Optional
+from typing import Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
+    T,
     WorkingNamespace,
 )
-from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
-    UDSNamespace,
-)
+from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
@@ -27,23 +32,27 @@ from nacc_attribute_deriver.utils.errors import (
 
 
 class CrossModuleAttributeCollection(AttributeCollection):
-    """Class to collect cross-module attributes.
+    """Class to collect cross-module attributes."""
 
-    Based from the UDS Attributes.
-    """
-
-    def __init__(
-        self,
-        table: SymbolTable,
-    ) -> None:
-        """Override initializer to set other module prefixes."""
-        self.__uds = UDSNamespace(table)
-        self.__working = WorkingNamespace(
-            table=table, required=frozenset(["cross-sectional.uds-visitdates"])
-        )
+    def __init__(self, table: SymbolTable) -> None:
+        """Initializer."""
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
+        self.__table = table
 
-    def _determine_death_date(self) -> Optional[date]:
+    def __working_value(self, attribute: str, attribute_type: Type[T]) -> Optional[T]:
+        """Grab cross-sectional working value."""
+        return self.__working.get_cross_sectional_value(attribute, attribute_type)
+
+    def __latest_working_value(
+        self, attribute: str, attribute_type: Type[T]
+    ) -> Optional[DateTaggedValue[T]]:
+        """Grab latest cross-sectional working value."""
+        return self.__working.get_cross_sectional_dated_value(
+            f"{attribute}.latest", attribute_type
+        )
+
+    def __determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
 
         Checks the following forms in order:
@@ -54,42 +63,44 @@ class CrossModuleAttributeCollection(AttributeCollection):
         Returns:
             Death date if found, None otherwise
         """
-        np_date = self.__working.get_cross_sectional_value("np-death-date", str)
-        death_date = date_from_form_date(np_date)
-        if death_date:
-            return death_date
-
-        milestone_date = self.__working.get_cross_sectional_value(
-            "milestone-death-date", str
-        )
-        death_date = date_from_form_date(milestone_date)
-        if death_date:
-            return death_date
-
-        mds_date = self.__working.get_cross_sectional_value("mds-death-date", str)
-        death_date = date_from_form_date(mds_date)
-        if death_date:
-            return death_date
+        for field in ["np-death-date", "milestone-death-date", "mds-death-date"]:
+            death_date = date_from_form_date(self.__working_value(field, str))
+            if death_date:
+                return death_date
 
         return None
 
+    def __get_latest_visitdate(self, attribute: str) -> Optional[date]:
+        """Get the latest UDS visitdate, if UDS visits exist."""
+        visitdates = self.__working_value(attribute, list)
+        if not visitdates:
+            return None
+
+        sorted_visitdates = sorted(list(visitdates))
+        return date_from_form_date(sorted_visitdates[-1])
+
+    ########################
+    # NP DERIVED VARIABLES #
+    ########################
+
     def _create_naccdage(self) -> int:
-        """From derive.sas and derivenew.sas."""
+        """Creates NACCDAGE: Age at death.
+
+        Pulls from NP, MLST, and UDS.
+        """
         # check that subject is deceased at all
-        mds_deceased = self.is_target_int(
-            self.__working.get_cross_sectional_value("mds-vital-status", int), 2
-        )
-        if self._create_naccdied() == 0 and not mds_deceased:
+        mds_vital_status = self.__working_value("mds-vital-status", int)
+        if self._create_naccdied() == 0 and mds_vital_status != 2:
             return 888
 
         # NP, grab from NPDAGE
-        npdage = self.__working.get_cross_sectional_value("np-death-age", int)
+        npdage = self.__working_value("np-death-age", int)
         if npdage:
             return npdage
 
         # otherwise calculate from DOB/DOD
-        birth_date = self.__uds.generate_uds_dob()
-        death_date = self._determine_death_date()
+        birth_date = date_from_form_date(self.__working_value("uds-date-of-birth", str))
+        death_date = self.__determine_death_date()
 
         if not birth_date or not death_date:
             return 999
@@ -100,29 +111,15 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         return age
 
-    def _create_naccdied(self) -> int:
-        """Creates NACCDIED - determined if death
-        has been reported by NP or Milestone form.
-        """
-        death_age = self.__working.get_cross_sectional_value("np-death-age", int)
-        if death_age is not None:
-            return 1
-
-        deceased = self.__working.get_cross_sectional_value("milestone-deceased", int)
-        if self.is_target_int(deceased, 1):
-            return 1
-
-        return 0
-
     def _create_naccautp(self) -> int:
         """Creates NACCAUTP - similar to NACCDIED but also
         needs to differentiate if an NP form was submitted
         or not.
         """
-        death_age = self.__working.get_cross_sectional_value("np-death-age", int)
-        deceased = self.__working.get_cross_sectional_value("milestone-deceased", int)
+        death_age = self.__working_value("np-death-age", int)
+        deceased = self.__working_value("milestone-deceased", int)
         np_deceased = death_age is not None
-        mile_deceased = self.is_target_int(deceased, 1)
+        mile_deceased = deceased == 1
 
         # not reported as having died
         if not np_deceased and not mile_deceased:
@@ -142,7 +139,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         Uses NACCDIED and death date calculate.
         """
         naccdied = self._create_naccdied()
-        deathdate = self._determine_death_date()
+        deathdate = self.__determine_death_date()
 
         # not dead
         if naccdied != 1:
@@ -153,13 +150,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 999
 
         # compare to last UDS visit
-        visitdates = self.__working.get_cross_sectional_value("uds-visitdates", list)
-
-        # a non-valid visitdate shouldn't be possible but handle just in case
-        if not visitdates:
-            return 999
-
-        last_visit = date_from_form_date(sorted(list(visitdates))[-1])
+        last_visit = self.__get_latest_visitdate("uds-visitdates")
         if not last_visit:
             return 999
 
@@ -182,20 +173,18 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 88
 
         # NP will always have a known month
-        np_date = self.__working.get_cross_sectional_value("np-death-date", str)
+        np_date = self.__working_value("np-death-date", str)
         death_date = date_from_form_date(np_date)
         if death_date:
             return death_date.month
 
         # Milestone month may be 99
-        milestone_mo = self.__working.get_cross_sectional_value(
-            "milestone-death-month", int
-        )
+        milestone_mo = self.__working_value("milestone-death-month", int)
         if milestone_mo is not None and milestone_mo != 99:
             return milestone_mo
 
         # MDS death month may be 99
-        mds_mo = self.__working.get_cross_sectional_value("mds-death-month", int)
+        mds_mo = self.__working_value("mds-death-month", int)
         if mds_mo is not None and mds_mo != 99:
             return mds_mo
 
@@ -208,7 +197,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         Year of death.
         """
         # year always defined if death date exists, even for MDS
-        deathdate = self._determine_death_date()
+        deathdate = self.__determine_death_date()
 
         # Explicitly states in rdd-np that this shouldn't precede 1970.
         # Previously not mentioned in SAS code.
@@ -227,13 +216,31 @@ class CrossModuleAttributeCollection(AttributeCollection):
             True: If UDS > target date
             False: If UDS <= target_date
         """
-        uds_date = self.__uds.get_date()
+        uds_date = self.__get_latest_visitdate("uds-visitdates")
         if not uds_date:
             raise AttributeDeriverError(
                 "Cannot determine UDS date to compare to MLST form"
             )
 
         return date_came_after(uds_date, target_date)
+
+    ###############################
+    # MILESTONE DERIVED VARIABLES #
+    ###############################
+
+    def _create_naccdied(self) -> int:
+        """Creates NACCDIED - determined if death
+        has been reported by NP or Milestone form.
+        """
+        death_age = self.__working_value("np-death-age", int)
+        if death_age is not None:
+            return 1
+
+        deceased = self.__working_value("milestone-deceased", int)
+        if deceased == 1:
+            return 1
+
+        return 0
 
     def _create_naccactv(self) -> int:
         """Creates NACCACTV - Follow-up status at the Alzheimer's
@@ -258,9 +265,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # if milestone marked subject as discontinued, and is the latest form,
         # return 0. if there were UDS visits after discontinuation was marked,
         # return 1
-        mlst_discontinued = self.__working.get_cross_sectional_dated_value(
-            "milestone-discontinued.latest", int
-        )
+        mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
         if mlst_discontinued and mlst_discontinued.value == 1:
             if self.uds_came_after(mlst_discontinued.date):
                 return 1
@@ -268,7 +273,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 0
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
-        if self.__uds.get_value("prespart", int) == 1:
+        if self.__working_value("prespart", int) == 1:
             return 0
 
         # 5 used for affiliates in SAS/R code
@@ -276,7 +281,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 5
 
         # check milestone protocol
-        protocol = self.__working.get_cross_sectional_value("milestone-protocol", int)
+        protocol = self.__working_value("milestone-protocol", int)
 
         # if protocol == 1 or 3, annual followup expected
         if protocol in [1, 3]:
@@ -298,13 +303,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """
         # if UDS is the latest one, check UDS prespart == 1 to return 8,
         # otherwise purely based on MLST
-        mlsts = self.__working.get_cross_sectional_value("milestone-visitdates", list)
-        if mlsts:
-            most_recent_mlst = date_from_form_date(mlsts[-1])
-            if (
-                self.uds_came_after(most_recent_mlst)
-                and self.__uds.get_value("prespart", int) == 1
-            ):
+        recent_mlst = self.__get_latest_visitdate("milestone-visitdates")
+        if recent_mlst:
+            prespart = self.__working_value("prespart", int)
+            if self.uds_came_after(recent_mlst) and prespart == 1:
                 return 8
 
         naccactv = self._create_naccactv()
@@ -332,9 +334,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
                 RENURSE == 0 in a later MLST form
         """
         # get most recent MLST value of renurse
-        renurse_record = self.__working.get_cross_sectional_dated_value(
-            "milestone-renurse.latest", int
-        )
+        renurse_record = self.__latest_working_value("milestone-renurse", int)
 
         # if MLST value (RENURSE) is NOT 1, return 0
         if not renurse_record or renurse_record.value != 1:
@@ -343,7 +343,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # after this point assume renurse_record.value == 1
         # if a later UDS visit has residenc != null,4,9 then return 0
         if self.uds_came_after(renurse_record.date):
-            residenc = self.__uds.get_value("residenc", int)
+            residenc = self.__working_value("residenc", int)
             if residenc is not None and residenc in [4, 9]:
                 return 0
 
@@ -356,29 +356,20 @@ class CrossModuleAttributeCollection(AttributeCollection):
         If UDS form came AFTER MLST, return the default (even if MLST
         said discontinued.
         """
-        discyr = self.__working.get_cross_sectional_value(
-            "milestone-discyr.latest.value", int
-        )
-        discmo = self.__working.get_cross_sectional_value(
-            "milestone-discmo.latest.value", int
-        )
-        discday = self.__working.get_cross_sectional_value(
-            "milestone-discday.latest.value", int
-        )
-
-        uds_date = self.__uds.get_date()
+        discyr = self.__working_value("milestone-discyr.latest.value", int)
+        discmo = self.__working_value("milestone-discmo.latest.value", int)
+        discday = self.__working_value("milestone-discday.latest.value", int)
+        uds_date = self.__get_latest_visitdate("uds-visitdates")
 
         if not uds_date:
-            raise AttributeDeriverError(
-                "Cannot determine UDS date to compare to MLST form"
-            )
+            return default
 
         # if UDS came after MLST, return default
         if date_came_after_sparse(uds_date, discyr, discmo, discday):
             return default
 
         # MLST is the latest; return whatever MLST set
-        disc_date = self.__working.get_cross_sectional_value(attribute, int)
+        disc_date = self.__working_value(attribute, int)
         return disc_date if disc_date is not None else default
 
     def _create_naccdsdy(self) -> int:

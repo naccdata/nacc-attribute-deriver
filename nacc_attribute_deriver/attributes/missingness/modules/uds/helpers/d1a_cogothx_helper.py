@@ -18,6 +18,7 @@ from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     T,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 from .d1_base import UDSFormD1Missingness
@@ -106,3 +107,10 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
                     "cogoth3x": attributes["cogoth2x"],
                 }
             )
+
+        # REGRESSION: In v1, COGOTH2F and COGOTH3F really should be -4
+        # but it seems the following normcog recode logic is applied anyways
+        # and overrides it, so manually handle the V1 case here
+        if self.formver == 1:
+            default = 8 if self.normcog == 1 else INFORMED_MISSINGNESS
+            attributes.update({"cogoth2f": default, "cogoth3f": default})

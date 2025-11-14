@@ -250,7 +250,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return False
 
         overall_status = self.get_contr_status(attributes)
-        return self.is_target_int(overall_status, ContributionStatus.PRIMARY)
+        return overall_status == ContributionStatus.PRIMARY
 
     def _create_naccetpr(self) -> int:  # noqa: C901
         """From Create NACCETPR, PRIMDX, SYNMULT.R which in turn comes from

@@ -5,6 +5,9 @@ import pytest
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1 import (
     UDSFormA1Attribute,
 )
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1_raw import (
+    UDSFormA1RawAttribute,
+)
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -90,15 +93,6 @@ class TestUDSFormA1Attribute:
         set_attribute(table, form_prefix, "sourcenw", 1)
         assert not attr._create_affiliate()
 
-    def test_create_educ(self, table):
-        """Tests _create_educ."""
-        attr = UDSFormA1Attribute(table)
-        assert attr._create_educ() == 3
-
-        # none case
-        table["file.info.forms.json.educ"] = None
-        assert attr._create_educ() is None
-
     def test_create_naccsex(self, table):
         """Test _create_naccsex."""
         table["file.info.forms.json"].update(
@@ -176,3 +170,14 @@ class TestUDSFormA1Attribute:
         table["file.info.forms.json"].update({"formver": 4.0, "lvleduc": 3})
         attr = UDSFormA1Attribute(table)
         assert attr._create_naccedulvl() == 3
+
+
+class TestUDSFormA1RawAttribute:
+    def test_create_educ(self, table):
+        """Tests _create_educ."""
+        attr = UDSFormA1RawAttribute(table)
+        assert attr._create_educ() == 3
+
+        # none case
+        table["file.info.forms.json.educ"] = None
+        assert attr._create_educ() is None
