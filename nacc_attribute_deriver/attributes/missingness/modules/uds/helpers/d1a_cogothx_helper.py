@@ -41,6 +41,19 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
             "cogoth3x": self.generic_missingness("cogoth3x", str),
         }
 
+        # REGRESSION - some explicitly set to -4 if formverd1 == 1.0
+        if self.uds.get_value("formverd1", float) == 1.0:
+            self.__attributes.update({
+                x: INFORMED_MISSINGNESS for x in
+                [
+                    "cogoth2",
+                    "cogoth2f",
+                    "cogoth3",
+                    "cogoth3f"
+                ]
+                if self.uds.get_value(x, int) is None
+            })
+
         # resolve as needed - missingness may be None
         # due to value already existing
         for key, value in self.__attributes.items():

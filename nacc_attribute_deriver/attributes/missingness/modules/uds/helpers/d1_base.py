@@ -57,21 +57,58 @@ class UDSFormD1Missingness(UDSMissingness):
         return None
 
     def handle_cognitive_impairment_gate(
-        self, gate: str, field: str, ignore_normcog_0: bool = False
+        self,
+        gate: str,
+        field: str,
+        ignore_normcog_0: bool = False,
+        other_gate: Optional[str] = None,
+        consider_formverd1: bool = False
     ) -> Optional[int]:
         """Handles variables dependent on NORMCOG and another gate:
 
         If NORMCOG = 0 and GATE is 0 or blank and FIELD is blank, FIELD = 7
         Else if NORMCOG = 1 and FIELD is blank, FIELD = 8
+
+        REGRESSION: Some variables look at an additional gate and/or formverd1, so consideer
+            that if specified. Mainly for POSSADIF, VASCPSIF, and COGOTH variables because
+            of these lines in the SAS:
+            %recode4g(gvar=d1formver,varlist=COGOTH2 COGOTH2F COGOTH3 COGOTH3F VASCPS VASCPSIF,
+                      qvalue=.,result=-4,vallist=1);
+            %recode4gg(gvarlist=PROBAD PROBAD VASC VASC,
+                       varlist=POSSAD POSSADIF VASCPS VASCPSIF
+                       ,qvalue=.,result=0,vallist=1);
+
+            The formverd1 case mainly occurs when formver == 2 but formverd1 == 1. Does
+            not seem as applicable for V3.
+
+            Because PROBAD/VASC are gates themselves, seem to not be as effected (?
+            or at least no regression errors raised for those in relation to this.)
         """
         gate_value = self.uds.get_value(gate, int)
-        value = self.uds.get_value(field, int)
+        current_value = self.uds.get_value(field, int)
+
+        # REGRESSION
+        if current_value is None:
+            other_gate_value = self.uds.get_value(other_gate, int) if other_gate else None
+
+            # formverd1 can be different from the overall form version
+            formver_d1 = self.uds.get_value("formverd1", float) if consider_formverd1 else None
+
+            if other_gate_value == 1:
+                current_value = 0
+
+            if formver_d1 == 1:
+                current_value = INFORMED_MISSINGNESS
 
         if (
             self.has_cognitive_impairment()
             and (gate_value is None or gate_value == 0)
-            and value is None
+            and (current_value is None or current_value not in [INFORMED_MISSINGNESS, 1])
         ):
             return 7
+
+        # REGRESSION
+        if current_value is not None:
+            return current_value
 
         return self.handle_normcog_gate(field, ignore_normcog_0=ignore_normcog_0)

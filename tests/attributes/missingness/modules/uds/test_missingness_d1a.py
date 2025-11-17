@@ -3,7 +3,7 @@
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_d1a import (
     UDSFormD1aMissingness,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK, INFORMED_MISSINGNESS
 
 
 class TestUDSFormD1aMissingness:
@@ -27,6 +27,27 @@ class TestUDSFormD1aMissingness:
         assert attr._missingness_cogothif() == 8
         assert attr._missingness_cogoth2f() == 8
         assert attr._missingness_cogoth3f() == 8
+
+        assert attr._missingness_cogothx() == INFORMED_BLANK
+        assert attr._missingness_cogoth2x() == INFORMED_BLANK
+        assert attr._missingness_cogoth3x() == INFORMED_BLANK
+
+        # test when formverd1 == 1.0, some should explicitly
+        # be INFORMED_MISSINGNESS now instead
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 2.0,
+                "formverd1": 1.0
+            }
+        )
+        attr = UDSFormD1aMissingness(uds_table)
+        assert attr._missingness_cogoth() == 0
+        assert attr._missingness_cogoth2() == INFORMED_MISSINGNESS
+        assert attr._missingness_cogoth3() == INFORMED_MISSINGNESS
+
+        assert attr._missingness_cogothif() == 8
+        assert attr._missingness_cogoth2f() == INFORMED_MISSINGNESS
+        assert attr._missingness_cogoth3f() == INFORMED_MISSINGNESS
 
         assert attr._missingness_cogothx() == INFORMED_BLANK
         assert attr._missingness_cogoth2x() == INFORMED_BLANK

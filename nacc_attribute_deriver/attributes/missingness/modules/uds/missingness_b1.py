@@ -22,7 +22,7 @@ class UDSFormB1Missingness(UDSMissingness):
         if height is None:
             return INFORMED_MISSINGNESS
 
-        if height == 99.9 or height == 99:
+        if height in [88, 88.8, 99, 99.9]:
             return 88.8
 
         heigdec = self.uds.get_value("heigdec", float)

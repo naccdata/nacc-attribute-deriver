@@ -481,7 +481,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         # REGRESSION: in legacy, we set it to -4 if the condition
         # passes, not the gate. Not in V4 so always set to missingness
         return self._handle_non_optional_gate(
-            "craftdvr", "craftcue", set_to_missingness=True
+            "udsbentd", "udsbenrs", set_to_missingness=True
         )
 
     def _missingness_udsverfn(self) -> Optional[int]:
@@ -502,15 +502,22 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_udsvertn(self) -> Optional[int]:
         """Handles missingness for UDSVERTN."""
+        # REGRESSION: Checks UDSVERFC first, then UDSVERLC
+        result = self._handle_non_optional_gate("udsverfc", "udsvertn")
+        if result is None or result in [95, 96, 97, 98]:
+            return result
+
         return self._handle_non_optional_gate("udsverlc", "udsvertn")
 
     def _missingness_udsverte(self) -> Optional[int]:
         """Handles missingness for UDSVERTE."""
-        return self._handle_non_optional_gate("udsverlc", "udsverte")
+        # REGRESSION: is udsvertn or udsverlc the gate?
+        return self._handle_non_optional_gate("udsvertn", "udsverte")
 
     def _missingness_udsverti(self) -> Optional[int]:
         """Handles missingness for UDSVERTI."""
-        return self._handle_non_optional_gate("udsverlc", "udsverti")
+        # REGRESSION: is udsvertn or udsverlc the gate?
+        return self._handle_non_optional_gate("udsvertn", "udsverti")
 
     ############################
     # LOGIPREV-gated variables #

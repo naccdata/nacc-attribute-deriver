@@ -101,23 +101,29 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_possadif(self) -> Optional[int]:
         """Handles missingness for POSSADIF."""
-        # Legacy SAS doesn't explicitly use the cognitive impairment
+        # REGRESSION: Legacy SAS doesn't explicitly use the cognitive impairment
         # gate but seems like what it does is effectively the same thing
-        return self.handle_cognitive_impairment_gate("possad", "possadif")
+        # it also does an additional check based on PROBAD
+        return self.handle_cognitive_impairment_gate("possad", "possadif",
+            other_gate="probad")
 
     def _missingness_vascps(self) -> Optional[int]:
         """Handles missingness for VASCPS."""
-        if self.uds.get_value("vasc", int) == 1:
-            return 0
+        # REGRESSION: consideres VASC and FORMVERD1
+        if self.uds.get_value("vascps", int) is None:
+            if self.uds.get_value("formverd1", float) == 1.0:
+                return INFORMED_MISSINGNESS
+
+            if self.uds.get_value("vasc", int) == 1:
+                return 0
 
         return self.handle_normcog_gate("vascps")
 
     def _missingness_vascpsif(self) -> Optional[int]:
         """Handles missingness for VASCPSIF."""
-        if self.uds.get_value("vasc", int) == 1:
-            return 0
-
-        return self.handle_cognitive_impairment_gate("vascps", "vascpsif")
+        # REGRESSION: does additional checks based on VASC and FORMVERD1
+        return self.handle_cognitive_impairment_gate("vascps", "vascpsif",
+            other_gate="vasc", consider_formverd1=True)
 
     #######################
     # CVD-gated variables #

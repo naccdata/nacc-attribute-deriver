@@ -22,10 +22,16 @@ class UDSFormB9RawAttribute(UDSAttributeCollection):
         """Handles capturing B9 attribute.
 
         Ignore prev codes (generally 777 for ages and 0 for everything
-        else)
+        else).
         """
         value = self.uds.get_value(field, int)
         if value == prev_code:
+            return None
+
+        # REGRESSION: If prev_code == 777, also ignore 888s
+        # 888s are the missingness value for blanks in legacy
+        # so it's a bit conflated
+        if prev_code == 777 and value == 888:
             return None
 
         # TODO: SAS code may also be not updating the

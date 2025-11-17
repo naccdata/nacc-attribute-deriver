@@ -162,9 +162,9 @@ class UDSMissingness(UDSAttributeCollection):
 
         If GATE is in CHECK_VALUES, then FIELD should = GATE.
         """
-        value = self.uds.get_value(gate, int)
-        if value in check_values:
-            return value
+        gate_value = self.uds.get_value(gate, int)
+        if gate_value in check_values:
+            return gate_value
 
         return None
 

@@ -4,6 +4,9 @@ import pytest
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_b9 import (
     UDSFormB9Attribute,
 )
+from nacc_attribute_deriver.attributes.derived.modules.uds.form_b9_raw import (
+    UDSFormB9RawAttribute,
+)
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -186,3 +189,48 @@ class TestUDSFormB9Attribute:
 
         attr = UDSFormB9Attribute(base_table)
         assert attr._create_nacccogf() == 1
+
+
+
+class TestUDSFormB9RawAttribute:
+    def test_create_bevhago(self, base_table):
+        """Test BEVHAGO case. Tests __handle_b9_attribute
+        by extension.
+        """
+        attr = UDSFormB9RawAttribute(base_table)
+
+        # if bevhago something valid, set it
+        base_table["file.info.forms.json.bevhago"] = 25
+        assert attr._create_bevhago() == 25
+
+        # if bevhago = 777, don't set it; this means
+        # if something else set it previously it will
+        # stay at that attribute location, since this
+        # returns None
+        base_table["file.info.forms.json.bevhago"] = 777
+        assert attr._create_bevhago() is None
+
+        # REGRESSION: same for 888
+        base_table["file.info.forms.json.bevhago"] = 888
+        assert attr._create_bevhago() is None
+
+    def test_create_frstchg(self, base_table):
+        """Test FRSTCHG case. Tests __handle_b9_attribute
+        by extension.
+        """
+        attr = UDSFormB9RawAttribute(base_table)
+
+        # if frstchg something valid, set it
+        base_table["file.info.forms.json.frstchg"] = 5
+        assert attr._create_frstchg() == 5
+
+        # if frstchg = 0, don't set it; this means
+        # if something else set it previously it will
+        # stay at that attribute location, since this
+        # returns None
+        base_table["file.info.forms.json.frstchg"] = 0
+        assert attr._create_frstchg() is None
+
+        # 888 is NOT ignored in this case since prev_code is not 777
+        base_table["file.info.forms.json.frstchg"] = 888
+        assert attr._create_frstchg() == 888
