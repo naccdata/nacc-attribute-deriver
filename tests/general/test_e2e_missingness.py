@@ -61,3 +61,18 @@ def test_csf_subject():
             }
         },
     }
+
+def test_mds_form():
+    """Test MDS."""
+    mds_table = SymbolTable(
+        {
+            "file": {
+                "info": {"forms": {"json": {"visitdate": "2020-01-01", "formver": 11, "agedem": 75}}}
+            }
+        }
+    )
+    deriver = MissingnessDeriver(missingness_level="test")
+    deriver.curate(mds_table, "mds")
+
+    # only apoe is set since agedem exists
+    assert mds_table["file.info.resolved"] == {"apoe": -4}

@@ -62,7 +62,7 @@ mds,mds_sex,file.info.resolved.sex,update,FALSE,int
 mds,mds_source,file.info.resolved.source,update,FALSE,int
 mds,mds_spect,file.info.resolved.spect,update,FALSE,int
 mds,mds_stroke,file.info.resolved.stroke,update,FALSE,int
-mds,mds_version,file.info.resolved.version,update,FALSE,int
+mds,mds_formver,file.info.resolved.formver,update,FALSE,int
 mds,mds_vitalst,file.info.resolved.vitalst,update,FALSE,int
 np,npsex,file.info.resolved.npsex,update,FALSE,int
 np,nppmih,file.info.resolved.nppmih,update,FALSE,int
@@ -78,7 +78,7 @@ np,npgrlch,file.info.resolved.npgrlch,update,FALSE,int
 np,nptan,file.info.resolved.nptan,update,FALSE,int
 np,nptanx,file.info.resolved.nptanx,update,FALSE,str
 np,npaban,file.info.resolved.npaban,update,FALSE,int
-np,npabanx,file.info.resolved.npabanx,update,FALSE,int
+np,npabanx,file.info.resolved.npabanx,update,FALSE,str
 np,npasan,file.info.resolved.npasan,update,FALSE,int
 np,npasanx,file.info.resolved.npasanx,update,FALSE,str
 np,nptdpan,file.info.resolved.nptdpan,update,FALSE,int

@@ -5,3 +5,5 @@ uds,trailbrr,file.info.resolved.trailbrr,update,FALSE,int
 uds,height,file.info.resolved.height,update,FALSE,float
 np,npsex,file.info.resolved.npsex,update,FALSE,int
 np,nppmih,file.info.resolved.nppmih,update,FALSE,int
+mds,mds_agedem,file.info.resolved.agedem,update,FALSE,int
+mds,mds_apoe,file.info.resolved.apoe,update,FALSE,int

@@ -13,4 +13,6 @@ class MDSMissingness(FormMissingnessCollection):
 
     def _missingness_mds(self, field: str, attr_type: Type[T]) -> Optional[T]:
         """Defines general missingness for MDS."""
-        return self.generic_missingness(field, attr_type)
+        # this is super hacky, but we added mds_ in the front to differentiate
+        # from UDS, so strip out
+        return self.generic_missingness(field.replace("mds_", ""), attr_type)
