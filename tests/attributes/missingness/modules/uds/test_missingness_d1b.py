@@ -23,3 +23,16 @@ class TestUDSFormD1bMissingness:
 
         attr = UDSFormD1bMissingness(uds_table)
         assert attr._missingness_ftldsubt() == 8
+
+        uds_table["file.info.forms.json"].update(
+            {
+                "normcog": 0,
+                "psp": 0,
+                "cort": 0,
+                "ftldmo": 0,
+                "ftldnos": 1,
+                "ftldsubt": 2,
+            }
+        )
+
+        assert attr._missingness_ftldsubt() == 2

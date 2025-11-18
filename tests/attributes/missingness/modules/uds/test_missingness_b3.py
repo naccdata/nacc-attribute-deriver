@@ -45,3 +45,15 @@ class TestUDSFormB3LegacyMissingness:
         )
 
         assert attr._missingness_pdnormal() == 8
+
+        # PDNORMAL = 0, but all are 0 or 8, with at least one 8
+        uds_table["file.info.forms.json"].update(
+            {x: random.choice([0, 8]) for x in UDSFormB3Missingness.ALL_B3_FIELDS}
+        )
+        uds_table["file.info.forms.json.pdnormal"] = 0
+        uds_table["file.info.forms.json.speech"] = 8
+        assert attr._missingness_pdnormal() == 8
+
+        # if one is None, PDNORMAL stays as it is
+        uds_table["file.info.forms.json.speech"] = None
+        assert attr._missingness_pdnormal() is None

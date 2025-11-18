@@ -52,9 +52,12 @@ class UDSFormB3Missingness(UDSMissingness):
         if all(x == 0 for x in all_values):
             return 1
 
-        all_values = [self.uds.get_value(x, int) for x in self.ALL_B3_FIELDS]
         if any(x in [1, 2, 3, 4] for x in all_values):
             return 0
+
+        # REGRESSION: at least one needs to be 8
+        if any(x == 8 for x in all_values) and all(x in [0, 8] for x in all_values):
+            return 8
 
         # REGRESSION: this needs to be checked after the above
         # but before the below
@@ -65,7 +68,7 @@ class UDSFormB3Missingness(UDSMissingness):
         if all(x is None for x in all_values):
             return INFORMED_MISSINGNESS
 
-        # all values are mix of 0, 8, or blank at this point
+        # all values must be a mix of 0, 8, and blank at this point
         # return 8 = unknown
         return 8
 

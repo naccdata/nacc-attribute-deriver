@@ -27,3 +27,11 @@ class TestUDSFormA5D2Missingness:
         uds_table["_prev_record.info.forms.json.hrtattage"] = 777
         uds_table["_prev_record.info.resolved.hrtattage"] = 5
         assert attr.handle_a5d2_carry_forward("hrtattack", "hrtattage") == 5
+
+    def test_quitsmok(self, uds_table):
+        """Test QUITSMOK missingness."""
+        attr = UDSFormA5D2Missingness(uds_table)
+        uds_table["file.info.forms.json"].update(
+            {"formver": 3.0, "quitsmok": None, "smokyrs": None, "tobac100": 9}
+        )
+        assert attr._missingness_quitsmok() == 888

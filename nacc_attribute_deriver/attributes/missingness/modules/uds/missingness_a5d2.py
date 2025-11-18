@@ -107,10 +107,25 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_quitsmok(self) -> Optional[int]:
         """Handles missingness for QUITSMOK."""
-        # REGRESSION: if quitsmok already set, keep it
-        quitsmok = self.uds.get_value("quitsmok", int)
-        if self.formver < 4 and quitsmok is not None:
-            return quitsmok
+        # REGRESSION: hardcode legacy logic as it is currently
+        # not aligned with V4
+        if self.formver < 4:
+            quitsmok = self.uds.get_value("quitsmok", int)
+            if quitsmok is not None:
+                return None
+
+            tobac100 = self.uds.get_value("tobac100", int)
+            smokyrs = self.uds.get_value("smokyrs", int)
+
+            if self.formver < 3:
+                if tobac100 == 0 and smokyrs == 0:
+                    return 888
+            else:  # V3
+                if tobac100 == 0 or smokyrs == 0:
+                    return 888
+
+            if tobac100 == 9:
+                return 888
 
         return self.handle_a5d2_carry_forward(
             "tobac100", "quitsmok", skip_gate_on_legacy=False

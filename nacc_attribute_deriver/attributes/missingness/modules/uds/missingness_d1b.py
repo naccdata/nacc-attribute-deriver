@@ -189,7 +189,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
                 if self.normcog == 1:
                     return 8
 
-                gates = self.uds.group_attributes(["psp", "cort", "ftldmo", "ftldnos"], int)
+                gates = self.uds.group_attributes(
+                    ["psp", "cort", "ftldmo", "ftldnos"], int
+                )
                 if all(x == 0 for x in gates):
                     return INFORMED_MISSINGNESS
 
