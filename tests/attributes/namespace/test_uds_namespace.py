@@ -69,6 +69,9 @@ class TestUDSNamespace:
         assert namespace.is_in_person()
 
         set_attribute(table, form_prefix, "packet", "IT")
+        assert namespace.is_in_person()
+
+        set_attribute(table, form_prefix, "packet", "T")
         assert not namespace.is_in_person()
 
     def test_normalize_formver(self, table, form_prefix):

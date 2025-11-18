@@ -62,7 +62,7 @@ class UDSFormD1Missingness(UDSMissingness):
         field: str,
         ignore_normcog_0: bool = False,
         other_gate: Optional[str] = None,
-        consider_formverd1: bool = False
+        consider_formverd1: bool = False,
     ) -> Optional[int]:
         """Handles variables dependent on NORMCOG and another gate:
 
@@ -89,10 +89,14 @@ class UDSFormD1Missingness(UDSMissingness):
 
         # REGRESSION
         if current_value is None:
-            other_gate_value = self.uds.get_value(other_gate, int) if other_gate else None
+            other_gate_value = (
+                self.uds.get_value(other_gate, int) if other_gate else None
+            )
 
             # formverd1 can be different from the overall form version
-            formver_d1 = self.uds.get_value("formverd1", float) if consider_formverd1 else None
+            formver_d1 = (
+                self.uds.get_value("formverd1", float) if consider_formverd1 else None
+            )
 
             if other_gate_value == 1:
                 current_value = 0
@@ -103,7 +107,9 @@ class UDSFormD1Missingness(UDSMissingness):
         if (
             self.has_cognitive_impairment()
             and (gate_value is None or gate_value == 0)
-            and (current_value is None or current_value not in [INFORMED_MISSINGNESS, 1])
+            and (
+                current_value is None or current_value not in [INFORMED_MISSINGNESS, 1]
+            )
         ):
             return 7
 

@@ -100,3 +100,43 @@ class TestUDSFormC1C2Missingness:
         assert attr._missingness_logiyr() == 8888
         assert attr._missingness_logimo() == 88
         assert attr._missingness_logiday() == 88
+
+    def test_udsverte_udsverti(self, uds_table):
+        """Tests UDSVERTE and UDSVERTI missingness which are most affected by
+        the UDSVERX cascade."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "udsverfc": 96,  # this is what gets cascaded down
+                "udsverlc": 3,
+                "udsvertn": None,
+                "udsverte": None,
+                "udsverti": None,
+            }
+        )
+        attr = UDSFormC1C2Missingness(uds_table)
+        assert attr._missingness_udsverte() == 96
+        assert attr._missingness_udsverti() == 96
+
+        uds_table["file.info.forms.json"].update(
+            {
+                "udsverfc": 13,
+                "udsverlc": 97,  # now this gets cascaded down
+                "udsvertn": None,
+                "udsverte": None,
+                "udsverti": None,
+            }
+        )
+        assert attr._missingness_udsverte() == 97
+        assert attr._missingness_udsverti() == 97
+
+        uds_table["file.info.forms.json"].update(
+            {
+                "udsverfc": 13,
+                "udsverlc": 5,
+                "udsvertn": 98,  # now this gets cascaded down
+                "udsverte": None,
+                "udsverti": None,
+            }
+        )
+        assert attr._missingness_udsverte() == 98
+        assert attr._missingness_udsverti() == 98

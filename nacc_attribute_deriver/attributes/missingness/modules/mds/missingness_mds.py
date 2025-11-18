@@ -12,5 +12,5 @@ class MDSMissingness(FormMissingnessCollection):
     """Class to handle MDS missingness values at the file-level."""
 
     def _missingness_mds(self, field: str, attr_type: Type[T]) -> Optional[T]:
-        """Defines general missingness for MDS"""
+        """Defines general missingness for MDS."""
         return self.generic_missingness(field, attr_type)

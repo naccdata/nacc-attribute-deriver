@@ -184,16 +184,19 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
     def _missingness_ftldsubt(self) -> Optional[int]:
         """Handles missingness for FTLDSUBT."""
         ftldsubt = self.uds.get_value("ftldsubt", int)
-        if self.formver < 4 and ftldsubt is None:
-            if self.normcog == 1:
-                return 8
+        if self.formver < 4:
+            if ftldsubt is None:
+                if self.normcog == 1:
+                    return 8
 
-            gates = self.uds.group_attributes(["psp", "cort", "ftldmo", "ftldnos"], int)
-            if all(x == 0 for x in gates):
-                return INFORMED_MISSINGNESS
+                gates = self.uds.group_attributes(["psp", "cort", "ftldmo", "ftldnos"], int)
+                if all(x == 0 for x in gates):
+                    return INFORMED_MISSINGNESS
 
-            if self.normcog == 0:
-                return 7
+                if self.normcog == 0:
+                    return 7
+            else:
+                return ftldsubt
 
         return self.handle_cognitive_impairment_gate(
             "ftld", "ftldsubt", ignore_normcog_0=True

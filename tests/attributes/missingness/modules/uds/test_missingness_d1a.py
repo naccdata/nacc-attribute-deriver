@@ -34,12 +34,7 @@ class TestUDSFormD1aMissingness:
 
         # test when formverd1 == 1.0, some should explicitly
         # be INFORMED_MISSINGNESS now instead
-        uds_table["file.info.forms.json"].update(
-            {
-                "formver": 2.0,
-                "formverd1": 1.0
-            }
-        )
+        uds_table["file.info.forms.json"].update({"formver": 2.0, "formverd1": 1.0})
         attr = UDSFormD1aMissingness(uds_table)
         assert attr._missingness_cogoth() == 0
         assert attr._missingness_cogoth2() == INFORMED_MISSINGNESS

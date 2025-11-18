@@ -8,6 +8,7 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.form_b9_raw import (
     UDSFormB9RawAttribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 @pytest.fixture(scope="function")
@@ -61,12 +62,22 @@ class TestUDSFormB9Attribute:
         attr = UDSFormB9Attribute(base_table)
         assert attr._create_naccbehf() == 3
 
-        # if befpred is something, should set to that value
+        # if befpred is something non-zero, should set to that value
         base_table["file.info.forms.json.befpred"] = 1
         assert attr._create_naccbehf() == 1
 
         # if befpred is 88, should return 0
         base_table["file.info.forms.json.befpred"] = 88
+        assert attr._create_naccbehf() == 0
+
+        # befpred is 0 and prev is 0, set to 99
+        base_table["file.info.forms.json.befpred"] = 0
+        base_table["_prev_record.info.forms.json.befpred"] = 0
+        assert attr._create_naccbehf() == 99
+
+        # if befpred is 0, but doesn't trigger any of the inner cases
+        # since p_befpred is missing, so stays at 0
+        base_table["_prev_record.info.forms.json.befpred"] = INFORMED_MISSINGNESS
         assert attr._create_naccbehf() == 0
 
     def test_nacccogf_case1(self, base_table):
@@ -191,11 +202,11 @@ class TestUDSFormB9Attribute:
         assert attr._create_nacccogf() == 1
 
 
-
 class TestUDSFormB9RawAttribute:
     def test_create_bevhago(self, base_table):
-        """Test BEVHAGO case. Tests __handle_b9_attribute
-        by extension.
+        """Test BEVHAGO case.
+
+        Tests __handle_b9_attribute by extension.
         """
         attr = UDSFormB9RawAttribute(base_table)
 
@@ -215,8 +226,9 @@ class TestUDSFormB9RawAttribute:
         assert attr._create_bevhago() is None
 
     def test_create_frstchg(self, base_table):
-        """Test FRSTCHG case. Tests __handle_b9_attribute
-        by extension.
+        """Test FRSTCHG case.
+
+        Tests __handle_b9_attribute by extension.
         """
         attr = UDSFormB9RawAttribute(base_table)
 

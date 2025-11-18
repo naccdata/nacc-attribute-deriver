@@ -210,3 +210,7 @@ class UDSFormB9RawAttribute(UDSAttributeCollection):
     def _create_beage(self) -> Optional[int]:
         """Captures BEAGE."""
         return self.__handle_b9_attribute("beage", prev_code=777)
+
+    def _create_parkage(self) -> Optional[int]:
+        """Captures PARKAGE."""
+        return self.__handle_b9_attribute("parkage", prev_code=777)

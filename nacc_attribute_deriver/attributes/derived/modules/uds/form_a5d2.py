@@ -71,7 +71,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
             return mrsyear if mrsyear is not None else 9999
 
         if cbstroke == 9:
-            return None
+            return INFORMED_MISSINGNESS
         if cbstroke == 0:
             return 8888
 
@@ -102,7 +102,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
             return mrsyear if mrsyear is not None else 9999
 
         if cbtia == 9:
-            return None
+            return INFORMED_MISSINGNESS
         if cbtia == 0:
             return 8888
 

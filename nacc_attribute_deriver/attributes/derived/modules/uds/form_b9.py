@@ -43,7 +43,13 @@ class UDSFormB9Attribute(UDSAttributeCollection):
     def __get_last_set(self, field: str) -> Optional[int]:
         """B9 potentially pulls across multiple visits to get the last time the
         field was ever set, so need to pass the working namespace."""
-        return self.get_prev_value(field, int, working=self.__working)
+        result = self.get_prev_value(field, int, working=self.__working)
+
+        # treat -4 as None
+        if result == INFORMED_MISSINGNESS:
+            return None
+
+        return result
 
     def harmonize_befrst(self) -> Optional[int]:
         """Updates BEFRST for NACCBEHF harmonization.

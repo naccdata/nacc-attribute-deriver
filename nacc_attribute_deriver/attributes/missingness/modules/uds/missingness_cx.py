@@ -484,6 +484,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
             "udsbentd", "udsbenrs", set_to_missingness=True
         )
 
+    ############################
+    # UDSVER-related variables #
+    ############################
+
     def _missingness_udsverfn(self) -> Optional[int]:
         """Handles missingness for UDSVERFN."""
         return self._handle_non_optional_gate("udsverfc", "udsverfn")
@@ -500,6 +504,26 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """Handles missingness for UDSVERLN."""
         return self._handle_non_optional_gate("udsverlc", "udsverln")
 
+    """REGRESSION:
+    The following cascade based on UDSVERTN, which is a similar situation
+    to the REYXREC variables above but at a much smaller scale as it only
+    really involves 3 variables.
+
+    From SAS, the overall cascade is:
+
+        UDSVERFC -> UDSVERFN, UDSVERNF, UDSVERTN
+        UDSVERLC -> UDSVERLR, UDSVERLN, UDSVERTN
+        UDSVERTN -> UDSVERTE, UDSVERTI 
+
+    Note that UDSVERTN is the common factor, and may be set by
+    UDSVERFC or UDSVERLC. This in turn effects what UDSVERTE and
+    UDSVERTI are set to. As such, we need to check these first.
+
+    Meanwhile, UDSVERFN, UDSVERNF, UDSVERLR, and UDSVERLN
+    can just call the _handle_non_optional_gate directly, as they
+    only have one non-cascading gate.
+    """
+
     def _missingness_udsvertn(self) -> Optional[int]:
         """Handles missingness for UDSVERTN."""
         # REGRESSION: Checks UDSVERFC first, then UDSVERLC
@@ -511,13 +535,27 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_udsverte(self) -> Optional[int]:
         """Handles missingness for UDSVERTE."""
-        # REGRESSION: is udsvertn or udsverlc the gate?
-        return self._handle_non_optional_gate("udsvertn", "udsverte")
+        # REGRESSION
+        udsvertn = self._missingness_udsvertn()
+        if udsvertn is None:
+            udsvertn = self.uds.get_value("udsvertn", int)
+
+        if udsvertn in [95, 96, 97, 98]:
+            return udsvertn
+
+        return self._handle_non_optional_gate("udsverlc", "udsverte")
 
     def _missingness_udsverti(self) -> Optional[int]:
         """Handles missingness for UDSVERTI."""
-        # REGRESSION: is udsvertn or udsverlc the gate?
-        return self._handle_non_optional_gate("udsvertn", "udsverti")
+        # REGRESSION
+        udsvertn = self._missingness_udsvertn()
+        if udsvertn is None:
+            udsvertn = self.uds.get_value("udsvertn", int)
+
+        if udsvertn in [95, 96, 97, 98]:
+            return udsvertn
+
+        return self._handle_non_optional_gate("udsverlc", "udsverti")
 
     ############################
     # LOGIPREV-gated variables #

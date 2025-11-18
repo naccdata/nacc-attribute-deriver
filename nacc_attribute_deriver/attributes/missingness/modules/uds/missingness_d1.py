@@ -6,6 +6,10 @@ will now be found in either D1a or D1b.
 
 from typing import Optional
 
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_MISSINGNESS,
+)
+
 from .helpers.d1_base import UDSFormD1Missingness
 
 
@@ -104,8 +108,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
         # REGRESSION: Legacy SAS doesn't explicitly use the cognitive impairment
         # gate but seems like what it does is effectively the same thing
         # it also does an additional check based on PROBAD
-        return self.handle_cognitive_impairment_gate("possad", "possadif",
-            other_gate="probad")
+        return self.handle_cognitive_impairment_gate(
+            "possad", "possadif", other_gate="probad"
+        )
 
     def _missingness_vascps(self) -> Optional[int]:
         """Handles missingness for VASCPS."""
@@ -122,8 +127,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
     def _missingness_vascpsif(self) -> Optional[int]:
         """Handles missingness for VASCPSIF."""
         # REGRESSION: does additional checks based on VASC and FORMVERD1
-        return self.handle_cognitive_impairment_gate("vascps", "vascpsif",
-            other_gate="vasc", consider_formverd1=True)
+        return self.handle_cognitive_impairment_gate(
+            "vascps", "vascpsif", other_gate="vasc", consider_formverd1=True
+        )
 
     #######################
     # CVD-gated variables #
@@ -172,6 +178,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_alcabuse(self) -> Optional[int]:
         """Handles missingness for ALCABUSE."""
+        if self.uds.get_value("alcabuse", int) is not None:
+            return None
+
         if self.uds.get_value("alcdem", int) == 0:
             return 8
 
@@ -179,6 +188,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_deptreat(self) -> Optional[int]:
         """Handles missingness for DEPTREAT."""
+        if self.uds.get_value("deptreat", int) is not None:
+            return None
+
         if self.uds.get_value("dep", int) == 0:
             return 8
 
@@ -186,6 +198,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_brnincte(self) -> Optional[int]:
         """Handles missingness for BRNINCTE."""
+        if self.uds.get_value("brnincte", int) is not None:
+            return None
+
         if self.uds.get_value("brninj", int) == 0:
             return 8
 
@@ -193,6 +208,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_park(self) -> Optional[int]:
         """Handles missingness for PARK."""
+        if self.uds.get_value("park", int) is not None:
+            return None
+
         if self.uds.get_value("lbdis", int) == 0:
             return 0
 

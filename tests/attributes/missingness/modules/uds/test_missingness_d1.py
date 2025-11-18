@@ -49,9 +49,30 @@ class TestUDSFormD1LegacyMissingness:
                 "demented": 0,
                 "impnomci": 0,
                 "mciaplus": 1,
-                "formverd1": 1.0  # what triggers
+                "formverd1": 1.0,  # what triggers
             }
         )
 
         attr = UDSFormD1LegacyMissingness(uds_table)
         assert attr._missingness_vascpsif() == INFORMED_MISSINGNESS
+
+    def test_park(self, uds_table):
+        """Test PARK missingness."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "I",
+                "lbdis": 0,
+                "park": None,
+            }
+        )
+
+        attr = UDSFormD1LegacyMissingness(uds_table)
+        assert attr._missingness_park() == 0
+
+        uds_table["file.info.forms.json"].update(
+            {
+                "park": 1,  # set so should keep
+            }
+        )
+        assert attr._missingness_park() is None
