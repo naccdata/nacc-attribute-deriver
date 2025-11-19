@@ -8,6 +8,7 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1 import (
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1_raw import (
     UDSFormA1RawAttribute,
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -122,6 +123,25 @@ class TestUDSFormA1Attribute:
         table["file.info.forms.json"].update({"formver": 4.0, "predomlan": "5"})
         attr = UDSFormA1Attribute(table)
         assert attr._create_nacclang() == 5
+
+    def test_create_nacclangx(self, table):
+        """Tests _create_nacclangx."""
+        table["file.info.forms.json"].update(
+            {
+                "primlangx": "some legacy text",  # V3
+                "predomlanx": "some current text",  # V4
+            }
+        )
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_nacclangx() == "some legacy text"
+
+        table["file.info.forms.json.formver"] = 4.0
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_nacclangx() == "some current text"
+
+        # check returns informed blank if missing
+        table["file.info.forms.json.predomlanx"] = None
+        assert attr._create_nacclangx() == INFORMED_BLANK
 
     def test_create_nacchisp(self, table):
         """Tests _create_nacchisp."""

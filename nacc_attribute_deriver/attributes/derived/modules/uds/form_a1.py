@@ -12,6 +12,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     date_from_form_date,
@@ -47,7 +48,8 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
     def _create_naccageb(self) -> Optional[int]:
         """Creates NACCAGEB (age at initial visit)."""
-        if not self.uds.is_initial():
+        # also ignore I4s
+        if not self.uds.is_initial() or self.uds.is_i4():
             return None
 
         return self._create_naccage()
@@ -198,9 +200,11 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             return None
 
         if self.formver < 4:
-            return self.uds.get_value("primlangx", str)
+            result = self.uds.get_value("primlangx", str)
+        else:
+            result = self.uds.get_value("predomlanx", str)
 
-        return self.uds.get_value("predomlanx", str)
+        return result if result is not None else INFORMED_BLANK
 
     def _create_nacchisp(self) -> Optional[int]:
         """Creates NACCHISP - Hispanic/Latino ethnicity

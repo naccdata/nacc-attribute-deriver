@@ -118,10 +118,10 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
             result = self.uds.get_value("headinjury", int)
             return result if result is not None else INFORMED_MISSINGNESS
 
-        traumbrf = self.uds.get_value("traumbrf", int)
-        traumchr = self.uds.get_value("traumchr", int)
-        traumext = self.uds.get_value("traumext", int)
-        tbi = self.uds.get_value("tbi", int)
+        traumbrf = self.uds.get_value("traumbrf", int)  # V1/V2
+        traumchr = self.uds.get_value("traumchr", int)  # V1/V2
+        traumext = self.uds.get_value("traumext", int)  # V1/V2
+        tbi = self.uds.get_value("tbi", int)  # V3, only in IVP so -4 for rest
         all_vars = [traumbrf, traumchr, traumext, tbi]
 
         if any(x in [1, 2] for x in all_vars):
@@ -211,13 +211,14 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         ELIF ARTHTYPE or ARTYPE = 9 then VAR = 9
         Else -4.
         """
-        arth = self.uds.get_value("arth", int)
         arthrit = self.uds.get_value("arthrit", int)
-        if arthrit is None and arthrit is None:
+        arth = self.uds.get_value("arth", int)
+        if arthrit is None and arth is None:
             return INFORMED_MISSINGNESS
 
         arthtype = self.uds.get_value("arthtype", int)
         artype = self.uds.get_value("artype", int)
+
         if arthtype in yes_conditions or artype in yes_conditions:
             return 1
         if arthtype in no_conditions or artype in no_conditions:
@@ -353,10 +354,10 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
             return result if result is not None else INFORMED_MISSINGNESS
 
         othercond = self.uds.get_value("othercond", int)
-        if othercond == 0:
-            return 0
-        if othercond in [0, 2]:
+        if othercond == 1:
             return 1
+        if othercond in [0, 2]:
+            return 0
         if othercond == 9:
             return 9
 
@@ -371,6 +372,16 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         V3 and earlier: From form A5
         """
         if self.formver < 4:
+            # in V3, the following values aren't provided,
+            # so pull value from previous visit
+            # TODO: wait for RT to decide on behavior, might be like NACCTBI
+            # if self.formver == 3 and not self.uds.is_initial():
+            #     result = None
+            #     if self.prev_record:
+            #         result = self.prev_record.get_derived_value("naccdep", int)
+
+            #     return result if result else INFORMED_MISSINGNESS
+
             dep2yrs = self.uds.get_value("dep2yrs", int)
             depothr = self.uds.get_value("depothr", int)
             if dep2yrs == 1 or depothr == 1:

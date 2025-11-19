@@ -62,12 +62,17 @@ def test_csf_subject():
         },
     }
 
+
 def test_mds_form():
     """Test MDS."""
     mds_table = SymbolTable(
         {
             "file": {
-                "info": {"forms": {"json": {"visitdate": "2020-01-01", "formver": 11, "agedem": 75}}}
+                "info": {
+                    "forms": {
+                        "json": {"visitdate": "2020-01-01", "formver": 11, "agedem": 75}
+                    }
+                }
             }
         }
     )

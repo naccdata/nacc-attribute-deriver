@@ -35,7 +35,7 @@ class TestUDSFormA2Attribute:
         assert attr._create_naccninr() == 3
 
         # newinf = 1, so generate
-        table["file.info.forms.json.a2sub"] = 1
+        table["file.info.forms.json.inrace"] = 99
         table["file.info.forms.json.newinf"] = 1
         assert attr._create_naccninr() == 99
 
@@ -47,15 +47,15 @@ class TestUDSFormA2Attribute:
     def test_create_naccninr_initial(self, table):
         """Tests NACCNINR behavior on initial visit."""
         table["file.info.forms.json"].update(
-            {"packet": "I", "formver": 1.0, "a2sub": 0, "newinf": None}
+            {"packet": "I", "formver": 1.0, "inrace": None, "newinf": None}
         )
         attr = UDSFormA2Attribute(table)
 
-        # # if initial but not submitted, should return -4
-        # assert attr._create_naccninr() == INFORMED_MISSINGNESS
+        # if initial but not submitted, should return -4
+        assert attr._create_naccninr() == INFORMED_MISSINGNESS
 
-        # submitted, computes 99
-        table["file.info.forms.json.a2sub"] = 1
+        # submitted, computes 9
+        table["file.info.forms.json.inrace"] = 99
         assert attr._create_naccninr() == 99
 
         # specific case that computes 2

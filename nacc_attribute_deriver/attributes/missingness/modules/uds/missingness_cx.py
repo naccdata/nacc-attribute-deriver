@@ -513,7 +513,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
         UDSVERFC -> UDSVERFN, UDSVERNF, UDSVERTN
         UDSVERLC -> UDSVERLR, UDSVERLN, UDSVERTN
-        UDSVERTN -> UDSVERTE, UDSVERTI 
+        UDSVERTN -> UDSVERTE, UDSVERTI
 
     Note that UDSVERTN is the common factor, and may be set by
     UDSVERFC or UDSVERLC. This in turn effects what UDSVERTE and

@@ -20,41 +20,22 @@ class UDSFormA2Attribute(UDSAttributeCollection):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
-    @property
-    def submitted(self) -> bool:
-        """Form A2 is optional, so may have not been submitted.
-
-        See A2SUB for V3 and earlier, MODEA2 for V4.
-        """
-        if self.formver < 4:
-            return self.uds.get_value("a2sub", int) == 1
-
-        return self.uds.get_value("modea2", int) in [1, 2]
-
     def _create_naccninr(self) -> int:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
         co-participant).
 
         May need to carry forward value.
         """
-        # if self.formver == 4 or (not self.submitted and self.uds.is_initial()):
-        # REGRESSION: seems A2SUB not reliable?
         if self.formver == 4:
             return INFORMED_MISSINGNESS
 
-        # newinf = self.uds.get_value("newinf", int)
-        # if not self.uds.is_initial() and newinf != 1:
-        #     # may need to carry forward from previous record
-        #     naccninr = None
-        #     if self.prev_record:
-        #         naccninr = self.prev_record.get_derived_value("naccninr", int)
-
-        #     return naccninr if naccninr is not None else INFORMED_MISSINGNESS
-
+        # REGRESSION: a2sub unreliable? looks like legacy looks
+        # specifically at inrace instead if result ends up being 99
         newinf = self.uds.get_value("newinf", int)
         if self.uds.is_initial() or newinf == 1:
-            return generate_race_v3(
-                race=self.uds.get_value("inrace", int),
+            inrace = self.uds.get_value("inrace", int)
+            result = generate_race_v3(
+                race=inrace,
                 racex=self.uds.get_value("inracex", str),
                 racesec=self.uds.get_value("inrasec", int),
                 racesecx=self.uds.get_value("inrasecx", str),
@@ -62,7 +43,13 @@ class UDSFormA2Attribute(UDSAttributeCollection):
                 raceterx=self.uds.get_value("inraterx", str),
             )
 
+            if result == 99 and inrace is None:
+                return INFORMED_MISSINGNESS
+
+            return result
+
         # otherwise may need to pull forward
+        naccninr = None
         if self.prev_record:
             naccninr = self.prev_record.get_derived_value("naccninr", int)
 
@@ -70,13 +57,10 @@ class UDSFormA2Attribute(UDSAttributeCollection):
 
     def _create_naccincntfq(self) -> int:
         """Creates NACCINCNTFQ - frequency of contact."""
-        # if not self.submitted:
-        #     return INFORMED_MISSINGNESS
-
         if self.formver == 4:
             inlivwth = self.uds.get_value("inlivwth", int)
             if inlivwth is None:
-                raise AttributeDeriverError("INLIVWTH required if A2 submitted")
+                return INFORMED_MISSINGNESS
 
             if inlivwth == 1:
                 return 8

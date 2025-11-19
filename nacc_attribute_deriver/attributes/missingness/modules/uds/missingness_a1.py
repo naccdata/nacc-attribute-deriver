@@ -316,9 +316,51 @@ class UDSFormA1Missingness(UDSMissingness):
         """Handles missingness for PRIOCC."""
         return self.handle_prev_visit("priocc", int, default=99)
 
+    # The following are required so no defaults
+
+    def _missingness_birthmo(self) -> Optional[int]:
+        """Handles missingness for BIRTHMO."""
+        return self.handle_prev_visit("birthmo", int)
+
+    def _missingness_birthyr(self) -> Optional[int]:
+        """Handles missingness for BIRTHYR."""
+        return self.handle_prev_visit("birthyr", int)
+
+    def _missingness_birthsex(self) -> Optional[int]:
+        """Handles missingness for BIRTHSEX."""
+        return self.handle_prev_visit("birthsex", int)
+
+    def _missingness_intersex(self) -> Optional[int]:
+        """Handles missingness for INTERSEX."""
+        return self.handle_prev_visit("intersex", int)
+
+    def _missingness_served(self) -> Optional[int]:
+        """Handles missingness for SERVED."""
+        return self.handle_prev_visit("served", int)
+
+    def _missingness_handed(self) -> Optional[int]:
+        """Handles missingness for HANDED."""
+        return self.handle_prev_visit("handed", int)
+
+    def _missingness_educ(self) -> Optional[int]:
+        """Handles missingness for EDUC."""
+        return self.handle_prev_visit("educ", int)
+
+    def _missingness_lvleduc(self) -> Optional[int]:
+        """Handles missingness for LVLEDUC."""
+        return self.handle_prev_visit("lvleduc", int)
+
+    def _missingness_sourcenw(self) -> Optional[int]:
+        """Handles missingness for SOURCENW."""
+        return self.handle_prev_visit("sourcenw", int)
+
     ######################
     # Write-in variables #
     ######################
+
+    def _missingness_chldhdctry(self) -> Optional[str]:
+        """Handles missingness for CHLDHDCTRY."""
+        return self.handle_prev_visit("chldhdctry", str)
 
     def _missingness_raceaianx(self) -> Optional[str]:
         """Handles missingness for RACEAIANX."""
@@ -356,18 +398,13 @@ class UDSFormA1Missingness(UDSMissingness):
         """Handles missingness for SEXORNOTHX."""
         return self.handle_prev_visit("sexornothx", str)
 
-    #####################################
-    # Legacy variables (V3 and earlier)
-    # just set to -4 in these cases #
-    #####################################
+    ############################W################
+    # Legacy variables (only in V3 and earlier) #
+    #############################################
 
     def _missingness_sex(self) -> Optional[int]:
         """Handles missingness for SEX."""
         return self.handle_prev_visit("sex", int)
-
-    def _missingness_birthsex(self) -> Optional[int]:
-        """Handles missingness for BIRTHSEX."""
-        return self.handle_prev_visit("birthsex", int)
 
     def _missingness_hispanic(self) -> Optional[int]:
         """Handles missingness for HISPANIC."""
@@ -417,22 +454,6 @@ class UDSFormA1Missingness(UDSMissingness):
         """Handles missingness for PRIMLANX."""
         return self.handle_prev_visit("primlanx", str)
 
-    def _missingness_handed(self) -> Optional[int]:
-        """Handles missingness for HANDED."""
-        return self.handle_prev_visit("handed", int)
-
-    def _missingness_educ(self) -> Optional[int]:
-        """Handles missingness for EDUC."""
-        return self.handle_prev_visit("educ", int)
-
-    def _missingness_lvleduc(self) -> Optional[int]:
-        """Handles missingness for LVLEDUC."""
-        return self.handle_prev_visit("lvleduc", int)
-
     def _missingness_source(self) -> Optional[int]:
         """Handles missingness for SOURCE."""
         return self.handle_prev_visit("source", int)
-
-    def _missingness_sourcenw(self) -> Optional[int]:
-        """Handles missingness for SOURCENW."""
-        return self.handle_prev_visit("sourcenw", int)
