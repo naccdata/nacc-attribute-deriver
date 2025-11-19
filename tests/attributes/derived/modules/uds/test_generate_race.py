@@ -96,16 +96,16 @@ class TestGenerateRaceV3:
 
     # the following are pulled from regression testing
 
-    def test_NACC359394(self):
+    def test_case1(self):
         # baseline says 99, computed seems more correct
         assert generate_race_v3(50, "Mulato", 88, "", 88, "") == 6
 
-    def test_NACC201235(self):
+    def test_case2(self):
         # baseline says 1, was incorrectly computing as 6
         # was missing itialian american from white_responses, fixed
         assert generate_race_v3(1, "", 50, "ITIALIAN AMERICAN", 88, "") == 1
 
-    def test_NACC356772(self):
+    def test_case3(self):
         """baseline says 6, was computing as 99 EGYPT as a response is not
         defined in the SAS code, I believe it's set by the line.
 
@@ -119,12 +119,12 @@ class TestGenerateRaceV3:
         """
         assert generate_race_v3(50, "EGYPT", 1, "", 88, "") == 6
 
-    def test_NACC703416(self):
+    def test_case4(self):
         # baseline says 1, computed says 6
         # also affected by the if/else inconsistency, fixed now
         assert generate_race_v3(50, "POLISH", 1, "", 88, "") == 1
 
-    def test_hispanic(self):
+    def test_case5_hispanic(self):
         """This one is most volatile to changes/script differences.
 
         Original derived value is 99, but needs to be further refined
@@ -133,7 +133,11 @@ class TestGenerateRaceV3:
         assert generate_race_v3(50, "HISPANIC", 88, "", 88, "") == 99
         assert generate_race_v3(50, "Hispanic", 88, "", 88, "") == 99
 
-    def test_NACC342334(self):
+    def test_case6(self):
         """baseline 1 vs computed 6, issue was accidental lack of comma should
         in fact be 1."""
         assert generate_race_v3(1, "", 50, "Middle Eastern", 88, "") == 1
+
+    def test_case7(self):
+        """Baseline said 99 but should be 6, legacy code did not match on case."""
+        assert generate_race_v3(50, "Mestiza", 88, "", 88, "") == 6

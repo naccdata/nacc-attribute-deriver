@@ -31,7 +31,7 @@ class UDSFormB8Attribute(UDSAttributeCollection):
                 return 1
             if normnrexam == 1:
                 return 0
-            if neurexam == 8:
+            if neurexam == 0:
                 return 8
 
         return INFORMED_MISSINGNESS

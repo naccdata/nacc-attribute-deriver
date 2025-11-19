@@ -49,7 +49,7 @@ class TestUDSFormB8Attribute:
         assert attr._create_naccnrex() == 0
 
         # third case
-        uds_table["file.info.forms.json"].update({"normnrexam": None, "neurexam": 8})
+        uds_table["file.info.forms.json"].update({"normnrexam": None, "neurexam": 0})
         assert attr._create_naccnrex() == 8
 
         # default case

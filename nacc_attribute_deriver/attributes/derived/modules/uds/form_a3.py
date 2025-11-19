@@ -143,23 +143,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             missingness_value=0 if self.formver != 4 else INFORMED_MISSINGNESS,
         )
 
-        # this technically worked before so keeping just in case
-        # known_value = self.__subject_derived.get_cross_sectional_value(  # type: ignore
-        #     "naccfadm", int
-        # )
-
-        # # removed in V4
-        # if self.formver >= 4:
-        #     return known_value if known_value is not None else INFORMED_MISSINGNESS
-
-        # if not self.submitted or self.formver < 3:
-        #     return 0
-
-        # if self.uds.get_value("fadmut", int) in [1, 2, 3, 8]:
-        #     return 1
-
-        # return known_value if known_value is not None else 0
-
     def _create_naccfftd(self) -> int:
         """Creates NACCFFTD - In this family, is there evidence for
         an FTLD mutation?
@@ -185,20 +168,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             missingness_value=0 if self.formver != 4 else INFORMED_MISSINGNESS,
         )
 
-        # this also worked before, so keeping just in case
-        # if not self.submitted or self.formver != 3:
-        #     return 0
-
-        # if (
-        #     self.uds.get_value("fftdmut", int) in [1, 2, 3, 4, 8]
-        #     or self.uds.get_value("ftdmutat", int) == 1
-        # ):
-        #     return 1
-
-        # return self.__subject_derived.get_cross_sectional_value(  # type: ignore
-        #     "naccfftd", int, default=0
-        # )
-
     def _create_naccam(self) -> int:
         """Creates NACCAM - In this family, is there evidence
         of an AD mutation?
@@ -222,23 +191,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             return None
 
         return self.__handle_a3_derived_logic(__naccam_logic, "naccam")
-
-        # known_value = self.__subject_derived.get_cross_sectional_value(
-        #     "naccam", int
-        # )
-        # if not self.submitted or self.formver != 3:
-        #     return known_value if known_value is not None else INFORMED_MISSINGNESS
-
-        # fadmut = self.uds.get_value("fadmut", int)
-        # if fadmut in [1, 2, 3, 8]:
-        #     return fadmut
-        # if fadmut == 0:
-        #     # a non-zero known value should supersede
-        #     if known_value in [1, 2, 3, 8]:
-        #         return known_value
-        #     return fadmut
-
-        # return known_value if known_value is not None else 9
 
     def _create_naccams(self) -> int:
         """Creates NACCAMS - Source of evidence for AD
@@ -266,27 +218,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         return self.__handle_a3_derived_logic(__naccams_logic, "naccams")
 
-        # known_value = self.__subject_derived.get_cross_sectional_value(
-        #     "naccams", int
-        # )
-
-        # if not self.submitted or self.formver != 3:
-        #     return known_value if known_value is not None else INFORMED_MISSINGNESS
-
-        # if self._create_naccam() == 0:
-        #     return INFORMED_MISSINGNESS
-
-        # fadmuso = self.uds.get_value("fadmuso", int)
-        # if fadmuso in [1, 2, 3, 8]:
-        #     return fadmuso
-
-        # # for NACCAMS to be 9, it must be 9 at ALL visits, return None otherwise
-        # if fadmuso == 9 and (self.uds.is_initial() or known_value == 9):
-        #     return 9
-
-        # # if fadmuso is None, also return 9 or the known value
-        # return known_value if known_value is not None else 9
-
     def _create_naccfm(self) -> int:
         """Creates NACCFM - In this family, is there evidence for an
         FTLD mutation (from a list of specific mutations)?
@@ -308,25 +239,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             return None
 
         return self.__handle_a3_derived_logic(__naccfm_logic, "naccfm")
-
-        # known_value = self.__subject_derived.get_cross_sectional_value(
-        #     "naccfm", int, default=9
-        # )
-
-        # if not self.submitted or self.formver != 3:
-        #     return known_value
-
-        # fftdmut = self.uds.get_value("fftdmut", int)
-        # if fftdmut in [1, 2, 3, 4, 8]:
-        #     return fftdmut
-
-        # if fftdmut == 0:
-        #     # a non-zero known value should supersede
-        #     if known_value in [1, 2, 3, 4, 8]:
-        #         return known_value
-        #     return fftdmut
-
-        # return known_value
 
     def _create_naccfms(self) -> int:
         """Creates NACCFMS - Source of evidence for FTLD
@@ -351,27 +263,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         return self.__handle_a3_derived_logic(__naccfms_logic, "naccfms")
 
-        # known_value = self.__subject_derived.get_cross_sectional_value(
-        #     "naccfms", int, default=9
-        # )
-
-        # if not self.submitted or self.formver != 3:
-        #     return known_value
-
-        # if self._create_naccfm() == 0:
-        #     return INFORMED_MISSINGNESS
-
-        # fftdmusu = self.uds.get_value("fftdmuso", int)
-        # if fftdmusu in [0, 1, 2, 3, 8]:
-        #     return fftdmusu
-
-        # # for NACCFMS to be 9, it must be 9 at ALL visits, return None otherwise
-        # if fftdmusu == 9 and (self.uds.is_initial() or known_value == 9):
-        #     return 9
-
-        # # if fftdmusu is None, also return 9 or the known value
-        # return known_value
-
     def _create_naccom(self) -> int:
         """Creates NACCOM - In this family, is there evidence for
         a mutation other than an AD or FTLD mutation?
@@ -391,23 +282,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             return None
 
         return self.__handle_a3_derived_logic(__naccom_logic, "naccom")
-
-        # known_value = self.__subject_derived.get_cross_sectional_value(
-        #     "naccom", int, default=9
-        # )
-
-        # if not self.submitted or self.formver != 3:
-        #     return known_value
-
-        # # known value 1 always supersedes
-        # if known_value == 1:
-        #     return 1
-
-        # fothmut = self.uds.get_value("fothmut", int)
-        # if fothmut in [0, 1]:
-        #     return fothmut
-
-        # return known_value
 
     def _create_naccoms(self) -> int:
         """Creates NACCOMS - Source of evidence for other
@@ -431,27 +305,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             return None
 
         return self.__handle_a3_derived_logic(__naccoms_logic, "naccoms")
-
-        # known_value = self.__subject_derived.get_cross_sectional_value(
-        #     "naccoms", int, default=9
-        # )
-
-        # if not self.submitted or self.formver != 3:
-        #     return known_value
-
-        # if self._create_naccom() == 0:
-        #     return INFORMED_MISSINGNESS
-
-        # fothmuso = self.uds.get_value("fothmuso", int)
-        # if fothmuso in [0, 1, 2, 3, 8]:
-        #     return fothmuso
-
-        # # for NACCOMS to be 9, it must be 9 at ALL visits, return None otherwise
-        # if fothmuso == 9 and (self.uds.is_initial() or known_value == 9):
-        #     return 9
-
-        # # if fothmuso is None, also return 9 or the known value
-        # return known_value
 
     #############
     # Write-ins #

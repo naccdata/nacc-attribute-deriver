@@ -54,7 +54,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         # seems QAF before expects 888.8 if not
         # submitted on initial visit, -4/None otherwise
         if not self.submitted:
-            if self.uds.is_initial():
+            if self.uds.is_initial() and not self.uds.is_i4():
                 return 888.8
 
             return INFORMED_MISSINGNESS
