@@ -74,7 +74,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
     ##############################
 
     def _handle_verbaltest_gate(
-        self, verbal_value: int, set_value: int
+        self, field: str, verbal_value: int, set_value: int
     ) -> Optional[int]:
         """Handles variables gated by VERBALTEST, which generally follows the
         below logic.
@@ -84,75 +84,75 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if self.uds.get_value("verbaltest", int) == verbal_value:
             return set_value
 
-        return None
+        return self.generic_missingness(field, int)
 
     def _missingness_rey1rec(self) -> Optional[int]:
         """Handles missingness for REY1REC."""
-        return self._handle_verbaltest_gate(verbal_value=2, set_value=88)
+        return self._handle_verbaltest_gate("rey1rec", verbal_value=2, set_value=88)
 
     def _missingness_reydti(self) -> Optional[int]:
         """Handles missingness for REYDTI."""
-        return self._handle_verbaltest_gate(verbal_value=2, set_value=88)
+        return self._handle_verbaltest_gate("reydti", verbal_value=2, set_value=88)
 
     def _missingness_reymethod(self) -> Optional[int]:
         """Handles missingness for REYMETHOD."""
-        return self._handle_verbaltest_gate(verbal_value=2, set_value=88)
+        return self._handle_verbaltest_gate("reymethod",verbal_value=2, set_value=88)
 
     def _missingness_cerad1rec(self) -> Optional[int]:
         """Handles missingness for CERAD1REC."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad1rec", verbal_value=1, set_value=88)
 
     def _missingness_cerad1read(self) -> Optional[int]:
         """Handles missingness for CERAD1READ."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad1read", verbal_value=1, set_value=88)
 
     def _missingness_cerad1int(self) -> Optional[int]:
         """Handles missingness for CERAD1INT."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("cerad1int", verbal_value=1, set_value=888)
 
     def _missingness_cerad2rec(self) -> Optional[int]:
         """Handles missingness for CERAD2REC."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad2rec", verbal_value=1, set_value=88)
 
     def _missingness_cerad2read(self) -> Optional[int]:
         """Handles missingness for CERAD2READ."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad2read", verbal_value=1, set_value=88)
 
     def _missingness_cerad2int(self) -> Optional[int]:
         """Handles missingness for CERAD2INT."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("cerad2int", verbal_value=1, set_value=888)
 
     def _missingness_cerad3rec(self) -> Optional[int]:
         """Handles missingness for CERAD3REC."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad3rec", verbal_value=1, set_value=88)
 
     def _missingness_cerad3read(self) -> Optional[int]:
         """Handles missingness for CERAD3READ."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad3read", verbal_value=1, set_value=88)
 
     def _missingness_cerad3int(self) -> Optional[int]:
         """Handles missingness for CERAD3INT."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("cerad3int", verbal_value=1, set_value=888)
 
     def _missingness_ceraddti(self) -> Optional[int]:
         """Handles missingness for CERADDTI."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceraddti", verbal_value=1, set_value=88)
 
     def _missingness_ceradj6rec(self) -> Optional[int]:
         """Handles missingness for CERADJ6REC."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceradj6rec", verbal_value=1, set_value=88)
 
     def _missingness_ceradj6int(self) -> Optional[int]:
         """Handles missingness for CERADJ6INT."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("ceradj6int", verbal_value=1, set_value=888)
 
     def _missingness_ceradj7yes(self) -> Optional[int]:
         """Handles missingness for CERADJ7YES."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceradj7yes", verbal_value=1, set_value=88)
 
     def _missingness_ceradj7no(self) -> Optional[int]:
         """Handles missingness for CERADJ7NO."""
-        return self._handle_verbaltest_gate(verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceradj7no", verbal_value=1, set_value=88)
 
     ##########################################
     # Write-in variables that rely on a gate #
@@ -220,8 +220,8 @@ class UDSFormC1C2Missingness(UDSMissingness):
         cascading in a somewhat recursive manner to store the final value
         in gate_mresult.
         """
-        result = self._handle_verbaltest_gate(verbal_value=2, set_value=888)
-        if result is not None:
+        result = self._handle_verbaltest_gate(field, verbal_value=2, set_value=888)
+        if result is not None and result != INFORMED_MISSINGNESS:
             return result
 
         check_values = [88, 95, 96, 97, 98]
@@ -589,7 +589,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if (field != "logiyr") and (value is None or value == 99):
             return 88
 
-        return None
+        return value
 
     def _missingness_logiprev(self) -> Optional[int]:
         """Handles missingness for LOGIPREV."""

@@ -85,10 +85,10 @@ class TestUDSFormC1C2Missingness:
         )
         attr = UDSFormC1C2Missingness(uds_table)
 
-        # real date, expect None to return as-is
-        assert attr._missingness_logiyr() is None
-        assert attr._missingness_logimo() is None
-        assert attr._missingness_logiday() is None
+        # real date, expect values
+        assert attr._missingness_logiyr() == 2025
+        assert attr._missingness_logimo() == 6
+        assert attr._missingness_logiday() == 9
 
         # need to parse invalid date
         uds_table["file.info.forms.json"].update(
