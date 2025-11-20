@@ -1,5 +1,6 @@
 """Tests UDS Form B9 attributes."""
 
+import random
 import pytest
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_b9 import (
     UDSFormB9Attribute,
@@ -200,6 +201,41 @@ class TestUDSFormB9Attribute:
 
         attr = UDSFormB9Attribute(base_table)
         assert attr._create_nacccogf() == 1
+
+    def test_nacccogage(self, uds_table):
+        """Tests NACCCOGAGE. V1-V3 and V4 are identical, just
+        look at different values."""
+        formver = random.choice([1, 2, 3, 4])
+        field = "decage" if formver < 4 else "cogage"
+
+        uds_table["file.info.forms.json.formver"] = formver
+        attr = UDSFormB9Attribute(uds_table)
+
+        # Case 1: FIELD is not 777, so just pull from form
+        value = random.choice(range(15, 111))
+        uds_table["file.info.forms.json"].update({field: value})
+        assert attr._create_nacccogage() == value
+
+        # Case 2: FIELD is 777, pull from working
+        uds_table["file.info.forms.json"].update({field: 777})
+
+        # not there, so -4
+        assert attr._create_nacccogage() == INFORMED_MISSINGNESS
+
+        # there, so expect the last set value
+        value = random.choice(range(15, 111))
+        uds_table.update({
+            "subject": {
+                "info": {
+                    "working": {
+                        "cross-sectional": {
+                            field: value
+                        }
+                    }
+                }
+            }
+        })
+        assert attr._create_nacccogage() == value
 
 
 class TestUDSFormB9RawAttribute:

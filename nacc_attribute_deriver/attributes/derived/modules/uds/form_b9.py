@@ -85,13 +85,20 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         Depends on previous vars (p_decclin, p_befrst, p_befpred)
 
-        TODO: RDD lists this as cross-sectional, but it seems more like
-        its longitudinal with carryover from previous forms (e.g. not
-        the same for every visit.)
+        REGRESSION: Supposed to be cross-sectional, but being treated as
+        longitudinal. Eventually change curation_rules.csv to fix that.
+        For now, the known_value will not effect the previous logic since
+        we are not writing these values to the cross-sectional location
+        in the first place.
         """
-        # not defined in V4
+        known_value = self.__subject_derived.get_cross_sectional_value("naccbehf", int)
+
+        # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
-            return INFORMED_MISSINGNESS
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
+
+        if known_value is None:
+            known_value = 99
 
         befrst = self.harmonize_befrst()
         befpred = self.uds.get_value("befpred", int)  # v3+
@@ -136,42 +143,56 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             if naccbehf == 88:
                 naccbehf = 0
 
-        return naccbehf if naccbehf is not None else 99
+        return naccbehf if naccbehf is not None else known_value
 
-    def _create_naccbefx(self) -> Optional[str]:
+    def _create_naccbefx(self) -> str:
         """Create NACCBEFX, specification of other predominant symptom that was
         first recognized as a decline in the subject's behavior.
 
-        TODO: RDD lists this as cross-sectional, but it seems more like
-        its longitudinal,
+        REGRESSION: Supposed to be cross-sectional, but being treated as
+        longitudinal. Eventually change curation_rules.csv to fix that.
+        For now, the known_value will not effect the previous logic since
+        we are not writing these values to the cross-sectional location
+        in the first place.
         """
-        # not defined in V4
-        if self.formver == 4:
-            return INFORMED_BLANK
+        known_value = self.__subject_derived.get_cross_sectional_value("naccbefx", str)
+        if known_value is None:
+            known_value = INFORMED_BLANK
 
         if self._create_naccbehf() != 10:
-            return None
+            return known_value
 
+        result = None
         if self.formver < 3:
-            return self.uds.get_value("befrstx", str)
+            result = self.uds.get_value("befrstx", str)
+        else:
+            result = self.uds.get_value("befpredx", str)
 
-        return self.uds.get_value("befpredx", str)
+        return result if result is not None else known_value
 
-    def _create_nacccgfx(self) -> Optional[str]:
+    def _create_nacccgfx(self) -> str:
         """Creates NACCCGFX, specification for other predominant symptom first
         recognized as a decline in the subject's cognition.
 
-        TODO: RDD lists this as cross-sectional, but it seems more like
-        its longitudinal.
+        REGRESSION: Supposed to be cross-sectional, but being treated as
+        longitudinal. Eventually change curation_rules.csv to fix that.
+        For now, the known_value will not effect the previous logic since
+        we are not writing these values to the cross-sectional location
+        in the first place.
         """
+        known_value = self.__subject_derived.get_cross_sectional_value("nacccgfx", str)
+        if known_value is None:
+            known_value = INFORMED_BLANK
+
         # not defined in V4
         if self.formver == 4:
-            return INFORMED_BLANK
+            return known_value
 
         cogfprex = self.uds.get_value("cogfprex", str)
         cogfrstx = self.uds.get_value("cogfrstx", str)
 
-        return cogfprex if cogfprex is not None else cogfrstx
+        result = cogfprex if cogfprex is not None else cogfrstx
+        return result if result is not None else known_value
 
     def harmonize_cogfrst(self) -> Optional[int]:
         """Updates COGFRST for NACCCOGF harmonization.
@@ -192,13 +213,20 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         """Creates NACCCOGF, Indicate the predominant symptom that was first
         recognized as a decline in the subject's cognition.
 
-        TODO: RDD lists this as cross-sectional, but it seems more like
-        its longitudinal with carryover from previous forms (e.g. not
-        the same for every visit.)
+        REGRESSION: Supposed to be cross-sectional, but being treated as
+        longitudinal. Eventually change curation_rules.csv to fix that.
+        For now, the known_value will not effect the previous logic since
+        we are not writing these values to the cross-sectional location
+        in the first place.
         """
-        # not defined in V4
+        known_value = self.__subject_derived.get_cross_sectional_value("nacccogf", int)
+
+        # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
-            return INFORMED_MISSINGNESS
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
+
+        if known_value is None:
+            known_value = 99
 
         cogfrst = self.harmonize_cogfrst()
         cogfpred = self.uds.get_value("cogfpred", int)
@@ -236,14 +264,26 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         if self.formver >= 3 and nacccogf == 88:
             nacccogf = 0
 
-        return nacccogf if nacccogf is not None else 99
+        return nacccogf if nacccogf is not None else known_value
 
     def _create_naccmotf(self) -> int:  # noqa: C901
         """Creates NACCMOTF, Indicate the predominant symptom that was first
-        recognized as a decline in the subject's motor function."""
-        # not defined in V4
+        recognized as a decline in the subject's motor function.
+
+        REGRESSION: Supposed to be cross-sectional, but being treated as
+        longitudinal. Eventually change curation_rules.csv to fix that.
+        For now, the known_value will not effect the previous logic since
+        we are not writing these values to the cross-sectional location
+        in the first place.
+        """
+        known_value = self.__subject_derived.get_cross_sectional_value("naccmotf", int)
+
+        # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
-            return INFORMED_MISSINGNESS
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
+
+        if known_value is None:
+            known_value = 99
 
         mofrst = self.uds.get_value("mofrst", int)
 
@@ -273,4 +313,4 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         if self.formver >= 3 and naccmotf == 88:
             naccmotf = 0
 
-        return naccmotf if naccmotf is not None else 99
+        return naccmotf if naccmotf is not None else known_value

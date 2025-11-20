@@ -418,3 +418,121 @@ class TestUDSFormA5D2Attribute:
 
         uds_table["file.info.forms.json.anxiety"] = 2
         assert attr._create_naccanx() == 2
+
+    def test_naccsubst(self, uds_table):
+        """Tests NACCSUBST."""
+
+        # V1 - V3 rely on ABUSOTHR
+        uds_table["file.info.forms.json.formver"] = random.choice([1, 2, 3])
+        attr = UDSFormA5D2Attribute(uds_table)
+
+        # default: missing, expect -4
+        assert attr._create_naccsubst() == INFORMED_MISSINGNESS
+
+        # Case 1: 0 or 2 then expect 0
+        uds_table["file.info.forms.json.abusothr"] = random.choice([0, 2])
+        assert attr._create_naccsubst() == 0
+
+        # Case 2: 1 then expect 1
+        uds_table["file.info.forms.json.abusothr"] = 1
+        assert attr._create_naccsubst() == 1
+
+        # Case 3: 9 then expect 9
+        uds_table["file.info.forms.json.abusothr"] = 9
+        assert attr._create_naccsubst() == 9
+
+        # V4 rely on SUBSTYEAR
+        uds_table["file.info.forms.json.formver"] = 4
+        attr = UDSFormA5D2Attribute(uds_table)
+
+        # default: missing, expect -4
+        assert attr._create_naccsubst() == INFORMED_MISSINGNESS
+
+        # otherwise equals SUBSTYEAR
+        value = random.choice([0, 1, 9])
+        uds_table["file.info.forms.json.substyear"] = value
+        assert attr._create_naccsubst() == value
+
+    def test_naccheart_v1v2(self, uds_table):
+        """Tests NACCHEART - V1/V2 logic. Basically just looks at CVHATT"""
+        uds_table["file.info.forms.json.formver"] = random.choice([1, 2])
+        attr = UDSFormA5D2Attribute(uds_table)
+
+        # default: missing, expect -4
+        assert attr._create_naccheart() == INFORMED_MISSINGNESS
+
+        # otherwise equals CVHATT
+        value = random.choice([0, 1, 2, 9])
+        uds_table["file.info.forms.json.cvhatt"] = value
+        assert attr._create_naccheart() == value
+
+    def test_naccheart_v3(self, uds_table):
+        """Tests NACCHEART - V3 logic. Looks at both CVHATT and MYOINF"""
+        uds_table["file.info.forms.json.formver"] = 3
+        attr = UDSFormA5D2Attribute(uds_table)
+
+        # default: missing, expect -4
+        assert attr._create_naccheart() == INFORMED_MISSINGNESS
+
+        # Case 1: If CVHATT or MYOINF == 1, expect 1
+        field = random.choice(["cvhatt", "moyinf"])
+        uds_table["file.info.forms.json"].update({field: 1})
+        assert attr._create_naccheart() == 1
+
+        # Case 2: If CVHATT or MYOINF == 0, expect 0
+        uds_table["file.info.forms.json"].update({field: 0})
+        assert attr._create_naccheart() == 0
+
+        # Case 3: If CVHATT == 2, expect 2
+        uds_table["file.info.forms.json"].update({
+            "cvhatt": 2,
+            "myoinf": 9
+        })
+        assert attr._create_naccheart() == 2
+
+        # check not triggerd if MYOINF == 2 (not an allowed value for
+        # this variable but sanity check)
+        uds_table["file.info.forms.json"].update({
+            "cvhatt": 9,
+            "myoinf": 2
+        })
+        assert attr._create_naccheart() == INFORMED_MISSINGNESS
+
+        # Case 4: If CVHATT = 9 and MYOINF = 8 then expect 9
+        uds_table["file.info.forms.json"].update({
+            "cvhatt": 9,
+            "myoinf": 8
+        })
+        assert attr._create_naccheart() == 9
+
+    def test_naccheart_v4(self, uds_table):
+        """Tests NACCHEART - V4 logic. Looks at both HRTATTACK and CARDARREST."""
+        uds_table["file.info.forms.json.formver"] = 4
+        attr = UDSFormA5D2Attribute(uds_table)
+
+        # default: missing, expect -4
+        assert attr._create_naccheart() == INFORMED_MISSINGNESS
+
+        # Case 1: If HRTATTACK or CARDARREST == 1, expect 1
+        field = random.choice(["hrtattack", "cardarrest"])
+        uds_table["file.info.forms.json"].update({field: 1})
+        assert attr._create_naccheart() == 1
+
+        # Case 2: If HRTATTACK or CARDARREST == 2, expect 2
+        uds_table["file.info.forms.json"].update({field: 2})
+        assert attr._create_naccheart() == 2
+
+        # Case 3: If HRTATTACK or CARDARREST == 0, expect 0
+        uds_table["file.info.forms.json"].update({field: 0})
+        assert attr._create_naccheart() == 0
+
+        # Case 4: If HRTATTACK and CARDARREST == 9, expect 9
+        uds_table["file.info.forms.json"].update({
+            "hrtattack": 9,
+            "cardarrest": 9
+        })
+        assert attr._create_naccheart() == 9
+
+        # fallback case: if only one is 9, expect -4
+        uds_table["file.info.forms.json"].update({field: 8})
+        assert attr._create_naccheart() == INFORMED_MISSINGNESS

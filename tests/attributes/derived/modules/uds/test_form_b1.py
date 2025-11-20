@@ -126,7 +126,8 @@ class TestUDSFormB1Attribute:
         assert attr._compute_average("field1", "field2") == 65
 
     def test_handle_v3_blood_pressure(self, uds_table):
-        """Test _handle_v3_blood_pressure, which is just for V3."""
+        """Test _handle_v3_blood_pressure, which is for V3 blood pressure
+        variables."""
         uds_table["file.info.forms.json"].update(
             {"formver": 3.0, "gate": 777, "field": 123}
         )

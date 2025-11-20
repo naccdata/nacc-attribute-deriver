@@ -34,7 +34,7 @@ mds,mds_fevalmo,file.info.resolved.fevalmo,update,FALSE,int
 mds,mds_fevalyr,file.info.resolved.fevalyr,update,FALSE,int
 mds,mds_hispanic,file.info.resolved.hispanic,update,FALSE,int
 mds,mds_maristat,file.info.resolved.maristat,update,FALSE,int
-mds,mds_mdb001,file.info.resolved.mdb001,update,FALSE,int
+mds,mds_mdb001,file.info.resolved.mdb001,update,FALSE,str
 mds,mds_mmseday,file.info.resolved.mmseday,update,FALSE,int
 mds,mds_mmsefrst,file.info.resolved.mmsefrst,update,FALSE,int
 mds,mds_mmselast,file.info.resolved.mmselast,update,FALSE,int

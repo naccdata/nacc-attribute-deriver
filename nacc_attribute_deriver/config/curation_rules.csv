@@ -432,3 +432,6 @@ uds,moage,subject.info.working.cross-sectional.moage,update,FALSE
 uds,beremago,subject.info.working.cross-sectional.beremago,update,FALSE
 uds,beage,subject.info.working.cross-sectional.beage,update,FALSE
 uds,parkage,subject.info.working.cross-sectional.parkage,update,FALSE
+uds,naccfam,subject.info.derived.longitudinal.naccfam,list,TRUE
+uds,naccmom,subject.info.derived.longitudinal.naccmom,list,TRUE
+uds,naccdad,subject.info.derived.longitudinal.naccdad,list,TRUE

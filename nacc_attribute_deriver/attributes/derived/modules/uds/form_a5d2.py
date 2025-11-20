@@ -193,7 +193,7 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
             return 2
         if hrtattack == 0 or cardarrest == 0:
             return 0
-        if hrtattack == 9 and myoinf == 9:
+        if hrtattack == 9 and cardarrest == 9:
             return 9
 
         return INFORMED_MISSINGNESS
