@@ -1,17 +1,16 @@
 # Regression
 
-The following are known and notable issues and inconsistencies in how the legacy code derived variables and what we are changing it to going forward starting with the new system and V4.
+The following are known and notable issues and inconsistencies in how the legacy code derived variables and what we are changing it to going forward starting with the new system and V4. You may also find `# REGRESSION` comments in the code for more context.
 
 ## Generally
 
-* For missingness, there are a lot of inconsistencies on when things are set to -4 based on relevance to the form version. The legacy had to hardcode all of these, and it seems several slipped through the cracks/accidentally got set to something anyways. Going forward, we are using `config/uds_ded_matrix.csv` explicitly - if it's not in the version, it is explicitly set to -4.
+* For missingness, there are a lot of inconsistencies on when things are set to -4 based on relevance to the form version. The legacy had to hardcode all of these, and it seems several slipped through the cracks/accidentally got set to something anyways. Going forward, we are using `config/uds_ded_matrix.csv` to explicitly set something to the missingness value (-4/-4.4/blank) if it is not applicable to the version.
 	* In the matrix, 1 = collected in that version, 2 = collected only at IVP and automatically brought across, 0/blank = not applicable 
-
 
 ## Form A3
 
 * `NACCFAM`, `NACCMOM`, and `NACCDAD` (all cross-sectional) followed a rule that if any visit ever set it to 1, it would stay 1, but 0 and 9 could flip/flop. Going forward, we instead allow it to flip-flop between 0 and 1, but 9 will never override the other two.
-	* On that note, the legacy code for these variables is particularly incomprehensible. The current code doesn't really help, as it was written to reproduce the legacy output before applying the above change. But at least it's in Python now and not SAS :)
+	* On that note, the legacy code for these variables is particularly incomprehensible. The current code doesn't really help, as it was written to reproduce/interpret the legacy output before applying the above change. But at least it's in Python now and not SAS :)
 
 ## Form A4
 
@@ -41,5 +40,3 @@ As such, for these handful of visits with inconsistent data, their derived/missi
 ## Form D1a
 
 * `NACCMCII`: Legacy code seems to not have been correctly considering the 8 condition, especially in regards to the initial visit - for example, even if there was MCI at the initial visit, it would NOT set it to 8. I'm still investigating exactly what it's doing wrong just for regression testing, but it will be fixed going forward.
-
-

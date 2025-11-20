@@ -46,6 +46,8 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_demun(self) -> Optional[int]:
         """Handles missingness for DEMUN."""
+        # REGRESSION - RDD does not specify DEMUN can be 8
+        # but it IS happening in the legacy when NORMCOG == 1
         return self.handle_normcog_gate("demun")
 
     ########################################

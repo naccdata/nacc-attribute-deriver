@@ -160,6 +160,94 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "dadneur", None)
         assert attr._create_naccdad() == 9
 
+    def test_create_naccam(self, table, form_prefix, subject_derived_prefix):
+        """Tests creating NACCAM."""
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccam() == 3
+        set_attribute(table, form_prefix, "fadmut", 0)
+        assert attr._create_naccam() == 0
+
+        # test superseded cases
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 2)
+        assert attr._create_naccam() == 2
+        set_attribute(table, form_prefix, "fadmut", 0)
+        assert attr._create_naccam() == 2
+        set_attribute(table, form_prefix, "fadmut", None)
+        assert attr._create_naccam() == 2
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 0)
+        assert attr._create_naccam() == 0
+        set_attribute(table, form_prefix, "fadmut", 8)
+        assert attr._create_naccam() == 8
+
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 9)
+        assert attr._create_naccam() == 8
+        set_attribute(table, form_prefix, "fadmut", 0)
+        assert attr._create_naccam() == 0
+
+    def test_create_naccams(self, table, form_prefix, subject_derived_prefix):
+        """Tests creating NACCAMS."""
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccams() == 2
+        set_attribute(table, form_prefix, "fadmuso", 9)
+        assert attr._create_naccams() == 9
+        set_attribute(table, form_prefix, "fadmuso", None)
+        assert attr._create_naccams() == 9
+
+        # test superseded cases
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccams", 9)
+        assert attr._create_naccams() == 9
+        set_attribute(table, form_prefix, "fadmuso", 9)
+        assert attr._create_naccams() == 9
+
+    def test_create_naccom(self, table, form_prefix, subject_derived_prefix):
+        """Test creating NACCOM."""
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccom() == 0
+        set_attribute(table, form_prefix, "fothmut", 1)
+        assert attr._create_naccom() == 1
+        set_attribute(table, form_prefix, "fothmut", 9)
+        assert attr._create_naccom() == 9
+
+        # check V2 case - should be -4 since no known value
+        set_attribute(table, form_prefix, "formver", 2)
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccom() == -4
+
+        # test superseded cases
+        set_attribute(table, form_prefix, "formver", 3)
+        attr = UDSFormA3Attribute(table)
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 9)
+        assert attr._create_naccom() == 9
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 0)
+        assert attr._create_naccom() == 0
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 1)
+        assert attr._create_naccom() == 1
+
+        # check V2 case - should use known value
+        set_attribute(table, form_prefix, "formver", 2)
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccom() == 1
+
+    def test_create_naccam_v3_case(self, table, form_prefix, subject_derived_prefix):
+        """Test create NACCAM when there are a pile of V2 visits before a V3
+        one.
+
+        Starts at -4 and expected to change to 9 once we get to V3.
+        """
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", -4)
+        set_attribute(table, form_prefix, "formver", 2)
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccam() == -4
+
+        set_attribute(table, form_prefix, "formver", 3)
+        set_attribute(table, form_prefix, "fadmut", 9)
+        attr = UDSFormA3Attribute(table)
+        assert attr._create_naccam() == 9
+
+
+class TestNACCFAM:
+    """Class to test NACCFAM specifically."""
     def test_create_naccfam(self, table, naccfam_table, form_prefix):
         """Tests creating NACCFAM."""
         attr = UDSFormA3Attribute(table)
@@ -302,87 +390,42 @@ class TestUDSFormA3Attribute:
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 1)
         assert attr._create_naccfam() == 1
 
-    def test_create_naccam(self, table, form_prefix, subject_derived_prefix):
-        """Tests creating NACCAM."""
-        attr = UDSFormA3Attribute(table)
-        assert attr._create_naccam() == 3
-        set_attribute(table, form_prefix, "fadmut", 0)
-        assert attr._create_naccam() == 0
+    def test_create_naccfam_all_8(self, uds_table):
+        """Test NACCFAM when all are 8."""
+        uds_table["file.info.forms.json"].update({
+            "formver": 3,
+            "a3sub": 1,
+            "momneur": 8,
+            "momprdx": None,
+            "dadneur": 8,
+            "dadprdx": None,
+            "sibs": 0,
+            "kids": 2,
+            "kid1neu": 8,
+            "kid1pdx": None,
+            "kid2neu": 8,
+            "kid2pdx": None
+        })
 
-        # test superseded cases
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 2)
-        assert attr._create_naccam() == 2
-        set_attribute(table, form_prefix, "fadmut", 0)
-        assert attr._create_naccam() == 2
-        set_attribute(table, form_prefix, "fadmut", None)
-        assert attr._create_naccam() == 2
+        attr = UDSFormA3Attribute(uds_table)
+        assert attr._create_naccfam() == 9
 
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 0)
-        assert attr._create_naccam() == 0
-        set_attribute(table, form_prefix, "fadmut", 8)
-        assert attr._create_naccam() == 8
+    def test_create_naccfam_all_8_except_one(self, uds_table):
+        """Test NACCFAM when all are 8 expect dad which is 9."""
+        uds_table["file.info.forms.json"].update({
+            "formver": 3,
+            "a3sub": 1,
+            "momneur": 8,
+            "momprdx": None,
+            "dadneur": 9,
+            "dadprdx": None,
+            "sibs": 0,
+            "kids": 2,
+            "kid1neu": 8,
+            "kid1pdx": None,
+            "kid2neu": 8,
+            "kid2pdx": None
+        })
 
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 9)
-        assert attr._create_naccam() == 8
-        set_attribute(table, form_prefix, "fadmut", 0)
-        assert attr._create_naccam() == 0
-
-    def test_create_naccams(self, table, form_prefix, subject_derived_prefix):
-        """Tests creating NACCAMS."""
-        attr = UDSFormA3Attribute(table)
-        assert attr._create_naccams() == 2
-        set_attribute(table, form_prefix, "fadmuso", 9)
-        assert attr._create_naccams() == 9
-        set_attribute(table, form_prefix, "fadmuso", None)
-        assert attr._create_naccams() == 9
-
-        # test superseded cases
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccams", 9)
-        assert attr._create_naccams() == 9
-        set_attribute(table, form_prefix, "fadmuso", 9)
-        assert attr._create_naccams() == 9
-
-    def test_create_naccom(self, table, form_prefix, subject_derived_prefix):
-        """Test creating NACCOM."""
-        attr = UDSFormA3Attribute(table)
-        assert attr._create_naccom() == 0
-        set_attribute(table, form_prefix, "fothmut", 1)
-        assert attr._create_naccom() == 1
-        set_attribute(table, form_prefix, "fothmut", 9)
-        assert attr._create_naccom() == 9
-
-        # check V2 case - should be -4 since no known value
-        set_attribute(table, form_prefix, "formver", 2)
-        attr = UDSFormA3Attribute(table)
-        assert attr._create_naccom() == -4
-
-        # test superseded cases
-        set_attribute(table, form_prefix, "formver", 3)
-        attr = UDSFormA3Attribute(table)
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 9)
-        assert attr._create_naccom() == 9
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 0)
-        assert attr._create_naccom() == 0
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccom", 1)
-        assert attr._create_naccom() == 1
-
-        # check V2 case - should use known value
-        set_attribute(table, form_prefix, "formver", 2)
-        attr = UDSFormA3Attribute(table)
-        assert attr._create_naccom() == 1
-
-    def test_create_naccam_v3_case(self, table, form_prefix, subject_derived_prefix):
-        """Test create NACCAM when there are a pile of V2 visits before a V3
-        one.
-
-        Starts at -4 and expected to change to 9 once we get to V3.
-        """
-        set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", -4)
-        set_attribute(table, form_prefix, "formver", 2)
-        attr = UDSFormA3Attribute(table)
-        assert attr._create_naccam() == -4
-
-        set_attribute(table, form_prefix, "formver", 3)
-        set_attribute(table, form_prefix, "fadmut", 9)
-        attr = UDSFormA3Attribute(table)
-        assert attr._create_naccam() == 9
+        attr = UDSFormA3Attribute(uds_table)
+        assert attr._create_naccfam() == 0

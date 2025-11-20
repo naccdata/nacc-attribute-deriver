@@ -56,7 +56,7 @@ class BaseFamilyMemberHandler:
         """Get the upper bound based on the number of sibs/kids reported."""
         assert not self.is_parent(), "Trying to get bound on parent attribute"
         result = self.__uds.get_value(f"{self.__prefix}s", int)
-        if result is not None:
+        if result is not None and result != 0:
             return result + 1
 
         return 0
@@ -236,14 +236,6 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
         ended up being quite confusing, so was rewritten based on RDD
         specs and regression testing.
 
-        Once we determine there is no cognitive impairment, we need
-        to differentiate between an absolute no (0) vs an unknown (9).
-        This is done by looking at whether or not the corresponding XDEM
-        or XNEUR variable is 9.
-            TODO: V3+ and V1/V2 behavior seem to intuitively be doing different
-                things (e.g. when is 0 vs 9 returned), but coded to match
-                regression tests/QAF. May want to look more into
-
         Returns:
             1. Has cognitive impairment
             0: No cognitive impairment, or code other than specified list
@@ -259,6 +251,10 @@ class LegacyFamilyMemberHandler(BaseFamilyMemberHandler):
 
         if self.is_parent():
             if self.formver == 3:
+                # REGRESSION: this doesn't seem right - seems like you'd
+                # want to return 9 if neur == 9? but this causes the least errors
+                # might be because legacy treated XNOT as boolean, and here
+                # we're conflating 9
                 return 0 if self._neur() is not None else 9
 
             return 9 if self._dem() == 9 else 0

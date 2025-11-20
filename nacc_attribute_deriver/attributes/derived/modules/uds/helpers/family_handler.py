@@ -174,7 +174,7 @@ class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
         """
         # if no data, fallback to known value or informed missingness
         if not member.has_data():
-            return known_value if known_value is not None else INFORMED_MISSINGNESS
+            return known_value
 
         # otherwise, check cognitive impairment status
         status = member.cognitive_impairment_status()
@@ -185,17 +185,16 @@ class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
 
         # if all have no data, then fallback to known value
         if all(not member.has_data() for member in self.all_members):
-            return known_value if known_value is not None else INFORMED_MISSINGNESS
+            return known_value
 
-        # if V3 and all 8, return 9
-        # REGRESSION - really not sure about this behavior;
-        # see comments under check_neur_is_8. but even this doesn't match the regression
-        # tests fully, or this isn't being called in the right place, so comment out
-        # for now
-        # if self.uds.normalized_formver() >= 3:
-        #     all_8s = [member.check_neur_is_8() for member in self.all_members]
-        #     if all(all_8s):
-        #         return 9
+        # REGRESSION - this is clearly an error to me, but because of the way
+        # the SAS code is written, it seems if that if, for V3, all NEUR values
+        # are 8, AND the subject has no kids or no sibs, set it to 9 instead of 0?
+        # (without this code block most return 0 instead)
+        if self.uds.normalized_formver() >= 3:
+            all_8s = [member.check_neur_is_8() for member in self.all_members]
+            if all(all_8s) and (self.sibs.get_bound() == 0 or self.kids.get_bound() == 0):
+                return self.determine_member_status(9, known_value)
 
         # get cognitive status for each family member
         family_status = [

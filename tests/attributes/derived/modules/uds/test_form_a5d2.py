@@ -475,7 +475,7 @@ class TestUDSFormA5D2Attribute:
         assert attr._create_naccheart() == INFORMED_MISSINGNESS
 
         # Case 1: If CVHATT or MYOINF == 1, expect 1
-        field = random.choice(["cvhatt", "moyinf"])
+        field = random.choice(["cvhatt", "myoinf"])
         uds_table["file.info.forms.json"].update({field: 1})
         assert attr._create_naccheart() == 1
 
