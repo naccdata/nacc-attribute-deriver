@@ -7,9 +7,8 @@ NACCDAD
 NACCFAM
 
 NOTE: In older versions (V3 and earlier), it was originally intended that
-if any of these variables were set to 1, it always stayed as 1. The behavior
-of when it was 9 (unknown) on the other hand was a lot messier and seemed
-inconsistent between versions.
+if any of these variables were set to 1, it always stayed as 1. However, 0
+and 9 could flip-flop between each other.
 
 GOING FORWARD, for V4 AND with changes to legacy code, we have decided that it
 can switch between a 0 and a 1 (so always following the newest entry, especially
