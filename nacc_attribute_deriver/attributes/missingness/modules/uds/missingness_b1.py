@@ -3,7 +3,6 @@
 Only in V3 and earlier.
 """
 
-from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.utils.constants import (
@@ -12,7 +11,7 @@ from nacc_attribute_deriver.utils.constants import (
 
 
 class UDSFormB1Missingness(UDSMissingness):
-    def _missingness_height(self) -> Optional[float]:
+    def _missingness_height(self) -> float:
         """Handle missingness for HEIGHT. May need to add the decimal in legacy
         versions.
 
@@ -37,7 +36,7 @@ class UDSFormB1Missingness(UDSMissingness):
     # LEGACY 999 to 888 changes #
     #############################
 
-    def __handle_999_to_888(self, field: str) -> Optional[int]:
+    def __handle_999_to_888(self, field: str) -> int:
         """Handles the 999 to 888 change - see
         b1structrdd.sas.
         """
@@ -48,19 +47,19 @@ class UDSFormB1Missingness(UDSMissingness):
 
         return self.generic_missingness(field, int)
 
-    def _missingness_weight(self) -> Optional[int]:
+    def _missingness_weight(self) -> int:
         """Handles missingness for WEIGHT."""
         return self.__handle_999_to_888("weight")
 
-    def _missingness_bpsys(self) -> Optional[int]:
+    def _missingness_bpsys(self) -> int:
         """Handles missingness for BPSYS."""
         return self.__handle_999_to_888("bpsys")
 
-    def _missingness_bpdias(self) -> Optional[int]:
+    def _missingness_bpdias(self) -> int:
         """Handles missingness for BPDIAS."""
         return self.__handle_999_to_888("bpdias")
 
-    def _missingness_hrate(self) -> Optional[int]:
+    def _missingness_hrate(self) -> int:
         """Handles missingness for HRATE."""
         return self.__handle_999_to_888("hrate")
 
@@ -68,7 +67,7 @@ class UDSFormB1Missingness(UDSMissingness):
     # LEGACY with gate #
     ####################
 
-    def __handle_b1_with_gate(self, gate: str, field: str) -> Optional[int]:
+    def __handle_b1_with_gate(self, gate: str, field: str) -> int:
         """Handles B1 missingness with a gate."""
         gate_value = self.uds.get_value(gate, int)
         if gate_value == 0:
@@ -78,14 +77,14 @@ class UDSFormB1Missingness(UDSMissingness):
 
         return self.generic_missingness(field, int)
 
-    def _missingness_viswcorr(self) -> Optional[int]:
+    def _missingness_viswcorr(self) -> int:
         """Handles missingness for VISWCORR.
 
         Only in V3 and earlier - see b1structrdd.sas
         """
         return self.__handle_b1_with_gate("viscorr", "viswcorr")
 
-    def _missingness_hearwaid(self) -> Optional[int]:
+    def _missingness_hearwaid(self) -> int:
         """Handles missingness for HEARWAID.
 
         Only in V3 and earlier - see b1structrdd.sas

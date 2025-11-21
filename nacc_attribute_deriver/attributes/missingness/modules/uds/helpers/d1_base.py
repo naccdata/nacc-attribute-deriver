@@ -41,12 +41,13 @@ class UDSFormD1Missingness(UDSMissingness):
 
     def handle_normcog_gate(
         self, field: str, ignore_normcog_0: bool = False
-    ) -> Optional[int]:
+    ) -> int:
         """Handles NORMCOG-gated variables, which follow:
 
         If NORMCOG = 1 and FIELD is blank, FIELD = 8
         """
-        if self.uds.get_value(field, int) is None:
+        value = self.uds.get_value(field, int)
+        if value is None:
             if self.normcog == 1:
                 return 8
             if not ignore_normcog_0 and self.normcog == 0:
@@ -54,7 +55,7 @@ class UDSFormD1Missingness(UDSMissingness):
 
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def handle_cognitive_impairment_gate(
         self,
@@ -63,7 +64,7 @@ class UDSFormD1Missingness(UDSMissingness):
         ignore_normcog_0: bool = False,
         other_gate: Optional[str] = None,
         consider_formverd1: bool = False,
-    ) -> Optional[int]:
+    ) -> int:
         """Handles variables dependent on NORMCOG and another gate:
 
         If NORMCOG = 0 and GATE is 0 or blank and FIELD is blank, FIELD = 7

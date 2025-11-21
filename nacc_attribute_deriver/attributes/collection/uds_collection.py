@@ -143,7 +143,7 @@ class UDSMissingness(UDSAttributeCollection):
 
     def handle_gated_writein(
         self, gate: str, attribute: str, values: List[int], include_none: bool = False
-    ) -> Optional[str]:
+    ) -> str:
         """Handles generic write-in logic in the form:
 
         If GATE is in GATE_VALUES, then FIELD should be blank
@@ -154,18 +154,19 @@ class UDSMissingness(UDSAttributeCollection):
 
         return self.generic_missingness(attribute, str)
 
-    def handle_forbidden_gated_writein(self, gate: str, value: int) -> Optional[str]:
+    def handle_forbidden_gated_writein(self, gate: str, value: int, field: str) -> str:
         """Handles write-in blanks that rely on a gate variable in the form: If
         GATE is NOT VALUE then FIELD should be blank.
 
         Args:
             gate: The gate variable
             value: The value the gate must NOT equal to trigger the condition
+            field: If condition not passed, field to perform generic missingness for
         """
         if self.uds.get_value(gate, int) != value:
             return INFORMED_BLANK
 
-        return None
+        return self.generic_missingness(field, str)
 
     def handle_set_to_gate(self, gate: str, check_values: List[int]) -> Optional[int]:
         """Generically handle:
@@ -185,7 +186,7 @@ class UDSMissingness(UDSAttributeCollection):
         prev_code: Optional[T] = None,
         default: Optional[T] = None,
         working: Optional[WorkingNamespace] = None,
-    ) -> Optional[T]:
+    ) -> T:
         """Handle when the value could be provided by the previous visit.
 
         If VAR == PREV_CODE, VAR = PREV_VISIT.

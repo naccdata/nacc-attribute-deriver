@@ -62,7 +62,7 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
 
         self.__reorder()
 
-    def get(self, field: str, attr_type: Type[T]) -> Optional[T]:
+    def get(self, field: str, attr_type: Type[T]) -> T:
         """Get the resolved value."""
         if field not in self.__attributes:
             raise AttributeDeriverError(f"Unknown COGOTHX field: {field}")
@@ -71,7 +71,7 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
         if not isinstance(result, attr_type):
             raise AttributeDeriverError(f"Type mismatch on resolved {field}")
 
-        return attr_type(result)  # type: ignore
+        return result
 
     def __reorder(self) -> None:
         """May need to move COGOTHX variables up; for example,
