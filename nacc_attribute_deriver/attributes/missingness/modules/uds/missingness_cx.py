@@ -11,11 +11,18 @@ here to make sure we aren't accidentally missing or duplicating any.
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.utils.date import parse_unknown_dates
 
 
 class UDSFormC1C2Missingness(UDSMissingness):
+    def __init__(self, table: SymbolTable):
+        super().__init__(table)
+        # V4. If C2T is submitted, RMMODEC2C2T must be 1, so used as
+        # an indicator of whether or not this is a C2T form
+        self.__is_c2t = self.uds.get_value("rmmodec2c2t", int) == 1
+
     ###########################
     # RESPVAL gated variables #
     ###########################
@@ -74,7 +81,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
     ##############################
 
     def _handle_verbaltest_gate(
-        self, field: str, verbal_value: int, set_value: int
+        self, field: str, verbal_value: int = 1, set_value: int = 88
     ) -> Optional[int]:
         """Handles variables gated by VERBALTEST, which generally follows the
         below logic.
@@ -88,71 +95,75 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_rey1rec(self) -> Optional[int]:
         """Handles missingness for REY1REC."""
-        return self._handle_verbaltest_gate("rey1rec", verbal_value=2, set_value=88)
+        return self._handle_verbaltest_gate("rey1rec", verbal_value=2)
+
+    def _missingness_reydrec(self) -> Optional[int]:
+        """Handles missingness for REYDREC."""
+        return self._handle_verbaltest_gate("reydrec", verbal_value=2)
 
     def _missingness_reydti(self) -> Optional[int]:
         """Handles missingness for REYDTI."""
-        return self._handle_verbaltest_gate("reydti", verbal_value=2, set_value=88)
+        return self._handle_verbaltest_gate("reydti", verbal_value=2)
 
     def _missingness_reymethod(self) -> Optional[int]:
         """Handles missingness for REYMETHOD."""
-        return self._handle_verbaltest_gate("reymethod", verbal_value=2, set_value=88)
+        return self._handle_verbaltest_gate("reymethod", verbal_value=2)
 
     def _missingness_cerad1rec(self) -> Optional[int]:
         """Handles missingness for CERAD1REC."""
-        return self._handle_verbaltest_gate("cerad1rec", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad1rec")
 
     def _missingness_cerad1read(self) -> Optional[int]:
         """Handles missingness for CERAD1READ."""
-        return self._handle_verbaltest_gate("cerad1read", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad1read")
 
     def _missingness_cerad1int(self) -> Optional[int]:
         """Handles missingness for CERAD1INT."""
-        return self._handle_verbaltest_gate("cerad1int", verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("cerad1int", set_value=888)
 
     def _missingness_cerad2rec(self) -> Optional[int]:
         """Handles missingness for CERAD2REC."""
-        return self._handle_verbaltest_gate("cerad2rec", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad2rec")
 
     def _missingness_cerad2read(self) -> Optional[int]:
         """Handles missingness for CERAD2READ."""
-        return self._handle_verbaltest_gate("cerad2read", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad2read")
 
     def _missingness_cerad2int(self) -> Optional[int]:
         """Handles missingness for CERAD2INT."""
-        return self._handle_verbaltest_gate("cerad2int", verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("cerad2int", set_value=888)
 
     def _missingness_cerad3rec(self) -> Optional[int]:
         """Handles missingness for CERAD3REC."""
-        return self._handle_verbaltest_gate("cerad3rec", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad3rec")
 
     def _missingness_cerad3read(self) -> Optional[int]:
         """Handles missingness for CERAD3READ."""
-        return self._handle_verbaltest_gate("cerad3read", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("cerad3read")
 
     def _missingness_cerad3int(self) -> Optional[int]:
         """Handles missingness for CERAD3INT."""
-        return self._handle_verbaltest_gate("cerad3int", verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("cerad3int", set_value=888)
 
     def _missingness_ceraddti(self) -> Optional[int]:
         """Handles missingness for CERADDTI."""
-        return self._handle_verbaltest_gate("ceraddti", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceraddti")
 
     def _missingness_ceradj6rec(self) -> Optional[int]:
         """Handles missingness for CERADJ6REC."""
-        return self._handle_verbaltest_gate("ceradj6rec", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceradj6rec")
 
     def _missingness_ceradj6int(self) -> Optional[int]:
         """Handles missingness for CERADJ6INT."""
-        return self._handle_verbaltest_gate("ceradj6int", verbal_value=1, set_value=888)
+        return self._handle_verbaltest_gate("ceradj6int", set_value=888)
 
     def _missingness_ceradj7yes(self) -> Optional[int]:
         """Handles missingness for CERADJ7YES."""
-        return self._handle_verbaltest_gate("ceradj7yes", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceradj7yes")
 
     def _missingness_ceradj7no(self) -> Optional[int]:
         """Handles missingness for CERADJ7NO."""
-        return self._handle_verbaltest_gate("ceradj7no", verbal_value=1, set_value=88)
+        return self._handle_verbaltest_gate("ceradj7no")
 
     ##########################################
     # Write-in variables that rely on a gate #
@@ -202,7 +213,11 @@ class UDSFormC1C2Missingness(UDSMissingness):
     #######################################################
 
     def _handle_reyxrec_cascade(
-        self, gate: str, field: str, gate_mresult: Optional[int] = None
+        self,
+        gate: str,
+        field: str,
+        in_hundreds: bool = False,
+        gate_mresult: Optional[int] = None,
     ) -> Optional[int]:
         """Handle the REYXREC cascading rules, e.g:
 
@@ -220,24 +235,46 @@ class UDSFormC1C2Missingness(UDSMissingness):
         (unless the gate itself does not rely on something), which ends up
         cascading in a somewhat recursive manner to store the final value
         in gate_mresult.
+
+        Args:
+            gate: The gate field
+            field: The field
+            in_hundreds: The INT values are in the hundreds, so missingess values need to be
+                adjusted to 888, 995, etc.
+            gate_mresult: The gate missingness result - applied in a cascading fashion
         """
-        result = self._handle_verbaltest_gate(field, verbal_value=2, set_value=888)
+        set_value = 888 if in_hundreds else 88
+        result = self._handle_verbaltest_gate(
+            field, verbal_value=2, set_value=set_value
+        )
         if result is not None and result != INFORMED_MISSINGNESS:
             return result
 
         check_values = [88, 95, 96, 97, 98]
         result = self.handle_set_to_gate(gate, check_values=check_values)
+
+        # may need to set to the gate's missingness value if no result
+        if result is None:
+            if gate_mresult is not None and gate_mresult in check_values:
+                result = gate_mresult
+
+        # if some gate result, adjust as needed
         if result is not None:
+            # need to adjust if in the hundreds
+            if in_hundreds:
+                if result == 88:
+                    return 888
+
+                return result + 900
+
             return result
 
-        if gate_mresult is not None and gate_mresult in check_values:
-            return gate_mresult
-
+        # otherwise, return generic missingness
         return self.generic_missingness(field, int)
 
     def _missingness_reydint(self) -> Optional[int]:
         """Handles missingness for REYDINT."""
-        return self._handle_reyxrec_cascade("reydrec", "reydint")
+        return self._handle_reyxrec_cascade("reydrec", "reydint", in_hundreds=True)
 
     def _missingness_reytcor(self) -> Optional[int]:
         """Handles missingness for REYTCOR."""
@@ -249,7 +286,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_rey1int(self) -> Optional[int]:
         """Handles missingness for REY1INT."""
-        return self._handle_reyxrec_cascade("rey1rec", "rey1int")
+        return self._handle_reyxrec_cascade("rey1rec", "rey1int", in_hundreds=True)
 
     def _missingness_rey2rec(self) -> Optional[int]:
         """Handles missingness for REY2REC."""
@@ -257,7 +294,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_rey2int(self) -> Optional[int]:
         """Handles missingness for REY2INT."""
-        return self._handle_reyxrec_cascade("rey1rec", "rey2int")
+        return self._handle_reyxrec_cascade("rey1rec", "rey2int", in_hundreds=True)
 
     def _missingness_rey3rec(self) -> Optional[int]:
         """Handles missingness for REY3REC."""
@@ -268,7 +305,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_rey3int(self) -> Optional[int]:
         """Handles missingness for REY3INT."""
         return self._handle_reyxrec_cascade(
-            "rey2rec", "rey3int", gate_mresult=self._missingness_rey2rec()
+            "rey2rec",
+            "rey3int",
+            in_hundreds=True,
+            gate_mresult=self._missingness_rey2rec(),
         )
 
     def _missingness_rey4rec(self) -> Optional[int]:
@@ -280,7 +320,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_rey4int(self) -> Optional[int]:
         """Handles missingness for REY4INT."""
         return self._handle_reyxrec_cascade(
-            "rey3rec", "rey4int", gate_mresult=self._missingness_rey3rec()
+            "rey3rec",
+            "rey4int",
+            in_hundreds=True,
+            gate_mresult=self._missingness_rey3rec(),
         )
 
     def _missingness_rey5rec(self) -> Optional[int]:
@@ -292,7 +335,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_rey5int(self) -> Optional[int]:
         """Handles missingness for REY5INT."""
         return self._handle_reyxrec_cascade(
-            "rey4rec", "rey5int", gate_mresult=self._missingness_rey4rec()
+            "rey4rec",
+            "rey5int",
+            in_hundreds=True,
+            gate_mresult=self._missingness_rey4rec(),
         )
 
     def _missingness_reybrec(self) -> Optional[int]:
@@ -304,7 +350,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_reybint(self) -> Optional[int]:
         """Handles missingness for REYBINT."""
         return self._handle_reyxrec_cascade(
-            "rey5rec", "reybint", gate_mresult=self._missingness_rey5rec()
+            "rey5rec",
+            "reybint",
+            in_hundreds=True,
+            gate_mresult=self._missingness_rey5rec(),
         )
 
     def _missingness_rey6rec(self) -> Optional[int]:
@@ -316,7 +365,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_rey6int(self) -> Optional[int]:
         """Handles missingness for REY6INT."""
         return self._handle_reyxrec_cascade(
-            "reybrec", "rey6int", gate_mresult=self._missingness_reybrec()
+            "reybrec",
+            "rey6int",
+            in_hundreds=True,
+            gate_mresult=self._missingness_reybrec(),
         )
 
     ##########################
@@ -614,16 +666,41 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_mocatots(self) -> Optional[int]:
         """Handles missingness for MOCATOTS."""
+        # in V4 only in C2
+        # REGRESSION - legacy seems to not differentiate
+        if self.formver == 4 and self.__is_c2t:
+            return INFORMED_MISSINGNESS
+
         if self.uds.get_value("mocacomp", int) == 0:
             return 88
 
         return self.generic_missingness("mocatots", int)
 
-    def __handle_mocacomp_gate(self, field: str) -> Optional[int]:
+    def _missingness_mocbtots(self) -> Optional[int]:
+        """Handles missingness for MOCBTOTS."""
+        # in V4 only in C2t
+        # REGRESSION - legacy seems to not differentiate
+        if self.formver == 4 and not self.__is_c2t:
+            return INFORMED_MISSINGNESS
+
+        if self.uds.get_value("mocacomp", int) == 0:
+            return 88
+
+        return self.generic_missingness("mocatots", int)
+
+    def __handle_mocacomp_gate(
+        self, field: str, c2_only_var: bool = False
+    ) -> Optional[int]:
         """Handle variables gated by MOCACOMP.
 
         If MOCACOMP = 0, then FIELD = MOCAREAS
         """
+        # in V4, some variables are only in C2
+        # REGRESSION - legacy seems to not differentiate
+        if self.formver == 4:
+            if self.__is_c2t and c2_only_var:
+                return INFORMED_MISSINGNESS
+
         if self.uds.get_value("mocacomp", int) == 0:
             mocareas = self.uds.get_value("mocareas", int)
             return mocareas if mocareas is not None else INFORMED_MISSINGNESS
@@ -632,31 +709,31 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_mocatrai(self) -> Optional[int]:
         """Handles missingness for MOCATRAI."""
-        return self.__handle_mocacomp_gate("mocatrai")
+        return self.__handle_mocacomp_gate("mocatrai", c2_only_var=True)
 
     def _missingness_mocacube(self) -> Optional[int]:
         """Handles missingness for MOCACUBE."""
-        return self.__handle_mocacomp_gate("mocacube")
+        return self.__handle_mocacomp_gate("mocacube", c2_only_var=True)
 
     def _missingness_mocacloc(self) -> Optional[int]:
         """Handles missingness for MOCACLOC."""
-        return self.__handle_mocacomp_gate("mocacloc")
+        return self.__handle_mocacomp_gate("mocacloc", c2_only_var=True)
 
     def _missingness_mocaclon(self) -> Optional[int]:
         """Handles missingness for MOCACLON."""
-        return self.__handle_mocacomp_gate("mocaclon")
+        return self.__handle_mocacomp_gate("mocaclon", c2_only_var=True)
 
     def _missingness_mocacloh(self) -> Optional[int]:
         """Handles missingness for MOCACLOH."""
-        return self.__handle_mocacomp_gate("mocacloh")
+        return self.__handle_mocacomp_gate("mocacloh", c2_only_var=True)
 
     def _missingness_mocanami(self) -> Optional[int]:
         """Handles missingness for MOCANAMI."""
-        return self.__handle_mocacomp_gate("mocanami")
+        return self.__handle_mocacomp_gate("mocanami", c2_only_var=True)
 
     def _missingness_mocaregi(self) -> Optional[int]:
         """Handles missingness for MOCAREGI."""
-        return self.__handle_mocacomp_gate("mocaregi")
+        return self.__handle_mocacomp_gate("mocaregi", c2_only_var=True)
 
     def _missingness_mocadigi(self) -> Optional[int]:
         """Handles missingness for MOCADIGI."""
