@@ -3,6 +3,7 @@
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormA1Missingness(UDSMissingness):
@@ -41,8 +42,9 @@ class UDSFormA1Missingness(UDSMissingness):
     ############################################################
 
     def __handle_generic_a1_missingness(self, field: str) -> Optional[int]:
-        """For most variables the default is 0, so generalize."""
-        return self.handle_prev_visit(field, int, default=0, ignore_i4=True)
+        """For most variables the default is 0 in V4, so generalize."""
+        default = INFORMED_MISSINGNESS if self.formver < 4 else 0
+        return self.handle_prev_visit(field, int, default=default)
 
     def _missingness_raceaian(self) -> Optional[int]:
         """Handles missingness for RACEAIAN."""

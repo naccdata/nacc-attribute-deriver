@@ -3,13 +3,15 @@
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormA1aMissingness(UDSMissingness):
     def __handle_a1a_missingness(self, field: str) -> Optional[int]:
         """Handle A1a missingness; basically need to set the default to 0 for
-        all of these."""
-        return self.generic_missingness(field, int, default=0)
+        all of these if V4."""
+        default = INFORMED_MISSINGNESS if self.formver < 4 else 0
+        return self.generic_missingness(field, int, default=default)
 
     def _missingness_expancest(self) -> Optional[int]:
         """Handles missingness for EXPANCEST."""
