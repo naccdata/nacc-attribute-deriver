@@ -1,7 +1,9 @@
 """Class to handle A3-specific missingness values.
 
 While not explicitly pushed to the QAFs, are necessary to keep track of
-for calculationss of derived variables.
+for calculationss of derived variables. There are other variables that
+specify prev codes to pull through, but are not currently handled at the
+moment since nothing is explicitly looking at them.
 """
 
 from typing import Optional
@@ -20,8 +22,11 @@ class UDSFormA3Missingness(UDSMissingness):
 
         In short, if we see 66 or blank, we pull the previous visit
         through.
+
+        Set default to -4 instead of blanks since even though these
+        are strings, they're not write-ins.
         """
-        return self.handle_prev_visit(field, str, prev_code="66")
+        return self.handle_prev_visit(field, str, prev_code="66", default="-4")
 
     def _missingness_mometpr(self) -> Optional[str]:
         """Handles missingness for MOMETPR."""

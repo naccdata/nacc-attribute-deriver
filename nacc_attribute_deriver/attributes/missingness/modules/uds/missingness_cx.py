@@ -96,7 +96,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_reymethod(self) -> Optional[int]:
         """Handles missingness for REYMETHOD."""
-        return self._handle_verbaltest_gate("reymethod",verbal_value=2, set_value=88)
+        return self._handle_verbaltest_gate("reymethod", verbal_value=2, set_value=88)
 
     def _missingness_cerad1rec(self) -> Optional[int]:
         """Handles missingness for CERAD1REC."""

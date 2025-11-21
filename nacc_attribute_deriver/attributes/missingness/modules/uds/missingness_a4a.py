@@ -24,7 +24,10 @@ class UDSFormA4aMissingness(UDSMissingness):
         return self.generic_missingness(field, int)
 
     def _handle_a4a_missingness(
-        self, fvp_gates: List[str], field: str, attr_type: Type[T] = int  # type: ignore
+        self,
+        fvp_gates: List[str],
+        field: str,
+        attr_type: Type[T] = int,  # type: ignore
     ) -> Optional[Any]:
         """Handle A4a missingness, which is generally:
 
@@ -57,7 +60,8 @@ class UDSFormA4aMissingness(UDSMissingness):
                         return 9
 
         return self.generic_missingness(
-            field, attr_type, default=0 if attr_type == int else None)
+            field, attr_type, default=0 if attr_type == int else None
+        )
 
     def _missingness_targetab1(self) -> Optional[int]:
         """Handles missingness for TARGETAB1."""

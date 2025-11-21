@@ -139,5 +139,6 @@ class TestGenerateRaceV3:
         assert generate_race_v3(1, "", 50, "Middle Eastern", 88, "") == 1
 
     def test_case7(self):
-        """Baseline said 99 but should be 6, legacy code did not match on case."""
+        """Baseline said 99 but should be 6, legacy code did not match on
+        case."""
         assert generate_race_v3(50, "Mestiza", 88, "", 88, "") == 6

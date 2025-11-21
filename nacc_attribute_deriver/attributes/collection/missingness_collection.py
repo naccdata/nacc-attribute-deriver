@@ -78,7 +78,10 @@ class SubjectMissingnessCollection(AttributeCollection):
     def handle_subject_missing(
         self, attribute: str, default: Optional[int] = INFORMED_MISSINGNESS
     ) -> Optional[int]:
-        """Handle missing values at the subject level. Assuming all ints."""
+        """Handle missing values at the subject level.
+
+        Assuming all ints.
+        """
         value = self.__derived.get_cross_sectional_value(attribute, int)
         if value is None:
             return default

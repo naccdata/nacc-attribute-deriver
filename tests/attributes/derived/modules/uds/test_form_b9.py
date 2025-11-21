@@ -203,8 +203,10 @@ class TestUDSFormB9Attribute:
         assert attr._create_nacccogf() == 1
 
     def test_nacccogage(self, uds_table):
-        """Tests NACCCOGAGE. V1-V3 and V4 are identical, just
-        look at different values."""
+        """Tests NACCCOGAGE.
+
+        V1-V3 and V4 are identical, just look at different values.
+        """
         formver = random.choice([1, 2, 3, 4])
         field = "decage" if formver < 4 else "cogage"
 
@@ -224,17 +226,9 @@ class TestUDSFormB9Attribute:
 
         # there, so expect the last set value
         value = random.choice(range(15, 111))
-        uds_table.update({
-            "subject": {
-                "info": {
-                    "working": {
-                        "cross-sectional": {
-                            field: value
-                        }
-                    }
-                }
-            }
-        })
+        uds_table.update(
+            {"subject": {"info": {"working": {"cross-sectional": {field: value}}}}}
+        )
         assert attr._create_nacccogage() == value
 
 

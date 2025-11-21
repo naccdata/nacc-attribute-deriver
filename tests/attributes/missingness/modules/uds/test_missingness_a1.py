@@ -44,20 +44,16 @@ class TestUDSFormA1Missingness:
         # pull from prev visit - if prev was -4 (likely older version),
         # should set to 0 for V4 and -4 for older versions
         uds_table["file.info.forms.json"].update({"packet": "I4", "raceaian": None})
-        uds_table.update({
-            "_prev_record": {
-                "info": {
-                    "forms": {
-                        "json": {
-                            "visitdate": "2020-01-01"
-                        }
-                    },
-                    "resolved": {
-                        "raceaian": -4
+        uds_table.update(
+            {
+                "_prev_record": {
+                    "info": {
+                        "forms": {"json": {"visitdate": "2020-01-01"}},
+                        "resolved": {"raceaian": -4},
                     }
                 }
             }
-        })
+        )
         attr = UDSFormA1Missingness(uds_table)
         assert attr._missingness_raceaian() == 0
 

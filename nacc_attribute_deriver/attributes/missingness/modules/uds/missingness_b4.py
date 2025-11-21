@@ -1,7 +1,6 @@
 """Class to handle B4-specific missingness values.
 
 Really just handles making floats -4.0 instead ofo -4.4
-
 """
 
 from typing import Optional
@@ -11,7 +10,6 @@ from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormB4Missingness(UDSMissingness):
-
     def __handle_b4_float(self, field: str) -> Optional[float]:
         return self.generic_missingness(field, float, default=INFORMED_MISSINGNESS)
 
@@ -54,4 +52,3 @@ class UDSFormB4Missingness(UDSMissingness):
     def _missingness_cdrlang(self) -> Optional[float]:
         """Handles missingness for CDRLANG."""
         return self.__handle_b4_float("cdrlang")
-

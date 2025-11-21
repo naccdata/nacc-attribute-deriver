@@ -178,7 +178,9 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
     # Other variables #
     ###################
 
-    def __handle_misc_gate(self, field: str, gate: str, return_value: int) -> Optional[int]:
+    def __handle_misc_gate(
+        self, field: str, gate: str, return_value: int
+    ) -> Optional[int]:
         """Handle the misc gate logics, which are all similar."""
         value = self.uds.get_value(field, int)
         if value is not None:

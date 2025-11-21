@@ -248,6 +248,7 @@ class TestUDSFormA3Attribute:
 
 class TestNACCFAM:
     """Class to test NACCFAM specifically."""
+
     def test_create_naccfam(self, table, naccfam_table, form_prefix):
         """Tests creating NACCFAM."""
         attr = UDSFormA3Attribute(table)
