@@ -3,9 +3,10 @@
 # TODO: STILL IN PROGRESS, WAITING RT FEEDBACK
 """
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.attributes.namespace.namespace import T
 
 
 class UDSFormA4aMissingness(UDSMissingness):
@@ -23,7 +24,7 @@ class UDSFormA4aMissingness(UDSMissingness):
         return self.generic_missingness(field, int)
 
     def _handle_a4a_missingness(
-        self, fvp_gates: List[str], field: str, writein: bool = False
+        self, fvp_gates: List[str], field: str, attr_type: Type[T] = int  # type: ignore
     ) -> Optional[Any]:
         """Handle A4a missingness, which is generally:
 
@@ -47,9 +48,7 @@ class UDSFormA4aMissingness(UDSMissingness):
 
                 if gate in ["newtreat", "newadevent"]:
                     if gate_value in [0, 9]:
-                        return self.get_prev_value(
-                            field, attr_type=str if writein else int
-                        )
+                        return self.get_prev_value(field, attr_type)
 
                 elif gate in ["trtbiomark", "advevent"]:
                     if gate_value == 0:
@@ -57,14 +56,8 @@ class UDSFormA4aMissingness(UDSMissingness):
                     if gate_value == 9:
                         return 9
 
-        if writein:
-            return self.generic_missingness(field, str)
-
-        result = self.uds.get_value(field, int)
-        if result is not None:
-            return None
-
-        return 0
+        return self.generic_missingness(
+            field, attr_type, default=0 if attr_type == int else None)
 
     def _missingness_targetab1(self) -> Optional[int]:
         """Handles missingness for TARGETAB1."""
@@ -88,15 +81,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx1(self) -> Optional[str]:
         """Handles missingness for TARGETOTX1."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx1", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx1", attr_type=str)
 
     def _missingness_trttrial1(self) -> Optional[str]:
         """Handles missingness for TRTTRIAL1."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial1", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial1", attr_type=str)
 
     def _missingness_nctnum1(self) -> Optional[int]:
         """Handles missingness for NCTNUM1."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum1", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum1", attr_type=str)
 
     def _missingness_targetab2(self) -> Optional[int]:
         """Handles missingness for TARGETAB2."""
@@ -120,15 +113,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx2(self) -> Optional[int]:
         """Handles missingness for TARGETOTX2."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx2", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx2", attr_type=str)
 
     def _missingness_trttrial2(self) -> Optional[int]:
         """Handles missingness for TRTTRIAL2."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial2", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial2", attr_type=str)
 
     def _missingness_nctnum2(self) -> Optional[int]:
         """Handles missingness for NCTNUM2."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum2", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum2", attr_type=str)
 
     def _missingness_targetab3(self) -> Optional[int]:
         """Handles missingness for TARGETAB3."""
@@ -152,15 +145,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx3(self) -> Optional[int]:
         """Handles missingness for TARGETOTX3."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx3", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx3", attr_type=str)
 
     def _missingness_trttrial3(self) -> Optional[int]:
         """Handles missingness for TRTTRIAL3."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial3", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial3", attr_type=str)
 
     def _missingness_nctnum3(self) -> Optional[int]:
         """Handles missingness for NCTNUM3."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum3", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum3", attr_type=str)
 
     def _missingness_targetab4(self) -> Optional[int]:
         """Handles missingness for TARGETAB4."""
@@ -184,15 +177,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx4(self) -> Optional[int]:
         """Handles missingness for TARGETOTX4."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx4", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx4", attr_type=str)
 
     def _missingness_trttrial4(self) -> Optional[int]:
         """Handles missingness for TRTTRIAL4."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial4", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial4", attr_type=str)
 
     def _missingness_nctnum4(self) -> Optional[int]:
         """Handles missingness for NCTNUM4."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum4", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum4", attr_type=str)
 
     def _missingness_targetab5(self) -> Optional[int]:
         """Handles missingness for TARGETAB5."""
@@ -216,15 +209,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx5(self) -> Optional[int]:
         """Handles missingness for TARGETOTX5."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx5", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx5", attr_type=str)
 
     def _missingness_trttrial5(self) -> Optional[int]:
         """Handles missingness for TRTTRIAL5."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial5", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial5", attr_type=str)
 
     def _missingness_nctnum5(self) -> Optional[int]:
         """Handles missingness for NCTNUM5."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum5", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum5", attr_type=str)
 
     def _missingness_targetab6(self) -> Optional[int]:
         """Handles missingness for TARGETAB6."""
@@ -248,15 +241,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx6(self) -> Optional[int]:
         """Handles missingness for TARGETOTX6."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx6", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx6", attr_type=str)
 
     def _missingness_trttrial6(self) -> Optional[int]:
         """Handles missingness for TRTTRIAL6."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial6", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial6", attr_type=str)
 
     def _missingness_nctnum6(self) -> Optional[int]:
         """Handles missingness for NCTNUM6."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum6", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum6", attr_type=str)
 
     def _missingness_targetab7(self) -> Optional[int]:
         """Handles missingness for TARGETAB7."""
@@ -280,15 +273,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx7(self) -> Optional[int]:
         """Handles missingness for TARGETOTX7."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx7", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx7", attr_type=str)
 
     def _missingness_trttrial7(self) -> Optional[int]:
         """Handles missingness for TRTTRIAL7."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial7", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial7", attr_type=str)
 
     def _missingness_nctnum7(self) -> Optional[int]:
         """Handles missingness for NCTNUM7."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum7", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum7", attr_type=str)
 
     def _missingness_targetab8(self) -> Optional[int]:
         """Handles missingness for TARGETAB8."""
@@ -312,15 +305,15 @@ class UDSFormA4aMissingness(UDSMissingness):
 
     def _missingness_targetotx8(self) -> Optional[int]:
         """Handles missingness for TARGETOTX8."""
-        return self._handle_a4a_missingness(["newtreat"], "targetotx8", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "targetotx8", attr_type=str)
 
     def _missingness_trttrial8(self) -> Optional[int]:
         """Handles missingness for TRTTRIAL8."""
-        return self._handle_a4a_missingness(["newtreat"], "trttrial8", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "trttrial8", attr_type=str)
 
     def _missingness_nctnum8(self) -> Optional[int]:
         """Handles missingness for NCTNUM8."""
-        return self._handle_a4a_missingness(["newtreat"], "nctnum8", writein=True)
+        return self._handle_a4a_missingness(["newtreat"], "nctnum8", attr_type=str)
 
     def _missingness_ariae(self) -> Optional[int]:
         """Handles missingness for ARIAE."""
@@ -343,5 +336,5 @@ class UDSFormA4aMissingness(UDSMissingness):
     def _missingness_adverseotx(self) -> Optional[str]:
         """Handles missingness for ADVERSEOTX."""
         return self._handle_a4a_missingness(
-            ["newtreat", "newadevent", "trtbiomark"], "adverseotx", writein=True
+            ["newtreat", "newadevent", "trtbiomark"], "adverseotx", attr_type=str
         )

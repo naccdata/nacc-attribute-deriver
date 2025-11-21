@@ -18,6 +18,7 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
+    MISSINGNESS_VALUES,
 )
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
@@ -109,12 +110,21 @@ class UDSMissingness(UDSAttributeCollection):
 
     def generic_missingness(
         self, attribute: str, attr_type: Type[T], default: Optional[T] = None
-    ) -> Optional[T]:
+    ) -> T:
         """Generic missingness:
 
         If FIELD is None, FIELD = -4 / -4.4 / blank
         """
-        if self.uds.get_value(attribute, str) is None:
+        # NOTE: because V4 saves all metadata as strings, we need to
+        # force the typing here for missingness. the intended behavior
+        # was to return None (no update) if the value exists, but
+        # because of the typing issue we do need to set it.
+        # ideally this gets fixed further upstream at some point,
+        # especially because forcing the typing makes this take
+        # longer (since it needs to perform the operation)
+
+        value = self.uds.get_value(attribute, attr_type)
+        if value is None:
             if default is not None:
                 return default
 
@@ -129,7 +139,7 @@ class UDSMissingness(UDSAttributeCollection):
                 f"Unknown missingness attribute type: {attr_type}"
             )
 
-        return None
+        return value
 
     def handle_gated_writein(
         self, gate: str, attribute: str, values: List[int], include_none: bool = False
@@ -190,7 +200,7 @@ class UDSMissingness(UDSAttributeCollection):
                 prev_value = self.get_prev_value(
                     attribute, attr_type, default=default, working=working
                 )
-                if prev_value is not None:
+                if prev_value is not None and prev_value not in MISSINGNESS_VALUES:
                     return prev_value
 
         return self.generic_missingness(attribute, attr_type, default=default)

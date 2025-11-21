@@ -223,7 +223,7 @@ class TestUDSFormB9Missingness:
             }
         )
         attr = UDSFormB9Missingness(uds_table)
-        assert attr._missingness_bevwell() is None
+        assert attr._missingness_bevwell() == 0
 
     def test_beagit(self, uds_table):
         """Tests missingness for BEAGIT."""
@@ -280,7 +280,7 @@ class TestUDSFormB9Missingness:
             }
         )
         attr = UDSFormB9Missingness(uds_table)
-        assert attr._missingness_berem() is None
+        assert attr._missingness_berem() == 1
 
     def test_bevhago(self, uds_table):
         """Tests missingness for BEVHAGO."""

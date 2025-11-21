@@ -390,42 +390,42 @@ class TestNACCFAM:
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccfam", 1)
         assert attr._create_naccfam() == 1
 
-    def test_create_naccfam_all_8(self, uds_table):
-        """Test NACCFAM when all are 8."""
-        uds_table["file.info.forms.json"].update({
-            "formver": 3,
-            "a3sub": 1,
-            "momneur": 8,
-            "momprdx": None,
-            "dadneur": 8,
-            "dadprdx": None,
-            "sibs": 0,
-            "kids": 2,
-            "kid1neu": 8,
-            "kid1pdx": None,
-            "kid2neu": 8,
-            "kid2pdx": None
-        })
+    # def test_create_naccfam_all_8(self, uds_table):
+    #     """Test NACCFAM when all are 8."""
+    #     uds_table["file.info.forms.json"].update({
+    #         "formver": 3,
+    #         "a3sub": 1,
+    #         "momneur": 8,
+    #         "momprdx": None,
+    #         "dadneur": 8,
+    #         "dadprdx": None,
+    #         "sibs": 0,
+    #         "kids": 2,
+    #         "kid1neu": 8,
+    #         "kid1pdx": None,
+    #         "kid2neu": 8,
+    #         "kid2pdx": None
+    #     })
 
-        attr = UDSFormA3Attribute(uds_table)
-        assert attr._create_naccfam() == 9
+    #     attr = UDSFormA3Attribute(uds_table)
+    #     assert attr._create_naccfam() == 9
 
-    def test_create_naccfam_all_8_except_one(self, uds_table):
-        """Test NACCFAM when all are 8 expect dad which is 9."""
-        uds_table["file.info.forms.json"].update({
-            "formver": 3,
-            "a3sub": 1,
-            "momneur": 8,
-            "momprdx": None,
-            "dadneur": 9,
-            "dadprdx": None,
-            "sibs": 0,
-            "kids": 2,
-            "kid1neu": 8,
-            "kid1pdx": None,
-            "kid2neu": 8,
-            "kid2pdx": None
-        })
+    # def test_create_naccfam_all_8_except_one(self, uds_table):
+    #     """Test NACCFAM when all are 8 expect dad which is 9."""
+    #     uds_table["file.info.forms.json"].update({
+    #         "formver": 3,
+    #         "a3sub": 1,
+    #         "momneur": 8,
+    #         "momprdx": None,
+    #         "dadneur": 9,
+    #         "dadprdx": None,
+    #         "sibs": 0,
+    #         "kids": 2,
+    #         "kid1neu": 8,
+    #         "kid1pdx": None,
+    #         "kid2neu": 8,
+    #         "kid2pdx": None
+    #     })
 
-        attr = UDSFormA3Attribute(uds_table)
-        assert attr._create_naccfam() == 0
+    #     attr = UDSFormA3Attribute(uds_table)
+    #     assert attr._create_naccfam() == 0

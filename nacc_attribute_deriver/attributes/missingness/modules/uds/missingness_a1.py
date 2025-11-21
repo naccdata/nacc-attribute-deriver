@@ -42,7 +42,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def __handle_generic_a1_missingness(self, field: str) -> Optional[int]:
         """For most variables the default is 0, so generalize."""
-        return self.handle_prev_visit(field, int, default=0)
+        return self.handle_prev_visit(field, int, default=0, ignore_i4=True)
 
     def _missingness_raceaian(self) -> Optional[int]:
         """Handles missingness for RACEAIAN."""

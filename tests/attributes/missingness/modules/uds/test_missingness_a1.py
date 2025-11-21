@@ -14,7 +14,7 @@ class TestUDSFormA1Missingness:
         assert attr._missingness_residenc() == 9
 
         uds_table["file.info.forms.json.residenc"] = 3
-        assert attr._missingness_residenc() is None
+        assert attr._missingness_residenc() == 3
 
         uds_table["file.info.forms.json.residenc"] = None
         assert attr._missingness_residenc() == INFORMED_MISSINGNESS
@@ -26,7 +26,7 @@ class TestUDSFormA1Missingness:
         assert attr._missingness_maristat() == 9
 
         uds_table["file.info.forms.json.maristat"] = 5
-        assert attr._missingness_maristat() is None
+        assert attr._missingness_maristat() == 5
 
         uds_table["file.info.forms.json.maristat"] = None
         assert attr._missingness_maristat() == INFORMED_MISSINGNESS

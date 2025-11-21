@@ -8,10 +8,11 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissi
 class UDSFormB6Missingness(UDSMissingness):
     def _missingness_nogds(self) -> Optional[int]:
         """Handle missingness for NOGDS."""
-        if self.uds.get_value("nogds", int) is None:
+        nogds = self.uds.get_value("nogds", int)
+        if nogds is None:
             return 0
 
-        return None
+        return nogds
 
     def __handle_nogds_gate(self, field: str) -> Optional[int]:
         """Handles missingness for GDS vars."""

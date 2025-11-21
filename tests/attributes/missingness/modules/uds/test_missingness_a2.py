@@ -26,7 +26,7 @@ class TestUDSFormA2Missingness:
         assert attr._missingness_incntmod() == INFORMED_MISSINGNESS
         assert attr._missingness_incnttim() == INFORMED_MISSINGNESS
 
-        # now the values are set to something, so should return None
+        # now the values are set to something, so stay as-is
         uds_table["file.info.forms.json"].update({"incntmod": 1, "incnttim": 2})
-        assert attr._missingness_incntmod() is None
-        assert attr._missingness_incnttim() is None
+        assert attr._missingness_incntmod() == 1
+        assert attr._missingness_incnttim() == 2

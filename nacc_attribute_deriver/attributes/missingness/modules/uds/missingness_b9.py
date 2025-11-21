@@ -207,7 +207,7 @@ class UDSFormB9Missingness(UDSMissingness):
     def _missingness_beothr(self) -> Optional[int]:
         """Handles missingness for BEOTHR."""
         result = self.__handle_behavior_variables(["decclin", "decclbe"], "beothr", 0)
-        if result is None:
+        if result is None or result == 9:
             if self.uds.get_value("beothr", int) == 9:
                 return 0
 
@@ -371,7 +371,7 @@ class UDSFormB9Missingness(UDSMissingness):
             return -4
 
         result = self._handle_cascading_gates(["decclin", "decclmot"], "momopark", 0)
-        if result is None:
+        if result is None or result == 88:
             if self.uds.get_value("momopark", int) == 88:
                 return 8
 
@@ -625,7 +625,7 @@ class UDSFormB9Missingness(UDSMissingness):
             return self.__handle_b9_prev_value("decage")
 
         if decage is not None:
-            return None
+            return decage
 
         if self.formver == 1 and not self.uds.is_initial():
             b9chg = self.uds.get_value("b9chg", int)

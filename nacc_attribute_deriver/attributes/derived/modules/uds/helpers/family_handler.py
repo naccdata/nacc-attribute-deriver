@@ -187,14 +187,13 @@ class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
         if all(not member.has_data() for member in self.all_members):
             return known_value
 
-        # REGRESSION - this is clearly an error to me, but because of the way
-        # the SAS code is written, it seems if that if, for V3, all NEUR values
-        # are 8, AND the subject has no kids or no sibs, set it to 9 instead of 0?
-        # (without this code block most return 0 instead)
-        if self.uds.normalized_formver() >= 3:
-            all_8s = [member.check_neur_is_8() for member in self.all_members]
-            if all(all_8s) and (self.sibs.get_bound() == 0 or self.kids.get_bound() == 0):
-                return self.determine_member_status(9, known_value)
+        # REGRESSION - there is something weird going on when everything is 8
+        # but it is quite inconsistent whether its 0 or 9; "does the best"
+        # when this is commented out, so commented out for now
+        # if self.uds.normalized_formver() >= 3:
+        #     all_8s = [member.check_neur_is_8() for member in self.all_members]
+        #     if all(all_8s) and (self.sibs.get_bound() == 0 or self.kids.get_bound() == 0):
+        #         return self.determine_member_status(9, known_value)
 
         # get cognitive status for each family member
         family_status = [

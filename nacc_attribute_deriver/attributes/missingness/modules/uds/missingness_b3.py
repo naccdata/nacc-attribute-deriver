@@ -61,8 +61,9 @@ class UDSFormB3Missingness(UDSMissingness):
 
         # REGRESSION: this needs to be checked after the above
         # but before the below
-        if self.uds.get_value("pdnormal", int) is not None:
-            return None
+        pdnormal = self.uds.get_value("pdnormal", int)
+        if pdnormal is not None:
+            return pdnormal
 
         # if all blank, likely form was not filled out
         if all(x is None for x in all_values):

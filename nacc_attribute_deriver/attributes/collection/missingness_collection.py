@@ -34,12 +34,19 @@ class FormMissingnessCollection(AttributeCollection):
     def form(self) -> FormNamespace:
         return self.__form
 
-    def generic_missingness(self, field: str, attr_type: Type[T]) -> Optional[T]:
+    def generic_missingness(self, field: str, attr_type: Type[T]) -> T:
         """Generic missingness:
 
         If FIELD is None, FIELD = -4 / -4.4 / blank
         """
-        if self.__form.get_value(field, str) is None:
+        # NOTE: because V4 saves all metadata as strings, we need to
+        # force the typing here for missingness. the intended behavior
+        # was to return None (no update) if the value exists, but
+        # because of the typing issue we do need to set it.
+        # ideally this gets fixed further upstream at some point
+
+        value = self.__form.get_value(field, attr_type)
+        if value is None:
             if attr_type == int:  # noqa: E721
                 return INFORMED_MISSINGNESS  # type: ignore
             if attr_type == str:  # noqa: E721
@@ -51,7 +58,7 @@ class FormMissingnessCollection(AttributeCollection):
                 f"Unknown missingness attribute type: {attr_type}"
             )
 
-        return None
+        return value
 
 
 class SubjectMissingnessCollection(AttributeCollection):
@@ -71,13 +78,13 @@ class SubjectMissingnessCollection(AttributeCollection):
     def handle_subject_missing(
         self, attribute: str, default: Optional[int] = INFORMED_MISSINGNESS
     ) -> Optional[int]:
-        """Handle missing values at the subject level."""
-        value = self.__derived.get_cross_sectional_value(attribute, str)
+        """Handle missing values at the subject level. Assuming all ints."""
+        value = self.__derived.get_cross_sectional_value(attribute, int)
         if value is None:
             return default
 
-        # the reason we don't return the value itself is because in this
-        # context returning None means "don't replace what's already there"
-        # whereas returning the value would say "replace what's there with
-        # itself" and could potentially cause ordering/date issues
-        return None
+        # Unlike the file-level, subject-level metadata is ensured to be
+        # the correct type, so we could still return None. However,
+        # also making it return the value so its consistent. shouldn't
+        # affect dated values as not relevant to this context
+        return value

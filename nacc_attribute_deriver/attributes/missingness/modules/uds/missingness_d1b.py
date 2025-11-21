@@ -97,8 +97,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def __handle_formver_ftld_gate(self, field: str) -> Optional[int]:
         """Handle variables gated by FORMVER and FTLD."""
-        if self.uds.get_value(field, int) is not None:
-            return None
+        value = self.uds.get_value(field, int)
+        if value is not None:
+            return value
 
         if self.uds.get_value("ftld", int) is None:
             return 0

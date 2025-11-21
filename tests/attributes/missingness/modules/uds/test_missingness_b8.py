@@ -28,7 +28,7 @@ class TestUDSFormB8Missingness:
         uds_table["file.info.forms.json"].update({"normnrexam": 1, "gaitabn": 1})
         assert attr._missingness_gaitfind() == INFORMED_MISSINGNESS
         uds_table["file.info.forms.json.gaitfind"] = 5
-        assert attr._missingness_gaitfind() is None
+        assert attr._missingness_gaitfind() == 5
 
     def test_handle_normnrexam_gate(self, uds_table):
         """Test _handle_normnrexam_gate."""
@@ -48,7 +48,7 @@ class TestUDSFormB8Missingness:
         uds_table["file.info.forms.json.normnrexam"] = 1
         assert attr._handle_normnrexam_gate("somevar") == INFORMED_MISSINGNESS
         uds_table["file.info.forms.json.somevar"] = 5
-        assert attr._handle_normnrexam_gate("somevar") is None
+        assert attr._handle_normnrexam_gate("somevar") == 5
 
     def test_handle_normnrexam_with_gate(self, uds_table):
         """Tests _handle_normnrexam_with_gate."""
@@ -79,11 +79,11 @@ class TestUDSFormB8Missingness:
             attr._handle_normnrexam_with_gate("gate", "somevar") == INFORMED_MISSINGNESS
         )
 
-        # default case, not missing so return None (so doesn't override)
+        # default case, not missing so return 5
         uds_table["file.info.forms.json"].update(
             {"normnrexam": None, "gate": None, "somevar": 5}
         )
-        assert attr._handle_normnrexam_with_gate("gate", "somevar") is None
+        assert attr._handle_normnrexam_with_gate("gate", "somevar") == 5
 
     def test_postinst(self, uds_table):
         """Tests postinst."""

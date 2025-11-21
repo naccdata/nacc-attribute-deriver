@@ -35,7 +35,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_resphear(self) -> Optional[int]:
         """Handles missingness for RESPHEAR."""
@@ -162,8 +162,9 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """Handles missingness for NPSYLANX."""
         # REGRESSION: if there was something there, legacy seems to
         # just keep it
-        if self.formver < 4 and self.uds.get_value("npsylanx", str) is not None:
-            return None
+        npsylanx = self.uds.get_value("npsylanx", str)
+        if self.formver < 4 and npsylanx is not None:
+            return npsylanx
 
         result = self.handle_forbidden_gated_writein("npsylan", 3)
         if result is not None:
@@ -616,7 +617,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if self.uds.get_value("mocacomp", int) == 0:
             return 88
 
-        return self.generic_missingness("mocacomp", int)
+        return self.generic_missingness("mocatots", int)
 
     def __handle_mocacomp_gate(self, field: str) -> Optional[int]:
         """Handle variables gated by MOCACOMP.

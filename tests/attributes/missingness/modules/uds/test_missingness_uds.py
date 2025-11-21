@@ -11,10 +11,12 @@ class TestUDSMissingness:
         """Test when a previous visit is involved."""
         attr = UDSMissingness(uds_table)
 
+        # sanity check - return if its in the current and no prev visit
+        uds_table["file.info.forms.json.testval"] = 6
+        assert attr.handle_prev_visit("testval", int) == 6
+
         # Case 1: Initial visit, so should return generic
         # missingness
-        uds_table["file.info.forms.json.testval"] = 6
-        assert attr.handle_prev_visit("testval", int) is None
         uds_table["file.info.forms.json.testval"] = None
         assert attr.handle_prev_visit("testval", int) == INFORMED_MISSINGNESS
         assert attr.handle_prev_visit("testval", int, default=0) == 0

@@ -75,4 +75,4 @@ class TestUDSFormD1LegacyMissingness:
                 "park": 1,  # set so should keep
             }
         )
-        assert attr._missingness_park() is None
+        assert attr._missingness_park() == 1

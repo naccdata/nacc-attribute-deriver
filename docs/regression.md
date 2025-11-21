@@ -1,3 +1,11 @@
+# V4 Notes
+
+## V4 Typing
+
+Currently, V4 data is saved in FW metadata as strings. This causes issues in the data model validation, which explicitly looks at the source type. As an interim solution, the current code enforces typing on everything defined in the `*missingness.csv` files, since those are the "rules" that get curated and already have typing attached.
+
+**THAT BEING SAID**, this is not comprehensive, and only includes variables explicitly needed for QAF generation at the moment. As such, there still may be numerical/integer values in `file.info.resolved` that are _still strings_ since they are not explicitly handled here. Ideally this typing issue gets resolved further upstream (especially because doing this significnatly increases the runtime), but for now this is a brute-force solution to get things going.
+
 # Regression
 
 The following are known and notable issues and inconsistencies in how the legacy code derived variables and what we are changing it to going forward starting with the new system and V4. You may also find `# REGRESSION` comments in the code for more context.

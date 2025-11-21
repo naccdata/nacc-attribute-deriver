@@ -137,13 +137,14 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
         If NORMCOG = 0 and DEMENTED = 0 and FIELD is blank, then FIELD = 0
         """
-        if self.uds.get_value(field, int) is None:
+        value = self.uds.get_value(field, int)
+        if value is None:
             if self.normcog == 0 and self.demented == 0:
                 return 0
 
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_mcicritcln(self) -> Optional[int]:
         """Handles missingness for MCICRITCLN."""
@@ -167,13 +168,14 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
         If NORMCOG = 0 and DEMENTED = 0 and MCI = 0 and FIELD is blank,
         then FIELD = 0
         """
-        if self.uds.get_value(field, int) is None:
+        value = self.uds.get_value(field, int)
+        if value is None:
             if self.normcog == 0 and self.demented == 0 and self.mci == 0:
                 return 0
 
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_impnomcifu(self) -> Optional[int]:
         """Handles missingness for IMPNOMCIFU."""
@@ -201,7 +203,8 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
         If (MCI = 1 or DEMENTED = 1) and FIELD is blank, then FIELD = 0
         If (NORMCOG = 1 or IMPNOMCI = 1) and FIELD is blank, then FIELD = 8
         """
-        if self.uds.get_value(field, int) is None:
+        value = self.uds.get_value(field, int)
+        if value is None:
             if self.mci == 1 or self.demented == 1:
                 return 0
             if self.normcog == 1 or self.impnomci == 1:
@@ -209,7 +212,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_cdommem(self) -> Optional[int]:
         """Handles missingness for CDOMMEM."""
@@ -452,35 +455,32 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_scddxconf(self) -> Optional[int]:
         """Handles missingness for SCDDXCONF."""
-        if self.uds.get_value("scddxconf", int) is None:
+        result = self.generic_missingness("scddxconf", int)
+        if result == INFORMED_MISSINGNESS:
             scd = self.uds.get_value("scd", int)
             if self.normcog == 0 and scd == 0:
                 return 8
 
-            return INFORMED_MISSINGNESS
-
-        return None
+        return result
 
     def _missingness_mbi(self) -> Optional[int]:
         """Handles missingness for MBI."""
-        if self.uds.get_value("mbi", int) is None:
+        result = self.generic_missingness("mbi", int)
+        if result == INFORMED_MISSINGNESS:
             if self.normcog == 1 or self.demented == 1:
                 return 8
 
-            return INFORMED_MISSINGNESS
-
-        return None
+        return result
 
     def _missingness_neopstat(self) -> Optional[int]:
         """Handles missingness for NEOPSTAT."""
-        neop = self.uds.get_value("neop", int)
-        if self.uds.get_value("neopstat", int) is None:
+        result = self.generic_missingness("neopstat", int)
+        if result == INFORMED_MISSINGNESS:
+            neop = self.uds.get_value("neop", int)
             if neop is None or neop == 0:
                 return 8
 
-            return INFORMED_MISSINGNESS
-
-        return None
+        return result
 
     def _missingness_demented(self) -> Optional[int]:
         """Handles missingness for DEMENTED."""
@@ -494,7 +494,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
         if self.impnomci is None or self.impnomci == 0:
             return 0
 
-        return None
+        return self.impnomci
 
     def _missingness_cogothx(self) -> Optional[str]:
         """Handles missingness for COGOTHX."""

@@ -178,42 +178,29 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
     # Other variables #
     ###################
 
+    def __handle_misc_gate(self, field: str, gate: str, return_value: int) -> Optional[int]:
+        """Handle the misc gate logics, which are all similar."""
+        value = self.uds.get_value(field, int)
+        if value is not None:
+            return value
+
+        if self.uds.get_value(gate, int) == 0:
+            return return_value
+
+        return self.generic_missingness(field, int)
+
     def _missingness_alcabuse(self) -> Optional[int]:
         """Handles missingness for ALCABUSE."""
-        if self.uds.get_value("alcabuse", int) is not None:
-            return None
-
-        if self.uds.get_value("alcdem", int) == 0:
-            return 8
-
-        return self.generic_missingness("alcabuse", int)
+        return self.__handle_misc_gate("alcabuse", "alcdem", 8)
 
     def _missingness_deptreat(self) -> Optional[int]:
         """Handles missingness for DEPTREAT."""
-        if self.uds.get_value("deptreat", int) is not None:
-            return None
-
-        if self.uds.get_value("dep", int) == 0:
-            return 8
-
-        return self.generic_missingness("deptreat", int)
+        return self.__handle_misc_gate("deptreat", "dep", 8)
 
     def _missingness_brnincte(self) -> Optional[int]:
         """Handles missingness for BRNINCTE."""
-        if self.uds.get_value("brnincte", int) is not None:
-            return None
-
-        if self.uds.get_value("brninj", int) == 0:
-            return 8
-
-        return self.generic_missingness("brnincte", int)
+        return self.__handle_misc_gate("brnincte", "brninj", 8)
 
     def _missingness_park(self) -> Optional[int]:
         """Handles missingness for PARK."""
-        if self.uds.get_value("park", int) is not None:
-            return None
-
-        if self.uds.get_value("lbdis", int) == 0:
-            return 0
-
-        return self.generic_missingness("park", int)
+        return self.__handle_misc_gate("park", "lbdis", 0)

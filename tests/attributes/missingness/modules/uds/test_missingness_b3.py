@@ -34,7 +34,7 @@ class TestUDSFormB3LegacyMissingness:
         )
 
         uds_table["file.info.forms.json.pdnormal"] = 1
-        assert attr._missingness_pdnormal() is None
+        assert attr._missingness_pdnormal() == 1
 
         uds_table["file.info.forms.json.pdnormal"] = None
         assert attr._missingness_pdnormal() == INFORMED_MISSINGNESS
@@ -56,4 +56,4 @@ class TestUDSFormB3LegacyMissingness:
 
         # if one is None, PDNORMAL stays as it is
         uds_table["file.info.forms.json.speech"] = None
-        assert attr._missingness_pdnormal() is None
+        assert attr._missingness_pdnormal() == 0

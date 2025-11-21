@@ -112,7 +112,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
         if self.formver < 4:
             quitsmok = self.uds.get_value("quitsmok", int)
             if quitsmok is not None:
-                return None
+                return quitsmok
 
             tobac100 = self.uds.get_value("tobac100", int)
             smokyrs = self.uds.get_value("smokyrs", int)
@@ -403,7 +403,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
                 return 0
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_impamfoot(self) -> Optional[int]:
         """Handles missingness for IMPAMFOOT."""
@@ -458,7 +458,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
                 return 0
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_diabins(self) -> Optional[int]:
         """Handles missingness for DIABINS."""
@@ -514,7 +514,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_arthupex(self) -> Optional[int]:
         """Handles missingness for ARTHUPEX."""
@@ -543,7 +543,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
             return INFORMED_MISSINGNESS
 
-        return None
+        return arthtype
 
     ######################
     # APNEA GATED VALUES #
@@ -588,7 +588,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
                 return 0
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_cancerprim(self) -> Optional[int]:
         """Handles missingness for CANCERPRIM."""
@@ -671,7 +671,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
                 return 0
             return INFORMED_MISSINGNESS
 
-        return None
+        return value
 
     def _missingness_cancmetbr(self) -> Optional[int]:
         """Handles missingness for CANCMETBR."""

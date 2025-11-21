@@ -31,7 +31,7 @@ class UDSFormB1Missingness(UDSMissingness):
             if height != height_with_dec:
                 return height_with_dec
 
-        return None
+        return height
 
     #############################
     # LEGACY 999 to 888 changes #

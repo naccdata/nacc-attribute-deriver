@@ -5,6 +5,12 @@ INFORMED_MISSINGNESS = -4
 INFORMED_MISSINGNESS_FLOAT = -4.4
 INFORMED_BLANK = "blank"  # will be translated to an overriding None
 
+MISSINGNESS_VALUES = [
+    INFORMED_MISSINGNESS,
+    INFORMED_MISSINGNESS_FLOAT,
+    INFORMED_BLANK
+]
+
 CURATION_TYPE = ["create", "missingness"]
 
 # For form B6
@@ -82,4 +88,6 @@ REGRESSION_VARIABLES = [
     "trailbli",
     "cogoth2f",
     "cogoth3f",
+    "comport",
+    "cdrlang"
 ]

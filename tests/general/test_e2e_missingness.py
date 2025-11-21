@@ -80,4 +80,4 @@ def test_mds_form():
     deriver.curate(mds_table, "mds")
 
     # only apoe is set since agedem exists
-    assert mds_table["file.info.resolved"] == {"apoe": -4}
+    assert mds_table["file.info.resolved"] == {"agedem": 75, "apoe": -4}

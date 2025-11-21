@@ -79,4 +79,4 @@ class UDSFormA1aMissingness(UDSMissingness):
         if expnotapp == 1 and expstrs is None:
             return 5
 
-        return None
+        return self.generic_missingness("expstrs", int)
