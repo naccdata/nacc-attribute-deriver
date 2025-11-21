@@ -241,9 +241,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
             field: The field
             in_hundreds: The INT values are in the hundreds, so missingess values need to be
                 adjusted to 888, 995, etc.
+                REGRESSION - need to do going forward, but V1 - V3 didn't do this
             gate_mresult: The gate missingness result - applied in a cascading fashion
         """
-        set_value = 888 if in_hundreds else 88
+        set_value = 888 if in_hundreds and self.formver == 4 else 88
         result = self._handle_verbaltest_gate(
             field, verbal_value=2, set_value=set_value
         )
@@ -261,7 +262,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         # if some gate result, adjust as needed
         if result is not None:
             # need to adjust if in the hundreds
-            if in_hundreds:
+            if in_hundreds and self.formver == 4:
                 if result == 88:
                     return 888
 
@@ -686,7 +687,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         if self.uds.get_value("mocacomp", int) == 0:
             return 88
 
-        return self.generic_missingness("mocatots", int)
+        return self.generic_missingness("mocbtots", int)
 
     def __handle_mocacomp_gate(
         self, field: str, c2_only_var: bool = False
