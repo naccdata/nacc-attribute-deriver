@@ -71,9 +71,9 @@ class UDSFormA4Missingness(UDSMissingness):
         return self.generic_missingness("anymeds", int)
 
     def __handle_rxnormidx(self, field: str) -> str:
-        """V4+.
-
-        Handles missingness for all RXNORMIDX (1-40) values.
+        """V4+. Handles missingness for all RXNORMIDX (1-40)
+        values. While effectively an int, being
+        treated as a string.
         """
         if self.formver < 4:
             return INFORMED_BLANK

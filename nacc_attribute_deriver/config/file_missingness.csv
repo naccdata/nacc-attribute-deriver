@@ -1582,7 +1582,7 @@ uds,bdomafreg,file.info.resolved.bdomafreg,update,FALSE,int
 uds,bdomimp,file.info.resolved.bdomimp,update,FALSE,int
 uds,bdomsocial,file.info.resolved.bdomsocial,update,FALSE,int
 uds,bdomthts,file.info.resolved.bdomthts,update,FALSE,int
-uds,biomarkdx,file.info.resolved.biomarkdx,update,FALSE,str
+uds,biomarkdx,file.info.resolved.biomarkdx,update,FALSE,int
 uds,bloodad,file.info.resolved.bloodad,update,FALSE,int
 uds,bloodftld,file.info.resolved.bloodftld,update,FALSE,int
 uds,bloodlbd,file.info.resolved.bloodlbd,update,FALSE,int

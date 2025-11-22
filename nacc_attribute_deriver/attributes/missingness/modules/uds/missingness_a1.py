@@ -306,15 +306,15 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_adistate(self) -> int:
         """Handles missingness for ADISTATE."""
-        return self.handle_prev_visit("adistate", int, default=99)
+        return self.handle_prev_visit("adistate", int, default=999)
 
     def _missingness_adinat(self) -> int:
         """Handles missingness for ADINAT."""
-        return self.handle_prev_visit("adinat", int, default=99)
+        return self.handle_prev_visit("adinat", int, default=999)
 
     def _missingness_priocc(self) -> int:
         """Handles missingness for PRIOCC."""
-        return self.handle_prev_visit("priocc", int, default=99)
+        return self.handle_prev_visit("priocc", int, default=999)
 
     # The following are required so no defaults
 

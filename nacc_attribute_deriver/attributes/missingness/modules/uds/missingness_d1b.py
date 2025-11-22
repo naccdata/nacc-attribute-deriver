@@ -146,39 +146,39 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_cteif(self) -> int:
         """Handles missingness for CTEIF."""
-        return self.handle_cognitive_impairment_gate("cte", "cteif")
+        return self.handle_cognitive_impairment_gate("cte", "cteif", ignore_normcog_0=True)
 
     def _missingness_ctecert(self) -> int:
         """Handles missingness for CTECERT."""
-        return self.handle_cognitive_impairment_gate("cte", "ctecert")
+        return self.handle_cognitive_impairment_gate("cte", "ctecert", ignore_normcog_0=True)
 
     def _missingness_caaif(self) -> int:
         """Handles missingness for CAAIF."""
-        return self.handle_cognitive_impairment_gate("caa", "caaif")
+        return self.handle_cognitive_impairment_gate("caa", "caaif", ignore_normcog_0=True)
 
     def _missingness_lateif(self) -> int:
         """Handles missingness for LATEIF."""
-        return self.handle_cognitive_impairment_gate("late", "lateif")
+        return self.handle_cognitive_impairment_gate("late", "lateif", ignore_normcog_0=True)
 
     def _missingness_msaif(self) -> int:
         """Handles missingness for MSAIF."""
-        return self.handle_cognitive_impairment_gate("msa", "msaif")
+        return self.handle_cognitive_impairment_gate("msa", "msaif", ignore_normcog_0=True)
 
     def _missingness_pspif(self) -> int:
         """Handles missingness for PSPIF."""
-        return self.handle_cognitive_impairment_gate("psp", "pspif")
+        return self.handle_cognitive_impairment_gate("psp", "pspif", ignore_normcog_0=True)
 
     def _missingness_cortif(self) -> int:
         """Handles missingness for CORTIF."""
-        return self.handle_cognitive_impairment_gate("cort", "cortif")
+        return self.handle_cognitive_impairment_gate("cort", "cortif", ignore_normcog_0=True)
 
     def _missingness_ftldmoif(self) -> int:
         """Handles missingness for FTLDMOIF."""
-        return self.handle_cognitive_impairment_gate("ftldmo", "ftldmoif")
+        return self.handle_cognitive_impairment_gate("ftldmo", "ftldmoif", ignore_normcog_0=True)
 
     def _missingness_ftldnoif(self) -> int:
         """Handles missingness for FTLDNOIF."""
-        return self.handle_cognitive_impairment_gate("ftldnos", "ftldnoif")
+        return self.handle_cognitive_impairment_gate("ftldnos", "ftldnoif", ignore_normcog_0=True)
 
     def _missingness_ftldsubt(self) -> int:
         """Handles missingness for FTLDSUBT."""
@@ -205,20 +205,20 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_cvdif(self) -> int:
         """Handles missingness for CVDIF."""
-        return self.handle_cognitive_impairment_gate("cvd", "cvdif")
+        return self.handle_cognitive_impairment_gate("cvd", "cvdif", ignore_normcog_0=True)
 
     def _missingness_downsif(self) -> int:
         """Handles missingness for DOWNSIF."""
-        return self.handle_cognitive_impairment_gate("downs", "downsif")
+        return self.handle_cognitive_impairment_gate("downs", "downsif", ignore_normcog_0=True)
 
     def _missingness_huntif(self) -> int:
         """Handles missingness for HUNTIF."""
-        return self.handle_cognitive_impairment_gate("hunt", "huntif")
+        return self.handle_cognitive_impairment_gate("hunt", "huntif", ignore_normcog_0=True)
 
     def _missingness_prionif(self) -> int:
         """Handles missingness for PRIONIF."""
-        return self.handle_cognitive_impairment_gate("prion", "prionif")
+        return self.handle_cognitive_impairment_gate("prion", "prionif", ignore_normcog_0=True)
 
     def _missingness_othcogif(self) -> int:
         """Handles missingness for OTHCOGIF."""
-        return self.handle_cognitive_impairment_gate("othcog", "othcogif")
+        return self.handle_cognitive_impairment_gate("othcog", "othcogif", ignore_normcog_0=True)

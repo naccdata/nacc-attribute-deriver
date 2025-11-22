@@ -65,25 +65,38 @@ class UDSFormD1Missingness(UDSMissingness):
         other_gate: Optional[str] = None,
         consider_formverd1: bool = False,
     ) -> int:
-        """Handles variables dependent on NORMCOG and another gate:
+        """Handles variables dependent on cognitive impairment (DEMENTED, MCI, IMPNOMCI)
+        and another gate, e.g:
 
-        If NORMCOG = 0 and GATE is 0 or blank and FIELD is blank, FIELD = 7
+        If any(DEMENTED, MCI, IMPNOMCI = 1) and GATE is 0 or blank and FIELD is blank, FIELD = 7
         Else if NORMCOG = 1 and FIELD is blank, FIELD = 8
 
+        Args:
+            gate: The gate to check - must be none/blank for condition to succeed
+            field: The field
+            ignore_normcog_0: Since this method fallsback to handle_normcog_gate,
+                some fields care about NORMCOG = 0 whereas others don't, so
+                may need to set this. Usually ignore_normcog_0 = True for
+                variables that can't be set to 0 to begin with
+            other_gate: REGRESSION ARG - some legacy variables need to
+                check an additional gate, see below
+            consider_formverd1: REGRESSION ARG - some legacy variables have
+                additional logic baesd on formverd1, see below
+
         REGRESSION: Some variables look at an additional gate and/or formverd1, so consideer
-            that if specified. Mainly for POSSADIF, VASCPSIF, and COGOTH variables because
-            of these lines in the SAS:
-            %recode4g(gvar=d1formver,varlist=COGOTH2 COGOTH2F COGOTH3 COGOTH3F VASCPS VASCPSIF,
-                      qvalue=.,result=-4,vallist=1);
-            %recode4gg(gvarlist=PROBAD PROBAD VASC VASC,
-                       varlist=POSSAD POSSADIF VASCPS VASCPSIF
-                       ,qvalue=.,result=0,vallist=1);
+        that if specified. Mainly for POSSADIF, VASCPSIF, and COGOTH variables because
+        of these lines in the SAS:
+        %recode4g(gvar=d1formver,varlist=COGOTH2 COGOTH2F COGOTH3 COGOTH3F VASCPS VASCPSIF,
+                  qvalue=.,result=-4,vallist=1);
+        %recode4gg(gvarlist=PROBAD PROBAD VASC VASC,
+                   varlist=POSSAD POSSADIF VASCPS VASCPSIF
+                   ,qvalue=.,result=0,vallist=1);
 
-            The formverd1 case mainly occurs when formver == 2 but formverd1 == 1. Does
-            not seem as applicable for V3.
+        The formverd1 case mainly occurs when formver == 2 but formverd1 == 1. Does
+        not seem as applicable for V3.
 
-            Because PROBAD/VASC are gates themselves, seem to not be as effected (?
-            or at least no regression errors raised for those in relation to this.)
+        Because PROBAD/VASC are gates themselves, seem to not be as effected (?
+        or at least no regression errors raised for those in relation to this.)
         """
         gate_value = self.uds.get_value(gate, int)
         current_value = self.uds.get_value(field, int)
