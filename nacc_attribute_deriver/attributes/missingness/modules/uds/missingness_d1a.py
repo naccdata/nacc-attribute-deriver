@@ -253,14 +253,21 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
         Else if NORMCOG=1 and FIELD is blank, then FIELD should =8
         """
         assert gate in ["predomsyn", "anxiet"]
-        if self.normcog == 0 and self.uds.get_value(field, int) is None:
-            gate_value = self.uds.get_value(gate, int)
-            if gate_value == 1:
-                return 0
-            if gate_value == 0:
-                return 7
+        value = self.uds.get_value(field, int)
 
-        return self.handle_normcog_gate(field)
+        if value is None:
+            if self.normcog == 0:
+                gate_value = self.uds.get_value(gate, int)
+                if gate_value == 1:
+                    return 0
+                if gate_value == 0:
+                    return 7
+            if self.normcog == 1:
+                return 8
+
+            return INFORMED_MISSINGNESS
+
+        return value
 
     def _missingness_amndem(self) -> int:
         """Handles missingness for AMNDEM."""
@@ -345,95 +352,95 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_lbdsynt(self) -> int:
         """Handles missingness for LBDSYNT."""
-        return self.handle_cognitive_impairment_gate("lbdsyn", "lbdsynt")
+        return self.handle_normcog_with_other_gate("lbdsyn", "lbdsynt")
 
     def _missingness_pspsynt(self) -> int:
         """Handles missingness for PSPSYNT."""
-        return self.handle_cognitive_impairment_gate("pspsyn", "pspsynt")
+        return self.handle_normcog_with_other_gate("pspsyn", "pspsynt")
 
     def _missingness_msasynt(self) -> int:
         """Handles missingness for MSASYNT."""
-        return self.handle_cognitive_impairment_gate("msasyn", "msasynt")
+        return self.handle_normcog_with_other_gate("msasyn", "msasynt")
 
     def _missingness_majdepdif(self) -> int:
         """Handles missingness for MAJDEPDIF."""
-        return self.handle_cognitive_impairment_gate("majdepdx", "majdepdif")
+        return self.handle_normcog_with_other_gate("majdepdx", "majdepdif")
 
     def _missingness_othdepdif(self) -> int:
         """Handles missingness for OTHDEPDIF."""
-        return self.handle_cognitive_impairment_gate("othdepdx", "othdepdif")
+        return self.handle_normcog_with_other_gate("othdepdx", "othdepdif")
 
     def _missingness_ndevdisif(self) -> int:
         """Handles missingness for NDEVDISIF."""
-        return self.handle_cognitive_impairment_gate("ndevdis", "ndevdisif")
+        return self.handle_normcog_with_other_gate("ndevdis", "ndevdisif")
 
     def _missingness_tbidxif(self) -> int:
         """Handles missingness for TBIDXIF."""
-        return self.handle_cognitive_impairment_gate("tbidx", "tbidxif")
+        return self.handle_normcog_with_other_gate("tbidx", "tbidxif")
 
     def _missingness_postc19if(self) -> int:
         """Handles missingness for POSTC19IF."""
-        return self.handle_cognitive_impairment_gate("postc19", "postc19if")
+        return self.handle_normcog_with_other_gate("postc19", "postc19if")
 
     def _missingness_apneadxif(self) -> int:
         """Handles missingness for APNEADXIF."""
-        return self.handle_cognitive_impairment_gate("apneadx", "apneadxif")
+        return self.handle_normcog_with_other_gate("apneadx", "apneadxif")
 
     def _missingness_othcillif(self) -> int:
         """Handles missingness for OTHCILLIF."""
-        return self.handle_cognitive_impairment_gate("othcogill", "othcillif")
+        return self.handle_normcog_with_other_gate("othcogill", "othcillif")
 
     def _missingness_hycephif(self) -> int:
         """Handles missingness for HYCEPHIF."""
-        return self.handle_cognitive_impairment_gate("hyceph", "hycephif")
+        return self.handle_normcog_with_other_gate("hyceph", "hycephif")
 
     def _missingness_epilepif(self) -> int:
         """Handles missingness for EPILEPIF."""
-        return self.handle_cognitive_impairment_gate("epilep", "epilepif")
+        return self.handle_normcog_with_other_gate("epilep", "epilepif")
 
     def _missingness_neopif(self) -> int:
         """Handles missingness for NEOPIF."""
-        return self.handle_cognitive_impairment_gate("neop", "neopif")
+        return self.handle_normcog_with_other_gate("neop", "neopif")
 
     def _missingness_hivif(self) -> int:
         """Handles missingness for HIVIF."""
-        return self.handle_cognitive_impairment_gate("hiv", "hivif")
+        return self.handle_normcog_with_other_gate("hiv", "hivif")
 
     def _missingness_bipoldif(self) -> int:
         """Handles missingness for BIPOLDIF."""
-        return self.handle_cognitive_impairment_gate("bipoldx", "bipoldif")
+        return self.handle_normcog_with_other_gate("bipoldx", "bipoldif")
 
     def _missingness_schizoif(self) -> int:
         """Handles missingness for SCHIZOIF."""
-        return self.handle_cognitive_impairment_gate("schizop", "schizoif")
+        return self.handle_normcog_with_other_gate("schizop", "schizoif")
 
     def _missingness_anxietif(self) -> int:
         """Handles missingness for ANXIETIF."""
-        return self.handle_cognitive_impairment_gate("anxiet", "anxietif")
+        return self.handle_normcog_with_other_gate("anxiet", "anxietif")
 
     def _missingness_delirif(self) -> int:
         """Handles missingness for DELIRIF."""
-        return self.handle_cognitive_impairment_gate("delir", "delirif")
+        return self.handle_normcog_with_other_gate("delir", "delirif")
 
     def _missingness_ptsddxif(self) -> int:
         """Handles missingness for PTSDDXIF."""
-        return self.handle_cognitive_impairment_gate("ptsddx", "ptsddxif")
+        return self.handle_normcog_with_other_gate("ptsddx", "ptsddxif")
 
     def _missingness_othpsyif(self) -> int:
         """Handles missingness for OTHPSYIF."""
-        return self.handle_cognitive_impairment_gate("othpsy", "othpsyif")
+        return self.handle_normcog_with_other_gate("othpsy", "othpsyif")
 
     def _missingness_alcdemif(self) -> int:
         """Handles missingness for ALCDEMIF."""
-        return self.handle_cognitive_impairment_gate("alcdem", "alcdemif")
+        return self.handle_normcog_with_other_gate("alcdem", "alcdemif")
 
     def _missingness_impsubif(self) -> int:
         """Handles missingness for IMPSUBIF."""
-        return self.handle_cognitive_impairment_gate("impsub", "impsubif")
+        return self.handle_normcog_with_other_gate("impsub", "impsubif")
 
     def _missingness_medsif(self) -> int:
         """Handles missingness for MEDSIF."""
-        return self.handle_cognitive_impairment_gate("meds", "medsif")
+        return self.handle_normcog_with_other_gate("meds", "medsif")
 
     def _missingness_cogothif(self) -> int:
         """Handles missingness for COGOTHIF."""
@@ -482,7 +489,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
 
     def _missingness_demented(self) -> int:
         """Handles missingness for DEMENTED."""
-        if self.uds.get_value("normcog", int) == 1:
+        if self.normcog == 1:
             return 0
 
         return self.generic_missingness("demented", int)

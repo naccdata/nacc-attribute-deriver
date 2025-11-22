@@ -7,6 +7,7 @@ dependent variables could call the same rule) but due to the sheer
 number of them and slight nuances I decided to be extremely explicit
 here to make sure we aren't accidentally missing or duplicating any.
 """
+
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
@@ -675,9 +676,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
         return self.generic_missingness("mocbtots", int)
 
-    def __handle_mocacomp_gate(
-        self, field: str, c2_only_var: bool = False
-    ) -> int:
+    def __handle_mocacomp_gate(self, field: str, c2_only_var: bool = False) -> int:
         """Handle variables gated by MOCACOMP.
 
         If MOCACOMP = 0, then FIELD = MOCAREAS

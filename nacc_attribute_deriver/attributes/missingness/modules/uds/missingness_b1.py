@@ -3,7 +3,6 @@
 Only in V3 and earlier.
 """
 
-
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,

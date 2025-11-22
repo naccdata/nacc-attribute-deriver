@@ -108,8 +108,13 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
         # REGRESSION: Legacy SAS doesn't explicitly use the cognitive impairment
         # gate but seems like what it does is effectively the same thing
         # it also does an additional check based on PROBAD
+        override_value = self.uds.get_value("possadif", int)
+        if override_value is None:
+            if self.uds.get_value("probad", int) == 1:
+                override_value = 0
+
         return self.handle_cognitive_impairment_gate(
-            "possad", "possadif", other_gate="probad"
+            "possad", "possadif", override_value=override_value
         )
 
     def _missingness_vascps(self) -> int:
@@ -126,9 +131,17 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_vascpsif(self) -> int:
         """Handles missingness for VASCPSIF."""
-        # REGRESSION: does additional checks based on VASC and FORMVERD1
+        # REGRESSION: does additional checks based on VASC and FORMVERD1,
+        # which may set VASCPSIF to something else beforehand
+        override_value = self.uds.get_value("vascpsif", int)
+        if override_value is None:
+            if self.uds.get_value("vasc", int) == 1:
+                override_value = 0
+            if self.uds.get_value("formverd1", float) == 1:
+                override_value = INFORMED_MISSINGNESS
+
         return self.handle_cognitive_impairment_gate(
-            "vascps", "vascpsif", other_gate="vasc", consider_formverd1=True
+            "vascps", "vascpsif", override_value=override_value
         )
 
     #######################
@@ -176,9 +189,7 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
     # Other variables #
     ###################
 
-    def __handle_misc_gate(
-        self, field: str, gate: str, return_value: int
-    ) -> int:
+    def __handle_misc_gate(self, field: str, gate: str, return_value: int) -> int:
         """Handle the misc gate logics, which are all similar."""
         value = self.uds.get_value(field, int)
         if value is not None:

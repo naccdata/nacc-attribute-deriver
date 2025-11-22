@@ -32,7 +32,7 @@ class TestUDSFormC1C2Missingness:
 
         uds_table["file.info.forms.json"].update(
             {
-                "formver": 3.2,
+                "formver": 4.0,
                 "packet": "T",
                 "reydrec": cascade_value,
                 "rey1rec": cascade_value,

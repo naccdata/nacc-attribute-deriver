@@ -4,7 +4,6 @@ Some of these variables have recode logic defined in the legacy SAS
 code, so there are some version differences.
 """
 
-
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     DerivedNamespace,
@@ -357,33 +356,80 @@ class UDSFormA5D2Missingness(UDSMissingness):
     # CARRY FORWARD ONLY VALUES #
     #############################
 
+    def __adjust_carry_forward_digits(
+        self, field: str, adjust_88: bool = False, adjust_99: bool = False
+    ) -> int:
+        """In the 2025 Febuary release, 88 and 99 were adjusted to 888 and 999
+        for the following variables, but some packets with the old values had
+        already been accepted. So need to adjust here.
+
+        Need to fine-tune between 88/99 since some have allowed ranges
+        that go past 88.
+        """
+        result = self.handle_prev_visit(field, int, prev_code=777)
+        if adjust_88 and result == 88:
+            return 888
+        if adjust_99 and result == 99:
+            return 999
+
+        return result
+
     def _missingness_nomensage(self) -> int:
         """Handles missingness for NOMENSAGE."""
-        return self.handle_prev_visit("nomensage", int, prev_code=777)
+        return self.__adjust_carry_forward_digits(
+            "nomensage", adjust_88=True, adjust_99=True
+        )
 
     def _missingness_hrtyears(self) -> int:
-        """Handles missingness for HRTYEARS."""
-        return self.handle_prev_visit("hrtyears", int, prev_code=777)
+        """Handles missingness for HRTYEARS.
+
+        0-90 or 999.
+        """
+        return self.__adjust_carry_forward_digits("hrtyears", adjust_99=True)
 
     def _missingness_hrtstrtage(self) -> int:
-        """Handles missingness for HRTSTRTAGE."""
-        return self.handle_prev_visit("hrtstrtage", int, prev_code=777)
+        """Handles missingness for HRTSTRTAGE. 10-110 or 999.
+
+        NOTE: because the new range went over 88/99s, we can't
+        easily detect old values. let go through for now.
+        """
+        return self.__adjust_carry_forward_digits("hrtstrtage")
 
     def _missingness_hrtendage(self) -> int:
-        """Handles missingness for HRTENDAGE."""
-        return self.handle_prev_visit("hrtendage", int, prev_code=777)
+        """Handles missingness for HRTENDAGE. 10-110 or 888 or 999.
+
+        NOTE: because the new range went over 88/99s, we can't
+        easily detect old values. let go through for now.
+        """
+        return self.__adjust_carry_forward_digits("hrtendage")
 
     def _missingness_bcpillsyr(self) -> int:
         """Handles missingness for BCPILLSYR."""
-        return self.handle_prev_visit("bcpillsyr", int, prev_code=777)
+        return self.__adjust_carry_forward_digits("bcpillsyr", adjust_99=True)
 
     def _missingness_bcstartage(self) -> int:
         """Handles missingness for BCSTARTAGE."""
-        return self.handle_prev_visit("bcstartage", int, prev_code=777)
+        return self.__adjust_carry_forward_digits("bcstartage", adjust_99=True)
 
     def _missingness_bcendage(self) -> int:
         """Handles missingness for BCENDAGE."""
-        return self.handle_prev_visit("bcendage", int, prev_code=777)
+        return self.__adjust_carry_forward_digits(
+            "bcendage", adjust_88=True, adjust_99=True
+        )
+
+    def _missingness_menarche(self) -> int:
+        """Handles missingness for MENARCHE.
+
+        Has no carry-forward so adjust directly.
+        """
+        value = self.uds.get_value("menarche", int)
+        if value == 88:
+            return 888
+
+        if value == 99:
+            return 99
+
+        return self.generic_missingness("menarche", int)
 
     ########################
     # HEADIMP GATED VALUES #

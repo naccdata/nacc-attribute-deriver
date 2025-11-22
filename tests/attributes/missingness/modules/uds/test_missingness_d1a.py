@@ -93,7 +93,7 @@ class TestUDSFormD1aMissingness:
             }
         )
         attr = UDSFormD1aMissingness(uds_table)
-        assert attr._missingness_amndem() is None  # uses raw value
+        assert attr._missingness_amndem() == 0  # uses raw value
 
         uds_table["file.info.forms.json.amndem"] = None
         assert attr._missingness_amndem() == 8

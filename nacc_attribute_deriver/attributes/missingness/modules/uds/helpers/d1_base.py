@@ -39,12 +39,12 @@ class UDSFormD1Missingness(UDSMissingness):
         """Check DEMENTED, MCI, and IMPNOMCI for cognitive impairment."""
         return self.demented == 1 or self.generate_mci() == 1 or self.impnomci == 1
 
-    def handle_normcog_gate(
-        self, field: str, ignore_normcog_0: bool = False
-    ) -> int:
+    def handle_normcog_gate(self, field: str, ignore_normcog_0: bool = False) -> int:
         """Handles NORMCOG-gated variables, which follow:
 
-        If NORMCOG = 1 and FIELD is blank, FIELD = 8
+        If FIELD is blank:
+            If NORMCOG = 1, FIELD = 8
+            If NORMCOG = 0, FIELD = 0 (optional, some values don't consider this)
         """
         value = self.uds.get_value(field, int)
         if value is None:
@@ -57,16 +57,33 @@ class UDSFormD1Missingness(UDSMissingness):
 
         return value
 
+    def handle_normcog_with_other_gate(self, gate: str, field: str) -> int:
+        """Handles NORMCOG with another gate logic, which follows:
+
+        If FIELD is blank:
+            If NORMCOG = 0 and GATE is blank/0, then FIELD = 7.
+            Else if NORMCOG = 1, FIELD = 8
+        """
+        value = self.uds.get_value(field, int)
+        if value is None:
+            gate_value = self.uds.get_value(gate, int)
+            if self.normcog == 0 and (gate_value is None or gate_value == 0):
+                return 7
+            if self.normcog == 1:
+                return 8
+
+            return INFORMED_MISSINGNESS
+
+        return value
+
     def handle_cognitive_impairment_gate(
         self,
         gate: str,
         field: str,
-        ignore_normcog_0: bool = False,
-        other_gate: Optional[str] = None,
-        consider_formverd1: bool = False,
+        override_value: Optional[int] = None,
     ) -> int:
-        """Handles variables dependent on cognitive impairment (DEMENTED, MCI, IMPNOMCI)
-        and another gate, e.g:
+        """Handles variables dependent on cognitive impairment (DEMENTED, MCI,
+        IMPNOMCI) and another gate, e.g:
 
         If any(DEMENTED, MCI, IMPNOMCI = 1) and GATE is 0 or blank and FIELD is blank, FIELD = 7
         Else if NORMCOG = 1 and FIELD is blank, FIELD = 8
@@ -74,14 +91,8 @@ class UDSFormD1Missingness(UDSMissingness):
         Args:
             gate: The gate to check - must be none/blank for condition to succeed
             field: The field
-            ignore_normcog_0: Since this method fallsback to handle_normcog_gate,
-                some fields care about NORMCOG = 0 whereas others don't, so
-                may need to set this. Usually ignore_normcog_0 = True for
-                variables that can't be set to 0 to begin with
-            other_gate: REGRESSION ARG - some legacy variables need to
-                check an additional gate, see below
-            consider_formverd1: REGRESSION ARG - some legacy variables have
-                additional logic baesd on formverd1, see below
+            override_value: REGRESSION ARG - some legacy variables set the value
+                beforehand based on other logic, see below, see below
 
         REGRESSION: Some variables look at an additional gate and/or formverd1, so consideer
         that if specified. Mainly for POSSADIF, VASCPSIF, and COGOTH variables because
@@ -99,36 +110,26 @@ class UDSFormD1Missingness(UDSMissingness):
         or at least no regression errors raised for those in relation to this.)
         """
         gate_value = self.uds.get_value(gate, int)
-        current_value = self.uds.get_value(field, int)
+        value = self.uds.get_value(field, int)
 
-        # REGRESSION
-        if current_value is None:
-            other_gate_value = (
-                self.uds.get_value(other_gate, int) if other_gate else None
-            )
+        # main logic we actually care about
+        if value is None:
+            if (
+                self.has_cognitive_impairment()
+                and (gate_value is None or gate_value == 0)
+                and (
+                    override_value is None
+                    or override_value not in [INFORMED_MISSINGNESS, 1]
+                )
+            ):
+                return 7
 
-            # formverd1 can be different from the overall form version
-            formver_d1 = (
-                self.uds.get_value("formverd1", float) if consider_formverd1 else None
-            )
+            if override_value is not None:
+                return override_value
 
-            if other_gate_value == 1:
-                current_value = 0
+            if self.normcog == 1:
+                return 8
 
-            if formver_d1 == 1:
-                current_value = INFORMED_MISSINGNESS
+            return INFORMED_MISSINGNESS
 
-        if (
-            self.has_cognitive_impairment()
-            and (gate_value is None or gate_value == 0)
-            and (
-                current_value is None or current_value not in [INFORMED_MISSINGNESS, 1]
-            )
-        ):
-            return 7
-
-        # REGRESSION
-        if current_value is not None:
-            return current_value
-
-        return self.handle_normcog_gate(field, ignore_normcog_0=ignore_normcog_0)
+        return value

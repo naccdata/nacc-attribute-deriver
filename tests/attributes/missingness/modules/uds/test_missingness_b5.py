@@ -18,6 +18,5 @@ class TestUDSFormB5Missingness:
         assert attr._missingness_npiqinfx() == INFORMED_BLANK
 
         # test NPIQINF is there and 3, so keep whatever is already in NPIQINFX
-        # (does this by returning None so its not overwritten)
         uds_table["file.info.forms.json"].update({"npiqinf": 3, "npiqinfx": "dummy"})
-        assert attr._missingness_npiqinfx() is None
+        assert attr._missingness_npiqinfx() == "dummy"

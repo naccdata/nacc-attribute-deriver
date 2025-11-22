@@ -146,39 +146,39 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_cteif(self) -> int:
         """Handles missingness for CTEIF."""
-        return self.handle_cognitive_impairment_gate("cte", "cteif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("cte", "cteif")
 
     def _missingness_ctecert(self) -> int:
         """Handles missingness for CTECERT."""
-        return self.handle_cognitive_impairment_gate("cte", "ctecert", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("cte", "ctecert")
 
     def _missingness_caaif(self) -> int:
         """Handles missingness for CAAIF."""
-        return self.handle_cognitive_impairment_gate("caa", "caaif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("caa", "caaif")
 
     def _missingness_lateif(self) -> int:
         """Handles missingness for LATEIF."""
-        return self.handle_cognitive_impairment_gate("late", "lateif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("late", "lateif")
 
     def _missingness_msaif(self) -> int:
         """Handles missingness for MSAIF."""
-        return self.handle_cognitive_impairment_gate("msa", "msaif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("msa", "msaif")
 
     def _missingness_pspif(self) -> int:
         """Handles missingness for PSPIF."""
-        return self.handle_cognitive_impairment_gate("psp", "pspif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("psp", "pspif")
 
     def _missingness_cortif(self) -> int:
         """Handles missingness for CORTIF."""
-        return self.handle_cognitive_impairment_gate("cort", "cortif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("cort", "cortif")
 
     def _missingness_ftldmoif(self) -> int:
         """Handles missingness for FTLDMOIF."""
-        return self.handle_cognitive_impairment_gate("ftldmo", "ftldmoif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("ftldmo", "ftldmoif")
 
     def _missingness_ftldnoif(self) -> int:
         """Handles missingness for FTLDNOIF."""
-        return self.handle_cognitive_impairment_gate("ftldnos", "ftldnoif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("ftldnos", "ftldnoif")
 
     def _missingness_ftldsubt(self) -> int:
         """Handles missingness for FTLDSUBT."""
@@ -199,26 +199,24 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
             else:
                 return ftldsubt
 
-        return self.handle_cognitive_impairment_gate(
-            "ftld", "ftldsubt", ignore_normcog_0=True
-        )
+        return self.handle_cognitive_impairment_gate("ftld", "ftldsubt")
 
     def _missingness_cvdif(self) -> int:
         """Handles missingness for CVDIF."""
-        return self.handle_cognitive_impairment_gate("cvd", "cvdif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("cvd", "cvdif")
 
     def _missingness_downsif(self) -> int:
         """Handles missingness for DOWNSIF."""
-        return self.handle_cognitive_impairment_gate("downs", "downsif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("downs", "downsif")
 
     def _missingness_huntif(self) -> int:
         """Handles missingness for HUNTIF."""
-        return self.handle_cognitive_impairment_gate("hunt", "huntif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("hunt", "huntif")
 
     def _missingness_prionif(self) -> int:
         """Handles missingness for PRIONIF."""
-        return self.handle_cognitive_impairment_gate("prion", "prionif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("prion", "prionif")
 
     def _missingness_othcogif(self) -> int:
         """Handles missingness for OTHCOGIF."""
-        return self.handle_cognitive_impairment_gate("othcog", "othcogif", ignore_normcog_0=True)
+        return self.handle_cognitive_impairment_gate("othcog", "othcogif")
