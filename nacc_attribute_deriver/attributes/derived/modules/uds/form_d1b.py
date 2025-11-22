@@ -63,11 +63,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if alzdisif in [1, 2, 3]:
             return alzdisif
 
-        if self.has_cognitive_impairment():
-            return 7
-
-        # TODO: ASKING RT ABOUT THE MBI CASE - FOR NOW RETURN 0
-        return 0
+        return 8
 
     def _create_nacclbde(self) -> int:
         """From d1structrdd.sas.
@@ -118,8 +114,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         elif self.has_cognitive_impairment():
             return 7
 
-        # TODO: ASKING RT ABOUT MBI - FOR NOW RETURN 0 (NO)
-        return 0
+        return 8
 
     def _create_naccalzd(self) -> int:
         """Creates NACCALZD - Presumptive etiologic diagnosis of
