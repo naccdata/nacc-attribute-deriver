@@ -107,13 +107,13 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             if dep == 0 or dep is None:
                 return 7
         else:
-            majdepdxif = self.uds.get_value("majdepdxif", int)
+            majdepdif = self.uds.get_value("majdepdif", int)
             othdepdif = self.uds.get_value("othdepdif", int)
             othdepdx = self.uds.get_value("othdepdx", int)
             majdepdx = self.uds.get_value("majdepdx", int)
 
-            if majdepdxif in [1, 2, 3] and othdepdif in [1, 2, 3]:
-                return max(majdepdxif, othdepdif)
+            if majdepdif in [1, 2, 3] and othdepdif in [1, 2, 3]:
+                return max(majdepdif, othdepdif)
             if majdepdx is None and othdepdx is None:
                 return 7
 
@@ -374,27 +374,25 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             return 8
 
         # V4
-        cdommem = self.uds.get_value("cdommem", int)
-        cdom_regions = self.uds.group_attributes(
-            ["cdomlang", "cdomattn", "cdomexec", "cdomvisu", "cdomaprax"], int
-        )
+        if self.generate_mci() == 1:
+            cdommem = self.uds.get_value("cdommem", int)
+            cdom_regions = self.uds.group_attributes(
+                ["cdomlang", "cdomattn", "cdomexec", "cdomvisu", "cdomaprax"], int
+            )
 
-        if cdommem == 1:
-            if all(x is None for x in cdom_regions):
-                return 1
-            if any(x == 1 for x in cdom_regions):
-                return 2
-        elif cdommem == 0:
-            num_regions = cdom_regions.count(1)
-            if num_regions == 1:
-                return 3
-            if num_regions > 1:
-                return 4
+            if cdommem == 1:
+                if all(x is None for x in cdom_regions):
+                    return 1
+                if any(x == 1 for x in cdom_regions):
+                    return 2
+            elif cdommem is None or cdommem == 0:
+                num_regions = cdom_regions.count(1)
+                if num_regions == 1:
+                    return 3
+                if num_regions > 1:
+                    return 4
 
-        if self.generate_mci() == 0:
-            return 8
-
-        return INFORMED_MISSINGNESS
+        return 8
 
     def determine_mci_domain_affected_v3(self, mci_domain: List[str]) -> int:
         """V3 and earlier. Determines if the given MCI domain is affected.

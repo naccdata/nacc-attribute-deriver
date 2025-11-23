@@ -21,7 +21,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
     def _missingness_scd(self) -> int:
         """Handles missingness for SCD."""
         scd = self.uds.get_value("scd", int)
-        if scd is None and self.normcog == 0:
+        if scd is None and self.normcog == 1:
             return 8
 
         return self.generic_missingness("scd", int)
@@ -29,7 +29,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
     def _missingness_predomsyn(self) -> int:
         """Handles missingness for PREDOMSYN."""
         predomsyn = self.uds.get_value("predomsyn", int)
-        if predomsyn is None and self.normcog == 0:
+        if predomsyn is None and self.normcog == 1:
             return 8
 
         return self.generic_missingness("predomsyn", int)
