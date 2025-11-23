@@ -176,6 +176,7 @@ uds,naccreas,subject.info.derived.cross-sectional.naccreas,update,FALSE
 uds,naccrefr,subject.info.derived.cross-sectional.naccrefr,update,FALSE
 uds,naccsex,subject.info.derived.cross-sectional.naccsex,update,FALSE
 uds,nacclang,subject.info.derived.cross-sectional.nacclang,update,FALSE
+uds,nacclangx,subject.info.derived.cross-sectional.nacclangx,update,FALSE
 uds,nacchisp,subject.info.derived.cross-sectional.nacchisp,update,FALSE
 uds,naccedulvl,subject.info.derived.cross-sectional.naccedulvl,update,FALSE
 uds,naccninr,file.info.derived.naccninr,update,FALSE
@@ -351,6 +352,7 @@ uds,naccnorm,subject.info.derived.cross-sectional.naccnorm,update,FALSE
 uds,naccidem,subject.info.derived.cross-sectional.naccidem,update,FALSE
 uds,naccadmu,subject.info.derived.cross-sectional.naccadmu,update,FALSE
 uds,naccftdm,subject.info.derived.cross-sectional.naccftdm,update,FALSE
+uds,naccwmhsev,subject.info.derived.cross-sectional.naccwmhsev,update,FALSE
 uds,naccmcii,subject.info.derived.cross-sectional.naccmcii,update,FALSE
 uds,contributing_diagnosis,subject.info.cognitive.uds.other-diagnosis.initial,initial,TRUE
 uds,contributing_diagnosis,subject.info.cognitive.uds.other-diagnosis.latest,latest,TRUE

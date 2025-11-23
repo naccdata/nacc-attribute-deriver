@@ -101,29 +101,41 @@ class TestUDSFormB1Attribute:
         # test formver != 4
         uds_table["file.info.forms.json.formver"] = random.choice([1.0, 2.0, 3.0, 3.2])
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._compute_average("field1", "field2") == INFORMED_MISSINGNESS
+        assert (
+            attr._compute_average("field1", "field2", 30, 140) == INFORMED_MISSINGNESS
+        )
 
         # test form not submitted, V3 and earlier
         uds_table["file.info.forms.json"].update({"b1sub": 0})
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._compute_average("field1", "field2") == INFORMED_MISSINGNESS
+        assert (
+            attr._compute_average("field1", "field2", 30, 140) == INFORMED_MISSINGNESS
+        )
 
         # test form not submitted, V4
         uds_table["file.info.forms.json"].update({"modeb1": 0, "formver": 4.0})
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._compute_average("field1", "field2") == INFORMED_MISSINGNESS
+        assert (
+            attr._compute_average("field1", "field2", 30, 140) == INFORMED_MISSINGNESS
+        )
 
         # test fields are missing
         uds_table["file.info.forms.json.modeb1"] = 1
-        assert attr._compute_average("field1", "field2") == 888
+        assert attr._compute_average("field1", "field2", 30, 140) == 888
 
         # test fields are 888
         uds_table["file.info.forms.json"].update({"field1": 1, "field2": 888})
-        assert attr._compute_average("field1", "field2") == 888
+        assert attr._compute_average("field1", "field2", 30, 140) == 888
 
         # compute average
         uds_table["file.info.forms.json"].update({"field1": 78, "field2": 52})
-        assert attr._compute_average("field1", "field2") == 65
+        assert attr._compute_average("field1", "field2", 30, 140) == 65
+
+        # test min/max is enfoced
+        uds_table["file.info.forms.json"].update({"field1": 29, "field2": 20})
+        assert attr._compute_average("field1", "field2", 30, 140) == 30
+        uds_table["file.info.forms.json"].update({"field1": 141, "field2": 145})
+        assert attr._compute_average("field1", "field2", 30, 140) == 140
 
     def test_handle_v3_blood_pressure(self, uds_table):
         """Test _handle_v3_blood_pressure, which is for V3 blood pressure
@@ -133,8 +145,17 @@ class TestUDSFormB1Attribute:
         )
 
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._handle_v3_blood_pressure("gate", "field") == 123
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 123
+
+        # min/max enforced
+        uds_table["file.info.forms.json.field"] = 1
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 30
+        uds_table["file.info.forms.json.field"] = 200
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 140
 
         # gate is not 777
         uds_table["file.info.forms.json.gate"] = 888
-        assert attr._handle_v3_blood_pressure("gate", "field") == -4
+        assert (
+            attr._handle_v3_blood_pressure("gate", "field", 30, 140)
+            == INFORMED_MISSINGNESS
+        )

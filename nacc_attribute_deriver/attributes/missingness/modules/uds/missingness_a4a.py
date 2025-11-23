@@ -3,10 +3,9 @@
 # TODO: STILL IN PROGRESS, WAITING RT FEEDBACK
 """
 
-from typing import Any, List, Optional, Type
+from typing import Any, List, Type
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
-from nacc_attribute_deriver.attributes.namespace.namespace import T
 
 
 class UDSFormA4aMissingness(UDSMissingness):

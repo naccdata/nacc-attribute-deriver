@@ -427,7 +427,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             return 888
 
         if value == 99:
-            return 99
+            return 999
 
         return self.generic_missingness("menarche", int)
 

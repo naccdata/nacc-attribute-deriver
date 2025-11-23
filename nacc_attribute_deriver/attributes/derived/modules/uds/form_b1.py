@@ -70,7 +70,9 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return 888.8
 
-    def _compute_average(self, field1: str, field2: str) -> Optional[int]:
+    def _compute_average(
+        self, field1: str, field2: str, minimum: int, maximum: int
+    ) -> Optional[int]:
         """Compute the average for the two fields (V4 only).
 
         Rounded to the nearest integer.
@@ -91,21 +93,26 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         result = (value1 + value2) / 2  # type: ignore
         # + 0.0001 so we ensure exact halves round up, not down
-        return round(result + 0.0001)
+        result = round(result + 0.0001)
+
+        # enforce min/max
+        return max(minimum, min(maximum, result))
 
     def _create_naccwaist(self) -> Optional[int]:
         """Creates NACCWAIST - Waist circumference (inches),
-        average of two measurements
+        average of two measurements.
         """
-        return self._compute_average("waist1", "waist2")
+        return self._compute_average("waist1", "waist2", 20, 60)
 
     def _create_nacchip(self) -> Optional[int]:
         """Creates NACCHIP - Hip circumference (inches),
         average of two measurements
         """
-        return self._compute_average("hip1", "hip2")
+        return self._compute_average("hip1", "hip2", 25, 70)
 
-    def _handle_v3_blood_pressure(self, gate: str, field: str) -> int:
+    def _handle_v3_blood_pressure(
+        self, gate: str, field: str, minimum: int, maximum: int
+    ) -> int:
         """Handles V3 blood pressure variables, which looks to see if
         supplemental blood pressure information was provided and returns that
         if so.
@@ -115,6 +122,8 @@ class UDSFormB1Attribute(UDSAttributeCollection):
                 was submitted (checking if it equals 777)
             field: The field to grab if the supplemnt blood pressure
                 data was submitted
+            minimum: minimum value
+            maximum: maimum value
 
         Returns:
             value of field, if supplemental data provided, else -4
@@ -125,7 +134,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
                 raise AttributeDeriverError(
                     f"Missing expected value {field} when {gate} == 777 for V3"
                 )
-            return value
+            return max(minimum, min(maximum, value))
 
         return INFORMED_MISSINGNESS
 
@@ -134,33 +143,33 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         (average of two readings), systolic, left arm
         """
         if self.formver == 3:
-            return self._handle_v3_blood_pressure("bpsys", "bpsysl")
+            return self._handle_v3_blood_pressure("bpsys", "bpsysl", 70, 230)
 
-        return self._compute_average("bpsysl1", "bpsysl2")
+        return self._compute_average("bpsysl1", "bpsysl2", 70, 230)
 
     def _create_naccbpsysr(self) -> Optional[int]:
         """Creates NACCBPSYSR - Participant blood pressure
         (average of two readings), systolic, right arm
         """
         if self.formver == 3:
-            return self._handle_v3_blood_pressure("bpsys", "bpsysr")
+            return self._handle_v3_blood_pressure("bpsys", "bpsysr", 70, 230)
 
-        return self._compute_average("bpsysr1", "bpsysr2")
+        return self._compute_average("bpsysr1", "bpsysr2", 70, 230)
 
     def _create_naccbpdial(self) -> Optional[int]:
         """Creates NACCBPDIAL - Participant blood pressure
         (average of two readings), diastolic, left arm
         """
         if self.formver == 3:
-            return self._handle_v3_blood_pressure("bpdias", "bpdiasl")
+            return self._handle_v3_blood_pressure("bpdias", "bpdiasl", 30, 140)
 
-        return self._compute_average("bpdiasl1", "bpdiasl2")
+        return self._compute_average("bpdiasl1", "bpdiasl2", 30, 140)
 
     def _create_naccbpdiar(self) -> Optional[int]:
         """Creates NACCBPDIAR - Participant blood pressure
         (average of two readings), diastolic, right arm
         """
         if self.formver == 3:
-            return self._handle_v3_blood_pressure("bpdias", "bpdiasr")
+            return self._handle_v3_blood_pressure("bpdias", "bpdiasr", 30, 140)
 
-        return self._compute_average("bpdiasr1", "bpdiasr2")
+        return self._compute_average("bpdiasr1", "bpdiasr2", 30, 140)

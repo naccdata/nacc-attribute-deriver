@@ -231,6 +231,12 @@ class TestUDSFormB9Attribute:
         )
         assert attr._create_nacccogage() == value
 
+        # check range is enforced
+        uds_table["file.info.forms.json"].update({field: 5})
+        assert attr._create_nacccogage() == 9
+        uds_table["file.info.forms.json"].update({field: 115})
+        assert attr._create_nacccogage() == 110
+
 
 class TestUDSFormB9RawAttribute:
     def test_create_bevhago(self, base_table):

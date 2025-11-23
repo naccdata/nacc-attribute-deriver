@@ -31,6 +31,7 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             if self.generate_mci() == 0:
                 return 8
 
+            # shouldn't really reach this case, but fallback
             return INFORMED_MISSINGNESS
 
         # V4

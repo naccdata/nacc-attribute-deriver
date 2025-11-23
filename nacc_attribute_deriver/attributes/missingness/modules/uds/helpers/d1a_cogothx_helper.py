@@ -12,7 +12,7 @@ This helper does this on instantiation instead, and the missingness rules
 will pull directly from the results.
 """
 
-from typing import Optional, Type
+from typing import Type
 
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     T,
