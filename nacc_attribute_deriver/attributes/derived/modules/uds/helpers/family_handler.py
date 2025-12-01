@@ -114,16 +114,16 @@ class BaseFamilyHandler(Generic[F], ABC):
         Determines status for a single member. Only override if derived
         status is 0 or 1, or known value is not already a 0 or 1.
         """
-        # if (status in [0, 1]) or (known_value not in [0, 1]):
-        #     return status
+        if (status in [0, 1]) or (known_value not in [0, 1]):
+            return status
 
-        # return known_value
+        return known_value
 
         # REGRESSION: in legacy it looks like only 1 overrides, 0/9 can flip flop
         # in new version 9 never overrides, but 0/1 can flip flop, so uncomment
         # the above once finalized
-        if status == 1 or known_value == 1:
-            return 1
+        # if status == 1 or known_value == 1:
+        #     return 1
 
         return status
 
