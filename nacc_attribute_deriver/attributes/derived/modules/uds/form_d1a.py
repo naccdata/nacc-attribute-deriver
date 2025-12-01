@@ -188,7 +188,8 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         if self.demented == 1:
             return 4
 
-        return INFORMED_MISSINGNESS
+        # MBI = 1 in this case
+        return 8
 
     def __determine_predominant_syndrome(self, field: str) -> int:
         """V4; determine predominant syndrome, used for NACCAPPA, NACCBVFT, and

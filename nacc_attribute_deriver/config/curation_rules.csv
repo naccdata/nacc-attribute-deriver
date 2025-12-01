@@ -5,6 +5,9 @@ historic_apoe,historic_naccne4s,subject.info.derived.cross-sectional.naccne4s,up
 apoe,naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
 apoe,naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 ncrad_biosamples,naccncrd,subject.info.derived.cross-sectional.naccncrd,update,FALSE
+apoe,naccapoe,file.info.derived.naccapoe,update,FALSE
+apoe,naccne4s,file.info.derived.naccne4s,update,FALSE
+ncrad_biosamples,naccncrd,file.info.derived.naccncrd,update,FALSE
 mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
 mds,mds_death_month,subject.info.working.cross-sectional.mds-death-month,update,FALSE
