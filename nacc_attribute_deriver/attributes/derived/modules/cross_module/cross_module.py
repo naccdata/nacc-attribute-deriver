@@ -176,6 +176,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         result = calculate_months(last_visit, deathdate)
 
         # handle negative
+        # REGRESSION: RDD limits this 0-100 but no cap in SAS/QAF
         return 999 if result is None or result < 0 else result
 
     # Tried to use all things described in the rdd-np. Many seemed not

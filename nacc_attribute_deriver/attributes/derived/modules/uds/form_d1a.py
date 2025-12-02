@@ -31,8 +31,8 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             if self.generate_mci() == 0:
                 return 8
 
-            # shouldn't really reach this case, but fallback
-            return INFORMED_MISSINGNESS
+            # shouldn't reach this case
+            raise AttributeDeriverError("Cannot determine NACCMCIM")
 
         # V4
         cdommem = self.uds.get_value("cdommem", int)
@@ -86,8 +86,8 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             if majdepdx is None and othdepdx is None:
                 return 0
 
-        # shouldn't really reach this case, but fallback
-        return INFORMED_MISSINGNESS
+        # shouldn't reach this case
+        raise AttributeDeriverError("Cannot determine NACCDEPD")
 
     def _create_naccdepdif(self) -> int:
         """Creates NACCDEPDIF - Primary, contributing, or non-contributing cause of
@@ -112,13 +112,21 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             othdepdx = self.uds.get_value("othdepdx", int)
             majdepdx = self.uds.get_value("majdepdx", int)
 
-            if majdepdif in [1, 2, 3] and othdepdif in [1, 2, 3]:
+            if majdepdif in [1, 2, 3] or othdepdif in [1, 2, 3]:
+                # if one is blank, return the other
+                if majdepdif is None:
+                    return othdepdif  # type: ignore
+                if othdepdif is None:
+                    return majdepdif
+
+                # else return max
                 return max(majdepdif, othdepdif)
+
             if majdepdx is None and othdepdx is None:
                 return 7
 
-        # shouldn't really reach this case, but fallback
-        return INFORMED_MISSINGNESS
+        # shouldn't reach this case
+        raise AttributeDeriverError("Cannot determine NACCDEPDIF")
 
     def _create_nacctbidx(self) -> int:
         """Creates NACCTBIDX - Non-neurodegenerative or non-CVD conditions affecting
@@ -142,8 +150,8 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             if tbidx is None:
                 return 0
 
-        # shouldn't really reach this case, but fallback
-        return INFORMED_MISSINGNESS
+        # shouldn't reach this case
+        raise AttributeDeriverError("Cannot determine NACCTBIDX")
 
     def _create_nacctbidxif(self) -> int:
         """Creates NACCTBIDXIF - Primary, contributing, or non-contributing cause of
@@ -169,8 +177,8 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             if tbidx is None:
                 return 7
 
-        # shouldn't really reach this case, but fallback
-        return INFORMED_MISSINGNESS
+        # shouldn't reach this case
+        raise AttributeDeriverError("Cannot determine NACCTBIDXIF")
 
     def _create_naccudsd(self) -> int:
         """From Create NACCUDSD.R which in turn is from derive.sas.

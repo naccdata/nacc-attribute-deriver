@@ -76,18 +76,16 @@ class SubjectMissingnessCollection(AttributeCollection):
         return self.__derived
 
     def handle_subject_missing(
-        self, attribute: str, default: Optional[int] = INFORMED_MISSINGNESS
-    ) -> Optional[int]:
+        self, attribute: str, attr_type: Type[T], default: T
+    ) -> T:
         """Handle missing values at the subject level.
 
-        Assuming all ints.
+        A default is required.
         """
-        value = self.__derived.get_cross_sectional_value(attribute, int)
-        if value is None:
-            return default
+        value = self.__derived.get_cross_sectional_value(attribute, attr_type)
 
         # Unlike the file-level, subject-level metadata is ensured to be
         # the correct type, so we could still return None. However,
         # also making it return the value so its consistent. shouldn't
         # affect dated values as not relevant to this context
-        return value
+        return value if value is not None else default

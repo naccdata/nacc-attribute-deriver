@@ -4,9 +4,9 @@ historic_apoe,historic_apoe,subject.info.working.cross-sectional.historic-apoe,u
 historic_apoe,historic_naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
 apoe,naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE
 apoe,naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE
-ncrad_biosamples,naccncrd,subject.info.derived.cross-sectional.naccncrd,update,FALSE
 apoe,naccapoe,file.info.derived.naccapoe,update,FALSE
 apoe,naccne4s,file.info.derived.naccne4s,update,FALSE
+ncrad_biosamples,naccncrd,subject.info.derived.cross-sectional.naccncrd,update,FALSE
 ncrad_biosamples,naccncrd,file.info.derived.naccncrd,update,FALSE
 mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
@@ -33,8 +33,8 @@ niagads_availability,ngdsgwac,subject.info.derived.cross-sectional.ngdsgwac,upda
 niagads_availability,ngdsexac,subject.info.derived.cross-sectional.ngdsexac,update,FALSE
 niagads_availability,ngdswgac,subject.info.derived.cross-sectional.ngdswgac,update,FALSE
 niagads_availability,ngdsweac,subject.info.derived.cross-sectional.ngdsweac,update,FALSE
-niagads_availability,adgcgwas,subject.info.derived.cross-sectional.adgcgwas,update,false
-niagads_availability,adgcexom,subject.info.derived.cross-sectional.adgcexom,update,false
+niagads_availability,adgcgwas,subject.info.derived.cross-sectional.adgcgwas,update,FALSE
+niagads_availability,adgcexom,subject.info.derived.cross-sectional.adgcexom,update,FALSE
 niagads_availability,adgcrnd,subject.info.derived.cross-sectional.adgcrnd,update,FALSE
 niagads_availability,adgcexr,subject.info.derived.cross-sectional.adgcexr,update,FALSE
 niagads_availability,ngdsgwas,file.info.derived.ngdsgwas,update,FALSE
@@ -45,8 +45,8 @@ niagads_availability,ngdsgwac,file.info.derived.ngdsgwac,update,FALSE
 niagads_availability,ngdsexac,file.info.derived.ngdsexac,update,FALSE
 niagads_availability,ngdswgac,file.info.derived.ngdswgac,update,FALSE
 niagads_availability,ngdsweac,file.info.derived.ngdsweac,update,FALSE
-niagads_availability,adgcgwas,file.info.derived.adgcgwas,update,false
-niagads_availability,adgcexom,file.info.derived.adgcexom,update,false
+niagads_availability,adgcgwas,file.info.derived.adgcgwas,update,FALSE
+niagads_availability,adgcexom,file.info.derived.adgcexom,update,FALSE
 niagads_availability,adgcrnd,file.info.derived.adgcrnd,update,FALSE
 niagads_availability,adgcexr,file.info.derived.adgcexr,update,FALSE
 np,naccamy,subject.info.derived.cross-sectional.naccamy,update,FALSE

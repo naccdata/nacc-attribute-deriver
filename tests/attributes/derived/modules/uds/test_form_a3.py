@@ -144,21 +144,27 @@ class TestUDSFormA3Attribute:
         set_attribute(table, form_prefix, "daddem", 0)
         assert attr._create_naccdad() == 0
 
-    def test_create_naccdad_superseded(
-        self, table, form_prefix, subject_derived_prefix
-    ):
-        """Tests creating NACCDAD when an already-computed value supersedes."""
+    def test_create_naccdad_flip_flop(self, table, form_prefix, subject_derived_prefix):
+        """Tests creating NACCDAD flipping between values."""
         attr = UDSFormA3Attribute(table)
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 1)
         assert attr._create_naccdad() == 1
 
+        # 0 and 1 can flip-flop
         set_attribute(table, form_prefix, "dadneur", 3)
-        assert attr._create_naccdad() == 1
+        assert attr._create_naccdad() == 0
 
+        # everything overrides 9
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 9)
         assert attr._create_naccdad() == 0
         set_attribute(table, form_prefix, "dadneur", None)
         assert attr._create_naccdad() == 9
+
+        # 9 cannot override a 0 or 1
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 1)
+        assert attr._create_naccdad() == 1
+        set_attribute(table, subject_derived_prefix, "cross-sectional.naccdad", 0)
+        assert attr._create_naccdad() == 0
 
     def test_create_naccam(self, table, form_prefix, subject_derived_prefix):
         """Tests creating NACCAM."""

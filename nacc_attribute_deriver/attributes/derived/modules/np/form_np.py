@@ -335,7 +335,7 @@ class NPFormAttributeCollection(AttributeCollection):
 
         return naccmicr if naccmicr is not None else 9
 
-    def _create_naccnec(self) -> Optional[int]:
+    def _create_naccnec(self) -> int:
         """Create the NACCNEC variable.
 
         Laminar necrosis

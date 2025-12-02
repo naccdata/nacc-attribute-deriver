@@ -1,7 +1,5 @@
 """Class to handle CSF missingness values."""
 
-from typing import Optional
-
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     SubjectMissingnessCollection,
 )
@@ -10,14 +8,14 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
 class CSFMissingness(SubjectMissingnessCollection):
     """Class to handle CSF missingness values."""
 
-    def _missingness_naccacsf(self) -> Optional[int]:
+    def _missingness_naccacsf(self) -> int:
         """Handles NACCACSF."""
-        return self.handle_subject_missing("naccacsf", 0)
+        return self.handle_subject_missing("naccacsf", int, 0)
 
-    def _missingness_naccpcsf(self) -> Optional[int]:
+    def _missingness_naccpcsf(self) -> int:
         """Handles NACCPCSF."""
-        return self.handle_subject_missing("naccpcsf", 0)
+        return self.handle_subject_missing("naccpcsf", int, 0)
 
-    def _missingness_nacctcsf(self) -> Optional[int]:
+    def _missingness_nacctcsf(self) -> int:
         """Handles NACCTCSF."""
-        return self.handle_subject_missing("nacctcsf", 0)
+        return self.handle_subject_missing("nacctcsf", int, 0)

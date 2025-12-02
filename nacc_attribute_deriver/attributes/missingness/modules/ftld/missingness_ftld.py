@@ -1,7 +1,5 @@
 """Class to handle FTLD missingness values."""
 
-from typing import Optional
-
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     SubjectMissingnessCollection,
 )
@@ -10,6 +8,6 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
 class FTLDMissingness(SubjectMissingnessCollection):
     """Class to handle FTLD missingness values."""
 
-    def _missingness_naccftd(self) -> Optional[int]:
+    def _missingness_naccftd(self) -> int:
         """Handles NACCFTD."""
-        return self.handle_subject_missing("naccftd", 0)
+        return self.handle_subject_missing("naccftd", int, 0)
