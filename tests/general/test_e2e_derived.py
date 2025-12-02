@@ -427,12 +427,13 @@ def test_ftld():
     assert form.to_dict() == {
         "file": {
             "info": {
+                "derived": {"naccftd": 1},
                 "forms": {
                     "json": {
                         "module": "FTLD",
                         "visitdate": "2025-01-01",
                     }
-                }
+                },
             }
         },
         "subject": {"info": {"derived": {"cross-sectional": {"naccftd": 1}}}},
@@ -450,12 +451,13 @@ def test_lbd():
     assert form.to_dict() == {
         "file": {
             "info": {
+                "derived": {"nacclbdm": 1},
                 "forms": {
                     "json": {
                         "module": "LBD",
                         "visitdate": "2025-01-01",
                     }
-                }
+                },
             }
         },
         "subject": {"info": {"derived": {"cross-sectional": {"nacclbdm": 1}}}},
