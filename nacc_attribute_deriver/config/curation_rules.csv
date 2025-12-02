@@ -152,7 +152,9 @@ mri_summary,naccbrnv,file.info.derived.naccbrnv,update,FALSE
 mri_summary,naccbrnv,subject.info.derived.longitudinal.naccbrnv,sorted-list,TRUE
 meds,drugs_list,subject.info.working.longitudinal.drugs-list,list,TRUE
 ftld,naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
+ftld,naccftd,file.info.derived.naccftd,max,FALSE
 lbd,nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
+lbd,nacclbdm,file.info.derived.nacclbdm,max,FALSE
 uds,naccid,subject.info.derived.cross-sectional.naccid,update,FALSE
 uds,uds_date_of_birth,subject.info.working.cross-sectional.uds-date-of-birth,update,FALSE
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
