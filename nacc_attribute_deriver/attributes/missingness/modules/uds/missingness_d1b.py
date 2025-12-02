@@ -73,8 +73,8 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
         default = None if self.formver < 4 else 0
         return self.generic_missingness(field, int, default=default)
 
-    def _missingness_ftld(self) -> int:
-        """Handles missingness for FTLD."""
+    def _missingness_uds_ftld(self) -> int:
+        """Handles missingness for FTLD (variable from UDS)."""
         return self.__handle_formver_gate("ftld")
 
     def _missingness_cte(self) -> int:
