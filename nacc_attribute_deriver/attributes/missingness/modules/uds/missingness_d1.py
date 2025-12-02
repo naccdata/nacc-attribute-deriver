@@ -109,7 +109,7 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
         # gate but seems like what it does is effectively the same thing
         # it also does an additional check based on PROBAD
         override_value = self.uds.get_value("possadif", int)
-        if override_value is None:
+        if override_value is None:  # noqa: SIM102
             if self.uds.get_value("probad", int) == 1:
                 override_value = 0
 

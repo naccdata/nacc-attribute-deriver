@@ -1,4 +1,5 @@
 # ruff: noqa
+from .cls import *
 from .csf import *
 from .ftld import *
 from .lbd import *

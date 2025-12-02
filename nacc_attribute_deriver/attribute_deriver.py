@@ -258,9 +258,8 @@ class MissingnessDeriver(BaseAttributeDeriver):
 
         # REGRESSION: let these go through even if they're not
         # actually in the form version. remove once done testing
-        if not applicable:
-            if rule.name in REGRESSION_VARIABLES:
-                applicable = True
+        if not applicable and rule.name in REGRESSION_VARIABLES:
+            applicable = True
 
         # if applicable, try to see if this attribute has a specific
         # rule function attached to it, and call that

@@ -1,7 +1,7 @@
 """Class to handle form missingness values that check subject-level derived
 variables."""
 
-from typing import Optional, Type
+from typing import Type
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,

@@ -85,7 +85,8 @@ class UDSFormD1Missingness(UDSMissingness):
         """Handles variables dependent on cognitive impairment (DEMENTED, MCI,
         IMPNOMCI) and another gate, e.g:
 
-        If any(DEMENTED, MCI, IMPNOMCI = 1) and GATE is 0 or blank and FIELD is blank, FIELD = 7
+        If any(DEMENTED, MCI, IMPNOMCI = 1) and GATE is 0 or blank and FIELD is blank,
+            FIELD = 7
         Else if NORMCOG = 1 and FIELD is blank, FIELD = 8
 
         Args:
@@ -94,11 +95,11 @@ class UDSFormD1Missingness(UDSMissingness):
             override_value: REGRESSION ARG - some legacy variables set the value
                 beforehand based on other logic, see below, see below
 
-        REGRESSION: Some variables look at an additional gate and/or formverd1, so consideer
-        that if specified. Mainly for POSSADIF, VASCPSIF, and COGOTH variables because
-        of these lines in the SAS:
-        %recode4g(gvar=d1formver,varlist=COGOTH2 COGOTH2F COGOTH3 COGOTH3F VASCPS VASCPSIF,
-                  qvalue=.,result=-4,vallist=1);
+        REGRESSION: Some variables look at an additional gate and/or formverd1, so
+            consideer that if specified. Mainly for POSSADIF, VASCPSIF, and COGOTH
+            variables because of these lines in the SAS:
+        %recode4g(gvar=d1formver,varlist=COGOTH2 COGOTH2F COGOTH3 COGOTH3F VASCPS
+                  VASCPSIF,qvalue=.,result=-4,vallist=1);
         %recode4gg(gvarlist=PROBAD PROBAD VASC VASC,
                    varlist=POSSAD POSSADIF VASCPS VASCPSIF
                    ,qvalue=.,result=0,vallist=1);

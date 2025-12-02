@@ -471,7 +471,7 @@ class UDSFormD1aMissingness(UDSFormD1Missingness):
     def _missingness_mbi(self) -> int:
         """Handles missingness for MBI."""
         result = self.generic_missingness("mbi", int)
-        if result == INFORMED_MISSINGNESS:
+        if result == INFORMED_MISSINGNESS:  # noqa: SIM102
             if self.normcog == 1 or self.demented == 1:
                 return 8
 

@@ -61,7 +61,9 @@ class UDSFormA4aMissingness(UDSMissingness):
                         return 9
 
         return self.generic_missingness(
-            field, attr_type, default=0 if attr_type == int else None
+            field,
+            attr_type,
+            default=0 if attr_type == int else None,  # noqa: E721
         )
 
     def _missingness_targetab1(self) -> int:

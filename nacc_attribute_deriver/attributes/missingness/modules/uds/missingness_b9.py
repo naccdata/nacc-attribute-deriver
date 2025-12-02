@@ -207,7 +207,7 @@ class UDSFormB9Missingness(UDSMissingness):
     def _missingness_beothr(self) -> int:
         """Handles missingness for BEOTHR."""
         result = self.__handle_behavior_variables(["decclin", "decclbe"], "beothr", 0)
-        if result is None or result == 9:
+        if result is None or result == 9:  # noqa: SIM102
             if self.uds.get_value("beothr", int) == 9:
                 return 0
 
@@ -363,7 +363,8 @@ class UDSFormB9Missingness(UDSMissingness):
     def _missingness_momopark(self) -> int:
         """Handles missingness for MOMOPARK."""
         # REGRESSION: SAS code has this line
-        # %recode4g(gvar=b9formver,varlist=MOMOPARK,qvalue=.,result=-4,vallist=%str(1,2,3,3.2));
+        # %recode4g(gvar=b9formver,varlist=MOMOPARK,qvalue=.,
+        #           result=-4,vallist=%str(1,2,3,3.2));
         # which ALWAYS sets momopark to -4 if it's missing at all
         # seems like an error/weird but allowing for now for regression tests
         # once we remove this, MOMOPARK usually = 0 in these cases
@@ -371,7 +372,7 @@ class UDSFormB9Missingness(UDSMissingness):
             return -4
 
         result = self._handle_cascading_gates(["decclin", "decclmot"], "momopark", 0)
-        if result is None or result == 88:
+        if result is None or result == 88:  # noqa: SIM102
             if self.uds.get_value("momopark", int) == 88:
                 return 8
 

@@ -224,8 +224,8 @@ class UDSFormC1C2Missingness(UDSMissingness):
         Args:
             gate: The gate field
             field: The field
-            in_hundreds: The INT values are in the hundreds, so missingess values need to be
-                adjusted to 888, 995, etc.
+            in_hundreds: The INT values are in the hundreds, so missingess values need
+                to be adjusted to 888, 995, etc.
                 REGRESSION - need to do going forward, but V1 - V3 didn't do this
             gate_mresult: The gate missingness result - applied in a cascading fashion
         """
@@ -240,7 +240,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         result = self.handle_set_to_gate(gate, check_values=check_values)  # type: ignore
 
         # may need to set to the gate's missingness value if no result
-        if result is None:
+        if result is None:  # noqa: SIM102
             if gate_mresult is not None and gate_mresult in check_values:
                 result = gate_mresult
 
@@ -414,7 +414,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """
         check_values = [888, 995, 996, 997, 998]
         result = self.handle_set_to_gate(gate, check_values=check_values)
-        if result is not None:
+        if result is not None:  # noqa: SIM102
             # REGRESSION:
             # older versions subtracted 800/900 to make it two digits
             if self.formver < 4 and result in check_values:
@@ -683,7 +683,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """
         # in V4, some variables are only in C2
         # REGRESSION - legacy seems to not differentiate
-        if self.formver == 4:
+        if self.formver == 4:  # noqa: SIM102
             if self.__is_c2t and c2_only_var:
                 return INFORMED_MISSINGNESS
 

@@ -8,6 +8,8 @@ apoe,naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE,int
 ncrad_biosamples,naccncrd,subject.info.derived.cross-sectional.naccncrd,update,FALSE,int
 ftld,naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE,int
 lbd,nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE,int
+cls,naccengl,subject.info.derived.cross-sectional.naccengl,update,FALSE,int
+cls,naccspnl,subject.info.derived.cross-sectional.naccspnl,update,FALSE,int
 csf,naccacsf,subject.info.derived.cross-sectional.naccacsf,update,FALSE,int
 csf,naccpcsf,subject.info.derived.cross-sectional.naccpcsf,update,FALSE,int
 csf,nacctcsf,subject.info.derived.cross-sectional.nacctcsf,update,FALSE,int

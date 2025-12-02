@@ -192,7 +192,8 @@ class LegacyFamilyHandler(BaseFamilyHandler[LegacyFamilyMemberHandler]):
         # when this is commented out, so commented out for now
         # if self.uds.normalized_formver() >= 3:
         #     all_8s = [member.check_neur_is_8() for member in self.all_members]
-        #     if all(all_8s) and (self.sibs.get_bound() == 0 or self.kids.get_bound() == 0):
+        #     if all(all_8s) and (self.sibs.get_bound() == 0 \
+        #       or self.kids.get_bound() == 0):
         #         return self.determine_member_status(9, known_value)
 
         # get cognitive status for each family member
