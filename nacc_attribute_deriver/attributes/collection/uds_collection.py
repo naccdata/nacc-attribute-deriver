@@ -1,31 +1,26 @@
 """UDS Attribute collection."""
 
 import datetime
-from typing import List, Optional, Type
+from typing import List, Optional
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
-    FormMissingnessCollection
+    FormMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     PreviousRecordNamespace,
 )
-from nacc_attribute_deriver.attributes.namespace.namespace import T, WorkingNamespace
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
-    INFORMED_MISSINGNESS,
-    INFORMED_MISSINGNESS_FLOAT,
-    MISSINGNESS_VALUES,
 )
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
-    InvalidFieldError,
 )
 
 
@@ -65,7 +60,9 @@ class UDSAttributeCollection(AttributeCollection):
 class UDSMissingness(FormMissingnessCollection):
     """Class to handle UDS missingness values."""
 
-    def __init__(self, table: SymbolTable, required: frozenset[str] = frozenset()) -> None:
+    def __init__(
+        self, table: SymbolTable, required: frozenset[str] = frozenset()
+    ) -> None:
         super().__init__(table=table, namespace=UDSNamespace, required=required)
         self.__formver = self.uds.normalized_formver()
 

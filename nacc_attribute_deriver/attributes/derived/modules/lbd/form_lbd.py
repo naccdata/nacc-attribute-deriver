@@ -2,6 +2,7 @@
 
 Currently just looks for existence.
 """
+
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
@@ -27,12 +28,12 @@ class LBDFormAttributeCollection(AttributeCollection):
         return 1
 
     def __handle_age_attribute(self, field: str, prev_code: int = 777) -> Optional[int]:
-        """This has the same issue as in B9 where 777
-        has weird skipping behavior and so we need to save
-        ages with this prev code as working variables. Need
-        to rethink if there is a better way to handle these.
-        For now just brute forcing for the sake of getting these
-        through.
+        """This has the same issue as in B9 where 777 has weird skipping
+        behavior and so we need to save ages with this prev code as working
+        variables.
+
+        Need to rethink if there is a better way to handle these. For
+        now just brute forcing for the sake of getting these through.
         """
         value = self.__lbd.get_value(field, int)
         if value == prev_code:

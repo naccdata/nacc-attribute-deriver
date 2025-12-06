@@ -6,14 +6,14 @@ from typing import Optional, Type
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
+from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
+    PreviousRecordNamespace,
+)
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
     SubjectDerivedNamespace,
     T,
     WorkingNamespace,
-)
-from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
-    PreviousRecordNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
@@ -55,20 +55,19 @@ class SubjectMissingnessCollection(AttributeCollection):
         return value if value is not None else default
 
 
-
 class FormMissingnessCollection(AttributeCollection):
     """Class to handle missingness values at the file level.
 
     These generally expect that the file DOES exist, but may have
-    missing values. Things may also need to be pulled across from
-    a previous visit
+    missing values. Things may also need to be pulled across from a
+    previous visit
     """
 
     def __init__(
         self,
         table: SymbolTable,
         namespace: Type[FormNamespace] = FormNamespace,
-        required: frozenset[str] = frozenset()
+        required: frozenset[str] = frozenset(),
     ) -> None:
         self.__form = namespace(table=table, required=required)
         self.__prev_record = PreviousRecordNamespace(table=table)

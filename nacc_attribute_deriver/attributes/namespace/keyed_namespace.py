@@ -56,7 +56,6 @@ class PreviousRecordNamespace(BaseNamespace):
         Returns:
           the value for the attribute in the table
 
-
         REGRESSION: It seems in some cases (namely on B9), the 777/prev code
         can actually pull across several visits. So it needs to actually
         consider the last time the value was set at all, not necessarily the
@@ -70,7 +69,6 @@ class PreviousRecordNamespace(BaseNamespace):
         (TODO: maybe conflating that too much. Those looking at working want
         the RAW value whereas all others want the RESOLVED value, which is
         after missingness is applied).
-
         """
         if working:
             result = working.get_cross_sectional_value(

@@ -23,8 +23,8 @@ class CovidFormMissingness(FormMissingnessCollection):
         return self.generic_missingness(field, attr_type)
 
     def _missingness_c19test(self) -> int:
-        """C19TEST in V1 but C19TESTED in V2. This missingness logic
-        requires F2/F3 Covid forms do need info.resolved.
+        """C19TEST in V1 but C19TESTED in V2. This missingness logic requires
+        F2/F3 Covid forms do need info.resolved.
 
         TODO: NEED TO ASK RT ABOUT HARMONIZATION SINCE ACCEPTED VALUES
             DIFFER BETWEEN VERSIONS, DO NOT MAP TOGETHER

@@ -50,7 +50,9 @@ class UDSFormA4aMissingness(UDSMissingness):
 
                 if gate in ["newtreat", "newadevent"]:
                     if gate_value in [0, 9]:
-                        prev_value = self.prev_record.get_resolved_value(field, attr_type)
+                        prev_value = self.prev_record.get_resolved_value(
+                            field, attr_type
+                        )
                         if prev_value is not None:
                             return prev_value
 

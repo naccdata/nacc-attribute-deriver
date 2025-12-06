@@ -4,7 +4,6 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissi
 
 
 class UDSFormB6Missingness(UDSMissingness):
-
     @property
     def submitted(self) -> bool:
         """Check if form submitted."""
@@ -19,8 +18,10 @@ class UDSFormB6Missingness(UDSMissingness):
         return nogds if nogds is not None else 0
 
     def __handle_nogds_gate(self, field: str) -> int:
-        """Handles missingness for GDS vars. B6 is optional
-        so may haven ot been submitted."""
+        """Handles missingness for GDS vars.
+
+        B6 is optional so may haven ot been submitted.
+        """
         if self.submitted:
             nogds = self.uds.get_value("nogds", int)
             value = self.uds.get_value(field, int)

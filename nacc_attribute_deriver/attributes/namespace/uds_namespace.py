@@ -1,7 +1,6 @@
 """Class to define UDS-specific attributes."""
 
 from datetime import date, datetime
-from typing import Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import FormNamespace
 from nacc_attribute_deriver.symbol_table import SymbolTable
@@ -15,15 +14,17 @@ class UDSNamespace(FormNamespace):
         """UDS form namespace."""
         super().__init__(
             table=table,
-            required=required.union({
-                "module",
-                "packet",
-                "formver",
-                "birthmo",
-                "birthyr",
-                "naccid",
-                "adcid",
-            }),
+            required=required.union(
+                {
+                    "module",
+                    "packet",
+                    "formver",
+                    "birthmo",
+                    "birthyr",
+                    "naccid",
+                    "adcid",
+                }
+            ),
             date_attribute="visitdate",
         )
 

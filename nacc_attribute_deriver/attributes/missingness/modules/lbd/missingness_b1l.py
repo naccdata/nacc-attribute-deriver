@@ -1,6 +1,8 @@
-"""Class to handle LBD B1l missingness values. Mainly done for the 777 (provided at
-previous visit) values.
+"""Class to handle LBD B1l missingness values.
+
+Mainly done for the 777 (provided at previous visit) values.
 """
+
 from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
@@ -10,13 +12,9 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import (
-    MISSINGNESS_VALUES,
-)
 
 
 class LBDFormB1lMissingness(FormMissingnessCollection):
-
     def __init__(self, table: SymbolTable) -> None:
         super().__init__(table=table)
 
@@ -25,8 +23,10 @@ class LBDFormB1lMissingness(FormMissingnessCollection):
         self.__working = WorkingNamespace(table=table)
 
     def __handle_lbd_age_prev_value(self, field: str) -> int:
-        """Same situation as B9, but pull directly from working namespace. This is
-        just duplicating UDS, so need to refactor at some point."""
+        """Same situation as B9, but pull directly from working namespace.
+
+        This is just duplicating UDS, so need to refactor at some point.
+        """
         return self.handle_prev_visit(field, int, prev_code=777, working=self.__working)
 
     def _missingness_lbpsyage(self) -> Optional[int]:
