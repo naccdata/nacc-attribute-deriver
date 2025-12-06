@@ -22,7 +22,7 @@ class UDSFormDxAttribute(UDSAttributeCollection):
     """Base class for all Dx derived variables."""
 
     def __init__(self, table: SymbolTable):
-        super().__init__(table, uds_required=frozenset(["normcog"]))
+        super().__init__(table, required=frozenset(["normcog"]))
         self.subject_derived = SubjectDerivedNamespace(table=table)
         self.working = WorkingNamespace(table=table)
         self.normcog = self.uds.get_required("normcog", int)

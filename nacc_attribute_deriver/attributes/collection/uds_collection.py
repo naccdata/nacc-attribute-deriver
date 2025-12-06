@@ -6,6 +6,9 @@ from typing import List, Optional, Type
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
+from nacc_attribute_deriver.attributes.collection.missingness_collection import (
+    FormMissingnessCollection
+)
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     PreviousRecordNamespace,
 )
@@ -28,23 +31,14 @@ from nacc_attribute_deriver.utils.errors import (
 
 class UDSAttributeCollection(AttributeCollection):
     def __init__(
-        self, table: SymbolTable, uds_required: Optional[frozenset] = None
+        self, table: SymbolTable, required: frozenset[str] = frozenset()
     ) -> None:
-        self.__uds = UDSNamespace(table, required=uds_required)
+        self.__uds = UDSNamespace(table, required=required)
         self.__formver = self.uds.normalized_formver()
-
-        module = self.__uds.get_required("module", str)
-        if module.upper() != "UDS":
-            msg = f"Current file is not a UDS form: found {module}"
-            raise InvalidFieldError(msg)
-
-        self.__prev_record = None
-        # prev record should exist for non-initial visits
-        if not self.uds.is_initial() or self.uds.is_i4():
-            self.__prev_record = PreviousRecordNamespace(table=table)
+        self.__prev_record = PreviousRecordNamespace(table=table)
 
     @property
-    def prev_record(self) -> Optional[PreviousRecordNamespace]:
+    def prev_record(self) -> PreviousRecordNamespace:
         return self.__prev_record
 
     @property
@@ -67,79 +61,21 @@ class UDSAttributeCollection(AttributeCollection):
 
         return visitdate
 
-    def get_prev_value(
-        self,
-        attribute: str,
-        attr_type: Type[T],
-        default: Optional[T] = None,
-        working: Optional[WorkingNamespace] = None,
-    ) -> Optional[T]:
-        """Get the previous value.
 
-        REGRESSION: It seems in some cases (namely on B9), the 777/prev code
-        can actually pull across several visits. So it needs to actually
-        consider the last time the value was set at all, not necessarily the
-        previous visit.
-
-        Basically, if this is passed a working namespace, try to grab from
-        there first. Then try to pull from the previous record. Especially
-        because previous record might resolve to a missingness value that
-        we don't necessarily want.
-
-        (TODO: maybe conflating that too much. Those looking at working want
-        the RAW value whereas all others want the RESOLVED value, which is
-        after missingness is applied).
-        """
-        if working:
-            result = working.get_cross_sectional_value(
-                attribute, attr_type, default=default
-            )
-            if result is not None:
-                return result
-
-        if self.__prev_record is not None:
-            return self.__prev_record.get_resolved_value(
-                attribute, attr_type, default=default
-            )
-
-        return None
-
-
-class UDSMissingness(UDSAttributeCollection):
+class UDSMissingness(FormMissingnessCollection):
     """Class to handle UDS missingness values."""
 
-    def generic_missingness(
-        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
-    ) -> T:
-        """Generic missingness:
+    def __init__(self, table: SymbolTable, required: frozenset[str] = frozenset()) -> None:
+        super().__init__(table=table, namespace=UDSNamespace, required=required)
+        self.__formver = self.uds.normalized_formver()
 
-        If FIELD is None, FIELD = -4 / -4.4 / blank
-        """
-        # NOTE: because V4 saves all metadata as strings, we need to
-        # force the typing here for missingness. the intended behavior
-        # was to return None (no update) if the value exists, but
-        # because of the typing issue we do need to set it.
-        # ideally this gets fixed further upstream at some point,
-        # especially because forcing the typing makes this take
-        # longer (since it needs to perform the operation)
+    @property
+    def uds(self) -> UDSNamespace:
+        return self.form  # type: ignore
 
-        value = self.uds.get_value(attribute, attr_type)
-        if value is None:
-            if default is not None:
-                return default
-
-            if attr_type == int:  # noqa: E721
-                return INFORMED_MISSINGNESS  # type: ignore
-            if attr_type == str:  # noqa: E721
-                return INFORMED_BLANK  # type: ignore
-            if attr_type == float:  # noqa: E721
-                return INFORMED_MISSINGNESS_FLOAT  # type: ignore
-
-            raise AttributeDeriverError(
-                f"Unknown missingness attribute type: {attr_type}"
-            )
-
-        return value
+    @property
+    def formver(self) -> int:
+        return self.__formver
 
     def handle_gated_writein(
         self, gate: str, attribute: str, values: List[int], include_none: bool = False
@@ -178,30 +114,3 @@ class UDSMissingness(UDSAttributeCollection):
             return gate_value
 
         return None
-
-    def handle_prev_visit(
-        self,
-        attribute: str,
-        attr_type: Type[T],
-        prev_code: Optional[T] = None,
-        default: Optional[T] = None,
-        working: Optional[WorkingNamespace] = None,
-    ) -> T:
-        """Handle when the value could be provided by the previous visit.
-
-        If VAR == PREV_CODE, VAR = PREV_VISIT.
-        ELIF VAR is not blank, return None (do not override)
-        ELSE generic missingness
-        """
-        # no prev record expected if true initial packet (I4 does not count)
-        if not self.uds.is_initial() or self.uds.is_i4():
-            value = self.uds.get_value(attribute, attr_type)
-
-            if value == prev_code:
-                prev_value = self.get_prev_value(
-                    attribute, attr_type, default=default, working=working
-                )
-                if prev_value is not None and prev_value not in MISSINGNESS_VALUES:
-                    return prev_value
-
-        return self.generic_missingness(attribute, attr_type, default=default)

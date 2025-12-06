@@ -441,7 +441,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if result != INFORMED_MISSINGNESS:
             return result
 
-        return self.__handle_b9_prev_value("frstchg")
+        return self.__handle_b9_prev_value("frstchg", prev_code=0)
 
     ######################################################
     # If VAR = 777, then VAR = value from previous visit #
@@ -612,7 +612,7 @@ class UDSFormB9Missingness(UDSMissingness):
     def __get_last_set(self, field: str) -> Optional[int]:
         """B9 potentially pulls across multiple visits to get the last time the
         field was ever set, so need to pass the working namespace."""
-        return self.get_prev_value(field, int, working=self.__working)
+        return self.prev_record.get_resolved_value(field, int, working=self.__working)
 
     def _missingness_decage(self) -> int:
         """Handles missingness for DECAGE.

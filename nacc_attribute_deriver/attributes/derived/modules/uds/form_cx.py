@@ -110,7 +110,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         if self.uds.is_initial():
             return self.uds.get_value("educ", int)
 
-        return self.get_prev_value("educ", int)
+        return self.prev_record.get_resolved_value("educ", int)
 
     def _create_naccmoca(self) -> int:
         """(V3+ only) Creates NACCMOCA.

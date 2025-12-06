@@ -155,6 +155,13 @@ ftld,naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
 ftld,naccftd,file.info.derived.naccftd,max,FALSE
 lbd,nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
 lbd,nacclbdm,file.info.derived.nacclbdm,max,FALSE
+lbd,lbpsyage,subject.info.working.cross-sectional.lbpsyage,update,FALSE
+lbd,lbsagerm,subject.info.working.cross-sectional.lbsagerm,update,FALSE
+lbd,lbsagesm,subject.info.working.cross-sectional.lbsagesm,update,FALSE
+lbd,lbsagegt,subject.info.working.cross-sectional.lbsagegt,update,FALSE
+lbd,lbsagefl,subject.info.working.cross-sectional.lbsagefl,update,FALSE
+lbd,lbsagetr,subject.info.working.cross-sectional.lbsagetr,update,FALSE
+lbd,lbsagebr,subject.info.working.cross-sectional.lbsagebr,update,FALSE
 uds,naccid,subject.info.derived.cross-sectional.naccid,update,FALSE
 uds,uds_date_of_birth,subject.info.working.cross-sectional.uds-date-of-birth,update,FALSE
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE

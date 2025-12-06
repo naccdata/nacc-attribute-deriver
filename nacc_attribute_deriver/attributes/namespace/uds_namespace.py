@@ -10,27 +10,24 @@ from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 class UDSNamespace(FormNamespace):
     def __init__(
-        self, table: SymbolTable, required: Optional[frozenset[str]] = None
+        self, table: SymbolTable, required: frozenset[str] = frozenset()
     ) -> None:
-        """Check that this is a UDS form."""
-        if required is None:
-            required = frozenset()
-
-        default_required = [
-            "module",
-            "packet",
-            "formver",
-            "birthmo",
-            "birthyr",
-            "naccid",
-            "adcid",
-        ]
+        """UDS form namespace."""
         super().__init__(
             table=table,
-            required=required.union(default_required),
+            required=required.union({
+                "module",
+                "packet",
+                "formver",
+                "birthmo",
+                "birthyr",
+                "naccid",
+                "adcid",
+            }),
             date_attribute="visitdate",
         )
 
+        # ensure this is an UDS form
         module = self.get_required("module", str)
         if module.upper() != "UDS":
             raise InvalidFieldError(
