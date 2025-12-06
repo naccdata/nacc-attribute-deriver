@@ -4,18 +4,29 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissi
 
 
 class UDSFormB6Missingness(UDSMissingness):
+
+    @property
+    def submitted(self) -> bool:
+        """Check if form submitted."""
+        if self.formver >= 4:
+            return self.uds.get_value("modeb6", int) in [1, 2]
+
+        return self.uds.get_value("b6sub", int) == 1
+
     def _missingness_nogds(self) -> int:
         """Handle missingness for NOGDS."""
         nogds = self.uds.get_value("nogds", int)
         return nogds if nogds is not None else 0
 
     def __handle_nogds_gate(self, field: str) -> int:
-        """Handles missingness for GDS vars."""
-        nogds = self.uds.get_value("nogds", int)
-        value = self.uds.get_value(field, int)
+        """Handles missingness for GDS vars. B6 is optional
+        so may haven ot been submitted."""
+        if self.submitted:
+            nogds = self.uds.get_value("nogds", int)
+            value = self.uds.get_value(field, int)
 
-        if nogds == 1 or value is None:
-            return 9
+            if nogds == 1 or value is None:
+                return 9
 
         return self.generic_missingness(field, int)
 

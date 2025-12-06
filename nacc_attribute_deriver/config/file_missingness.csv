@@ -624,7 +624,7 @@ lbd,lbsagetr,file.info.resolved.lbsagetr,update,FALSE,int
 lbd,lbsagebr,file.info.resolved.lbsagebr,update,FALSE,int
 lbd,lbssclau,file.info.resolved.lbssclau,update,FALSE,int
 lbd,lbssclvr,file.info.resolved.lbssclvr,update,FALSE,int
-lbd,lbssclot,file.info.resolved.lbssclot,update,FALSE,int
+lbd,lbssclot,file.info.resolved.lbssclot,update,FALSE,str
 lbd,lbsscor,file.info.resolved.lbsscor,update,FALSE,int
 lbd,lbudspch,file.info.resolved.lbudspch,update,FALSE,int
 lbd,lbudsalv,file.info.resolved.lbudsalv,update,FALSE,int

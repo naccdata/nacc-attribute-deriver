@@ -21,9 +21,9 @@ from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class FormMissingnessCollection(AttributeCollection):
-    """Class to handle missingness values at the form level.
+    """Class to handle missingness values at the file level.
 
-    These generally expect that the form DOES exist, but may have
+    These generally expect that the file DOES exist, but may have
     missing values.
     """
 

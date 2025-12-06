@@ -31,7 +31,6 @@ class PreviousRecordNamespace(FormNamespace):
             required=required,
             date_attribute=date_attribute,
         )
-        self.table = table
 
     def is_initial(self) -> bool:
         """Returns whether or not the previous record was an initial packet."""

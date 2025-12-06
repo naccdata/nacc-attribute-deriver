@@ -18,11 +18,6 @@ class LBDMissingness(SubjectMissingnessCollection):
 
 
 class LBDFormMissingness(FormMissingnessCollection):
-    """
-    TODO: THIS IS ONLY REQUIRED TO BACKFILL WRITE-IN/KNOWN BLANK VARIABLES TO AVOID
-    THE NOT-IN-CONTAINER ERROR. REMOVE ONCE FEATURE IS ADDED TO ETL GEAR.
-    """
-
     def _missingness_lbd(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for LBD form variables."""
         return self.generic_missingness(field, attr_type)
