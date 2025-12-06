@@ -13,10 +13,18 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class UDSFormB9RawAttribute(UDSAttributeCollection):
     """Class to collect UDS B9 attributes."""
+
+    def __init__(self, table: SymbolTable):
+        super().__init__(table)
+        self.__working = WorkingNamespace(table=table)
 
     def __handle_b9_attribute(self, field: str, prev_code: int) -> Optional[int]:
         """Handles capturing B9 attribute.
@@ -29,10 +37,13 @@ class UDSFormB9RawAttribute(UDSAttributeCollection):
             return None
 
         # REGRESSION: If prev_code == 777, also ignore 888s
+        # unless there is no other value to fall back to
         # 888s are the missingness value for blanks in legacy
         # so it's a bit conflated
         if prev_code == 777 and value == 888:
-            return None
+            prev_value = self.__working.get_cross_sectional_value(field, int)
+            if prev_value is not None:
+                return None
 
         # TODO: SAS code may also be not updating the
         # value once its set... leave for now and see

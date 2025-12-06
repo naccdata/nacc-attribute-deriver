@@ -65,10 +65,6 @@ class PreviousRecordNamespace(BaseNamespace):
         there first. Then try to pull from the previous record. Especially
         because previous record might resolve to a missingness value that
         we don't necessarily want.
-
-        (TODO: maybe conflating that too much. Those looking at working want
-        the RAW value whereas all others want the RESOLVED value, which is
-        after missingness is applied).
         """
         if working:
             result = working.get_cross_sectional_value(

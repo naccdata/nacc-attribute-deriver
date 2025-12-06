@@ -257,8 +257,12 @@ class TestUDSFormB9RawAttribute:
         base_table["file.info.forms.json.bevhago"] = 777
         assert attr._create_bevhago() is None
 
-        # REGRESSION: same for 888
+        # REGRESSION: for 888, if nothing defined, return 888,
+        # else don't return anything and "skip" 888
         base_table["file.info.forms.json.bevhago"] = 888
+        assert attr._create_bevhago() == 888
+
+        base_table["subject.info.working.cross-sectional.bevhago"] = 5
         assert attr._create_bevhago() is None
 
     def test_create_frstchg(self, base_table):

@@ -28,18 +28,14 @@ class LBDFormAttributeCollection(AttributeCollection):
         return 1
 
     def __handle_age_attribute(self, field: str, prev_code: int = 777) -> Optional[int]:
-        """This has the same issue as in B9 where 777 has weird skipping
-        behavior and so we need to save ages with this prev code as working
-        variables.
-
-        Need to rethink if there is a better way to handle these. For
-        now just brute forcing for the sake of getting these through.
-        """
+        """REGRESSION: It looks like the LBD/FTLD QAF does not handle 777?
+        Like it stays as 777. So exact behavior is undefined. For now, just
+        keep track of non-777s."""
         value = self.__lbd.get_value(field, int)
         if value == prev_code:
             return None
 
-        if prev_code == 777 and value == 888:
+        if prev_code == 777:
             return None
 
         return value

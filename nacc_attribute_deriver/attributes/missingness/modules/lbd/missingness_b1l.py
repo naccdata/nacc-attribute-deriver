@@ -23,10 +23,7 @@ class LBDFormB1lMissingness(FormMissingnessCollection):
         self.__working = WorkingNamespace(table=table)
 
     def __handle_lbd_age_prev_value(self, field: str) -> int:
-        """Same situation as B9, but pull directly from working namespace.
-
-        This is just duplicating UDS, so need to refactor at some point.
-        """
+        """Same situation as B9."""
         return self.handle_prev_visit(field, int, prev_code=777, working=self.__working)
 
     def _missingness_lbpsyage(self) -> Optional[int]:
