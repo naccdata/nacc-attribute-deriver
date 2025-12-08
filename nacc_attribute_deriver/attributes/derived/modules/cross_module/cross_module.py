@@ -302,7 +302,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 0
 
         # 5 used for affiliates in SAS/R code
-        if self.__subject_derived.get_cross_sectional_value("affiliate", bool):
+        if self.__subject_derived.get_value("affiliate", bool):
             return 5
 
         # check milestone protocol
@@ -405,3 +405,22 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
         return self.determine_discontinued_date("milestone-discyr.latest.value", 8888)
+
+    def _create_nacccore(self) -> int:
+        """Creates NACCCORE - Clinical core participant."""
+        # cannot just check affiliate mainly because of mds_source possibly being 9
+        mds_source = self.__working_value("mds-source", int)
+        uds_source = self.__working_value("uds-source", int)
+        uds_sourcenw = self.__working_value("uds-sourcenw", int)
+
+        # UDS participant
+        if uds_source != 4 and uds_sourcenw != 2 and mds_source is None:
+            return 1
+
+        # MDS participant
+        if mds_source not in [3, 9] and uds_source is None and uds_sourcenw is None:
+            return 1
+
+        # use overall affiliate status as a fallback
+        affiliate = self.__subject_derived.get_value("affiliate", bool)
+        return 1 if not affiliate else 0

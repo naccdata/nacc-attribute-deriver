@@ -281,7 +281,7 @@ class NPFormAttributeCollection(AttributeCollection):
             return self.mapper.map_comb2(nplinf, nplac)
 
         if self.formver == 1:
-            if (nplinf is not None and nplac is not None):
+            if nplinf is not None and nplac is not None:
                 return self.mapper.map_comb2(nplinf, nplac)
 
             naccinf = self.mapper.map_vasc(naccinf)
@@ -308,7 +308,7 @@ class NPFormAttributeCollection(AttributeCollection):
         elif self.formver == 1:
             if nplewy is not None:
                 return self.mapper.map_lewy()
-    
+
             nacclewy = self.mapper.map_gross(nacclewy)
 
         return nacclewy if nacclewy is not None else 9
@@ -372,7 +372,7 @@ class NPFormAttributeCollection(AttributeCollection):
             if npneur is not None:
                 return self.mapper.map_sub4(npneur)
 
-            naccneur =  self.mapper.map_gross(naccneur)
+            naccneur = self.mapper.map_gross(naccneur)
 
         return naccneur if naccneur is not None else 9
 
@@ -401,7 +401,7 @@ class NPFormAttributeCollection(AttributeCollection):
         elif self.formver == 1:
             if npmajor is not None:
                 return self.mapper.map_v9(npmajor)
-            
+
             naccothp = self.mapper.map_gross(naccothp)
 
         return naccothp if naccothp is not None else 9

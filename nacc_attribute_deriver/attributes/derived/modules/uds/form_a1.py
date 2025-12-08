@@ -298,6 +298,14 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
         return 1 if self._create_affiliate() else 0
 
+    def _create_uds_source(self) -> Optional[int]:
+        """Returns UDS source (V2 and earlier)"""
+        return self.uds.get_value("source", int)
+
+    def _create_uds_sourcenw(self) -> Optional[int]:
+        """Returns UDS sourcenw (V3 and later)"""
+        return self.uds.get_value("sourcenw", int)
+
     def _create_affiliate(self) -> bool:
         """Returns whether or not the participant is an affiliate.
 

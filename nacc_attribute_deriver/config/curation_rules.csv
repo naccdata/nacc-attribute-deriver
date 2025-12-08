@@ -12,6 +12,8 @@ mds,mds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,FALSE
 mds,mds_death_month,subject.info.working.cross-sectional.mds-death-month,update,FALSE
 mds,mds_vitalst,subject.info.working.cross-sectional.mds-vital-status,update,FALSE
+mds,mds_source,subject.info.working.cross-sectional.mds-source,update,FALSE
+mds,mds_affiliate,subject.info.derived.affiliate,update,FALSE
 milestone,milestone_visitdates,subject.info.working.cross-sectional.milestone-visitdates,set,FALSE
 milestone,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,FALSE
 milestone,milestone_death_month,subject.info.working.cross-sectional.milestone-death-month,update,FALSE
@@ -393,6 +395,8 @@ uds,years_of_uds,subject.info.longitudinal-data.uds.year-count,max,FALSE
 uds,uds_versions_available,subject.info.study-parameters.uds.versions,set,FALSE
 uds,affiliate,subject.info.derived.affiliate,update,FALSE
 uds,naccpaff,subject.info.derived.cross-sectional.naccpaff,update,FALSE
+uds,uds_source,subject.info.working.cross-sectional.uds-source,update,FALSE
+uds,uds_sourcenw,subject.info.working.cross-sectional.uds-sourcenw,update,FALSE
 mri_dicom,mri_image_session,subject.info.working.cross-sectional.mri-sessions,set,FALSE
 mri_dicom,naccdico,subject.info.derived.longitudinal.naccdico,dated-set,TRUE
 mri_nifti,naccnift,subject.info.derived.longitudinal.naccnift,dated-set,TRUE
@@ -431,6 +435,7 @@ cross_module,naccnovs,subject.info.derived.cross-sectional.naccnovs,update,FALSE
 cross_module,naccdsdy,subject.info.derived.cross-sectional.naccdsdy,update,FALSE
 cross_module,naccdsmo,subject.info.derived.cross-sectional.naccdsmo,update,FALSE
 cross_module,naccdsyr,subject.info.derived.cross-sectional.naccdsyr,update,FALSE
+cross_module,nacccore,subject.info.derived.cross-sectional.nacccore,update,FALSE
 uds,prespart,subject.info.working.cross-sectional.prespart,update,FALSE
 uds,residenc,subject.info.working.cross-sectional.residenc,update,FALSE
 uds,frstchg,subject.info.working.cross-sectional.frstchg,update,FALSE

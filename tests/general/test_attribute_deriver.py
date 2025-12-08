@@ -34,11 +34,13 @@ class TestAttributeDeriver:
         assert attr.get_curation_rules("invalid") is None
 
         # mds case - each rule maps to an unique attribute
-        assert self.__extract_attributes(attr.get_curation_rules("mds"), 4) == {
+        assert self.__extract_attributes(attr.get_curation_rules("mds"), 6) == {
             "subject.info.derived.cross-sectional.naccmdss",
             "subject.info.working.cross-sectional.mds-death-date",
             "subject.info.working.cross-sectional.mds-death-month",
             "subject.info.working.cross-sectional.mds-vital-status",
+            "subject.info.working.cross-sectional.mds-source",
+            "subject.info.derived.affiliate",
         }
 
     def test_get_curation_rules_apoe(self):

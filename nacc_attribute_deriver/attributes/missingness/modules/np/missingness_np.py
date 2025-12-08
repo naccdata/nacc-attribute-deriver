@@ -1,7 +1,7 @@
 """Class to handle NP form missingness values.
 
-See derivenp.sas. This particular form has a lot of recode macros
-for to handle missingness variables.
+See derivenp.sas. This particular form has a lot of recode macros for to
+handle missingness variables.
 """
 
 from typing import Type
@@ -78,7 +78,8 @@ class NPMissingness(FormMissingnessCollection):
 
             NPINFxB, NPINFxD, and NPINFxF = 2 digits (e.g. 88)
             NPINFxC, NPINFxE, and NPINFxG = 1 digit (e.g. 8)
-                ^ these values do not appear in the DEDs so not sure where they come from?
+                ^ these values do not appear in the DEDs so not sure where
+                they come from?
         """
         if self.formver in [10, 11]:
             is_two_digits = field[-1].lower() in ["b", "d", "f"]
@@ -86,10 +87,13 @@ class NPMissingness(FormMissingnessCollection):
             npinf = self.form.get_value("npinf", int)
             gate_value = self.form.get_value(gate, int)
 
-            if npinf == 8 or gate_value == 88 or gate_value == 0:
+            if npinf == 8 or gate_value == 88 or gate_value == 0:  # noqa: SIM114
                 return 88.8 if is_two_digits else 8.8
-            elif (npinf == 1 and gate_value is not None and
-                 (gate_value > 0 and gate_value < num_infarcts)):
+            elif (
+                npinf == 1
+                and gate_value is not None
+                and (gate_value > 0 and gate_value < num_infarcts)
+            ):
                 return 88.8 if is_two_digits else 8.8
             elif npinf == 9 or gate_value == 99:
                 return 99.9 if is_two_digits else 9.9
