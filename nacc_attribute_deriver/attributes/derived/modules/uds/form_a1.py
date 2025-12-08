@@ -12,7 +12,10 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+)
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     date_from_form_date,
@@ -104,7 +107,10 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         Not collected at followup visits.
         REMOVED IN V4
         """
-        if self.formver >= 4 or not self.uds.is_initial():
+        if self.formver >= 4:
+            return INFORMED_MISSINGNESS
+
+        if not self.uds.is_initial():
             return None
 
         reason = self.uds.get_value("reason", int)

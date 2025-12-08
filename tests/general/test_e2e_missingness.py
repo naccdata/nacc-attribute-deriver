@@ -37,7 +37,7 @@ def test_np_form():
     deriver = MissingnessDeriver(missingness_level="test")
     deriver.curate(np_table, "np")
 
-    assert np_table["file.info.resolved"] == {"npsex": -4, "nppmih": -4}
+    assert np_table["file.info.resolved"] == {"npsex": -4, "nppmih": -4.4}
 
 
 def test_csf_subject():

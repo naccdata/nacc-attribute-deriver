@@ -1084,7 +1084,7 @@ mds,mds_stroke,file.info.resolved.stroke,update,FALSE,int
 mds,mds_formver,file.info.resolved.formver,update,FALSE,int
 mds,mds_vitalst,file.info.resolved.vitalst,update,FALSE,int
 np,npsex,file.info.resolved.npsex,update,FALSE,int
-np,nppmih,file.info.resolved.nppmih,update,FALSE,int
+np,nppmih,file.info.resolved.nppmih,update,FALSE,float
 np,npfix,file.info.resolved.npfix,update,FALSE,int
 np,npfixx,file.info.resolved.npfixx,update,FALSE,str
 np,npwbrwt,file.info.resolved.npwbrwt,update,FALSE,int
