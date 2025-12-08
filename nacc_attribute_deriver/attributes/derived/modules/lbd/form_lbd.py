@@ -35,9 +35,6 @@ class LBDFormAttributeCollection(AttributeCollection):
         if value == prev_code:
             return None
 
-        if prev_code == 777:
-            return None
-
         return value
 
     def _create_lbpsyage(self) -> Optional[int]:

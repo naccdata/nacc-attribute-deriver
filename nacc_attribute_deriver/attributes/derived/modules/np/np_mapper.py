@@ -58,6 +58,24 @@ class NPMapper:
 
         return new
 
+    def map_nec(self, new: int | None) -> Optional[int]:
+        npgross = self.__np.get_value("npgross", int)
+        npvasc = self.__np.get_value("npvasc", int)
+        if npgross == 1:
+            if npvasc == 2:
+                return 0
+            if npvasc == 3:
+                return 8
+            if npvasc == 9:
+                return 9
+        if npvasc is None:
+            if npgross == 2:
+                return 0
+            if npgross == 9:
+                return 9
+
+        return new
+
     def map_sub1(self, old: int | None):
         if old in [1, 2, 3, 4]:
             return old - 1

@@ -111,12 +111,12 @@ csf,csfttmdx,file.info.resolved.csfttmdx,update,FALSE,str
 ftld,ftdaff,file.info.resolved.ftdaff,update,FALSE,int
 ftld,ftdmutat,file.info.resolved.ftdmutat,update,FALSE,int
 ftld,ftdpmut,file.info.resolved.ftdpmut,update,FALSE,int
-ftld,ftdpmutx,file.info.resolved.ftdpmutx,update,FALSE,int
+ftld,ftdpmutx,file.info.resolved.ftdpmutx,update,FALSE,str
 ftld,ftdmclab,file.info.resolved.ftdmclab,update,FALSE,int
 ftld,ftdmrlab,file.info.resolved.ftdmrlab,update,FALSE,int
 ftld,ftdmfamr,file.info.resolved.ftdmfamr,update,FALSE,int
 ftld,ftdmoth,file.info.resolved.ftdmoth,update,FALSE,int
-ftld,ftdmothx,file.info.resolved.ftdmothx,update,FALSE,int
+ftld,ftdmothx,file.info.resolved.ftdmothx,update,FALSE,str
 ftld,ftdmomn,file.info.resolved.ftdmomn,update,FALSE,int
 ftld,ftdmomp,file.info.resolved.ftdmomp,update,FALSE,int
 ftld,ftdmome,file.info.resolved.ftdmome,update,FALSE,int

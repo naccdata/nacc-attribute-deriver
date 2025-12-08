@@ -28,7 +28,7 @@ class MPSubjectMissingness(SubjectMissingnessCollection):
 
     def _missingness_naccnmri(self) -> int:
         """Handles NACCNMRI."""
-        return self.handle_subject_missing("naccnmri", int, 88)
+        return self.handle_subject_missing("naccnmri", int, 0)
 
     def _missingness_naccapsa(self) -> int:
         """Handles NACCAPSA."""
@@ -36,4 +36,4 @@ class MPSubjectMissingness(SubjectMissingnessCollection):
 
     def _missingness_naccnapa(self) -> int:
         """Handles NACCNAPA."""
-        return self.handle_subject_missing("naccnapa", int, 88)
+        return self.handle_subject_missing("naccnapa", int, 0)
