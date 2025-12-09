@@ -79,3 +79,21 @@ class TestNPMissingness:
         assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
         np_table["file.info.forms.json.npinf4a"] = random.choice([1, 2])
         assert attr._missingness_npinf4f() == 88.8
+
+    def test_nppmih(self, np_table):
+        """Test the NPPMIH decimal case."""
+        attr = NPMissingness(np_table)
+
+        # -4.4 cases
+        assert attr._missingness_nppmih() == INFORMED_MISSINGNESS_FLOAT
+
+        # NPPMIH value only
+        np_table["file.info.forms.json.nppmih"] = 3.1
+        assert attr._missingness_nppmih() == 3.1
+        np_table["file.info.forms.json.nppmih"] = 7
+        assert attr._missingness_nppmih() == 7
+
+        # with NPPMIM
+        np_table["file.info.forms.json.nppmih"] = 9
+        np_table["file.info.forms.json.nppmim"] = 7
+        assert attr._missingness_nppmih() == 9.7

@@ -53,6 +53,24 @@ class NPMissingness(FormMissingnessCollection):
 
         return self.generic_missingness("nppatho", int)
 
+    #####################
+    # Decimal variables #
+    #####################
+
+    def _missingness_nppmih(self) -> float:
+        """Handles missingness for NPPMIH. This may have a decimal
+        variable, NPPMIM, added to it."""
+        nppmih = self.form.get_value("nppmih", float)
+        nppmim = self.form.get_value("nppmim", float)
+
+        if nppmih is not None:
+            if nppmim is not None:
+                return nppmih + (nppmim / 10)
+
+            return nppmih
+
+        return self.generic_missingness("nppmih", float)
+
     ####################
     # NPINFX variables #
     ####################

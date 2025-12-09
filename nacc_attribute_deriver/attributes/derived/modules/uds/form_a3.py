@@ -310,13 +310,20 @@ class UDSFormA3Attribute(UDSAttributeCollection):
     # Write-ins #
     #############
 
-    def __handle_writein(self, field: str) -> str:
+    def __handle_writein(self, field: str, derived: str) -> str:
         """Handle write-in derived variables, which all work the same."""
+        # grab the current write-in, and return if not updated
+        value = self.__subject_derived.get_cross_sectional_value(derived, str)
+        value = value if value else INFORMED_BLANK
+
         if not self.submitted or self.formver != 3:
-            return INFORMED_BLANK
+            return value
 
         result = self.uds.get_value(field, str)
-        return result if result else INFORMED_BLANK
+        if result:
+            return result
+
+        return value
 
     def _create_naccamx(self) -> str:
         """Creates NACCAMX - If an AD mutation other than
@@ -324,14 +331,14 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        return self.__handle_writein("fadmutx")
+        return self.__handle_writein("fadmutx", "naccamx")
 
     def _create_naccamsx(self) -> str:
         """Creates NACCAMSX - Other source of AD.
 
         Only in V3.
         """
-        return self.__handle_writein("fadmusox")
+        return self.__handle_writein("fadmusox", "naccamsx")
 
     def _create_naccfmsx(self) -> str:
         """Creates NACCFMSX - If other source of FTLD mutation,
@@ -339,7 +346,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3
         """
-        return self.__handle_writein("fftdmusx")
+        return self.__handle_writein("fftdmusx", "naccfmsx")
 
     def _create_naccfmx(self) -> str:
         """Creates NACCFMX - If an FTLD mutation other than
@@ -347,7 +354,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        return self.__handle_writein("fftdmutx")
+        return self.__handle_writein("fftdmutx", "naccfmx")
 
     def _create_naccomsx(self) -> str:
         """Creates NACCOMSX - If mutation is reported at any
@@ -355,7 +362,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        return self.__handle_writein("fothmusx")
+        return self.__handle_writein("fothmusx", "naccomsx")
 
     def _create_naccomx(self) -> str:
         """Creates NACCOMX - If any other mutation is reported at
@@ -363,4 +370,4 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         Only in V3.
         """
-        return self.__handle_writein("fothmutx")
+        return self.__handle_writein("fothmutx", "naccomx")

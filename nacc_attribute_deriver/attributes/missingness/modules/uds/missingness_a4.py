@@ -418,3 +418,179 @@ class UDSFormA4Missingness(UDSMissingness):
     def _missingness_drug40(self) -> str:
         """Handles missingness for DRUG40."""
         return self.__handle_drugx("drug40")
+
+    def __handle_drug_idx(self, field: str) -> str:
+        """V3 and earlier.
+
+        These are not exactly missingness but are conflated with the
+        drug names and similarly mapped over from the drug list.
+        """
+        if self.formver >= 4:
+            return INFORMED_BLANK
+
+        if self.__drugs:
+            index = int(field.replace("drug", "")) - 1
+            if len(self.__drugs) > index:
+                return self.__drugs[index]
+
+        return INFORMED_BLANK
+
+    def _missingness_drug_id1(self) -> str:
+        """Handles missingness for DRUG_ID1."""
+        return self.__handle_drug_idx("drug1")
+
+    def _missingness_drug_id2(self) -> str:
+        """Handles missingness for DRUG_ID2."""
+        return self.__handle_drug_idx("drug2")
+
+    def _missingness_drug_id3(self) -> str:
+        """Handles missingness for DRUG_ID3."""
+        return self.__handle_drug_idx("drug3")
+
+    def _missingness_drug_id4(self) -> str:
+        """Handles missingness for DRUG_ID4."""
+        return self.__handle_drug_idx("drug4")
+
+    def _missingness_drug_id5(self) -> str:
+        """Handles missingness for DRUG_ID5."""
+        return self.__handle_drug_idx("drug5")
+
+    def _missingness_drug_id6(self) -> str:
+        """Handles missingness for DRUG_ID6."""
+        return self.__handle_drug_idx("drug6")
+
+    def _missingness_drug_id7(self) -> str:
+        """Handles missingness for DRUG_ID7."""
+        return self.__handle_drug_idx("drug7")
+
+    def _missingness_drug_id8(self) -> str:
+        """Handles missingness for DRUG_ID8."""
+        return self.__handle_drug_idx("drug8")
+
+    def _missingness_drug_id9(self) -> str:
+        """Handles missingness for DRUG_ID9."""
+        return self.__handle_drug_idx("drug9")
+
+    def _missingness_drug_id10(self) -> str:
+        """Handles missingness for DRUG_ID10."""
+        return self.__handle_drug_idx("drug10")
+
+    def _missingness_drug_id11(self) -> str:
+        """Handles missingness for DRUG_ID11."""
+        return self.__handle_drug_idx("drug11")
+
+    def _missingness_drug_id12(self) -> str:
+        """Handles missingness for DRUG_ID12."""
+        return self.__handle_drug_idx("drug12")
+
+    def _missingness_drug_id13(self) -> str:
+        """Handles missingness for DRUG_ID13."""
+        return self.__handle_drug_idx("drug13")
+
+    def _missingness_drug_id14(self) -> str:
+        """Handles missingness for DRUG_ID14."""
+        return self.__handle_drug_idx("drug14")
+
+    def _missingness_drug_id15(self) -> str:
+        """Handles missingness for DRUG_ID15."""
+        return self.__handle_drug_idx("drug15")
+
+    def _missingness_drug_id16(self) -> str:
+        """Handles missingness for DRUG_ID16."""
+        return self.__handle_drug_idx("drug16")
+
+    def _missingness_drug_id17(self) -> str:
+        """Handles missingness for DRUG_ID17."""
+        return self.__handle_drug_idx("drug17")
+
+    def _missingness_drug_id18(self) -> str:
+        """Handles missingness for DRUG_ID18."""
+        return self.__handle_drug_idx("drug18")
+
+    def _missingness_drug_id19(self) -> str:
+        """Handles missingness for DRUG_ID19."""
+        return self.__handle_drug_idx("drug19")
+
+    def _missingness_drug_id20(self) -> str:
+        """Handles missingness for DRUG_ID20."""
+        return self.__handle_drug_idx("drug20")
+
+    def _missingness_drug_id21(self) -> str:
+        """Handles missingness for DRUG_ID21."""
+        return self.__handle_drug_idx("drug21")
+
+    def _missingness_drug_id22(self) -> str:
+        """Handles missingness for DRUG_ID22."""
+        return self.__handle_drug_idx("drug22")
+
+    def _missingness_drug_id23(self) -> str:
+        """Handles missingness for DRUG_ID23."""
+        return self.__handle_drug_idx("drug23")
+
+    def _missingness_drug_id24(self) -> str:
+        """Handles missingness for DRUG_ID24."""
+        return self.__handle_drug_idx("drug24")
+
+    def _missingness_drug_id25(self) -> str:
+        """Handles missingness for DRUG_ID25."""
+        return self.__handle_drug_idx("drug25")
+
+    def _missingness_drug_id26(self) -> str:
+        """Handles missingness for DRUG_ID26."""
+        return self.__handle_drug_idx("drug26")
+
+    def _missingness_drug_id27(self) -> str:
+        """Handles missingness for DRUG_ID27."""
+        return self.__handle_drug_idx("drug27")
+
+    def _missingness_drug_id28(self) -> str:
+        """Handles missingness for DRUG_ID28."""
+        return self.__handle_drug_idx("drug28")
+
+    def _missingness_drug_id29(self) -> str:
+        """Handles missingness for DRUG_ID29."""
+        return self.__handle_drug_idx("drug29")
+
+    def _missingness_drug_id30(self) -> str:
+        """Handles missingness for DRUG_ID30."""
+        return self.__handle_drug_idx("drug30")
+
+    def _missingness_drug_id31(self) -> str:
+        """Handles missingness for DRUG_ID31."""
+        return self.__handle_drug_idx("drug31")
+
+    def _missingness_drug_id32(self) -> str:
+        """Handles missingness for DRUG_ID32."""
+        return self.__handle_drug_idx("drug32")
+
+    def _missingness_drug_id33(self) -> str:
+        """Handles missingness for DRUG_ID33."""
+        return self.__handle_drug_idx("drug33")
+
+    def _missingness_drug_id34(self) -> str:
+        """Handles missingness for DRUG_ID34."""
+        return self.__handle_drug_idx("drug34")
+
+    def _missingness_drug_id35(self) -> str:
+        """Handles missingness for DRUG_ID35."""
+        return self.__handle_drug_idx("drug35")
+
+    def _missingness_drug_id36(self) -> str:
+        """Handles missingness for DRUG_ID36."""
+        return self.__handle_drug_idx("drug36")
+
+    def _missingness_drug_id37(self) -> str:
+        """Handles missingness for DRUG_ID37."""
+        return self.__handle_drug_idx("drug37")
+
+    def _missingness_drug_id38(self) -> str:
+        """Handles missingness for DRUG_ID38."""
+        return self.__handle_drug_idx("drug38")
+
+    def _missingness_drug_id39(self) -> str:
+        """Handles missingness for DRUG_ID39."""
+        return self.__handle_drug_idx("drug39")
+
+    def _missingness_drug_id40(self) -> str:
+        """Handles missingness for DRUG_ID40."""
+        return self.__handle_drug_idx("drug40")
