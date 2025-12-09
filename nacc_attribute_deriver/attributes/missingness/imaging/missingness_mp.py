@@ -27,7 +27,10 @@ class MPSubjectMissingness(SubjectMissingnessCollection):
         return self.handle_subject_missing("naccmrsa", int, 0)
 
     def _missingness_naccnmri(self) -> int:
-        """Handles NACCNMRI."""
+        """Handles NACCNMRI.
+
+        REGRESSION: Should be 88, but legacy always set to 0
+        """
         return self.handle_subject_missing("naccnmri", int, 0)
 
     def _missingness_naccapsa(self) -> int:
@@ -35,5 +38,8 @@ class MPSubjectMissingness(SubjectMissingnessCollection):
         return self.handle_subject_missing("naccapsa", int, 0)
 
     def _missingness_naccnapa(self) -> int:
-        """Handles NACCNAPA."""
+        """Handles NACCNAPA.
+
+        REGRESSION: Should be 88, but legacy always set to 0
+        """
         return self.handle_subject_missing("naccnapa", int, 0)
