@@ -16,7 +16,7 @@ from nacc_attribute_deriver.schema.operation import (
     SortedListOperation,
     UpdateOperation,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_BLANK
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 

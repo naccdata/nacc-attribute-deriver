@@ -19,6 +19,9 @@ class FormScope(Scope):
     UDS = "uds"
     FTLD = "ftld"
     LBD = "lbd"
+    COVID_F1 = "covid_f1"
+    COVID_F2F3 = "covid_f2f3"
+    CROSS_MODULE = "cross_module"
 
 
 class GeneticsScope(Scope):
@@ -62,6 +65,9 @@ ScopeLiterals = Literal[
     FormScope.UDS,
     FormScope.FTLD,
     FormScope.LBD,
+    FormScope.COVID_F1,
+    FormScope.COVID_F2F3,
+    FormScope.CROSS_MODULE,
     GeneticsScope.APOE,
     GeneticsScope.HISTORIC_APOE,
     GeneticsScope.NIAGADS_AVAILABILITY,

@@ -76,6 +76,31 @@ def test_np_form():
                         "formver": 11.0,
                     }
                 },
+                "derived": {
+                    "naccbraa": 9,
+                    "naccneur": 9,
+                    "naccmicr": 9,
+                    "nacchem": 9,
+                    "naccarte": 9,
+                    "nacclewy": 9,
+                    "naccamy": 9,
+                    "naccavas": 9,
+                    "naccbrnn": 0,
+                    "nacccbd": 9,
+                    "naccdiff": 9,
+                    "naccdown": 7,
+                    "naccinf": 9,
+                    "naccnec": 9,
+                    "naccothp": 9,
+                    "naccpick": 9,
+                    "naccprio": 9,
+                    "naccprog": 9,
+                    "naccvasc": 9,
+                    "npformver": 11,
+                    "naccwri1": None,
+                    "naccwri2": None,
+                    "naccwri3": None,
+                },
             }
         },
         "subject": {
@@ -101,6 +126,10 @@ def test_np_form():
                         "naccprio": 9,
                         "naccprog": 9,
                         "naccvasc": 9,
+                        "npformver": 11,
+                        "naccwri1": None,
+                        "naccwri2": None,
+                        "naccwri3": None,
                     },
                 },
                 "working": {
@@ -147,12 +176,15 @@ def test_niagads_investigator():
         "niagads_exomechip": "NG00000, NG00001",
         "niagads_wgs": "0",
         "niagads_wes": 0,
+        "adgc_gwas": 1,
+        "adgc_exomechip": 0,
+        "gwas_round": "ADC 0",
+        "exome_round": "Exome1",
     }
 
     deriver = AttributeDeriver()
     deriver.curate(form, "niagads_availability")
 
-    assert "file.info.derived" not in form
     assert form["subject.info.derived.cross-sectional"] == {
         "ngdsexom": 1,
         "ngdsgwas": 1,
@@ -162,7 +194,12 @@ def test_niagads_investigator():
         "ngdsexac": "NG00000, NG00001",
         "ngdswgac": "88",
         "ngdsweac": "88",
+        "adgcgwas": 1,
+        "adgcexom": 0,
+        "adgcrnd": "ADC 0",
+        "adgcexr": "Exome1",
     }
+    assert form["subject.info.derived.cross-sectional"] == form["file.info.derived"]
 
 
 def test_scan_mri_qc():
@@ -369,7 +406,8 @@ def test_cls():
                         "awrispan": 7,
                         "aundspan": 3,
                     }
-                }
+                },
+                "derived": {"naccengl": 3.0, "naccspnl": 3.8},
             }
         },
         "subject": {
@@ -389,12 +427,13 @@ def test_ftld():
     assert form.to_dict() == {
         "file": {
             "info": {
+                "derived": {"naccftd": 1},
                 "forms": {
                     "json": {
                         "module": "FTLD",
                         "visitdate": "2025-01-01",
                     }
-                }
+                },
             }
         },
         "subject": {"info": {"derived": {"cross-sectional": {"naccftd": 1}}}},
@@ -412,13 +451,53 @@ def test_lbd():
     assert form.to_dict() == {
         "file": {
             "info": {
+                "derived": {"nacclbdm": 1},
                 "forms": {
                     "json": {
                         "module": "LBD",
                         "visitdate": "2025-01-01",
                     }
-                }
+                },
             }
         },
         "subject": {"info": {"derived": {"cross-sectional": {"nacclbdm": 1}}}},
+    }
+
+
+def test_csf():
+    """Test against minimal CSF data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {
+        "module": "CSF",
+        "visitdate": "2025-01-01",
+        "csfabeta": 1,
+        "csfptau": -123,
+        "csfttau": 2500,
+    }
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "csf")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "module": "CSF",
+                        "visitdate": "2025-01-01",
+                        "csfabeta": 1,
+                        "csfptau": -123,
+                        "csfttau": 2500,
+                    }
+                },
+                "derived": {"naccacsf": 1, "naccpcsf": 0, "nacctcsf": 1},
+            }
+        },
+        "subject": {
+            "info": {
+                "derived": {
+                    "cross-sectional": {"naccacsf": 1, "naccpcsf": 0, "nacctcsf": 1}
+                }
+            }
+        },
     }

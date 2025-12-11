@@ -1,46 +1,82 @@
 """Class to handle A2-specific missingness values."""
 
-from typing import Optional
-
-from nacc_attribute_deriver.schema.constants import (
-    INFORMED_MISSINGNESS,
-)
-
-from .missingness_uds import UDSMissingness
+from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormA2Missingness(UDSMissingness):
-    def _missingness_incntmod(self) -> Optional[int]:
-        """Handles missingness for INCNTMOD.
+    ############################
+    # INLIVWTH-gated variables #
+    ############################
 
-        If INLIVWTH=1 then INCNTMOD=8
+    def _handle_inlivwth_gate(self, field: str) -> int:
+        """Handles missingness for gated by INLIVWTH.
+
+        If INLIVWTH=1 then VAR=8
         """
-        if self.formver < 4:
-            return INFORMED_MISSINGNESS
-
         inlivwth = self.uds.get_value("inlivwth", int)
         if inlivwth == 1:
             return 8
 
-        return None
+        return self.generic_missingness(field, int)
 
-    def _missingness_incnttim(self) -> Optional[int]:
-        """Handles missingness for INCNTTIM.
+    def _missingness_incntmod(self) -> int:
+        """Handles missingness for INCNTMOD."""
+        return self._handle_inlivwth_gate("incntmod")
 
-        If INLIVWTH=1 then INCNTTIM=8
+    def _missingness_incnttim(self) -> int:
+        """Handles missingness for INCNTTIM."""
+        return self._handle_inlivwth_gate("incnttim")
+
+    def _missingness_invisits(self) -> int:
+        """Handles missingness for INVISITS."""
+        return self._handle_inlivwth_gate("invisits")
+
+    def _missingness_incalls(self) -> int:
+        """Handles missingness for INCALLS."""
+        return self._handle_inlivwth_gate("incalls")
+
+    ##########################
+    # NEWINF-gated variables #
+    ##########################
+
+    def __handle_newinf_gate(self, field: str) -> int:
+        """Handles missingness for variables gated by NEWINF.
+
+        NEWINF only provided in FVP.
         """
-        if self.formver < 4:
+        if self.uds.get_value("newinf", int) == 0:
             return INFORMED_MISSINGNESS
 
-        inlivwth = self.uds.get_value("inlivwth", int)
-        if inlivwth == 1:
-            return 8
+        return self.generic_missingness(field, int)
 
-        return None
+    def _missingness_inknown(self) -> int:
+        """Handles missingness for INKNOWN."""
+        return self.__handle_newinf_gate("inknown")
 
-    def _missingness_incntmdx(self) -> Optional[str]:
-        """Handles missingness for INCNTMDX.
+    def _missingness_inhisp(self) -> int:
+        """Handles missingness for INHISP."""
+        return self.__handle_newinf_gate("inhisp")
 
-        If INCNTMDX is blank then INCNTMDX should remain blank
-        """
-        return self.handle_v4_blank("incntmdx")
+    def _missingness_inhispor(self) -> int:
+        """Handles missingness for INHISPOR."""
+        if self.uds.get_value("inhisp", int) in [0, 9]:
+            return 88
+
+        return self.__handle_newinf_gate("inhispor")
+
+    def _missingness_inrace(self) -> int:
+        """Handles missingness for INRACE."""
+        return self.__handle_newinf_gate("inrace")
+
+    def _missingness_inrasec(self) -> int:
+        """Handles missingness for INRASEC."""
+        return self.__handle_newinf_gate("inrasec")
+
+    def _missingness_inrater(self) -> int:
+        """Handles missingness for INRATER."""
+        return self.__handle_newinf_gate("inrater")
+
+    def _missingness_ineduc(self) -> int:
+        """Handles missingness for INEDUC."""
+        return self.__handle_newinf_gate("ineduc")

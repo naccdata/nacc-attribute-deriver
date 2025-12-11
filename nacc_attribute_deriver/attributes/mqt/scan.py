@@ -9,7 +9,7 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.scan_namespace import (
     SCANMRINamespace,
@@ -40,7 +40,7 @@ class SCANMRIQCAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__mri_qc = SCANMRINamespace(table, scope=SCANMRIScope.MRI_QC)
-        self.__working = WorkingDerivedNamespace(
+        self.__working = WorkingNamespace(
             table=table, required=frozenset(["cross-sectional.scan-mri-dates"])
         )
 
@@ -129,7 +129,7 @@ class SCANPETQCAttributeCollection(AttributeCollection):
 
     def __init__(self, table: SymbolTable):
         self.__pet_qc = SCANPETNamespace(table, scope=SCANPETScope.PET_QC)
-        self.__working = WorkingDerivedNamespace(
+        self.__working = WorkingNamespace(
             table=table, required=frozenset(["cross-sectional.scan-pet-dates"])
         )
 

@@ -14,11 +14,11 @@ from typing import (
 
 from pydantic import ValidationError
 
-from nacc_attribute_deriver.schema.constants import INVALID_TEXT
-from nacc_attribute_deriver.schema.errors import InvalidFieldError, MissingRequiredError
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INVALID_TEXT
 from nacc_attribute_deriver.utils.date import date_from_form_date
+from nacc_attribute_deriver.utils.errors import InvalidFieldError, MissingRequiredError
 
 log = logging.getLogger(__name__)
 
@@ -176,9 +176,21 @@ class BaseNamespace:
         """
         return [self.get_value(x, attr_type) for x in attributes]
 
+    def map_attributes(
+        self, attributes: List[str], attr_type: Type[T]
+    ) -> Dict[str, T | None]:
+        """Group attributes into a mapping, from key to value. Assumes all are
+        the same type.
+
+        Args:
+            attributes: List of attributes to grab
+            attr_type: Expected attribute type for all attributes in list
+        """
+        return {x: self.get_value(x, attr_type) for x in attributes}
+
 
 class FormNamespace(BaseNamespace):
-    """Base class for attributes over file.info.forms."""
+    """Base class for attributes over file.info.forms.json."""
 
     def __init__(
         self,
@@ -412,7 +424,7 @@ class SubjectDerivedNamespace(BaseNamespace):
         return None if prev_record is None else prev_record.value
 
 
-class WorkingDerivedNamespace(SubjectDerivedNamespace):
+class WorkingNamespace(SubjectDerivedNamespace):
     """Similar to SubjectDerivedNamespace but specifically for
     working/temporary variables."""
 

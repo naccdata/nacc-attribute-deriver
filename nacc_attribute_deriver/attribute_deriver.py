@@ -9,43 +9,44 @@ import csv
 import datetime
 from abc import ABC, abstractmethod
 from importlib import resources
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 from pydantic import ValidationError
 
 from . import config
 from .attributes.collection.attribute_collection import AttributeCollectionRegistry
-from .schema.constants import DERIVE_TYPES
-from .schema.errors import AttributeDeriverError, OperationError
 from .schema.rule_types import DateTaggedValue
-from .schema.schema import AttributeAssignment, CurationRule, RuleFileModel
+from .schema.schema import (
+    AttributeAssignment,
+    CurationRule,
+    MissingnessFileModel,
+    RuleFileModel,
+)
 from .symbol_table import SymbolTable
-from .utils.scope import ScopeLiterals
+from .utils.constants import CURATION_TYPE, REGRESSION_VARIABLES
+from .utils.errors import AttributeDeriverError, OperationError
+from .utils.scope import FormScope, ScopeLiterals
 
 
 class BaseAttributeDeriver(ABC):
-    def __init__(self, rules_filename: str, derive_type: str):
+    def __init__(self, rules_filename: str, curation_type: str):
         """Initializer.
 
         Args:
             rules_file: Path to raw CSV containing the list of
                 rules to execute.
         """
-        if derive_type not in DERIVE_TYPES:
-            raise AttributeDeriverError(f"Unknown derive type: {derive_type}")
+        if curation_type not in CURATION_TYPE:
+            raise AttributeDeriverError(f"Unknown derive type: {curation_type}")
 
-        self.__rules_filename = rules_filename
-        self.__derive_type = derive_type
+        self._rules_filename = rules_filename
+        self._curation_type = curation_type
 
-        self.__rule_map = self.__load_rules()
+        self._rule_map = self._load_rules()
         # collect all attributes beforehand so they're easily hashable
         self._instance_collections = AttributeCollectionRegistry.get_attribute_methods()
 
-    @property
-    def derive_type(self) -> str:
-        return self.__derive_type
-
-    def __load_rules(self) -> Dict[str, List[CurationRule]]:
+    def _load_rules(self) -> Dict[str, List[CurationRule]]:
         """Load rules from the given path. All forms called through curate will
         have these rules applied to them.
 
@@ -54,7 +55,7 @@ class BaseAttributeDeriver(ABC):
         """
 
         attributes: Dict[str, Dict[str, List[AttributeAssignment]]] = {}
-        rules_file = resources.files(config).joinpath(self.__rules_filename)
+        rules_file = resources.files(config).joinpath(self._rules_filename)
         with rules_file.open("r") as file_stream:
             reader = csv.DictReader(file_stream)
             if not reader.fieldnames:
@@ -63,12 +64,12 @@ class BaseAttributeDeriver(ABC):
             for row in reader:
                 try:
                     rule_schema = RuleFileModel.model_validate(row)
-                except ValidationError as error:
+                except (ValidationError, OperationError) as error:
                     raise AttributeDeriverError(
                         f"error loading rule row: {error}"
                     ) from error
 
-                attribute_function = f"{self.derive_type}_{rule_schema.function}"
+                attribute_function = f"{self._curation_type}_{rule_schema.function}"
                 attribute_map = attributes.get(rule_schema.scope, {})
                 attribute_list = attribute_map.get(attribute_function, [])
 
@@ -82,7 +83,11 @@ class BaseAttributeDeriver(ABC):
             for attribute_function, assignments in attribute_map.items():
                 rules = rule_map.get(scope, [])
                 rules.append(
-                    CurationRule(function=attribute_function, assignments=assignments)
+                    CurationRule(
+                        name=attribute_function.removeprefix(f"{self._curation_type}_"),
+                        function=attribute_function,
+                        assignments=assignments,
+                    )
                 )
                 rule_map[scope] = rules
 
@@ -106,7 +111,7 @@ class BaseAttributeDeriver(ABC):
             scope: The curation scope
         """
         # derive the variables, if no rules for this scope, return
-        rules = self.__rule_map.get(scope)
+        rules = self._rule_map.get(scope)
         if not rules:
             return
 
@@ -139,7 +144,7 @@ class BaseAttributeDeriver(ABC):
         Returns:
             The list of CurationRules
         """
-        return self.__rule_map.get(scope)
+        return self._rule_map.get(scope)
 
 
 class AttributeDeriver(BaseAttributeDeriver):
@@ -168,8 +173,68 @@ class AttributeDeriver(BaseAttributeDeriver):
 
 
 class MissingnessDeriver(BaseAttributeDeriver):
-    def __init__(self, missingness_file: str = "missingness_rules.csv") -> None:
-        super().__init__(missingness_file, "missingness")
+    def __init__(self, missingness_level: str) -> None:
+        # For missingness, need to split out by level
+        if missingness_level not in ["file", "subject", "test"]:
+            raise AttributeDeriverError(
+                f"Unknown missingness level: {missingness_level}"
+            )
+
+        super().__init__(f"{missingness_level}_missingness.csv", "missingness")
+        # the way we deal with/use these two could probably be improved,
+        # really brute forcing stuff for now
+        self.__attribute_types = self.__get_attribute_types()
+        self.__applicable_attributes = self.__load_uds_matrix()
+
+    def __get_attribute_types(self) -> Dict[str, Type]:
+        """Get attribute types for each attribute, e.g.,
+            "attribute": int
+
+        If a missingness rule is not defined for this attribute,
+        it will infer the default missingness value from this type.
+        """
+        results = {}
+        rules_file = resources.files(config).joinpath(self._rules_filename)
+        with rules_file.open("r") as fh:
+            reader = csv.DictReader(fh)
+
+            # we already read this file once, so don't need to redo validation
+            for row in reader:
+                rule_schema = MissingnessFileModel.model_validate(row)
+
+                # generally consider 1 to 1 mapping so throw error on duplicates
+                if rule_schema.function in results:
+                    raise AttributeDeriverError(
+                        f"Multiple missingness rules defined for {rule_schema.function}"
+                    )
+
+                results[rule_schema.function] = rule_schema.attr_type
+
+        return results
+
+    def __load_uds_matrix(self) -> Dict[str, Dict[str, int]]:
+        """Load the UDS matrix to determine UDS variables and which versions
+        they are applicable to.
+
+        If not applicable, generic missingness will be applied even if
+        there is a rule definition for it.
+        """
+        matrix: Dict[str, Dict[str, int]] = {}
+        matrix_file = resources.files(config).joinpath("uds_ded_matrix.csv")
+        with matrix_file.open("r") as fh:
+            reader = csv.DictReader(fh)
+            if not reader.fieldnames:
+                raise AttributeDeriverError(
+                    "No CSV headers found in UDS ded matrix file"
+                )
+
+            matrix = {x: {} for x in reader.fieldnames if x != "variable"}
+            for row in reader:
+                for version in matrix:
+                    if row[version]:
+                        matrix[version][row["variable"]] = int(row[version])
+
+        return matrix
 
     def get_curated_value(
         self, table: SymbolTable, rule: CurationRule, scope: str
@@ -179,8 +244,27 @@ class MissingnessDeriver(BaseAttributeDeriver):
         For missingness variables, if a missingness function is not
         defined for it, use the generic scope missingness definition.
         """
+        applicable = True
+
+        # if UDS, determine if the field/rule is applicable to the current
+        # version/packet combo. default to True
+        if scope == FormScope.UDS:
+            formver = table.get("file.info.forms.json.formver")
+            packet = table.get("file.info.forms.json.packet")
+            if formver and packet:
+                key = f"v{float(formver):.1f}_{packet.upper()}"
+                if not self.__applicable_attributes.get(key, {}).get(rule.name):
+                    applicable = False
+
+        # REGRESSION: let these go through even if they're not
+        # actually in the form version. remove once done testing
+        if not applicable and rule.name in REGRESSION_VARIABLES:
+            applicable = True
+
+        # if applicable, try to see if this attribute has a specific
+        # rule function attached to it, and call that
         method = self._instance_collections.get(rule.function, None)
-        if method:
+        if applicable and method:
             try:
                 return method.apply(table)
             except Exception as e:
@@ -188,22 +272,19 @@ class MissingnessDeriver(BaseAttributeDeriver):
                     f"Failed to derive rule {rule.function}: {e}"
                 ) from e
 
-        # use generic scope missingness function
-        # we also need to pass the name of the field we are trying to assign a
-        # missingness value for since this is a generic function, so strip out
-        # the leading missingness_ in the original function name
-        method = self._instance_collections.get(f"{self.derive_type}_{scope}", None)
-        field = rule.function.replace(self.derive_type, "")
-
+        # otherwise, use generic scope missingness function
+        method = self._instance_collections.get(f"{self._curation_type}_{scope}", None)
         if not method:
             raise AttributeDeriverError(
                 f"Unknown attribute function for scope {scope}: "
-                + f"{self.derive_type}_{scope}"
+                + f"{self._curation_type}_{scope}"
             )
 
         try:
-            return method.apply_with_field(table, field)
+            return method.apply_with_field(
+                table, rule.name, self.__attribute_types[rule.name]
+            )
         except Exception as e:
             raise AttributeDeriverError(
-                f"Failed to derive rule {rule.function} with field {field}: {e}"
+                f"Failed to derive rule {rule.function} with field {rule.name}: {e}"
             ) from e

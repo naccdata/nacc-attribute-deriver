@@ -15,7 +15,7 @@ from nacc_attribute_deriver.attributes.mqt.scan import (
     MRIAnalysisTypes,
     PETAnalysisTypes,
 )
-from nacc_attribute_deriver.schema.errors import MissingRequiredError
+from nacc_attribute_deriver.utils.errors import MissingRequiredError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 

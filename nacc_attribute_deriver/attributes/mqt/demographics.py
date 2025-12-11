@@ -12,21 +12,23 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
-from nacc_attribute_deriver.schema.errors import (
+from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import (
     InvalidFieldError,
 )
-from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class DemographicsAttributeCollection(AttributeCollection):
     """Class to collect demographic attributes."""
 
     def __init__(self, table: SymbolTable):
-        self.__uds = UDSNamespace(table, required=frozenset(["sex"]))
+        self.__uds = UDSNamespace(table)
+        self.__formver = self.__uds.normalized_formver()
 
     def get_date(self) -> Optional[datetime.date]:
         return self.__uds.get_date()
@@ -36,12 +38,11 @@ class DemographicsAttributeCollection(AttributeCollection):
     )
 
     def _create_uds_sex(self) -> str:
-        """UDS sex.
+        """UDS sex."""
+        field = "sex" if self.__formver < 4 else "birthsex"
+        sex = self.__uds.get_value(field, int)
 
-        Always required.
-        """
-        sex = self.__uds.get_required("sex", int)
-        mapped_sex = self.SEX_MAPPING.get(sex)
+        mapped_sex = self.SEX_MAPPING.get(sex)  # type: ignore
 
         if not mapped_sex:
             raise InvalidFieldError(f"Invalid/unknown sex code: {sex}")
@@ -69,7 +70,8 @@ class DemographicsAttributeCollection(AttributeCollection):
         if not self.__uds.is_initial():
             return None
 
-        primlang = self.__uds.get_value("primlang", int)
+        field = "primlang" if self.__formver < 4 else "predomlan"
+        primlang = self.__uds.get_value(field, int)
         mapped_primlang = (
             self.PRIMARY_LANGUAGE_MAPPING.get(primlang) if primlang else None
         )
@@ -85,10 +87,9 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
         self.__uds = UDSNamespace(table=table)
         self.__subject_derived = SubjectDerivedNamespace(
             table=table,
-            required=frozenset(
-                [f"cross-sectional.{x}" for x in ["naccnihr", "naccdied"]]
-            ),
+            required=frozenset([f"cross-sectional.{x}" for x in ["naccnihr"]]),
         )
+        self.__working = WorkingNamespace(table=table)
 
     def get_date(self) -> Optional[datetime.date]:
         return self.__uds.get_date()
@@ -120,8 +121,23 @@ class DerivedDemographicsAttributeCollection(AttributeCollection):
     VITAL_STATUS_MAPPINGS = MappingProxyType({0: "unknown", 1: "deceased"})
 
     def _create_vital_status(self) -> str:
-        """Creates subject.info.demographics.uds.vital-status.latest."""
-        naccdied = self.__subject_derived.get_cross_sectional_value("naccdied", int)
+        """Creates subject.info.demographics.uds.vital-status.latest.
+
+        Same logic as NACCDIED, however we cannot rely on cross-module
+        derived variables for MQT as it is tied to the UDS scope. At
+        some point need to clean this up.
+        """
+        naccdied = 0
+        death_age = self.__working.get_cross_sectional_value("np-death-age", int)
+        if death_age is not None:
+            naccdied = 1
+        else:
+            deceased = self.__working.get_cross_sectional_value(
+                "milestone-deceased", int
+            )
+            if deceased == 1:
+                naccdied = 1
+
         mapped_naccdied = self.VITAL_STATUS_MAPPINGS.get(naccdied)  # type: ignore
 
         if not mapped_naccdied:

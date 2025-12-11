@@ -3,11 +3,11 @@
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_a2 import (
     UDSFormA2Missingness,
 )
-from nacc_attribute_deriver.schema.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormA2Missingness:
-    def test_missingness_incntmod_and_incnttim(self, uds_table):
+    def test_missingness_inlivwth_gate(self, uds_table):
         """Test missing INCNTMOD and INCNTTIM, which have same condition."""
         attr = UDSFormA2Missingness(uds_table)
         # V3 and earlier
@@ -21,7 +21,12 @@ class TestUDSFormA2Missingness:
         assert attr._missingness_incntmod() == 8
         assert attr._missingness_incnttim() == 8
 
-        # test INLIVWTH is 0
+        # test INLIVWTH is 0 but the values are missing
         uds_table["file.info.forms.json.inlivwth"] = 0
-        assert attr._missingness_incntmod() is None
-        assert attr._missingness_incnttim() is None
+        assert attr._missingness_incntmod() == INFORMED_MISSINGNESS
+        assert attr._missingness_incnttim() == INFORMED_MISSINGNESS
+
+        # now the values are set to something, so stay as-is
+        uds_table["file.info.forms.json"].update({"incntmod": 1, "incnttim": 2})
+        assert attr._missingness_incntmod() == 1
+        assert attr._missingness_incnttim() == 2

@@ -1,0 +1,43 @@
+"""Tests NIAGADS genetic attributes."""
+
+import pytest
+from nacc_attribute_deriver.attributes.derived.genetics.niagads import (
+    NIAGADSAttributeCollection,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
+
+
+@pytest.fixture(scope="function")
+def attr() -> NIAGADSAttributeCollection:
+    """Create dummy data and return it in an attribute object."""
+    data = {
+        "file": {
+            "info": {
+                "raw": {
+                    "niagads_gwas": "NG00000",
+                    "niagads_exomechip": "NG00000, NG00001",
+                    "niagads_wgs": "0",
+                    "niagads_wes": 0,
+                    "adgc_gwas": 1,
+                    "adgc_exomechip": 0,
+                    "gwas_round": "ADC 0",
+                    "exome_round": "Exome1",
+                }
+            }
+        }
+    }
+
+    return NIAGADSAttributeCollection(SymbolTable(data))
+
+
+class TestNIAGADSAttribute:
+    def test_create_niagads(self, attr):
+        """Tests creating NGDS* variables."""
+        assert attr._create_ngdsgwas() == 1
+        assert attr._create_ngdsexom() == 1
+        assert attr._create_ngdswgs() == 0
+        assert attr._create_ngdswes() == 0
+        assert attr._create_adgcgwas() == 1
+        assert attr._create_adgcexom() == 0
+        assert attr._create_adgcrnd() == "ADC 0"
+        assert attr._create_adgcexr() == "Exome1"

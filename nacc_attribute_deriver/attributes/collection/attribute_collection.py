@@ -9,12 +9,13 @@ import datetime
 import logging
 from inspect import isfunction
 from types import FunctionType
-from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Type
 
 from pydantic import BaseModel, ConfigDict
 
-from nacc_attribute_deriver.schema.constants import DERIVE_TYPES
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import CURATION_TYPE
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +47,10 @@ class AttributeExpression(BaseModel):
         return self.function(instance), instance.get_date()
 
     def apply_with_field(
-        self, table: SymbolTable, field: str
+        self,
+        table: SymbolTable,
+        field: str,
+        attr_type: Type,
     ) -> Tuple[Any, datetime.date | None]:
         """Apply the function on the instance with the field passed as a
         parameter.
@@ -59,7 +63,7 @@ class AttributeExpression(BaseModel):
             on the table
         """
         instance = self.attribute_class(table)
-        return self.function(instance, field), instance.get_date()
+        return self.function(instance, field, attr_type), instance.get_date()
 
 
 class AttributeCollectionRegistry(type):
@@ -89,6 +93,9 @@ class AttributeCollectionRegistry(type):
         methods: Dict[str, AttributeExpression] = {}
         for collection_type in cls.collection_types:
             for name, function in collection_type.get_all_hooks().items():  # type: ignore
+                if name in methods:
+                    raise AttributeDeriverError(f"Attribute {name} already defined")
+
                 methods[name] = AttributeExpression(
                     function=function,  # type: ignore
                     attribute_class=collection_type,
@@ -108,9 +115,15 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
         for attr_name in dir(cls):
             attr = getattr(cls, attr_name)
             if isfunction(attr) and any(
-                attr_name.startswith(f"_{derive_type}_") for derive_type in DERIVE_TYPES
+                attr_name.startswith(f"_{derive_type}_")
+                for derive_type in CURATION_TYPE
             ):
-                result[attr_name.lstrip("_")] = attr
+                hook = attr_name.lstrip("_")
+                if hook in result:
+                    raise AttributeDeriverError(
+                        f"Attribute {attr_name} already defined"
+                    )
+                result[hook] = attr
 
         return result
 
@@ -130,30 +143,13 @@ class AttributeCollection(object, metaclass=AttributeCollectionRegistry):
                 isfunction(attr)
                 and any(
                     attr_name.startswith(f"_{derive_type}_")
-                    for derive_type in DERIVE_TYPES
+                    for derive_type in CURATION_TYPE
                 )
                 and attr_name.lstrip("_") == derive_name
             ):
                 return attr
 
         return None
-
-    @staticmethod
-    def is_target_int(value: Union[int, str, None], target: int) -> bool:
-        """Check whether the value is the specified target int. This might be
-        overkill but wanted it to handle str/int comparisons.
-
-        Args:
-            value: Field to check
-            target: Target to check against
-        """
-        if not value:
-            return False
-
-        try:
-            return int(value) == target
-        except ValueError:
-            return False
 
     def get_date(self) -> Optional[datetime.date]:
         """Get date corresponding to this attribute collection from a specific

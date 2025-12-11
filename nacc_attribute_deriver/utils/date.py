@@ -2,7 +2,7 @@
 
 import re
 from datetime import date, datetime
-from typing import List, Optional, Set, Union
+from typing import List, Optional, Set, Tuple, Union
 
 
 def datetime_from_form_date(date_string: Optional[str]) -> Optional[datetime]:
@@ -43,6 +43,23 @@ def date_came_after(date1: date | None, date2: date | None) -> bool:
         return False
 
     return date2 is None or (date1 is not None and date1 > date2)
+
+
+def parse_unknown_dates(
+    date_string: Optional[str],
+) -> Tuple[Optional[int], Optional[int], Optional[int]]:
+    """Parse dates when parts are unknown, e.g. 9999-99-99.
+
+    Return year, month, day
+    """
+    if date_string is None:
+        return None, None, None
+
+    # assumes its YYYY-MM-DD format
+    date_parts = date_string.split("-")
+    assert len(date_parts) == 3, f"unparsable date format {date_string}"
+
+    return int(date_parts[0]), int(date_parts[1]), int(date_parts[2])
 
 
 def date_came_after_sparse(
