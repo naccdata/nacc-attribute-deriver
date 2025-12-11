@@ -2,7 +2,7 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 2.0.0 (not yet released)
+## 2.0.0
 
 Significant updates and refactorings to support:
 
