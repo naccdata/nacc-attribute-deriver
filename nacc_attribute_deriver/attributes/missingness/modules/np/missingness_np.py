@@ -58,8 +58,10 @@ class NPMissingness(FormMissingnessCollection):
     #####################
 
     def _missingness_nppmih(self) -> float:
-        """Handles missingness for NPPMIH. This may have a decimal
-        variable, NPPMIM, added to it."""
+        """Handles missingness for NPPMIH.
+
+        This may have a decimal variable, NPPMIM, added to it.
+        """
         nppmih = self.form.get_value("nppmih", float)
         nppmim = self.form.get_value("nppmim", float)
 
