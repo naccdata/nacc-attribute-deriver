@@ -87,9 +87,9 @@ covid_f2f3,c19kothx,file.info.resolved.c19kothx,update,FALSE,str
 covid_f2f3,c19core,file.info.resolved.c19core,update,FALSE,int
 covid_f2f3,c19copre,file.info.resolved.c19copre,update,FALSE,int
 covid_f2f3,c19cospx,file.info.resolved.c19cospx,update,FALSE,str
-csf,csfabeta,file.info.resolved.csfabeta,update,FALSE,int
-csf,csfptau,file.info.resolved.csfptau,update,FALSE,int
-csf,csfttau,file.info.resolved.csfttau,update,FALSE,int
+csf,csfabeta,file.info.resolved.csfabeta,update,FALSE,float
+csf,csfptau,file.info.resolved.csfptau,update,FALSE,float
+csf,csfttau,file.info.resolved.csfttau,update,FALSE,float
 csf,csflpmo,file.info.resolved.csflpmo,update,FALSE,int
 csf,csflpdy,file.info.resolved.csflpdy,update,FALSE,int
 csf,csflpyr,file.info.resolved.csflpyr,update,FALSE,int
