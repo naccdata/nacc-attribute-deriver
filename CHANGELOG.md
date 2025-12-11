@@ -9,6 +9,10 @@ Significant updates and refactorings to support:
 * rest of derived variables
 * missingness logic
 
+#### rc2
+
+* Adds V4 header variables
+
 ## 1.4.3
 
 Under PR [#65](https://github.com/naccdata/nacc-attribute-deriver/pull/65) 
