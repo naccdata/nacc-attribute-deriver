@@ -9,13 +9,10 @@ Significant updates and refactorings to support:
 * rest of derived variables
 * missingness logic
 
-#### rc2
+#### RCs:
 
-* Adds V4 header variables
-
-#### rc3
-
-* Updates B1a related variables to not throw error when missing - currently not available in FW
+* rc2: Adds V4 header variables
+* rc3: Updates B1a-related variables to not throw error when missing - data currently not available in FW
 
 ## 1.4.3
 
