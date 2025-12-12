@@ -6,10 +6,17 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
     FormMissingnessCollection,
     SubjectMissingnessCollection,
 )
-from nacc_attribute_deriver.attributes.namespace.namespace import T
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    RawNamespace,
+    T,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 class MPMissingness(FormMissingnessCollection):
+    def __init__(self, table: SymbolTable) -> None:
+        super().__init__(table=table, namespace=RawNamespace, date_attribute=None)
+
     def _missingness_mri_dicom(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for MRI DICOM."""
         return self.generic_missingness(field, attr_type)

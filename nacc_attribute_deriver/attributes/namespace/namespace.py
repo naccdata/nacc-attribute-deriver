@@ -81,6 +81,11 @@ class BaseNamespace:
         """Returns the attribute prefix for this object."""
         return self.__prefix
 
+    @property
+    def date_attribute(self) -> Optional[str]:
+        """Returns the date attribute."""
+        return self.__date_attribute
+
     def __symbol(self, attribute: str) -> str:
         """Returns the symbol table path for the attribute."""
         return f"{self.prefix}{attribute}"
@@ -198,7 +203,7 @@ class FormNamespace(BaseNamespace):
         table: SymbolTable,
         attribute_prefix: str = "file.info.forms.json.",
         required: frozenset[str] = frozenset(),
-        date_attribute: str = "visitdate",
+        date_attribute: str | None = "visitdate",
     ) -> None:
         super().__init__(
             table=table,

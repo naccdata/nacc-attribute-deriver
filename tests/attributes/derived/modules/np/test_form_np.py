@@ -3,6 +3,7 @@ from nacc_attribute_deriver.attributes.derived.modules.np.form_np import (
     NPFormAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import MissingRequiredError
 
 from tests.conftest import set_attribute
 
@@ -201,3 +202,26 @@ class TestCreateNACCCBD:
         assert np_form_attribute._create_nacccbd() == 8
         set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 0)
         assert np_form_attribute._create_nacccbd() == -4
+
+
+class TestGeneralNP:
+    def test_np_formdate(self, np_form_attribute_table, form_prefix):
+        """Test can handle both visitdate and npformdate."""
+        # visitdate
+        assert NPFormAttributeCollection(np_form_attribute_table)
+
+        # npformdate
+        set_attribute(np_form_attribute_table, form_prefix, "visitdate", None)
+        set_attribute(np_form_attribute_table, form_prefix, "npformdate", "2025-01-01")
+        assert NPFormAttributeCollection(np_form_attribute_table)
+
+        # neither, should raise error
+        set_attribute(np_form_attribute_table, form_prefix, "npformdate", None)
+
+        with pytest.raises(MissingRequiredError) as e:
+            NPFormAttributeCollection(np_form_attribute_table)
+
+        assert (
+            str(e.value)
+            == "missing required attributes: file.info.forms.json.npformdate"
+        )

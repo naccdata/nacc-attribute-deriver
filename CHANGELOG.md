@@ -12,7 +12,9 @@ Significant updates and refactorings to support:
 #### RCs:
 
 * rc2: Adds V4 header variables
-* rc3: Updates B1a-related variables to not throw error when missing - data currently not available in FW
+* rc3:
+    * Updates B1a-related variables to not throw error when missing - data currently not available in FW
+    * Handles NP form date being `npformdate` instead of `visitdate` in the new system
 
 ## 1.4.3
 

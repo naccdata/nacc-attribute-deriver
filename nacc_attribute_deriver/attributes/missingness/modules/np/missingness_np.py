@@ -31,7 +31,15 @@ class NPMissingness(FormMissingnessCollection):
     """Class to handle NP missingness values at the file-level."""
 
     def __init__(self, table: SymbolTable) -> None:
-        super().__init__(table, required=frozenset(["formver"]))
+        # in the legacy system, NP used visitdate, but in new system
+        # it uses npformdate, so use that if visitdate is missing
+        date_attribute = "visitdate"
+        if table.get("file.info.forms.json.visitdate") is None:
+            date_attribute = "npformdate"
+
+        super().__init__(
+            table, required=frozenset(["formver"]), date_attribute=date_attribute
+        )
         self.formver = self.form.get_required("formver", int)
 
     def _missingness_np(self, field: str, attr_type: Type[T]) -> T:
