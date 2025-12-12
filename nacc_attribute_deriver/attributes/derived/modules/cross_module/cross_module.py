@@ -26,9 +26,6 @@ from nacc_attribute_deriver.utils.date import (
     date_came_after_sparse,
     date_from_form_date,
 )
-from nacc_attribute_deriver.utils.errors import (
-    AttributeDeriverError,
-)
 
 
 class CrossModuleAttributeCollection(AttributeCollection):
@@ -243,9 +240,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """
         uds_date = self.__get_latest_visitdate("uds-visitdates")
         if not uds_date:
-            raise AttributeDeriverError(
-                "Cannot determine UDS date to compare to MLST form"
-            )
+            # may not be an UDS participant (e.g. MDS)
+            return False
 
         return date_came_after(uds_date, target_date)
 

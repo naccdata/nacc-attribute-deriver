@@ -15,6 +15,7 @@ Significant updates and refactorings to support:
 * rc3:
     * Updates B1a-related variables to not throw error when missing - data currently not available in FW
     * Handles NP form date being `npformdate` instead of `visitdate` in the new system
+    * Updates to not throw error if missing UDS in cross-module calculations, as it may have just been an MDS participant
 
 ## 1.4.3
 
