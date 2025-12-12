@@ -13,6 +13,10 @@ Significant updates and refactorings to support:
 
 * Adds V4 header variables
 
+#### rc3
+
+* Updates B1a related variables to not throw error when missing - currently not available in FW
+
 ## 1.4.3
 
 Under PR [#65](https://github.com/naccdata/nacc-attribute-deriver/pull/65) 
