@@ -18,7 +18,7 @@ Significant updates and refactorings to support:
     * Updates to not throw error if missing UDS in cross-module calculations, as it may have just been an MDS/BDS participant
     * Updates to support `yyyy/mm/dd` and `mm-dd-yyyy` date formats
 * rc4:
-    * Cast NP `formver` to int when the incoming value is a float
+    * Updates to handle float NP `formver`
 
 ## 1.4.3
 
