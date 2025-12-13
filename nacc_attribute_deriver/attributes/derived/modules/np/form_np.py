@@ -12,7 +12,10 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 from nacc_attribute_deriver.utils.date import create_death_date
-from nacc_attribute_deriver.utils.errors import InvalidFieldError
+from nacc_attribute_deriver.utils.errors import (
+    AttributeDeriverError,
+    InvalidFieldError,
+)
 
 from .np_form_wide_evaluator import NPFormWideEvaluator
 from .np_mapper import NPMapper
@@ -21,8 +24,16 @@ from .np_mapper import NPMapper
 class NPFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
         """Check that this is an NP form."""
+        # in the legacy system, NP used visitdate, but in new system
+        # it uses npformdate, so use that if visitdate is missing
+        date_attribute = "visitdate"
+        if table.get("file.info.forms.json.visitdate") is None:
+            date_attribute = "npformdate"
+
         self.__np = FormNamespace(
-            table=table, required=frozenset(["formver", "module"])
+            table=table,
+            required=frozenset(["formver", "module"]),
+            date_attribute=date_attribute,
         )
 
         module = self.__np.get_required("module", str)
@@ -554,7 +565,10 @@ class NPFormAttributeCollection(AttributeCollection):
     def _create_np_form_date(self) -> str:
         """Create NP form date - needed to compare when this was submitted
         relative to other forms like MLST."""
-        return self.__np.get_required("visitdate", str)
+        if not self.__np.date_attribute:
+            raise AttributeDeriverError("No NP date attribute defined")
+
+        return self.__np.get_required(self.__np.date_attribute, str)
 
     def _create_npchrom(self) -> Optional[int]:
         """Keeps track of NPCHROM - required for NACCADMU, NACCFTDM

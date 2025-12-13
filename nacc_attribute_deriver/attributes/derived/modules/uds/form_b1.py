@@ -8,7 +8,6 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
-from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class UDSFormB1Attribute(UDSAttributeCollection):
@@ -114,8 +113,8 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         self, gate: str, field: str, minimum: int, maximum: int
     ) -> int:
         """Handles V3 blood pressure variables, which looks to see if
-        supplemental blood pressure information was provided and returns that
-        if so.
+        supplemental blood pressure information (form B1a) was provided and
+        returns that if so.
 
         Args:
             gate: Field indicating if supplement blood pressure data
@@ -131,9 +130,13 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         if self.uds.get_value(gate, int) == 777:
             value = self.uds.get_value(field, int)
             if value is None:
-                raise AttributeDeriverError(
-                    f"Missing expected value {field} when {gate} == 777 for V3"
-                )
+                # TODO: B1a is currently not handled, so these values are missing
+                # for now just return 888 but should throw error once there
+                # raise AttributeDeriverError(
+                #     f"Missing expected value {field} when {gate} == 777 for V3"
+                # )
+                return 888
+
             return max(minimum, min(maximum, value))
 
         return INFORMED_MISSINGNESS

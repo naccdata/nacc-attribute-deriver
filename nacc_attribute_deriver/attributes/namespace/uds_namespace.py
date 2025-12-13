@@ -9,7 +9,10 @@ from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 class UDSNamespace(FormNamespace):
     def __init__(
-        self, table: SymbolTable, required: frozenset[str] = frozenset()
+        self,
+        table: SymbolTable,
+        required: frozenset[str] = frozenset(),
+        date_attribute: str | None = "visitdate",
     ) -> None:
         """UDS form namespace."""
         super().__init__(
@@ -25,7 +28,7 @@ class UDSNamespace(FormNamespace):
                     "adcid",
                 }
             ),
-            date_attribute="visitdate",
+            date_attribute=date_attribute,
         )
 
         # ensure this is an UDS form

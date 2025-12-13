@@ -11,6 +11,7 @@ from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
+    RawNamespace,
     SubjectDerivedNamespace,
     T,
     WorkingNamespace,
@@ -66,10 +67,13 @@ class FormMissingnessCollection(AttributeCollection):
     def __init__(
         self,
         table: SymbolTable,
-        namespace: Type[FormNamespace] = FormNamespace,
+        namespace: Type[FormNamespace] | Type[RawNamespace] = FormNamespace,
         required: frozenset[str] = frozenset(),
+        date_attribute: str | None = "visitdate",
     ) -> None:
-        self.__form = namespace(table=table, required=required)
+        self.__form = namespace(
+            table=table, required=required, date_attribute=date_attribute
+        )
         self.__prev_record = PreviousRecordNamespace(table=table)
 
     @property
@@ -77,7 +81,7 @@ class FormMissingnessCollection(AttributeCollection):
         return self.__prev_record
 
     @property
-    def form(self) -> FormNamespace:
+    def form(self) -> FormNamespace | RawNamespace:
         return self.__form
 
     def generic_missingness(

@@ -40,7 +40,6 @@ class UDSFormA4aMissingness(UDSMissingness):
                 should be autofilled to prior visit
             If TRTBIOMARK = 0 then VAR should = 8; if TRTBIOMARK = 9 then VAR should = 9
             If ADVEVENT = 0 then VAR should = 8; if ADVEVENT = 9 then VAR should = 9
-            If NEWADEVENT=0 then VAR should =8; If NEWADEVENT=9 then VAR should =9
 
         Else default missingness (-4)
         """
