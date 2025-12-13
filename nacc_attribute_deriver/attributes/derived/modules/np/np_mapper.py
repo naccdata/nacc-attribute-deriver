@@ -14,10 +14,10 @@ from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 class NPMapper:
     """Class to define static mapping functions."""
 
-    def __init__(self, np: FormNamespace):
+    def __init__(self, np: FormNamespace, formver: int):
         """Initializer; assumes np is correct form."""
         self.__np = np
-        self.formver = self.__np.get_required("formver", int)
+        self.formver = formver
 
     def map_gross(self, new: int | None) -> Optional[int]:
         npgross = self.__np.get_value("npgross", int)
