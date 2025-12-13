@@ -159,3 +159,8 @@ class TestUDSFormB1Attribute:
             attr._handle_v3_blood_pressure("gate", "field", 30, 140)
             == INFORMED_MISSINGNESS
         )
+
+        # TODO - testing B1a variable is not there
+        uds_table["file.info.forms.json.gate"] = 777
+        uds_table["file.info.forms.json.field"] = None
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 888
