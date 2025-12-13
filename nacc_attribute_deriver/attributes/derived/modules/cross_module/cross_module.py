@@ -240,7 +240,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         """
         uds_date = self.__get_latest_visitdate("uds-visitdates")
         if not uds_date:
-            # may not be an UDS participant (e.g. MDS)
+            # may not be an UDS participant (e.g. MDS/BDS)
             return False
 
         return date_came_after(uds_date, target_date)
