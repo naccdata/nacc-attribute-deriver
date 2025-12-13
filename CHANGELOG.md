@@ -16,7 +16,7 @@ Significant updates and refactorings to support:
     * Updates B1a-related variables to not throw error when missing - data currently not available in FW
     * Updates to handle NP form date being `npformdate` instead of `visitdate` in the new system
     * Updates to not throw error if missing UDS in cross-module calculations, as it may have just been an MDS/BDS participant
-    * Updates to support `yyyy/mm/dd` date format
+    * Updates to support `yyyy/mm/dd` and `mm-dd-yyyy` date formats
 
 ## 1.4.3
 

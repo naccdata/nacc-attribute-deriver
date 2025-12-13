@@ -10,8 +10,6 @@ from .errors import AttributeDeriverError
 def datetime_from_form_date(date_string: Optional[str]) -> Optional[datetime]:
     """Converts date string to datetime based on format.
 
-    Expects either `%Y-%m-%d` or `%m/%d/%Y` or `%Y/%m/%d`
-
     Args:
       date_string: the date string
     Returns:
@@ -21,13 +19,24 @@ def datetime_from_form_date(date_string: Optional[str]) -> Optional[datetime]:
         return None
 
     try:
+        # YYYY-MM-DD format
         if re.match(r"\d{4}-\d{2}-\d{2}", date_string):
             return datetime.strptime(date_string, "%Y-%m-%d")
 
-        if re.match(r"\d{4}/\d{2}/\d{2}", date_string):
+        # YYYY/MM/DD format
+        elif re.match(r"\d{4}/\d{2}/\d{2}", date_string):
             return datetime.strptime(date_string, "%Y/%m/%d")
 
-        return datetime.strptime(date_string, "%m/%d/%Y")
+        # MM-DD-YYYY
+        elif re.match(r"\d{2}-\d{2}-\d{4}", date_string):
+            return datetime.strptime(date_string, "%m-%d-%Y")
+
+        # MM/DD/YYYY
+        elif re.match(r"\d{2}/\d{2}/\d{4}", date_string):
+            return datetime.strptime(date_string, "%m/%d/%Y")
+
+        raise AttributeDeriverError(f"Invalid date format: {date_string}")
+
     except ValueError as e:
         raise AttributeDeriverError(f"Failed to parse date {date_string}: {e}") from e
 
