@@ -19,11 +19,11 @@ from .np_mapper import NPMapper
 
 
 class NPFormWideEvaluator:
-    def __init__(self, np: FormNamespace, mapper: NPMapper) -> None:
+    def __init__(self, np: FormNamespace, mapper: NPMapper, formver: int) -> None:
         """Initializer; assumes np is correct form."""
         self.np = np
         self.mapper = mapper
-        self.formver = np.get_required("formver", int)
+        self.formver = formver
 
     def get(self, attr: str) -> Optional[int]:
         """Get attribute."""

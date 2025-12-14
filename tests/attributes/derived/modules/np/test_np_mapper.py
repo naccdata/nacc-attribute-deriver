@@ -51,7 +51,7 @@ def np_mapper() -> NPMapper:
     }
 
     np = FormNamespace(table=SymbolTable(data), required=frozenset(["formver"]))
-    return NPMapper(np)
+    return NPMapper(np, 1)
 
 
 class TestNPMapper:
@@ -78,7 +78,8 @@ class TestNPMapper:
         mapper = NPMapper(
             FormNamespace(
                 table=np_form_attribute_table, required=frozenset(["formver"])
-            )
+            ),
+            1,
         )
         assert mapper.map_gross(0) == 0
         set_attribute(np_form_attribute_table, form_prefix, "npgross", 9)
@@ -88,7 +89,8 @@ class TestNPMapper:
         mapper = NPMapper(
             FormNamespace(
                 table=np_form_attribute_table, required=frozenset(["formver"])
-            )
+            ),
+            1,
         )
         assert mapper.map_sub4(1) == 3
         assert mapper.map_sub4(5) == 8
@@ -98,7 +100,8 @@ class TestNPMapper:
         mapper = NPMapper(
             FormNamespace(
                 table=np_form_attribute_table, required=frozenset(["formver"])
-            )
+            ),
+            1,
         )
         assert mapper.map_v9(1) == 1
         assert mapper.map_v9(2) == 0
@@ -109,7 +112,8 @@ class TestNPMapper:
         mapper = NPMapper(
             FormNamespace(
                 table=np_form_attribute_table, required=frozenset(["formver"])
-            )
+            ),
+            1,
         )
         assert mapper.map_vasc(0) == 0
         set_attribute(np_form_attribute_table, form_prefix, "npgross", 9)
@@ -122,7 +126,8 @@ class TestNPMapper:
         mapper = NPMapper(
             FormNamespace(
                 table=np_form_attribute_table, required=frozenset(["formver"])
-            )
+            ),
+            1,
         )
         assert mapper.map_sub1(1) == 0
         assert mapper.map_sub1(5) == 8
@@ -132,7 +137,8 @@ class TestNPMapper:
         mapper = NPMapper(
             FormNamespace(
                 table=np_form_attribute_table, required=frozenset(["formver"])
-            )
+            ),
+            1,
         )
         assert mapper.map_lewy() == 0
 
@@ -153,13 +159,14 @@ class TestNPMapper:
         assert np_mapper.map_comb2(8, 8) == 9
 
     def test_banked_v9(self, np_form_attribute_table, form_prefix):
-        # v1-7 always return None unelss old is specified
+        # v1-7 always return None unless old is specified
         for i in [1, 7]:
             set_attribute(np_form_attribute_table, form_prefix, "formver", i)
             mapper = NPMapper(
                 FormNamespace(
                     table=np_form_attribute_table, required=frozenset(["formver"])
-                )
+                ),
+                i,
             )
 
             assert mapper.banked_v9(None) is None
@@ -172,7 +179,8 @@ class TestNPMapper:
             mapper = NPMapper(
                 FormNamespace(
                     table=np_form_attribute_table, required=frozenset(["formver"])
-                )
+                ),
+                i,
             )
 
             assert mapper.banked_v9(None) == 9
@@ -186,6 +194,7 @@ class TestNPMapper:
                 mapper = NPMapper(
                     FormNamespace(
                         table=np_form_attribute_table, required=frozenset(["formver"])
-                    )
+                    ),
+                    i,
                 )
                 mapper.banked_v9(None)

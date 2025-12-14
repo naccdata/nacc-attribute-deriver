@@ -41,12 +41,18 @@ class NPFormAttributeCollection(AttributeCollection):
             msg = f"Current file is not an NP form: found {module}"
             raise InvalidFieldError(msg)
 
-        self.formver = self.__np.get_required("formver", int)
-        self.mapper = NPMapper(self.__np)
-        self.form_evaluator = NPFormWideEvaluator(self.__np, self.mapper)
+        # in V4, we allow formver to be entered as a float, but its really an
+        # int, so check that it can be cast down to an int
+        raw_formver = self.__np.get_required("formver", float)
+        self.formver = int(raw_formver)
+        if self.formver != raw_formver:
+            raise AttributeDeriverError(f"Unexpected formver for NP: {raw_formver}")
+
+        self.mapper = NPMapper(self.__np, self.formver)
+        self.form_evaluator = NPFormWideEvaluator(self.__np, self.mapper, self.formver)
 
     def _create_npformver(self) -> int:
-        """Form verison.
+        """Form version.
 
         Required.
         """

@@ -17,6 +17,8 @@ Significant updates and refactorings to support:
     * Updates to handle NP form date being `npformdate` instead of `visitdate` in the new system
     * Updates to not throw error if missing UDS in cross-module calculations, as it may have just been an MDS/BDS participant
     * Updates to support `yyyy/mm/dd` and `mm-dd-yyyy` date formats
+* rc4:
+    * Updates to handle float NP `formver`
 
 ## 1.4.3
 

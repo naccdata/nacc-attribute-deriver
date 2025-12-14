@@ -3,7 +3,10 @@ from nacc_attribute_deriver.attributes.derived.modules.np.form_np import (
     NPFormAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.errors import MissingRequiredError
+from nacc_attribute_deriver.utils.errors import (
+    AttributeDeriverError,
+    MissingRequiredError,
+)
 
 from tests.conftest import set_attribute
 
@@ -225,3 +228,19 @@ class TestGeneralNP:
             str(e.value)
             == "missing required attributes: file.info.forms.json.npformdate"
         )
+
+    def test_np_formver(self, np_form_attribute_table, form_prefix):
+        """Test can handle float formvers."""
+        # default case
+        assert NPFormAttributeCollection(np_form_attribute_table)
+
+        # float case
+        set_attribute(np_form_attribute_table, form_prefix, "formver", "11.0")
+        assert NPFormAttributeCollection(np_form_attribute_table)
+
+        # bad float case
+        set_attribute(np_form_attribute_table, form_prefix, "formver", "11.5")
+        with pytest.raises(AttributeDeriverError) as e:
+            NPFormAttributeCollection(np_form_attribute_table)
+
+        assert str(e.value) == "Unexpected formver for NP: 11.5"

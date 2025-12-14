@@ -16,6 +16,9 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
 )
+from nacc_attribute_deriver.utils.errors import (
+    AttributeDeriverError,
+)
 
 
 class NPSubjectMissingness(SubjectMissingnessCollection):
@@ -40,7 +43,10 @@ class NPMissingness(FormMissingnessCollection):
         super().__init__(
             table, required=frozenset(["formver"]), date_attribute=date_attribute
         )
-        self.formver = self.form.get_required("formver", int)
+        raw_formver = self.form.get_required("formver", float)
+        self.formver = int(raw_formver)
+        if self.formver != raw_formver:
+            raise AttributeDeriverError(f"Unexpected formver for NP: {raw_formver}")
 
     def _missingness_np(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for NP;
