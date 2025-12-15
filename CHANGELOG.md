@@ -20,8 +20,7 @@ Significant updates and refactorings to support:
 * rc4:
     * Updates to handle float NP `formver`
 * rc5
-    * Ensure all formvers are floats
-    * Set `INBIRYR` to be 9999 (some cases where it was set to 99)
+    * Fix various typing/range issues encountered when running ETL
 
 ## 1.4.3
 
