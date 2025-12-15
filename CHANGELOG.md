@@ -19,6 +19,9 @@ Significant updates and refactorings to support:
     * Updates to support `yyyy/mm/dd` and `mm-dd-yyyy` date formats
 * rc4:
     * Updates to handle float NP `formver`
+* rc5
+    * Ensure all formvers are floats
+    * Set `INBIRYR` to be 9999 (some cases where it was set to 99)
 
 ## 1.4.3
 
