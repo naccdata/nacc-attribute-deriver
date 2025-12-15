@@ -634,6 +634,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_logiprev(self) -> int:
         """Handles missingness for LOGIPREV."""
+        # sometimes IVP passes through, return informed missingness in that case
+        if self.uds.is_initial():
+            return INFORMED_MISSINGNESS
+
         return self.__handle_logiprev_gate("logiprev")
 
     def _missingness_logimo(self) -> int:
@@ -787,6 +791,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_memtime(self) -> int:
         """Handles missingness for MEMTIME."""
+        # sometimes IVP passes through; return informed missingness in that case
+        if self.uds.is_initial():
+            return INFORMED_MISSINGNESS
+
         memtime = self.uds.get_value("memtime", int)
         memunits = self.uds.get_value("memunits", int)
 

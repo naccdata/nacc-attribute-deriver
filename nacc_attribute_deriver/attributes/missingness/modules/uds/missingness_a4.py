@@ -65,7 +65,7 @@ class UDSFormA4Missingness(UDSMissingness):
         # still set ANYMEDS to 0, or vice versa, so legacy code
         # fixes it by checking if there are actually drugs and
         # basing ANYMEDS off of that
-        if self.formver < 4 and self.__drugs is not None:
+        if self.formver < 4:
             return 1 if self.__drugs else 0
 
         return self.generic_missingness("anymeds", int)

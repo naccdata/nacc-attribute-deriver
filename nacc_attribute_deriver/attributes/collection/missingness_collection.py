@@ -21,6 +21,7 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
+    INVALID_TEXT,
     MISSINGNESS_VALUES,
 )
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
@@ -100,7 +101,7 @@ class FormMissingnessCollection(AttributeCollection):
         # longer (since it needs to perform the operation)
 
         value = self.__form.get_value(attribute, attr_type)
-        if value is None:
+        if value is None or (attr_type == str and value in INVALID_TEXT):  # type: ignore
             if default is not None:
                 return default
 

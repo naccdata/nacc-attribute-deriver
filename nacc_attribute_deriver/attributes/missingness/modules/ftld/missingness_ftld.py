@@ -27,11 +27,10 @@ class FTLDFormMissingness(FormMissingnessCollection):
         """Defines general missingness for FTLD form variables."""
         return self.generic_missingness(field, attr_type)
 
-    def _missingness_ftdsnrat(self) -> float:
-        """Handles missingness for FTDSNRAT."""
+    def _missingness_ftdinfyr(self) -> int:
+        """Handles missingness for FTDINFYR."""
+        # some forms set this to 99; correct to 9999
+        if self.uds.get_value("ftdinfyr", int) == 99:
+            return 9999
 
-        # really just fixes so found 88s are now 88.88
-        if self.form.get_value("ftdsnrat", float) == 88:
-            return 88.88
-
-        return self.generic_missingness("ftdsnrat", float)
+        return self.generic_missingness(field, int)
