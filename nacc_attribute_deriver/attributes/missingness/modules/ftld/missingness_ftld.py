@@ -30,7 +30,7 @@ class FTLDFormMissingness(FormMissingnessCollection):
     def _missingness_ftdinfyr(self) -> int:
         """Handles missingness for FTDINFYR."""
         # some forms set this to 99; correct to 9999
-        if self.uds.get_value("ftdinfyr", int) == 99:
+        if self.form.get_value("ftdinfyr", int) == 99:
             return 9999
 
-        return self.generic_missingness(field, int)
+        return self.generic_missingness("ftdinfyr", int)

@@ -103,7 +103,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         if mmse is None and mmsereas is not None:
             return mmsereas
 
-        return mmse if mmse is not None else INFORMED_MISSINGNESS
+        return mmse if (mmse is not None and mmse != 99) else INFORMED_MISSINGNESS
 
     def __get_educ(self) -> Optional[int]:
         """Educ only explicitly provided at initial visit."""

@@ -91,4 +91,4 @@ class UDSFormA2Missingness(UDSMissingness):
         if self.uds.get_value("inbiryr", int) == 99:
             return 9999
 
-        return self.generic_missingness(field, int)
+        return self.generic_missingness("inbiryr", int)

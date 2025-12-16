@@ -634,10 +634,11 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_logiprev(self) -> int:
         """Handles missingness for LOGIPREV."""
-        # sometimes IVP passes through, return informed missingness in that case
-        if self.uds.is_initial():
+        # sometimes IVP passes through for V3, always return
+        # informed missingness in that case
+        if self.formver == 3 and self.uds.is_initial():
             return INFORMED_MISSINGNESS
-
+        
         return self.__handle_logiprev_gate("logiprev")
 
     def _missingness_logimo(self) -> int:
@@ -791,8 +792,8 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_memtime(self) -> int:
         """Handles missingness for MEMTIME."""
-        # sometimes IVP passes through; return informed missingness in that case
-        if self.uds.is_initial():
+        # sometimes IVP passes through for V3; return informed missingness in that case
+        if self.formver == 3 and self.uds.is_initial():
             return INFORMED_MISSINGNESS
 
         memtime = self.uds.get_value("memtime", int)
@@ -806,7 +807,102 @@ class UDSFormC1C2Missingness(UDSMissingness):
         ):
             return 99
 
-        if (memtime in [88, 99] or memtime is None) and memunits in [95, 96, 97, 98]:
+        if (memtime in [88, 99] or memtime is None) and memunits in [95, 96, 97, 98, 99]:
             return INFORMED_MISSINGNESS
 
         return self.generic_missingness("memtime", int)
+
+    ################################################################
+    # 9/99/999 translations
+    # In SAS this was specifically done for one center that had
+    # this issue for all forms prior to mid-2012. However, these
+    # are invalid values for all, so just adjust for any that
+    # show up
+    ################################################################
+
+    def __handle_invalid_missingness(self, field: str, invalid_missingness: int) -> int:
+        """Handles the invalid value missingness."""
+        if self.uds.get_value(field, int) == invalid_missingness:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness(field, int)
+
+    def _missingness_mmseloc(self) -> int:
+        """Handles missingness for MMSELOC."""
+        return self.__handle_invalid_missingness("mmseloc", 9)
+
+    def _missingness_mmselan(self) -> int:
+        """Handles missingness for MMSELAN."""
+        return self.__handle_invalid_missingness("mmselan", 9)
+
+    def _missingness_mmseorda(self) -> int:
+        """Handles missingness for MMSEORDA."""
+        return self.__handle_invalid_missingness("mmseorda", 99)
+
+    def _missingness_mmseorlo(self) -> int:
+        """Handles missingness for MMSEORLO."""
+        return self.__handle_invalid_missingness("mmseorlo", 99)
+
+    def _missingness_pentagon(self) -> int:
+        """Handles missingness for PENTAGON."""
+        return self.__handle_invalid_missingness("pentagon", 99)
+
+    def _missingness_mmse(self) -> int:
+        """Handles missingness for MMSE."""
+        return self.__handle_invalid_missingness("mmse", 99)
+
+    def _missingness_npsycloc(self) -> int:
+        """Handles missingness for NPSYCLOC."""
+        return self.__handle_invalid_missingness("npsycloc", 9)
+
+    def _missingness_npsylan(self) -> int:
+        """Handles missingness for NPSYLAN."""
+        return self.__handle_invalid_missingness("npsylan", 9)
+
+    def _missingness_digif(self) -> int:
+        """Handles missingness for DIGIF."""
+        return self.__handle_invalid_missingness("digif", 99)
+
+    def _missingness_digiflen(self) -> int:
+        """Handles missingness for DIGIFLEN."""
+        return self.__handle_invalid_missingness("digiflen", 99)
+
+    def _missingness_digib(self) -> int:
+        """Handles missingness for DIGIB."""
+        return self.__handle_invalid_missingness("digib", 99)
+
+    def _missingness_digiblen(self) -> int:
+        """Handles missingness for DIGIBLEN."""
+        return self.__handle_invalid_missingness("digiblen", 99)
+
+    def _missingness_animals(self) -> int:
+        """Handles missingness for ANIMALS."""
+        return self.__handle_invalid_missingness("animals", 99)
+
+    def _missingness_veg(self) -> int:
+        """Handles missingness for VEG."""
+        return self.__handle_invalid_missingness("veg", 99)
+
+    def _missingness_traila(self) -> int:
+        """Handles missingness for TRAILA."""
+        return self.__handle_invalid_missingness("traila", 999)
+
+    def _missingness_trailb(self) -> int:
+        """Handles missingness for TRAILB."""
+        return self.__handle_invalid_missingness("trailb", 999)
+
+    def _missingness_memunits(self) -> int:
+        """Handles missingness for MEMUNITS."""
+        return self.__handle_invalid_missingness("memunits", 99)
+
+    def _missingness_wais(self) -> int:
+        """Handles missingness for WAIS."""
+        return self.__handle_invalid_missingness("wais", 99)
+
+    def _missingness_boston(self) -> int:
+        """Handles missingness for BOSTON."""
+        return self.__handle_invalid_missingness("boston", 99)
+
+    def _missingness_cogstat(self) -> int:
+        """Handles missingness for COGSTAT."""
+        return self.__handle_invalid_missingness("cogstat", 9)
