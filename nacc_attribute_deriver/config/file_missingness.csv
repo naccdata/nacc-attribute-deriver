@@ -108,7 +108,7 @@ csf,csfttdy,file.info.resolved.csfttdy,update,FALSE,int
 csf,csfttyr,file.info.resolved.csfttyr,update,FALSE,int
 csf,csfttmd,file.info.resolved.csfttmd,update,FALSE,int
 csf,csfttmdx,file.info.resolved.csfttmdx,update,FALSE,str
-ftld,formver,file.info.resolved.formver,update,FALSE,float
+ftld,ftld_formver,file.info.resolved.formver,update,FALSE,float
 ftld,ftdaff,file.info.resolved.ftdaff,update,FALSE,int
 ftld,ftdmutat,file.info.resolved.ftdmutat,update,FALSE,int
 ftld,ftdpmut,file.info.resolved.ftdpmut,update,FALSE,int
@@ -590,7 +590,7 @@ ftld,ftdcbfoa,file.info.resolved.ftdcbfoa,update,FALSE,int
 ftld,ftdcbfos,file.info.resolved.ftdcbfos,update,FALSE,str
 ftld,ftdothi,file.info.resolved.ftdothi,update,FALSE,int
 ftld,ftdothis,file.info.resolved.ftdothis,update,FALSE,str
-lbd,formver,file.info.resolved.formver,update,FALSE,float
+lbd,lbd_formver,file.info.resolved.formver,update,FALSE,float
 lbd,lbssaliv,file.info.resolved.lbssaliv,update,FALSE,int
 lbd,lbsswall,file.info.resolved.lbsswall,update,FALSE,int
 lbd,lbsinsex,file.info.resolved.lbsinsex,update,FALSE,int
@@ -1264,7 +1264,7 @@ np,npatgfr1,file.info.resolved.npatgfr1,update,FALSE,int
 np,npatgfr2,file.info.resolved.npatgfr2,update,FALSE,int
 np,npatgfr3,file.info.resolved.npatgfr3,update,FALSE,int
 np,npatgfr4,file.info.resolved.npatgfr4,update,FALSE,int
-uds,formver,file.info.resolved.formver,update,FALSE,float
+uds,uds_formver,file.info.resolved.formver,update,FALSE,float
 uds,birthmo,file.info.resolved.birthmo,update,FALSE,int
 uds,birthyr,file.info.resolved.birthyr,update,FALSE,int
 uds,chldhdctry,file.info.resolved.chldhdctry,update,FALSE,str
