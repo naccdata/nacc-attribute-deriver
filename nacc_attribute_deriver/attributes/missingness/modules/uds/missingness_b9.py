@@ -169,7 +169,8 @@ class UDSFormB9Missingness(UDSMissingness):
             return self.__handle_behavior_motor_v1_fvp(field)
 
         return self._handle_cascading_gates(
-            gates, field, missingness_value, default=missingness_value)
+            gates, field, missingness_value, default=missingness_value
+        )
 
     def _missingness_beapathy(self) -> int:
         """Handles missingness for BEAPATHY."""
@@ -325,7 +326,8 @@ class UDSFormB9Missingness(UDSMissingness):
             return self.__handle_behavior_motor_v1_fvp(field)
 
         return self._handle_cascading_gates(
-            gates, field, missingness_value, default=missingness_value)
+            gates, field, missingness_value, default=missingness_value
+        )
 
     def _missingness_mogait(self) -> int:
         """Handles missingness for MOGAIT."""
