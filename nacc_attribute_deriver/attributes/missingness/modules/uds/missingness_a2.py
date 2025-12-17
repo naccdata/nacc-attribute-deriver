@@ -80,3 +80,15 @@ class UDSFormA2Missingness(UDSMissingness):
     def _missingness_ineduc(self) -> int:
         """Handles missingness for INEDUC."""
         return self.__handle_newinf_gate("ineduc")
+
+    #######################
+    # Corrected variables #
+    #######################
+
+    def _missingness_inbiryr(self) -> int:
+        """Handles missingness for INBIRYR."""
+        # some forms set this to 99; correct to 9999
+        if self.uds.get_value("inbiryr", int) == 99:
+            return 9999
+
+        return self.generic_missingness("inbiryr", int)

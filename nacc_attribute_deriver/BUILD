@@ -7,7 +7,7 @@ python_distribution(
     sdist=True,
     provides=python_artifact(
         name="nacc-attribute-deriver",
-        version="2.0.0-rc4",
+        version="2.0.0-rc5",
         description="Uses rules to derive attribute values from file data",
         author="NACC",
         author_email="nacchelp@uw.edu",

@@ -335,3 +335,13 @@ class TestUDSFormB9Missingness:
 
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_decage() == 65
+
+    def test_coglang(self, uds_table):
+        """Test COGLANG."""
+
+        # case 1: decclin and decclcog are None, expect 0
+        uds_table["file.info.forms.json"].update(
+            {"formver": 2.0, "decclin": None, "decclcog": None, "coglang": None}
+        )
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_coglang() == 0

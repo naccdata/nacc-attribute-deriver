@@ -1,5 +1,7 @@
 """Tests UDS Form A4 missingness attributes."""
 
+import copy
+import random
 import pytest
 
 from typing import Any, Dict
@@ -12,7 +14,8 @@ from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 
 @pytest.fixture(scope="function")
 def drugs_table(uds_table) -> Dict[str, Any]:
-    uds_table["subject.info.working.longitudinal"] = {
+    drugs_table = copy.deepcopy(uds_table)
+    drugs_table["subject.info.working.longitudinal"] = {
         "drugs-list": [
             # add multiple to make sure it maps to the right one
             {"date": "2000-01-01", "value": []},
@@ -23,7 +26,7 @@ def drugs_table(uds_table) -> Dict[str, Any]:
             {"date": "2025-12-12", "value": []},
         ]
     }
-    return uds_table
+    return drugs_table
 
 
 class TestUDSFormA4Missingness:
@@ -48,3 +51,13 @@ class TestUDSFormA4Missingness:
         assert attr._missingness_drug_id4() == "d00269"
         assert attr._missingness_drug_id5() == "d00689"
         assert attr._missingness_drug_id6() == INFORMED_BLANK
+
+    def test_missingness_anymeds(self, drugs_table, uds_table):
+        """Test ANYMEDS is solely based on drugs list."""
+        attr = UDSFormA4Missingness(drugs_table)
+        drugs_table["file.info.forms.json.anymeds"] = random.choice([0, 2])
+        assert attr._missingness_anymeds() == 1
+
+        attr = UDSFormA4Missingness(uds_table)
+        uds_table["file.info.forms.json.anymeds"] = 1
+        assert attr._missingness_anymeds() == 0

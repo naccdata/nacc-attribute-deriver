@@ -80,12 +80,14 @@ class UDSFormB9Missingness(UDSMissingness):
         missingness_value: int = 0,
         skip_prev_check: bool = False,
     ) -> int:
-        """Handle cognitive varialbes, which have some weird recoding logic in
+        """Handle cognitive variables, which have some weird recoding logic in
         V1 for FVP."""
         if self.formver == 1 and not self.uds.is_initial():
             return self.__handle_cognitive_v1_fvp(field, skip_prev_check)
 
-        return self._handle_cascading_gates(gates, field, missingness_value)
+        return self._handle_cascading_gates(
+            gates, field, missingness_value, default=missingness_value
+        )  # default same as missingness in this case
 
     def _missingness_cogmem(self) -> int:
         """Handles missingness for COGMEM."""
@@ -166,7 +168,9 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.formver == 1 and not self.uds.is_initial():
             return self.__handle_behavior_motor_v1_fvp(field)
 
-        return self._handle_cascading_gates(gates, field, missingness_value)
+        return self._handle_cascading_gates(
+            gates, field, missingness_value, default=missingness_value
+        )
 
     def _missingness_beapathy(self) -> int:
         """Handles missingness for BEAPATHY."""
@@ -321,7 +325,9 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.formver == 1 and not self.uds.is_initial():
             return self.__handle_behavior_motor_v1_fvp(field)
 
-        return self._handle_cascading_gates(gates, field, missingness_value)
+        return self._handle_cascading_gates(
+            gates, field, missingness_value, default=missingness_value
+        )
 
     def _missingness_mogait(self) -> int:
         """Handles missingness for MOGAIT."""
@@ -714,7 +720,7 @@ class UDSFormB9Missingness(UDSMissingness):
             if p_decclin == 1 and p_field == 9:
                 return 9
 
-        return self.generic_missingness(field, int)
+        return self.generic_missingness(field, int, default=0)
 
     def __handle_behavior_motor_v1_fvp(self, field: str) -> int:
         """Handles recoding of behavior/motor variables in V1 on FVP."""
@@ -726,7 +732,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if p_decclin == 1 and self.__b9chg == 1:
             return 9
 
-        return self.generic_missingness(field, int)
+        return self.generic_missingness(field, int, default=0)
 
     def __handle_xmode_v1(self, field: str) -> Optional[int]:
         """Handles V1 COGMODE, BEMODE, and MOMODE.

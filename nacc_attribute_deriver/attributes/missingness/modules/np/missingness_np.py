@@ -79,11 +79,14 @@ class NPMissingness(FormMissingnessCollection):
         nppmih = self.form.get_value("nppmih", float)
         nppmim = self.form.get_value("nppmim", float)
 
-        if nppmih is not None:
+        if nppmih is not None and nppmih != 99:
             if nppmim is not None:
                 return nppmih + (nppmim / 10)
 
             return nppmih
+
+        if nppmih == 99:
+            return 99.9
 
         return self.generic_missingness("nppmih", float)
 
@@ -133,6 +136,17 @@ class NPMissingness(FormMissingnessCollection):
                 return 99.9 if is_two_digits else 9.9
             elif npinf == 0:
                 return INFORMED_MISSINGNESS_FLOAT
+
+        # fix flat 88s/99s to 88.8/99.9
+        value = self.form.get_value(field, float)
+        if value == 88:
+            return 88.8
+        if value == 8:
+            return 8.8
+        if value == 99:
+            return 99.9
+        if value == 9:
+            return 9.9
 
         return self.generic_missingness(field, float)
 

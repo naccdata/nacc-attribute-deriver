@@ -20,3 +20,7 @@ class GenericUDSMissingness(UDSMissingness):
     def _missingness_uds(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for UDS; -4 if missing."""
         return self.generic_missingness(field, attr_type)
+
+    def _missingness_uds_formver(self) -> float:
+        """Handles missingness for UDS FORMVER."""
+        return self.generic_missingness("formver", float)

@@ -65,7 +65,10 @@ class UDSFormB1Attribute(UDSAttributeCollection):
             naccbmi = (weight * 703) / (height * height)
 
             # + 0.0001 so we ensure exact halves round up, not down
-            return round(naccbmi + 0.0001, 1)
+            naccbmi = round(naccbmi + 0.0001, 1)
+
+            # enforce range 10 - 100
+            return max(10, min(100, naccbmi))
 
         return 888.8
 

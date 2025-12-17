@@ -19,6 +19,8 @@ Significant updates and refactorings to support:
     * Updates to support `yyyy/mm/dd` and `mm-dd-yyyy` date formats
 * rc4:
     * Updates to handle float NP `formver`
+* rc5
+    * Fix various typing/range issues encountered when running ETL
 
 ## 1.4.3
 

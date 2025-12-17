@@ -30,3 +30,13 @@ class TestUDSFormA2Missingness:
         uds_table["file.info.forms.json"].update({"incntmod": 1, "incnttim": 2})
         assert attr._missingness_incntmod() == 1
         assert attr._missingness_incnttim() == 2
+
+    def test_missingness_inbiryr(self, uds_table):
+        """Tests INBIRYR is corrected when set to 99."""
+        attr = UDSFormA2Missingness(uds_table)
+
+        uds_table["file.info.forms.json.inbiryr"] = "99"
+        assert attr._missingness_inbiryr() == 9999
+
+        uds_table["file.info.forms.json.inbiryr"] = "1999"
+        assert attr._missingness_inbiryr() == 1999

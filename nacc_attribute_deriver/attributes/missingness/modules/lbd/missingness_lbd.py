@@ -21,3 +21,7 @@ class LBDFormMissingness(FormMissingnessCollection):
     def _missingness_lbd(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for LBD form variables."""
         return self.generic_missingness(field, attr_type)
+
+    def _missingness_lbd_formver(self) -> float:
+        """Handles missingness for LBD FORMVER."""
+        return self.generic_missingness("formver", float)
