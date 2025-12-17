@@ -168,7 +168,8 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.formver == 1 and not self.uds.is_initial():
             return self.__handle_behavior_motor_v1_fvp(field)
 
-        return self._handle_cascading_gates(gates, field, missingness_value)
+        return self._handle_cascading_gates(
+            gates, field, missingness_value, default=missingness_value)
 
     def _missingness_beapathy(self) -> int:
         """Handles missingness for BEAPATHY."""
@@ -323,7 +324,8 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.formver == 1 and not self.uds.is_initial():
             return self.__handle_behavior_motor_v1_fvp(field)
 
-        return self._handle_cascading_gates(gates, field, missingness_value)
+        return self._handle_cascading_gates(
+            gates, field, missingness_value, default=missingness_value)
 
     def _missingness_mogait(self) -> int:
         """Handles missingness for MOGAIT."""
@@ -728,7 +730,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if p_decclin == 1 and self.__b9chg == 1:
             return 9
 
-        return self.generic_missingness(field, int)
+        return self.generic_missingness(field, int, default=0)
 
     def __handle_xmode_v1(self, field: str) -> Optional[int]:
         """Handles V1 COGMODE, BEMODE, and MOMODE.

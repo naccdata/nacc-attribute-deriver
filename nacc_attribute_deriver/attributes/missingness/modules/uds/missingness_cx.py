@@ -865,6 +865,10 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """Handles missingness for NPSYLAN."""
         return self.__handle_invalid_missingness("npsylan", 9)
 
+    def _missingness_logimem(self) -> int:
+        """Handles missingness for LOGIMEM."""
+        return self.__handle_invalid_missingness("logimem", 99)
+
     def _missingness_digif(self) -> int:
         """Handles missingness for DIGIF."""
         return self.__handle_invalid_missingness("digif", 99)

@@ -1264,6 +1264,7 @@ np,npatgfr1,file.info.resolved.npatgfr1,update,FALSE,int
 np,npatgfr2,file.info.resolved.npatgfr2,update,FALSE,int
 np,npatgfr3,file.info.resolved.npatgfr3,update,FALSE,int
 np,npatgfr4,file.info.resolved.npatgfr4,update,FALSE,int
+uds,adcid,file.info.resolved.adcid,update,FALSE,int
 uds,uds_formver,file.info.resolved.formver,update,FALSE,float
 uds,birthmo,file.info.resolved.birthmo,update,FALSE,int
 uds,birthyr,file.info.resolved.birthyr,update,FALSE,int
