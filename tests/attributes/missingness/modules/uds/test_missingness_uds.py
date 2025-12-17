@@ -4,7 +4,7 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSMissingness,
 )
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_uds import (
-    GenericUDSMissingness
+    GenericUDSMissingness,
 )
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 

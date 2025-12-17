@@ -101,7 +101,7 @@ class FormMissingnessCollection(AttributeCollection):
         # longer (since it needs to perform the operation)
 
         value = self.__form.get_value(attribute, attr_type)
-        if value is None or (attr_type == str and value in INVALID_TEXT):  # type: ignore
+        if value is None or (attr_type == str and value in INVALID_TEXT):  # noqa: E721
             if default is not None:
                 return default
 

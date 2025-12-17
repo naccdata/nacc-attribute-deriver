@@ -314,3 +314,36 @@ class TestUDSFormC1C2Missingness:
 
         assert attr._missingness_mocatrai() == 96
         assert attr._missingness_mocadigi() == 96
+
+    def test_invalid_missingness(self, uds_table):
+        """Test case where things are set to 9/99/999, need to change to -4."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "mmseloc": 9,
+                "mmseorda": 99,
+                "traila": 999,
+            }
+        )
+
+        attr = UDSFormC1C2Missingness(uds_table)
+        assert attr._missingness_mmseloc() == INFORMED_MISSINGNESS
+        assert attr._missingness_mmseorda() == INFORMED_MISSINGNESS
+        assert attr._missingness_traila() == INFORMED_MISSINGNESS
+
+    def test_logiprev_memtime_initial_packet(self, uds_table):
+        """These are not relevant to the initial packet but sometimes get set;
+        make sure they are casted down to -4."""
+        uds_table["file.info.forms.json"].update(
+            {"packet": "I", "formver": 3, "logiprev": 15, "memtime": 20}
+        )
+
+        attr = UDSFormC1C2Missingness(uds_table)
+        assert attr._missingness_logiprev() == INFORMED_MISSINGNESS
+        assert attr._missingness_memtime() == INFORMED_MISSINGNESS
+
+        # check run as expected on FVP packet
+        uds_table["file.info.forms.json.formver"] = 2
+        attr = UDSFormC1C2Missingness(uds_table)
+
+        assert attr._missingness_logiprev() == 15
+        assert attr._missingness_memtime() == 20

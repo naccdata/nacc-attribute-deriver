@@ -1,6 +1,5 @@
-"""Class to handle LBD 777 (provided at previous visit) values,
-which are typically all ages.
-"""
+"""Class to handle LBD 777 (provided at previous visit) values, which are
+typically all ages."""
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     FormMissingnessCollection,

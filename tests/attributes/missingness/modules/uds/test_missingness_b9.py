@@ -341,13 +341,7 @@ class TestUDSFormB9Missingness:
 
         # case 1: decclin and decclcog are None, expect 0
         uds_table["file.info.forms.json"].update(
-            {
-                "formver": 2.0,
-                "decclin": None,
-                "decclcog": None,
-                "coglang": None
-            }
+            {"formver": 2.0, "decclin": None, "decclcog": None, "coglang": None}
         )
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_coglang() == 0
-

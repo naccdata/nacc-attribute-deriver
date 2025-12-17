@@ -71,6 +71,19 @@ class TestUDSFormB1Attribute:
         attr = UDSFormB1Attribute(uds_table)
         assert attr._create_naccbmi() == 35.2
 
+        # test min/max enforced
+        uds_table["file.info.forms.json"].update(
+            {"b1sub": 1, "weight": 55, "height": 62, "heigdec": 4}  # calculates 9.9
+        )
+        attr = UDSFormB1Attribute(uds_table)
+        assert attr._create_naccbmi() == 10
+
+        uds_table["file.info.forms.json"].update(
+            {"b1sub": 1, "weight": 400, "height": 36}
+        )
+        attr = UDSFormB1Attribute(uds_table)
+        assert attr._create_naccbmi() == 100
+
         # tests one or both is missing/unknown
         uds_table["file.info.forms.json"].update(
             {"b1sub": 1, "weight": None, "height": 60}

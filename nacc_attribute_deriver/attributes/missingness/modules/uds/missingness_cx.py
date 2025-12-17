@@ -638,7 +638,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         # informed missingness in that case
         if self.formver == 3 and self.uds.is_initial():
             return INFORMED_MISSINGNESS
-        
+
         return self.__handle_logiprev_gate("logiprev")
 
     def _missingness_logimo(self) -> int:
@@ -807,7 +807,13 @@ class UDSFormC1C2Missingness(UDSMissingness):
         ):
             return 99
 
-        if (memtime in [88, 99] or memtime is None) and memunits in [95, 96, 97, 98, 99]:
+        if (memtime in [88, 99] or memtime is None) and memunits in [
+            95,
+            96,
+            97,
+            98,
+            99,
+        ]:
             return INFORMED_MISSINGNESS
 
         return self.generic_missingness("memtime", int)

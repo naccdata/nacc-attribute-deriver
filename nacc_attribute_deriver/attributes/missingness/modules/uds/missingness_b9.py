@@ -86,10 +86,8 @@ class UDSFormB9Missingness(UDSMissingness):
             return self.__handle_cognitive_v1_fvp(field, skip_prev_check)
 
         return self._handle_cascading_gates(
-            gates,
-            field,
-            missingness_value,
-            default=missingness_value)  # default same as missingness in this case
+            gates, field, missingness_value, default=missingness_value
+        )  # default same as missingness in this case
 
     def _missingness_cogmem(self) -> int:
         """Handles missingness for COGMEM."""
