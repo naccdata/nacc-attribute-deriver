@@ -1,7 +1,10 @@
 """Tests generic UDS missingness attributes."""
 
-from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_uds import (
+from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSMissingness,
+)
+from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_uds import (
+    GenericUDSMissingness
 )
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
@@ -51,3 +54,8 @@ class TestUDSMissingness:
         uds_table["_prev_record.info.resolved.testval"] = None
         assert attr.handle_prev_visit("testval", int) == INFORMED_MISSINGNESS
         assert attr.handle_prev_visit("testval", int, default=0) == 0
+
+    def test_uds_formver(self, uds_table):
+        """Tests UDS Formver."""
+        attr = GenericUDSMissingness(uds_table)
+        assert attr._missingness_uds_formver() == 3.0

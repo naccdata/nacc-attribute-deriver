@@ -63,6 +63,10 @@ class LBDFormPrevVisitMissingness(FormMissingnessCollection):
         """Captures LBDAGE."""
         return self.__handle_lbd_age_prev_value("lbdage")
 
+    def _missingness_lbdage2(self) -> int:
+        """Captures LBDAGE2."""
+        return self.__handle_lbd_age_prev_value("lbdage2")
+
     def _missingness_lbdelage(self) -> int:
         """Captures LBDELAGE."""
         return self.__handle_lbd_age_prev_value("lbdelage")
