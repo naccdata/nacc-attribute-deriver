@@ -21,6 +21,8 @@ Significant updates and refactorings to support:
     * Updates to handle float NP `formver`
 * rc5
     * Fix various typing/range issues encountered when running ETL
+* rc6
+    * Make `pentagon` an honorary v1 variable
 
 ## 1.4.3
 
