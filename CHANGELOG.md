@@ -23,6 +23,7 @@ Significant updates and refactorings to support:
     * Fix various typing/range issues encountered when running ETL
 * rc6
     * Make `pentagon` an honorary v1 variable
+    * Adds ADCID to all form scopes
 
 ## 1.4.3
 
