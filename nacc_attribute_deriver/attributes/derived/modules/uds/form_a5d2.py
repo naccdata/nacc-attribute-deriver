@@ -372,16 +372,6 @@ class UDSFormA5D2Attribute(UDSAttributeCollection):
         V3 and earlier: From form A5
         """
         if self.formver < 4:
-            # in V3, the following values aren't provided,
-            # so pull value from previous visit
-            # TODO: wait for RT to decide on behavior, might be like NACCTBI
-            # if self.formver == 3 and not self.uds.is_initial():
-            #     result = None
-            #     if self.prev_record:
-            #         result = self.prev_record.get_derived_value("naccdep", int)
-
-            #     return result if result else INFORMED_MISSINGNESS
-
             dep2yrs = self.uds.get_value("dep2yrs", int)
             depothr = self.uds.get_value("depothr", int)
             if dep2yrs == 1 or depothr == 1:

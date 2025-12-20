@@ -24,6 +24,7 @@ Significant updates and refactorings to support:
 * rc6
     * Make `pentagon` an honorary v1 variable
     * Adds ADCID to all form scopes
+    * Fixes known discrepancies
 
 ## 1.4.3
 

@@ -23,8 +23,6 @@ class UDSFormA2Attribute(UDSAttributeCollection):
     def _create_naccninr(self) -> int:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
         co-participant).
-
-        May need to carry forward value.
         """
         if self.formver == 4:
             return INFORMED_MISSINGNESS
@@ -48,12 +46,8 @@ class UDSFormA2Attribute(UDSAttributeCollection):
 
             return result
 
-        # otherwise may need to pull forward
-        naccninr = None
-        if self.prev_record:
-            naccninr = self.prev_record.get_derived_value("naccninr", int)
-
-        return naccninr if naccninr is not None else INFORMED_MISSINGNESS
+        # NACCNINR is not pulled forward, so just return missingness
+        return INFORMED_MISSINGNESS
 
     def _create_naccincntfq(self) -> int:
         """Creates NACCINCNTFQ - frequency of contact."""

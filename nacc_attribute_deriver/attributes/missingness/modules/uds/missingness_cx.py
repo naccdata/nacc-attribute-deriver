@@ -444,19 +444,12 @@ class UDSFormC1C2Missingness(UDSMissingness):
     # Non-optional gated variables #
     ################################
 
-    def _handle_non_optional_gate(
-        self, gate: str, field: str, set_to_missingness: int = False
-    ) -> int:
+    def _handle_non_optional_gate(self, gate: str, field: str) -> int:
         """Generically handle:
 
         If GATE is 95-98 then FIELD should = GATE.
         """
         check_values = [95, 96, 97, 98]
-
-        # REGRESSION - most should set to gate, not informed missingness
-        if set_to_missingness and self.uds.get_value(gate, int) in check_values:
-            return INFORMED_MISSINGNESS
-
         result = self.handle_set_to_gate(gate, check_values=check_values)
         if result is not None:
             return result
@@ -501,27 +494,15 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_craftdti(self) -> int:
         """Handles missingness for CRAFTDTI."""
-        # REGRESSION: in legacy, we set it to -4 if the condition
-        # passes, not the gate
-        return self._handle_non_optional_gate(
-            "craftdvr", "craftdti", set_to_missingness=self.formver < 4
-        )
+        return self._handle_non_optional_gate("craftdvr", "craftdti")
 
     def _missingness_craftcue(self) -> int:
         """Handles missingness for CRAFTCUE."""
-        # REGRESSION: in legacy, we set it to -4 if the condition
-        # passes, not the gate
-        return self._handle_non_optional_gate(
-            "craftdvr", "craftcue", set_to_missingness=self.formver < 4
-        )
+        return self._handle_non_optional_gate("craftdvr", "craftcue")
 
     def _missingness_udsbenrs(self) -> int:
         """Handles missingness for UDSBENRS."""
-        # REGRESSION: in legacy, we set it to -4 if the condition
-        # passes, not the gate. Not in V4 so always set to missingness
-        return self._handle_non_optional_gate(
-            "udsbentd", "udsbenrs", set_to_missingness=True
-        )
+        return self._handle_non_optional_gate("udsbentd", "udsbenrs")
 
     ############################
     # UDSVER-related variables #
