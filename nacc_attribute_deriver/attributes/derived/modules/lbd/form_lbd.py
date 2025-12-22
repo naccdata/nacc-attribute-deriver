@@ -27,15 +27,21 @@ class LBDFormAttributeCollection(AttributeCollection):
         assumes LBD form."""
         return 1
 
+    ###################################################
+    # Age attributes - aka those with a 777 prev code #
+    ###################################################
+
     def __handle_age_attribute(self, field: str, prev_code: int = 777) -> Optional[int]:
-        """REGRESSION: It looks like the LBD/FTLD QAF does not handle 777?
-        Like it stays as 777. So exact behavior is undefined. For now, just
-        keep track of non-777s."""
+        """Keep track of non-777s."""
         value = self.__lbd.get_value(field, int)
         if value == prev_code:
             return None
 
         return value
+
+    #######
+    # B1l #
+    #######
 
     def _create_lbpsyage(self) -> Optional[int]:
         """Captures LBPSYAGE."""
@@ -64,3 +70,43 @@ class LBDFormAttributeCollection(AttributeCollection):
     def _create_lbsagebr(self) -> Optional[int]:
         """Captures LBSAGEBR."""
         return self.__handle_age_attribute("lbsagebr")
+
+    #######
+    # B4l #
+    #######
+
+    def _create_lbdage(self) -> Optional[int]:
+        """Captures LBDAGE."""
+        return self.__handle_age_attribute("lbdage")
+
+    def _create_lbdage2(self) -> Optional[int]:
+        """Captures LBDAGE2."""
+        return self.__handle_age_attribute("lbdage2")
+
+    def _create_lbdelage(self) -> Optional[int]:
+        """Captures LBDELAGE."""
+        return self.__handle_age_attribute("lbdelage")
+
+    def _create_lbhalage(self) -> Optional[int]:
+        """Captures LBHALAGE."""
+        return self.__handle_age_attribute("lbhalage")
+
+    def _create_lbanxage(self) -> Optional[int]:
+        """Captures LBANXAGE."""
+        return self.__handle_age_attribute("lbanxage")
+
+    def _create_lbapaage(self) -> Optional[int]:
+        """Captures LBAPAAGE."""
+        return self.__handle_age_attribute("lbapaage")
+
+    #######
+    # B9l #
+    #######
+
+    def _create_sccoagen(self) -> Optional[int]:
+        """Captures SCCOAGEN."""
+        return self.__handle_age_attribute("sccoagen")
+
+    def _create_sccoaged(self) -> Optional[int]:
+        """Captures SCCOAGED."""
+        return self.__handle_age_attribute("sccoaged")

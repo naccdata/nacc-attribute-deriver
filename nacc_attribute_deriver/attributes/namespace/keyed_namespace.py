@@ -73,7 +73,7 @@ class PreviousRecordNamespace(BaseNamespace):
             if result is not None:
                 return result
 
-        resolved = self.get_value(f"resolved.{attribute}", attr_type, default)
+        resolved = self.get_value(f"resolved.{attribute}", attr_type)
         if resolved is None:
             return self.get_value(f"forms.json.{attribute}", attr_type, default)
 
