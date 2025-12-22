@@ -26,13 +26,13 @@ class TestUDSFormA2Attribute:
         # not submitted/newinf != 1, no previous value to carry forward
         assert attr._create_naccninr() == INFORMED_MISSINGNESS
 
-        # newinf != 1 and carry forward from previous visit
+        # newinf != 1; no longer carrying forward from previous visit
         table["_prev_record.info"] = {
             "forms": {"json": {"visitdate": "2020-01-01"}},
             "derived": {"naccninr": 3},
         }
         attr = UDSFormA2Attribute(table)
-        assert attr._create_naccninr() == 3
+        assert attr._create_naccninr() == INFORMED_MISSINGNESS
 
         # newinf = 1, so generate
         table["file.info.forms.json.inrace"] = 99

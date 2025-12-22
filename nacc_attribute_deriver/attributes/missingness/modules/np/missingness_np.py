@@ -4,7 +4,7 @@ See derivenp.sas. This particular form has a lot of recode macros for to
 handle missingness variables.
 """
 
-from typing import Type
+from typing import Type, Optional
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     FormMissingnessCollection,
@@ -47,6 +47,15 @@ class NPMissingness(FormMissingnessCollection):
         self.formver = int(raw_formver)
         if self.formver != raw_formver:
             raise AttributeDeriverError(f"Unexpected formver for NP: {raw_formver}")
+
+    def generic_missingness(
+        self, attribute: str, attr_type: Type[T], default: Optional[T] = None
+    ) -> T:
+        """For NP only, the default for floats is -4.4 not -4.0."""
+        if default is None and attr_type == float:  # noqa: E721
+            default = INFORMED_MISSINGNESS_FLOAT
+
+        return super().generic_missingness(attribute, attr_type, default=default)
 
     def _missingness_np(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for NP;
