@@ -28,7 +28,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
         no_return_value: int = 8,
         unknown_return_value: int = 9,
         carry_forward: bool = False,
-        skip_gate_on_legacy: bool = True,
     ) -> int:
         """Handle generic A5D2 when there is both a gate and potentially a
         carryforward (777) situation:
@@ -45,12 +44,11 @@ class UDSFormA5D2Missingness(UDSMissingness):
         If GATE = 9, then FIELD should be 9
         Else generic missingness
         """
-        if self.formver >= 4 or not skip_gate_on_legacy:
-            gate_value = self.uds.get_value(gate, int)
-            if gate_value == 0:
-                return no_return_value
-            if gate_value == 9:
-                return unknown_return_value
+        gate_value = self.uds.get_value(gate, int)
+        if gate_value == 0:
+            return no_return_value
+        if gate_value == 9:
+            return unknown_return_value
 
         if carry_forward:
             return self.handle_prev_visit(field, int, prev_code=777)
@@ -63,7 +61,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
         field: str,
         no_return_value: int = 888,
         unknown_return_value: int = 999,
-        skip_gate_on_legacy: bool = False,
     ) -> int:
         """Handle generic A5D2 gate with carry forward."""
         return self.__handle_a5d2_gate(
@@ -72,26 +69,10 @@ class UDSFormA5D2Missingness(UDSMissingness):
             no_return_value=no_return_value,
             unknown_return_value=unknown_return_value,
             carry_forward=True,
-            skip_gate_on_legacy=skip_gate_on_legacy,
         )
 
     def _missingness_smokyrs(self) -> int:
         """Handles missingness for SMOKYRS."""
-        # works a little different in legacy
-        # TODO - should this be updated to the V4 version?
-        # the original logic doesn't make much sense
-        if self.formver < 4:
-            smokyrs = self.uds.get_value("smokyrs", int)
-            tobac100 = self.uds.get_value("tobac100", int)
-
-            if (smokyrs is None or smokyrs in [88, 99]) and tobac100 == 0:
-                return 0
-
-            if smokyrs is None and tobac100 == 9:
-                return 88
-
-            return self.generic_missingness("smokyrs", int)
-
         return self.handle_a5d2_carry_forward(
             "tobac100",
             "smokyrs",
@@ -105,29 +86,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_quitsmok(self) -> int:
         """Handles missingness for QUITSMOK."""
-        # REGRESSION: hardcode legacy logic as it is currently
-        # not aligned with V4
-        if self.formver < 4:
-            quitsmok = self.uds.get_value("quitsmok", int)
-            if quitsmok is not None:
-                return quitsmok
-
-            tobac100 = self.uds.get_value("tobac100", int)
-            smokyrs = self.uds.get_value("smokyrs", int)
-
-            if self.formver < 3:
-                if tobac100 == 0 and smokyrs == 0:
-                    return 888
-            else:  # V3
-                if tobac100 == 0 or smokyrs == 0:
-                    return 888
-
-            if tobac100 == 9:
-                return 888
-
-        return self.handle_a5d2_carry_forward(
-            "tobac100", "quitsmok", skip_gate_on_legacy=False
-        )
+        return self.handle_a5d2_carry_forward("tobac100", "quitsmok")
 
     def _missingness_hrtattage(self) -> int:
         """Handles missingness for HRTATTAGE."""
@@ -219,31 +178,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_packsper(self) -> int:
         """Handles missingness for PACKSPER."""
-        # works a little different in legacy
-        # TODO - should this be updated to the V4 version?
-        if self.formver < 4:
-            packsper = self.uds.get_value("packsper", int)
-            tobac100 = self.uds.get_value("tobac100", int)
-
-            # smokyr's own missingness gets used in the following
-            # logic, so use/call that directly. better way to clean
-            # this up?
-            missingness_smokyrs = self._missingness_smokyrs()  # type: ignore
-            current_smokyrs = self.uds.get_value("smokyrs", int)
-
-            # we care about if SMOKYRS is 0 through being explicitly
-            # set or through a missingness result
-            resolved_smokyrs = missingness_smokyrs == 0 or current_smokyrs == 0
-
-            if tobac100 == 0 and resolved_smokyrs:
-                return 0
-
-            if packsper is None or packsper in [8, 9]:  # noqa: SIM102
-                if tobac100 in [0, 8, 9] or resolved_smokyrs:
-                    return 8
-
-            # Fall back to V4 case
-
         return self.__handle_a5d2_gate("tobac100", "packsper")
 
     def _missingness_tobac30(self) -> int:
@@ -288,9 +222,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_strokmul(self) -> int:
         """Handles missingness for STROKMUL."""
-        return self.__handle_a5d2_gate(
-            "cbstroke", "strokmul", skip_gate_on_legacy=False
-        )
+        return self.__handle_a5d2_gate("cbstroke", "strokmul")
 
     def _missingness_ocd(self) -> int:
         """Handles missingness for OCD."""
@@ -298,7 +230,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def _missingness_tiamult(self) -> int:
         """Handles missingness for TIAMULT."""
-        return self.__handle_a5d2_gate("cbtia", "tiamult", skip_gate_on_legacy=False)
+        return self.__handle_a5d2_gate("cbtia", "tiamult")
 
     # the following have unique logic from V3 and earlier so
     # brought over from SAS recode logic
@@ -322,8 +254,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             "alcoccas",
             "alcfreq",
             no_return_value=8,
-            unknown_return_value=INFORMED_MISSINGNESS,
-            skip_gate_on_legacy=False,
+            unknown_return_value=INFORMED_MISSINGNESS
         )
 
     def _missingness_hattmult(self) -> int:
@@ -336,7 +267,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
             "hattmult",
             no_return_value=8,
             unknown_return_value=INFORMED_MISSINGNESS,
-            skip_gate_on_legacy=False,
         )
 
     def _missingness_hattyear(self) -> int:
@@ -349,7 +279,6 @@ class UDSFormA5D2Missingness(UDSMissingness):
             "hattyear",
             no_return_value=8888,
             unknown_return_value=INFORMED_MISSINGNESS,
-            skip_gate_on_legacy=False,
         )
 
     #############################

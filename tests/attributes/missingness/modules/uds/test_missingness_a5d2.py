@@ -34,7 +34,9 @@ class TestUDSFormA5D2Missingness:
         uds_table["file.info.forms.json"].update(
             {"formver": 3.0, "quitsmok": None, "smokyrs": None, "tobac100": 9}
         )
-        assert attr._missingness_quitsmok() == 888
+
+        # in legacy this returned 888; now should return 999
+        assert attr._missingness_quitsmok() == 999
 
     def test_3_digit_adjustment(self, uds_table):
         """Test 88/99 gets adjusted."""
