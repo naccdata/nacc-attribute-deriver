@@ -22,8 +22,7 @@ class UDSFormA2Attribute(UDSAttributeCollection):
 
     def _create_naccninr(self) -> int:
         """Creates NACCNINR (co-participant race) if first form or NEWINF (new
-        co-participant).
-        """
+        co-participant)."""
         if self.formver == 4:
             return INFORMED_MISSINGNESS
 

@@ -22,7 +22,7 @@ def test_uds_form(uds_table):
         "npiqinfx": None,
         "height": 53.6,
         "trailbrr": 96,
-        "cdrglob": -4.0
+        "cdrglob": -4.0,
     }
 
 

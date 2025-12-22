@@ -254,7 +254,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
             "alcoccas",
             "alcfreq",
             no_return_value=8,
-            unknown_return_value=INFORMED_MISSINGNESS
+            unknown_return_value=INFORMED_MISSINGNESS,
         )
 
     def _missingness_hattmult(self) -> int:

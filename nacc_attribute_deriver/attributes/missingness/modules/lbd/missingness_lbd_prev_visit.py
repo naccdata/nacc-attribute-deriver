@@ -21,7 +21,8 @@ class LBDFormPrevVisitMissingness(FormMissingnessCollection):
     def __handle_lbd_age_prev_value(self, field: str) -> int:
         """Same situation as B9."""
         return self.handle_prev_visit(
-            field, int, prev_code=777, default=999, working=self.__working)
+            field, int, prev_code=777, default=999, working=self.__working
+        )
 
     #######
     # B1l #

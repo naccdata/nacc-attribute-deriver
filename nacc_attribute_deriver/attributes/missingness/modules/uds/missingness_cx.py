@@ -503,7 +503,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
     def _missingness_udsbenrs(self) -> int:
         """Handles missingness for UDSBENRS."""
         result = self._handle_non_optional_gate("udsbentd", "udsbenrs")
-        
+
         # some instances where udsbenrs itself is 9, which most likely
         # means unknown. return 0 in this case for now
         if result == 9:
