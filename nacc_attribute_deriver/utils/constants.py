@@ -76,7 +76,6 @@ ALL_RX_CLASSES = COMBINATION_RX_CLASSES + NON_COMBINATION_RX_CLASSES
 # applicable to the version, but the SAS code does set them to
 # something, so for now we let them through
 REGRESSION_VARIABLES = [
-    "diabtype",
     "height",
     "trailarr",
     "trailali",

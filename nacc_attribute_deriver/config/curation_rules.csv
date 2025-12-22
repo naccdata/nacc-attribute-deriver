@@ -164,6 +164,14 @@ lbd,lbsagegt,subject.info.working.cross-sectional.lbsagegt,update,FALSE
 lbd,lbsagefl,subject.info.working.cross-sectional.lbsagefl,update,FALSE
 lbd,lbsagetr,subject.info.working.cross-sectional.lbsagetr,update,FALSE
 lbd,lbsagebr,subject.info.working.cross-sectional.lbsagebr,update,FALSE
+lbd,lbdage,subject.info.working.cross-sectional.lbdage,update,FALSE
+lbd,lbdage2,subject.info.working.cross-sectional.lbdage2,update,FALSE
+lbd,lbdelage,subject.info.working.cross-sectional.lbdelage,update,FALSE
+lbd,lbhalage,subject.info.working.cross-sectional.lbhalage,update,FALSE
+lbd,lbanxage,subject.info.working.cross-sectional.lbanxage,update,FALSE
+lbd,lbapaage,subject.info.working.cross-sectional.lbapaage,update,FALSE
+lbd,sccoagen,subject.info.working.cross-sectional.sccoagen,update,FALSE
+lbd,sccoaged,subject.info.working.cross-sectional.sccoaged,update,FALSE
 uds,naccid,subject.info.derived.cross-sectional.naccid,update,FALSE
 uds,uds_date_of_birth,subject.info.working.cross-sectional.uds-date-of-birth,update,FALSE
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE

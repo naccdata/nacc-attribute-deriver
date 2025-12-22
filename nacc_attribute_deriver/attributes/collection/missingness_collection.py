@@ -20,7 +20,6 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
-    INFORMED_MISSINGNESS_FLOAT,
     INVALID_TEXT,
     MISSINGNESS_VALUES,
 )
@@ -110,7 +109,7 @@ class FormMissingnessCollection(AttributeCollection):
             if attr_type == str:  # noqa: E721
                 return INFORMED_BLANK  # type: ignore
             if attr_type == float:  # noqa: E721
-                return INFORMED_MISSINGNESS_FLOAT  # type: ignore
+                return float(INFORMED_MISSINGNESS)  # type: ignore
 
             raise AttributeDeriverError(
                 f"Unknown missingness attribute type: {attr_type}"

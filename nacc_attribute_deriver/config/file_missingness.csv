@@ -1,4 +1,5 @@
 scope,function,location,operation,dated,attr_type
+cls,cls_adcid,file.info.resolved.adcid,update,FALSE,int
 cls,apcengl,file.info.resolved.apcengl,update,FALSE,int
 cls,apcspan,file.info.resolved.apcspan,update,FALSE,int
 cls,apreflan,file.info.resolved.apreflan,update,FALSE,int
@@ -12,6 +13,7 @@ cls,awriengl,file.info.resolved.awriengl,update,FALSE,int
 cls,awrispan,file.info.resolved.awrispan,update,FALSE,int
 cls,ayrengl,file.info.resolved.ayrengl,update,FALSE,int
 cls,ayrspan,file.info.resolved.ayrspan,update,FALSE,int
+covid_f1,covid_f1_adcid,file.info.resolved.adcid,update,FALSE,int
 covid_f1,c19tvis,file.info.resolved.c19tvis,update,FALSE,int
 covid_f1,c19tphon,file.info.resolved.c19tphon,update,FALSE,int
 covid_f1,c19ttab,file.info.resolved.c19ttab,update,FALSE,int
@@ -28,6 +30,7 @@ covid_f1,c19tiwed,file.info.resolved.c19tiwed,update,FALSE,int
 covid_f1,c19tishd,file.info.resolved.c19tishd,update,FALSE,int
 covid_f1,c19tioth,file.info.resolved.c19tioth,update,FALSE,int
 covid_f1,c19tiotx,file.info.resolved.c19tiotx,update,FALSE,str
+covid_f2f3,covid_f2f3_adcid,file.info.resolved.adcid,update,FALSE,int
 covid_f2f3,c19sympt,file.info.resolved.c19sympt,update,FALSE,int
 covid_f2f3,c19syotx,file.info.resolved.c19syotx,update,FALSE,str
 covid_f2f3,c19test,file.info.resolved.c19test,update,FALSE,int
@@ -87,6 +90,7 @@ covid_f2f3,c19kothx,file.info.resolved.c19kothx,update,FALSE,str
 covid_f2f3,c19core,file.info.resolved.c19core,update,FALSE,int
 covid_f2f3,c19copre,file.info.resolved.c19copre,update,FALSE,int
 covid_f2f3,c19cospx,file.info.resolved.c19cospx,update,FALSE,str
+csf,csf_adcid,file.info.resolved.adcid,update,FALSE,int
 csf,csfabeta,file.info.resolved.csfabeta,update,FALSE,float
 csf,csfptau,file.info.resolved.csfptau,update,FALSE,float
 csf,csfttau,file.info.resolved.csfttau,update,FALSE,float
@@ -108,6 +112,7 @@ csf,csfttdy,file.info.resolved.csfttdy,update,FALSE,int
 csf,csfttyr,file.info.resolved.csfttyr,update,FALSE,int
 csf,csfttmd,file.info.resolved.csfttmd,update,FALSE,int
 csf,csfttmdx,file.info.resolved.csfttmdx,update,FALSE,str
+ftld,ftld_adcid,file.info.resolved.adcid,update,FALSE,int
 ftld,ftld_formver,file.info.resolved.formver,update,FALSE,float
 ftld,ftdaff,file.info.resolved.ftdaff,update,FALSE,int
 ftld,ftdmutat,file.info.resolved.ftdmutat,update,FALSE,int
@@ -590,6 +595,7 @@ ftld,ftdcbfoa,file.info.resolved.ftdcbfoa,update,FALSE,int
 ftld,ftdcbfos,file.info.resolved.ftdcbfos,update,FALSE,str
 ftld,ftdothi,file.info.resolved.ftdothi,update,FALSE,int
 ftld,ftdothis,file.info.resolved.ftdothis,update,FALSE,str
+lbd,lbd_adcid,file.info.resolved.adcid,update,FALSE,int
 lbd,lbd_formver,file.info.resolved.formver,update,FALSE,float
 lbd,lbssaliv,file.info.resolved.lbssaliv,update,FALSE,int
 lbd,lbsswall,file.info.resolved.lbsswall,update,FALSE,int
@@ -1020,6 +1026,7 @@ lbd,lbocgyr,file.info.resolved.lbocgyr,update,FALSE,int
 lbd,lbocgdy,file.info.resolved.lbocgdy,update,FALSE,int
 lbd,lbocgpos,file.info.resolved.lbocgpos,update,FALSE,int
 lbd,lbocgavl,file.info.resolved.lbocgavl,update,FALSE,int
+mds,mds_adcid,file.info.resolved.adcid,update,FALSE,int
 mds,mds_absday,file.info.resolved.absday,update,FALSE,int
 mds,mds_absmo,file.info.resolved.absmo,update,FALSE,int
 mds,mds_absyear,file.info.resolved.absyear,update,FALSE,int
@@ -1085,6 +1092,7 @@ mds,mds_spect,file.info.resolved.spect,update,FALSE,int
 mds,mds_stroke,file.info.resolved.stroke,update,FALSE,int
 mds,mds_formver,file.info.resolved.formver,update,FALSE,float
 mds,mds_vitalst,file.info.resolved.vitalst,update,FALSE,int
+np,np_adcid,file.info.resolved.adcid,update,FALSE,int
 np,npsex,file.info.resolved.npsex,update,FALSE,int
 np,nppmih,file.info.resolved.nppmih,update,FALSE,float
 np,npfix,file.info.resolved.npfix,update,FALSE,int
@@ -1264,7 +1272,7 @@ np,npatgfr1,file.info.resolved.npatgfr1,update,FALSE,int
 np,npatgfr2,file.info.resolved.npatgfr2,update,FALSE,int
 np,npatgfr3,file.info.resolved.npatgfr3,update,FALSE,int
 np,npatgfr4,file.info.resolved.npatgfr4,update,FALSE,int
-uds,adcid,file.info.resolved.adcid,update,FALSE,int
+uds,uds_adcid,file.info.resolved.adcid,update,FALSE,int
 uds,uds_formver,file.info.resolved.formver,update,FALSE,float
 uds,birthmo,file.info.resolved.birthmo,update,FALSE,int
 uds,birthyr,file.info.resolved.birthyr,update,FALSE,int

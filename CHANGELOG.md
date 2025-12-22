@@ -21,6 +21,13 @@ Significant updates and refactorings to support:
     * Updates to handle float NP `formver`
 * rc5
     * Fix various typing/range issues encountered when running ETL
+* rc6
+    * Make `pentagon` an honorary v1 variable
+    * Adds ADCID to all form scopes
+    * Makes -4.0 the default for floats except in NP which stays at -4.4
+        * Removes `missingness_b4.py` which forced this for B4; should be done automatically now
+    * Fixes known discrepancies
+        * Majorly affects A5D2, which updates legacy behavior to rely on gates (previously this logic was skipped using the `skip_gate_on_legacy` argument, which is now removed)
 
 ## 1.4.3
 
