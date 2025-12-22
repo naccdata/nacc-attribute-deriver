@@ -38,3 +38,7 @@ class FTLDFormMissingness(FormMissingnessCollection):
     def _missingness_ftld_formver(self) -> float:
         """Handles missingness for FTLD FORMVER."""
         return self.generic_missingness("formver", float)
+
+    def _missingness_ftld_adcid(self) -> int:
+        """Handles missingness for FTLD ADCID."""
+        return self.generic_missingness("adcid", int)

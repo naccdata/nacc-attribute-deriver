@@ -38,3 +38,11 @@ class CovidFormMissingness(FormMissingnessCollection):
             return c19tested
 
         return INFORMED_MISSINGNESS
+
+    def _missingness_covid_f1_adcid(self) -> int:
+        """Handles missingness for COVID F1 ADCID."""
+        return self.generic_missingness("adcid", int)
+
+    def _missingness_covid_f2f3_adcid(self) -> int:
+        """Handles missingness for COVID F2/F3 ADCID."""
+        return self.generic_missingness("adcid", int)

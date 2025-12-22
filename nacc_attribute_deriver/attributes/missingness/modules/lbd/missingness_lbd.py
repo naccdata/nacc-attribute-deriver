@@ -25,3 +25,7 @@ class LBDFormMissingness(FormMissingnessCollection):
     def _missingness_lbd_formver(self) -> float:
         """Handles missingness for LBD FORMVER."""
         return self.generic_missingness("formver", float)
+
+    def _missingness_lbd_adcid(self) -> int:
+        """Handles missingness for LBD ADCID."""
+        return self.generic_missingness("adcid", int)

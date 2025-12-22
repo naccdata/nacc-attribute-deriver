@@ -24,3 +24,7 @@ class GenericUDSMissingness(UDSMissingness):
     def _missingness_uds_formver(self) -> float:
         """Handles missingness for UDS FORMVER."""
         return self.generic_missingness("formver", float)
+
+    def _missingness_uds_adcid(self) -> int:
+        """Handles missingness for UDS ADCID."""
+        return self.generic_missingness("adcid", int)
