@@ -16,6 +16,7 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
 )
+from nacc_attribute_deriver.utils.date import date_from_form_date
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
 )
@@ -63,6 +64,26 @@ class NPMissingness(FormMissingnessCollection):
         -4 / 4.4 / blank if missing.
         """
         return self.generic_missingness(field, attr_type)
+
+    #############################################
+    # Header variables
+    # Due to issue with visitdate vs npformdate,
+    # can't use generic methods
+    #############################################
+
+    def _missingness_np_adcid(self) -> int:
+        """NP ADCID."""
+        return self.generic_missingness("adcid", int)
+
+    def _missingness_np_formver(self) -> float:
+        """NP formver."""
+        return self.generic_missingness("formver", float)
+
+    def _missingness_np_visitdate(self) -> str:
+        """NP visitdate/formdate can come from either variable."""
+        visitdate = date_from_form_date(
+            self.form.get_required(self.form.date_attribute, str))
+        return str(visitdate)
 
     ####################################
     # Form version-dependent variables #

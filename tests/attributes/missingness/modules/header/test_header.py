@@ -16,16 +16,16 @@ class TestHeaderMissingness:
         attr = HeaderFormMissingness(table)
 
         # YYYY-MM-DD
-        assert attr._missingness_visitdate() == "2025-01-01"
+        assert attr._missingness_header_visitdate() == "2025-01-01"
 
         # YYYY/MM/DD
         table['file.info.forms.json.visitdate'] = "2025/01/01"
-        assert attr._missingness_visitdate() == "2025-01-01"
+        assert attr._missingness_header_visitdate() == "2025-01-01"
 
         # MM-DD-YYYY
         table['file.info.forms.json.visitdate'] = "01-01-2025"
-        assert attr._missingness_visitdate() == "2025-01-01"
+        assert attr._missingness_header_visitdate() == "2025-01-01"
 
         # MM/DD/YYYY
         table['file.info.forms.json.visitdate'] = "01/01/2025"
-        assert attr._missingness_visitdate() == "2025-01-01"
+        assert attr._missingness_header_visitdate() == "2025-01-01"

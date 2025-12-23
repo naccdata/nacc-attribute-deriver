@@ -274,6 +274,10 @@ class MissingnessDeriver(BaseAttributeDeriver):
                 ) from e
 
         # otherwise, use generic scope missingness function
+        # header is a special subscope shared across forms
+        if rule.name.startswith("header_"):
+            scope = "header"
+
         method = self._instance_collections.get(f"{self._curation_type}_{scope}", None)
         if not method:
             raise AttributeDeriverError(
