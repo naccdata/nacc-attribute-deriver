@@ -22,8 +22,7 @@ Significant updates and refactorings to support:
 * rc5
     * Fix various typing/range issues encountered when running ETL
 * rc6
-    * Make `pentagon` an honorary v1 variable
-    * Adds ADCID to all form scopes
+    * Updates to support the same headers across all form scopes (missingness)
     * Makes -4.0 the default for floats except in NP which stays at -4.4
         * Removes `missingness_b4.py` which forced this for B4; should be done automatically now
     * Fixes known discrepancies

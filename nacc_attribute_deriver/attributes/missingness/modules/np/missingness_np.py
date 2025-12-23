@@ -64,10 +64,6 @@ class NPMissingness(FormMissingnessCollection):
         """
         return self.generic_missingness(field, attr_type)
 
-    def _missingness_np_adcid(self) -> int:
-        """Handles missingness for NP ADCID."""
-        return self.generic_missingness("adcid", int)
-
     ####################################
     # Form version-dependent variables #
     ####################################

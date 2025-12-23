@@ -54,8 +54,3 @@ class TestUDSMissingness:
         uds_table["_prev_record.info.resolved.testval"] = None
         assert attr.handle_prev_visit("testval", int) == INFORMED_MISSINGNESS
         assert attr.handle_prev_visit("testval", int, default=0) == 0
-
-    def test_uds_formver(self, uds_table):
-        """Tests UDS Formver."""
-        attr = GenericUDSMissingness(uds_table)
-        assert attr._missingness_uds_formver() == 3.0
