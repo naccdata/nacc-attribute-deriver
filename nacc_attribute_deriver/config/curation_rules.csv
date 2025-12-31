@@ -173,7 +173,6 @@ lbd,lbapaage,subject.info.working.cross-sectional.lbapaage,update,FALSE
 lbd,sccoagen,subject.info.working.cross-sectional.sccoagen,update,FALSE
 lbd,sccoaged,subject.info.working.cross-sectional.sccoaged,update,FALSE
 uds,naccid,subject.info.derived.cross-sectional.naccid,update,FALSE
-uds,naccadc,subject.info.derived.cross-sectional.naccadc,update,FALSE
 uds,uds_date_of_birth,subject.info.working.cross-sectional.uds-date-of-birth,update,FALSE
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE

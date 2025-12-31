@@ -142,8 +142,3 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
     def _create_naccid(self) -> str:
         """Creates NACCID."""
         return self.uds.get_required("naccid", str)
-
-    def _create_naccadc(self) -> Optional[int]:
-        """Creates NACCADC - dummy function as this is expected to be
-        explicitly set by the curation process intead."""
-        return None
