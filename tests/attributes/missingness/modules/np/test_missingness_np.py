@@ -21,6 +21,7 @@ def np_table() -> SymbolTable:
             "info": {
                 "forms": {
                     "json": {
+                        "adcid": "0",
                         "formver": 10,
                         "module": "NP",
                         "visitdate": "2025-01-10",
@@ -97,3 +98,20 @@ class TestNPMissingness:
         np_table["file.info.forms.json.nppmih"] = 9
         np_table["file.info.forms.json.nppmim"] = 7
         assert attr._missingness_nppmih() == 9.7
+
+    def test_np_headers(self, np_table):
+        """Test NP headers."""
+        attr = NPMissingness(np_table)
+
+        assert attr._missingness_np_adcid() == 0
+        assert attr._missingness_np_formver() == 10.0
+        assert attr._missingness_np_visitdate() == "2025-01-10"
+
+        # test when form uses npformdate instead of visitdate
+        np_table["file.info.forms.json.visitdate"] = None
+        np_table["file.info.forms.json.npformdate"] = "09/28/2025"
+
+        attr = NPMissingness(np_table)
+        assert attr._missingness_np_adcid() == 0
+        assert attr._missingness_np_formver() == 10.0
+        assert attr._missingness_np_visitdate() == "2025-09-28"

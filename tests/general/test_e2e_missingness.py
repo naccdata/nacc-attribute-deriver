@@ -82,3 +82,10 @@ def test_mds_form():
 
     # only apoe is set since agedem exists
     assert mds_table["file.info.resolved"] == {"agedem": 75, "apoe": -4}
+
+
+def test_file_sanity_check():
+    """Sanity check for the file and subject levels just to make sure they
+    run."""
+    MissingnessDeriver(missingness_level="file")
+    MissingnessDeriver(missingness_level="subject")

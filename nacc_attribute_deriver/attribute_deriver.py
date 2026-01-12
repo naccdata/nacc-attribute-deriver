@@ -203,7 +203,11 @@ class MissingnessDeriver(BaseAttributeDeriver):
                 rule_schema = MissingnessFileModel.model_validate(row)
 
                 # generally consider 1 to 1 mapping so throw error on duplicates
-                if rule_schema.function in results:
+                # except for headers which are defined multiple times
+                if (
+                    rule_schema.function in results
+                    and not rule_schema.function.startswith("header_")
+                ):
                     raise AttributeDeriverError(
                         f"Multiple missingness rules defined for {rule_schema.function}"
                     )
@@ -273,6 +277,10 @@ class MissingnessDeriver(BaseAttributeDeriver):
                 ) from e
 
         # otherwise, use generic scope missingness function
+        # header is a special subscope shared across forms
+        if rule.name.startswith("header_"):
+            scope = "header"
+
         method = self._instance_collections.get(f"{self._curation_type}_{scope}", None)
         if not method:
             raise AttributeDeriverError(

@@ -34,7 +34,3 @@ class CSFFormMissingness(FormMissingnessCollection):
     def _missingness_csf(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for CLS form variables."""
         return self.generic_missingness(field, attr_type)
-
-    def _missingness_csf_adcid(self) -> int:
-        """Handles missingness for CSF ADCID."""
-        return self.generic_missingness("adcid", int)

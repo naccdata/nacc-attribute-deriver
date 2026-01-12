@@ -10,6 +10,7 @@ class Scope(str, Enum):
 
 class FormScope(Scope):
     # forms
+    BDS = "bds"
     CLS = "cls"
     CSF = "csf"
     MDS = "mds"
@@ -19,8 +20,7 @@ class FormScope(Scope):
     UDS = "uds"
     FTLD = "ftld"
     LBD = "lbd"
-    COVID_F1 = "covid_f1"
-    COVID_F2F3 = "covid_f2f3"
+    COVID = "covid"
     CROSS_MODULE = "cross_module"
 
 
@@ -56,6 +56,7 @@ class MixedProtocolScope(Scope):
 
 
 ScopeLiterals = Literal[
+    FormScope.BDS,
     FormScope.CLS,
     FormScope.CSF,
     FormScope.MDS,
@@ -65,8 +66,7 @@ ScopeLiterals = Literal[
     FormScope.UDS,
     FormScope.FTLD,
     FormScope.LBD,
-    FormScope.COVID_F1,
-    FormScope.COVID_F2F3,
+    FormScope.COVID,
     FormScope.CROSS_MODULE,
     GeneticsScope.APOE,
     GeneticsScope.HISTORIC_APOE,
