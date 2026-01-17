@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+# Unreleased
+
+* Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
+
 ## 2.0.0
 
 Significant updates and refactorings to support:

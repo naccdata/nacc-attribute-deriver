@@ -34,7 +34,7 @@ class DemographicsAttributeCollection(AttributeCollection):
         return self.__uds.get_date()
 
     SEX_MAPPING = MappingProxyType(
-        {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Don't know"}
+        {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Unknown"}
     )
 
     def _create_uds_sex(self) -> str:
