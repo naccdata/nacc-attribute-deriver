@@ -2,7 +2,10 @@
 
 import pytest
 
-from nacc_attribute_deriver.utils.date import datetime_from_form_date
+from nacc_attribute_deriver.utils.date import (
+    datetime_from_form_date,
+    standardize_date,
+)
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
@@ -28,3 +31,12 @@ class TestDateUtils:
             == "Failed to parse date 01/01/2025-extrastuff: "
             + "unconverted data remains: -extrastuff"
         )
+
+    def test_standardize_date(self):
+        """Test standardizing date."""
+        assert standardize_date("2025-12-01") == "2025-12-01"
+        assert standardize_date("2025/12/01") == "2025-12-01"
+        assert standardize_date("12-01-2025") == "2025-12-01"
+        assert standardize_date("12/01/2025") == "2025-12-01"
+
+        assert standardize_date(None) is None

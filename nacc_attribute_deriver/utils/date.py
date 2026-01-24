@@ -223,3 +223,12 @@ def create_death_date(
         ddy = 1
 
     return date_from_form_date(f"{dyr}-{dmo:02d}-{ddy:02d}")
+
+
+def standardize_date(date: Optional[str]) -> Optional[str]:
+    """Standardize date to YYYY-MM-DD format, if provided."""
+    date_obj = date_from_form_date(date)
+    if not date_obj:
+        return None
+
+    return str(date_obj)
