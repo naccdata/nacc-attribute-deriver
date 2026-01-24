@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 2.1.0
 
 * Standardizes all UDS `FRMDATEX` variables to YYYY-MM-DD format
+* Updates COVID `C19TxYR` variables to fix 88 to 8888 and 99 to 9999
 * Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
 
 ## 2.0.0
