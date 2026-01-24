@@ -2,8 +2,8 @@ scope,function,location,operation,dated,attr_type
 cls,header_adcid,file.info.resolved.adcid,update,FALSE,int
 cls,header_formver,file.info.resolved.formver,update,FALSE,float
 cls,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
-covid,uds_to_cls_visitdate,file.info.resolved.uds_visitdate,update,FALSE,str
-covid,cls_naccvnum,file.info.derived.naccvnum,update,FALSE,str
+cls,uds_to_cls_visitdate,file.info.resolved.uds_visitdate,update,FALSE,str
+cls,cls_naccvnum,file.info.derived.naccvnum,update,FALSE,str
 cls,apcengl,file.info.resolved.apcengl,update,FALSE,int
 cls,apcspan,file.info.resolved.apcspan,update,FALSE,int
 cls,apreflan,file.info.resolved.apreflan,update,FALSE,int
