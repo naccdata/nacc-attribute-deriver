@@ -7,7 +7,6 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
     FormMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
-from nacc_attribute_deriver.utils.date import standardize_date
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
@@ -22,11 +21,8 @@ class HeaderFormMissingness(FormMissingnessCollection):
 
         VISITDATE is required for forms so expected to be there.
         """
-        raw_visitdate = self.form.get_required("visitdate", str)
-        visitdate = standardize_date(raw_visitdate)
+        visitdate = self.get_visitdate()
         if not visitdate:
-            raise AttributeDeriverError(
-                f"Unable to standardize visitdate: {raw_visitdate}"
-            )
+            raise AttributeDeriverError("Missing visitdate from form header")
 
         return visitdate

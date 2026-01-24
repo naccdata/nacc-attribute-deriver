@@ -7,17 +7,36 @@ THE NOT-IN-CONTAINER ERROR. REMOVE ONCE FEATURE IS ADDED TO ETL GEAR.
 from typing import Type
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
-    FormMissingnessCollection,
+    UDSCorrelatedFormMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
-class CovidFormMissingness(FormMissingnessCollection):
+class CovidFormMissingness(UDSCorrelatedFormMissingnessCollection):
+    """Handles COVID missingness.
+
+    Need to correlate with latest UDS visit.
+    """
+
     def _missingness_covid(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for COVID F1 and F2/F3 form
         variables."""
         return self.generic_missingness(field, attr_type)
+
+    def _missingness_uds_to_covid_visitdate(self) -> str:
+        """Get the closest UDS visitdate."""
+        visitdate, _ = self.find_closest_uds_visit()
+        return visitdate
+
+    def _missingness_covid_naccvnum(self) -> int:
+        """Get the closest UDS visit, and set as this form's NACCVNUM.
+
+        Even though NACCVNUM is technically a derived variable, in this
+        instance we are treating it as a resolved variable.
+        """
+        _, naccvnum = self.find_closest_uds_visit()
+        return naccvnum
 
     def __fix_covid_year(self, field: str) -> int:
         """Fix improperly formatted covid years, e.g. 88 to 8888 and 99 to

@@ -2,6 +2,8 @@ scope,function,location,operation,dated,attr_type
 cls,header_adcid,file.info.resolved.adcid,update,FALSE,int
 cls,header_formver,file.info.resolved.formver,update,FALSE,float
 cls,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
+covid,uds_to_cls_visitdate,file.info.resolved.uds_visitdate,update,FALSE,str
+covid,cls_naccvnum,file.info.derived.naccvnum,update,FALSE,str
 cls,apcengl,file.info.resolved.apcengl,update,FALSE,int
 cls,apcspan,file.info.resolved.apcspan,update,FALSE,int
 cls,apreflan,file.info.resolved.apreflan,update,FALSE,int
@@ -18,6 +20,8 @@ cls,ayrspan,file.info.resolved.ayrspan,update,FALSE,int
 covid,header_adcid,file.info.resolved.adcid,update,FALSE,int
 covid,header_formver,file.info.resolved.formver,update,FALSE,float
 covid,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
+covid,uds_to_covid_visitdate,file.info.resolved.uds_visitdate,update,FALSE,str
+covid,covid_naccvnum,file.info.derived.naccvnum,update,FALSE,str
 covid,c19tvis,file.info.resolved.c19tvis,update,FALSE,int
 covid,c19tphon,file.info.resolved.c19tphon,update,FALSE,int
 covid,c19ttab,file.info.resolved.c19ttab,update,FALSE,int

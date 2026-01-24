@@ -43,7 +43,7 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         """Gets the visitdate - temporary derived variable."""
         return str(self.get_current_visitdate())
 
-    def get_visitdates(self) -> List[datetime.date]:
+    def get_uds_visitdates(self) -> List[datetime.date]:
         """Get all UDS visits.
 
         Adds the current UDS visit if not already there, but generally
@@ -60,7 +60,7 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         current_visitdate = str(self.get_current_visitdate())
         if current_visitdate not in visitdates:
             visitdates.append(current_visitdate)
-            visitdates.sort()
+            visitdates.sort()  # should be in order anyways but sort in case
 
         # convert strings to dates
         result = [date_from_form_date(x) for x in visitdates]
@@ -75,7 +75,7 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         This is also used for NACCVNUM, just under a different curation rule
         (cross-sectional vs longitudinal).
         """
-        return len(self.get_visitdates())
+        return len(self.get_uds_visitdates())
 
     def _create_naccdays(self) -> Optional[int]:
         """Creates NACCDAYS - days from initial visit to most recent visit.

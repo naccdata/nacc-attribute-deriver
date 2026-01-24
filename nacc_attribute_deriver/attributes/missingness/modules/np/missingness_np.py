@@ -16,7 +16,6 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
 )
-from nacc_attribute_deriver.utils.date import date_from_form_date
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
 )
@@ -81,13 +80,11 @@ class NPMissingness(FormMissingnessCollection):
 
     def _missingness_np_visitdate(self) -> str:
         """NP visitdate/formdate can come from either variable."""
-        if not self.form.date_attribute:
+        visitdate = self.get_visitdate()
+        if not visitdate:
             raise AttributeDeriverError("No date attribute defined for NP form")
 
-        visitdate = date_from_form_date(
-            self.form.get_required(self.form.date_attribute, str)
-        )
-        return str(visitdate)
+        return visitdate
 
     ####################################
     # Form version-dependent variables #
