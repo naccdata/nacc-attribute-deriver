@@ -1,4 +1,3 @@
-# ruff: noqa: SIM114
 """Class to handle B9-specific missingness values.
 
 This form has a lot of weird legacy recode logic. Stuff related to B9CHG

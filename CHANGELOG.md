@@ -2,9 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-# Unreleased
+## 2.0.1
 
 * Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
+* Upgrade to Python 3.12 and Pants 2.29.0
 
 ## 2.0.0
 
