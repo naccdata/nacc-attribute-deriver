@@ -124,8 +124,12 @@ class TestUDSFormB9Missingness:
             "formver": 1.0,
             "packet": "I",
             "decclin": 1,
-            "frstchg": 1,
+            "moage": 4,  # and range enforced to 9
         }
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_moage() == 9
+        assert attr._missingness_decclin() == 1
 
     def test_cognitive_ivp(self, uds_table):
         """Test missingness of cognitive variables on an initial.
@@ -289,6 +293,12 @@ class TestUDSFormB9Missingness:
         )
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_bevhago() == 888
+
+        # test range is enforced
+        uds_table["file.info.forms.json.bevhago"] = 5
+        assert attr._missingness_bevhago() == 15
+        uds_table["file.info.forms.json.bevhago"] = 114
+        assert attr._missingness_bevhago() == 110
 
     def test_decage_get_last_set(self, uds_table):
         """Tests DECAGE when the last set value was several visits ago."""

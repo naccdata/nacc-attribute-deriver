@@ -177,24 +177,22 @@ class TestUDSFormA4Attribute:
 
     def test_naccamd_range_enforced(self, table1):
         """Ensure range is enforced for NACCAMD."""
-        table1["subject.info.working.longitudinal"].update({
-            "drugs-list": [
-                {
-                    "date": "2025-01-01",
-                    "value": [str(i) for i in range(43)]
-                }
-            ]
-        })
+        table1["subject.info.working.longitudinal"].update(
+            {
+                "drugs-list": [
+                    {"date": "2025-01-01", "value": [str(i) for i in range(43)]}
+                ]
+            }
+        )
         attr = UDSFormA4Attribute(table1)
         assert attr._create_naccamd() == 40
 
-        table1["subject.info.working.longitudinal"].update({
-            "drugs-list": [
-                {
-                    "date": "2025-01-01",
-                    "value": [str(i) for i in range(39)]
-                }
-            ]
-        })
+        table1["subject.info.working.longitudinal"].update(
+            {
+                "drugs-list": [
+                    {"date": "2025-01-01", "value": [str(i) for i in range(39)]}
+                ]
+            }
+        )
         attr = UDSFormA4Attribute(table1)
         assert attr._create_naccamd() == 39

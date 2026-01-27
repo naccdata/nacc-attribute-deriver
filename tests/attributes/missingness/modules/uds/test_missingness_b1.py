@@ -1,30 +1,28 @@
 """Tests UDS Form B1 missingness attributes."""
 
-import random
-
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_b1 import (
     UDSFormB1Missingness,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormB1LegacyMissingness:
-
     def test_ranges(self, uds_table):
         """Test ranges are enforced."""
         # minimums
-        uds_table['file.info.forms.json'].update({
-            "height": 35,
-            "heigdec": 9,
-            "weight": 49,
-            "bpsys": 69,
-            "bpdias": 29,
-            "bpsysl": 69,
-            "bpsysr": 69,
-            "bpdiasl": 29,
-            "bpdiasr": 29,
-            "hrate": 32
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "height": 35,
+                "heigdec": 9,
+                "weight": 49,
+                "bpsys": 69,
+                "bpdias": 29,
+                "bpsysl": 69,
+                "bpsysr": 69,
+                "bpdiasl": 29,
+                "bpdiasr": 29,
+                "hrate": 32,
+            }
+        )
         attr = UDSFormB1Missingness(uds_table)
         assert attr._missingness_height() == 36.0
         assert attr._missingness_weight() == 50
@@ -37,18 +35,20 @@ class TestUDSFormB1LegacyMissingness:
         assert attr._missingness_hrate() == 33
 
         # maximums
-        uds_table['file.info.forms.json'].update({
-            "height": 87,
-            "heigdec": 99,
-            "weight": 401,
-            "bpsys": 231,
-            "bpdias": 141,
-            "bpsysl": 231,
-            "bpsysr": 231,
-            "bpdiasl": 141,
-            "bpdiasr": 141,
-            "hrate": 161
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "height": 87,
+                "heigdec": 99,
+                "weight": 401,
+                "bpsys": 231,
+                "bpdias": 141,
+                "bpsysl": 231,
+                "bpsysr": 231,
+                "bpdiasl": 141,
+                "bpdiasr": 141,
+                "hrate": 161,
+            }
+        )
         attr = UDSFormB1Missingness(uds_table)
         assert attr._missingness_height() == 87.9
         assert attr._missingness_weight() == 400
@@ -61,18 +61,20 @@ class TestUDSFormB1LegacyMissingness:
         assert attr._missingness_hrate() == 160
 
         # test 999s get set to 888 and 777s/888s are untouched
-        uds_table['file.info.forms.json'].update({
-            "height": 88,
-            "heigdec": 8,
-            "weight": 999,
-            "bpsys": 777,
-            "bpdias": 777,
-            "bpsysl": 888,
-            "bpsysr": 999,
-            "bpdiasl": 999,
-            "bpdiasr": 888,
-            "hrate": 999
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "height": 88,
+                "heigdec": 8,
+                "weight": 999,
+                "bpsys": 777,
+                "bpdias": 777,
+                "bpsysl": 888,
+                "bpsysr": 999,
+                "bpdiasl": 999,
+                "bpdiasr": 888,
+                "hrate": 999,
+            }
+        )
         attr = UDSFormB1Missingness(uds_table)
         assert attr._missingness_height() == 88.8
         assert attr._missingness_weight() == 888

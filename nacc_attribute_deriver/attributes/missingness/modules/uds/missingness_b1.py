@@ -6,6 +6,7 @@ Only in V3 and earlier.
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
+    UNKNOWN_CODES,
 )
 
 
@@ -45,7 +46,7 @@ class UDSFormB1Missingness(UDSMissingness):
             return 888
 
         result = self.generic_missingness(field, int)
-        if result != INFORMED_MISSINGNESS and result not in [777, 888, 999]:
+        if result not in UNKNOWN_CODES:
             # enforce specified range
             return min(max(minimum, result), maximum)
 
