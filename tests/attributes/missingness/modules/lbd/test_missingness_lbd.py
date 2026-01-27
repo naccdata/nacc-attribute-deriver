@@ -6,6 +6,7 @@ from nacc_attribute_deriver.attributes.missingness.modules.lbd.missingness_lbd_p
     LBDFormPrevVisitMissingness,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 @pytest.fixture(scope="function")
@@ -39,6 +40,12 @@ class TestLBDMissingness:
         # something in working, set to value
         lbd_table["subject.info.working.cross-sectional.lbanxage"] = 65
         assert attr._missingness_lbanxage() == 65
+
+        # 0 prev code case
+        lbd_table["file.info.forms.json.sccofrst"] = 0
+        assert attr._missingness_sccofrst() == INFORMED_MISSINGNESS
+        lbd_table["subject.info.working.cross-sectional.sccofrst"] = 2
+        assert attr._missingness_sccofrst() == 2
 
     def test_range_enforced(self, lbd_table):
         """Test ranges are enforced."""

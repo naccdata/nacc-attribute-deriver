@@ -6,9 +6,10 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 * Adds logic to correlate standalone forms (COVID, CLS) to the closest UDS visit - assumes all UDS visits have been curated already
     * Original `visitdate` moved to `c19visitdate` and `clsvisitdate`, respectively
-* Standardizes all UDS `FRMDATEX` variables to `YYYY-MM-DD` format
-* Enforces ranges for several variables
+* Updates to standardize all UDS `FRMDATEX` variables to `YYYY-MM-DD` format
+* Updates to enforce ranges for several variables
 * Updates COVID `C19TxYR` variables to fix 88 to 8888 and 99 to 9999
+* Updates LBD to handle the 0 prev code for `LBSPSYM` and `SCCOFRST` 
 * Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
 
 ## 2.0.1

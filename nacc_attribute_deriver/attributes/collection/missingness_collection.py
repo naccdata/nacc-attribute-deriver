@@ -156,8 +156,7 @@ class FormMissingnessCollection(AttributeCollection):
     ) -> T:
         """Handle when the value could be provided by the previous visit.
 
-        If VAR == PREV_CODE, VAR = PREV_VISIT.
-        ELIF VAR is not blank, return None (do not override)
+        If VAR == PREV_CODE, VAR = PREV_VISIT
         ELSE generic missingness
         """
         value = self.__form.get_value(attribute, attr_type)

@@ -8,7 +8,10 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import UNKNOWN_CODES
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_MISSINGNESS,
+    UNKNOWN_CODES,
+)
 
 
 class LBDFormPrevVisitMissingness(FormMissingnessCollection):
@@ -64,6 +67,13 @@ class LBDFormPrevVisitMissingness(FormMissingnessCollection):
         """Captures LBSAGEBR."""
         return self.__handle_lbd_age_prev_value("lbsagebr", 9, 110)
 
+    def _missingness_lbspsym(self) -> int:
+        """Captures LBSPSYM."""
+        result = self.handle_prev_visit(
+            "lbspsym", int, prev_code=0, working=self.__working
+        )
+        return result if result != 0 else INFORMED_MISSINGNESS
+
     #######
     # B4l #
     #######
@@ -103,3 +113,10 @@ class LBDFormPrevVisitMissingness(FormMissingnessCollection):
     def _missingness_sccoaged(self) -> int:
         """Captures SCCOAGED."""
         return self.__handle_lbd_age_prev_value("sccoaged", 15, 110)
+
+    def _missingness_sccofrst(self) -> int:
+        """Captures SCCOFRST."""
+        result = self.handle_prev_visit(
+            "sccofrst", int, prev_code=0, working=self.__working
+        )
+        return result if result != 0 else INFORMED_MISSINGNESS

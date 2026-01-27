@@ -95,6 +95,12 @@ class TestFormMissingnessCollection:
         working = WorkingNamespace(table=table)
         assert attr.handle_prev_visit("dummy", int, prev_code=777, working=working) == 9
 
+        # test default is used when absolutely nothing is there
+        assert (
+            attr.handle_prev_visit("undefined", str, default="some-default")
+            == "some-default"
+        )
+
 
 class TestUDSCorrelatedFormMissingnessCollection:
     def test_find_closest_uds_visit(self):
