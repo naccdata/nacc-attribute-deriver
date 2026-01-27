@@ -110,14 +110,14 @@ class NPMissingness(FormMissingnessCollection):
         nppmih = self.form.get_value("nppmih", float)
         nppmim = self.form.get_value("nppmim", float)
 
-        if nppmih is not None and nppmih != 99:
+        if nppmih == 99:
+            return 99.9
+
+        if nppmih is not None:
             if nppmim is not None:
                 return nppmih + (nppmim / 10)
 
             return nppmih
-
-        if nppmih == 99:
-            return 99.9
 
         return self.generic_missingness("nppmih", float)
 
