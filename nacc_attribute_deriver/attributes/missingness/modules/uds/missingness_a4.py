@@ -255,7 +255,11 @@ class UDSFormA4Missingness(UDSMissingness):
                 drug_id = self.__drugs[index]
 
                 # if drug ID doesn't map to a name leave as-is
-                return UDSMEDS.get(drug_id, drug_id)
+                result = UDSMEDS.get(drug_id, drug_id)
+                if not result:
+                    raise AttributeDeriverError(f"No drug for index {index}")
+
+                return result
 
         return self.generic_missingness(field, str)
 

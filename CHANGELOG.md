@@ -10,6 +10,10 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Updates COVID `C19TxYR` variables to fix 88 to 8888 and 99 to 9999
 * Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
 
+## 2.0.1
+
+* Upgrade to Python 3.12 and Pants 2.29.0
+
 ## 2.0.0
 
 Significant updates and refactorings to support:

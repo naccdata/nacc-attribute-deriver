@@ -51,8 +51,9 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.submitted:
             return known_value if known_value is not None else INFORMED_MISSINGNESS
 
-        return self.__family.determine_naccparent(  # type: ignore
-            parent, known_value if known_value is not None else 9
+        return self.__family.determine_naccparent(
+            parent,  # type: ignore
+            known_value if known_value is not None else 9,
         )
 
     def _create_naccdad(self) -> int:

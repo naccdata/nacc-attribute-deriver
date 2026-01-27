@@ -59,6 +59,6 @@ class UDSFormB6Attribute(UDSAttributeCollection):
             prorated = (completed_score / num_completed) * (unanswered)
 
             # this ensures 0.5 rounds up, not down
-            return int(math.floor(completed_score + prorated + 0.5))
+            return math.floor(completed_score + prorated + 0.5)
 
         return completed_score
