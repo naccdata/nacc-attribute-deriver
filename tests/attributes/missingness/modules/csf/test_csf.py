@@ -4,6 +4,7 @@ from nacc_attribute_deriver.attributes.missingness.modules.csf.missingness_csf i
     CSFFormMissingness,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestCSFMissingness:
@@ -30,4 +31,17 @@ class TestCSFMissingness:
 
         assert attr._missingness_csfabeta() == 1234.5
         assert attr._missingness_csfttau() == 1.0
+        assert attr._missingness_csfptau() == 500.0
+
+        # see how typical "unknown-looking" codes behave
+        table["file.info.forms.json"].update(
+            {
+                "csfabeta": None,  # stays as informed missingness
+                "csfttau": 999,  # should stay because its within range
+                "csfptau": 888,  # should be range enforced
+            }
+        )
+
+        assert attr._missingness_csfabeta() == INFORMED_MISSINGNESS
+        assert attr._missingness_csfttau() == 999.0
         assert attr._missingness_csfptau() == 500.0
