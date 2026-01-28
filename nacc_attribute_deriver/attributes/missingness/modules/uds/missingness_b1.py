@@ -6,6 +6,7 @@ Only in V3 and earlier.
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
+    UNKNOWN_CODES,
 )
 
 
@@ -27,40 +28,61 @@ class UDSFormB1Missingness(UDSMissingness):
         if heigdec is not None and heigdec != 0:
             height_with_dec = height + heigdec / 10
             if height != height_with_dec:
-                return height_with_dec
+                height = height_with_dec
 
-        return height
+        return min(max(36.0, height), 87.9)
 
-    #############################
-    # LEGACY 999 to 888 changes #
-    #############################
+    #################################################
+    # LEGACY 999 to 888 changes + range enforcement #
+    #################################################
 
-    def __handle_999_to_888(self, field: str) -> int:
+    def __handle_b1_ranges(self, field: str, minimum: int, maximum: int) -> int:
         """Handles the 999 to 888 change - see
-        b1structrdd.sas.
+        b1structrdd.sas. Also enforce min/max as needed.
         """
         # Cannot be 999 in V4, so seems okay to not gate based
         # on version
         if self.uds.get_value(field, int) == 999:
             return 888
 
-        return self.generic_missingness(field, int)
+        result = self.generic_missingness(field, int)
+        if result not in UNKNOWN_CODES:
+            # enforce specified range
+            return min(max(minimum, result), maximum)
+
+        return result
 
     def _missingness_weight(self) -> int:
         """Handles missingness for WEIGHT."""
-        return self.__handle_999_to_888("weight")
+        return self.__handle_b1_ranges("weight", 50, 400)
 
     def _missingness_bpsys(self) -> int:
         """Handles missingness for BPSYS."""
-        return self.__handle_999_to_888("bpsys")
+        return self.__handle_b1_ranges("bpsys", 70, 230)
 
     def _missingness_bpdias(self) -> int:
         """Handles missingness for BPDIAS."""
-        return self.__handle_999_to_888("bpdias")
+        return self.__handle_b1_ranges("bpdias", 30, 140)
+
+    def _missingness_bpsysl(self) -> int:
+        """Handles missingness for BPSYSL."""
+        return self.__handle_b1_ranges("bpsysl", 70, 230)
+
+    def _missingness_bpsysr(self) -> int:
+        """Handles missingness for BPSYSR."""
+        return self.__handle_b1_ranges("bpsysr", 70, 230)
+
+    def _missingness_bpdiasl(self) -> int:
+        """Handles missingness for BPDIASL."""
+        return self.__handle_b1_ranges("bpdiasl", 30, 140)
+
+    def _missingness_bpdiasr(self) -> int:
+        """Handles missingness for BPDIASR."""
+        return self.__handle_b1_ranges("bpdiasr", 30, 140)
 
     def _missingness_hrate(self) -> int:
         """Handles missingness for HRATE."""
-        return self.__handle_999_to_888("hrate")
+        return self.__handle_b1_ranges("hrate", 33, 160)
 
     ####################
     # LEGACY with gate #

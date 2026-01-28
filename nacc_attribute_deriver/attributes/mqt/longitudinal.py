@@ -23,7 +23,7 @@ class LongitudinalAttributeCollection(AttributeCollection):
             table=table, required=frozenset(["cross-sectional.uds-visitdates"])
         )
 
-    def get_visitdates(self) -> List[Any]:
+    def get_uds_visitdates(self) -> List[Any]:
         """Get UDS visits."""
         visitdates: list[Any] | None = self.__working.get_cross_sectional_value(
             "uds-visitdates", list
@@ -35,4 +35,4 @@ class LongitudinalAttributeCollection(AttributeCollection):
 
     def _create_years_of_uds(self) -> int:
         """Creates subject.info.longitudinal-data.uds.year-count."""
-        return len(get_unique_years(self.get_visitdates()))
+        return len(get_unique_years(self.get_uds_visitdates()))

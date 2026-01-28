@@ -174,3 +174,25 @@ class TestUDSFormA4Attribute:
         uds_table["file.info.forms.json.anymeds"] = None
         assert not attr.submitted
         self.__check_derived_values(attr, -4)
+
+    def test_naccamd_range_enforced(self, table1):
+        """Ensure range is enforced for NACCAMD."""
+        table1["subject.info.working.longitudinal"].update(
+            {
+                "drugs-list": [
+                    {"date": "2025-01-01", "value": [str(i) for i in range(43)]}
+                ]
+            }
+        )
+        attr = UDSFormA4Attribute(table1)
+        assert attr._create_naccamd() == 40
+
+        table1["subject.info.working.longitudinal"].update(
+            {
+                "drugs-list": [
+                    {"date": "2025-01-01", "value": [str(i) for i in range(39)]}
+                ]
+            }
+        )
+        attr = UDSFormA4Attribute(table1)
+        assert attr._create_naccamd() == 39

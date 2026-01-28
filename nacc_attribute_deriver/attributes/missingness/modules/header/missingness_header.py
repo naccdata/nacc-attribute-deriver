@@ -7,7 +7,7 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
     FormMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
-from nacc_attribute_deriver.utils.date import date_from_form_date
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class HeaderFormMissingness(FormMissingnessCollection):
@@ -21,5 +21,8 @@ class HeaderFormMissingness(FormMissingnessCollection):
 
         VISITDATE is required for forms so expected to be there.
         """
-        visitdate = date_from_form_date(self.form.get_required("visitdate", str))
-        return str(visitdate)
+        visitdate = self.get_visitdate()
+        if not visitdate:
+            raise AttributeDeriverError("Missing visitdate from form header")
+
+        return visitdate

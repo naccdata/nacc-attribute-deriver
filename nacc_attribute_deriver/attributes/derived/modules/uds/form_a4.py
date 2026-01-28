@@ -119,12 +119,12 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     def _create_naccamd(self) -> int:
         """Creates NACCAMD - Total number of medications reported at
-        each visit.
+        each visit. Enforces upper range of 40.
         """
         if not self.submitted:
             return INFORMED_MISSINGNESS
 
-        return len(self.__meds)
+        return min(len(self.__meds), 40)
 
     def _create_naccahtn(self) -> int:
         """Creates NACCAHTN - Reported current use of any type of

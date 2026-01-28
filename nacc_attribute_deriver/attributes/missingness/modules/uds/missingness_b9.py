@@ -11,6 +11,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import WorkingNamespa
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
+    UNKNOWN_CODES,
 )
 
 
@@ -490,39 +491,55 @@ class UDSFormB9Missingness(UDSMissingness):
 
         return self.generic_missingness(field, int, default=default)
 
+    def __handle_age_ranges(
+        self, gate: str, field: str, minimum: int, maximum: int
+    ) -> int:
+        """Handle ages, which need to look at prev with gate and also be bound
+        to a specific range."""
+        result = self.__handle_prev_with_gate(gate, field)
+        if result not in UNKNOWN_CODES:
+            return min(max(minimum, result), maximum)
+
+        return result
+
     def _missingness_cogflago(self) -> int:
         """Handles missingness for COGFLAGO."""
         # # TODO: extra recode logic in SAS - do we need?
         # if self.uds.get_value("decclcog", int) == 0:
         #     return 888
-        return self.__handle_prev_with_gate("cogfluc", "cogflago")
+        return self.__handle_age_ranges("cogfluc", "cogflago", 15, 110)
 
     def _missingness_bevhago(self) -> int:
         """Handles missingness for BEVHAGO."""
-        return self.__handle_prev_with_gate("bevhall", "bevhago")
+        return self.__handle_age_ranges("bevhall", "bevhago", 15, 110)
 
     def _missingness_beage(self) -> int:
-        """Handles missingness for BEAGE."""
-        return self.__handle_prev_with_gate("decclbe", "beage")
+        """Handlesd missingness for BEAGE."""
+        return self.__handle_age_ranges("decclbe", "beage", 15, 110)
 
     def _missingness_parkage(self) -> int:
         """Handles missingness for PARKAGE."""
-        return self.__handle_prev_with_gate("momopark", "parkage")
+        return self.__handle_age_ranges("momopark", "parkage", 15, 110)
 
     def _missingness_alsage(self) -> int:
         """Handles missingness for ALSAGE."""
-        return self.__handle_prev_with_gate("momoals", "alsage")
+        return self.__handle_age_ranges("momoals", "alsage", 15, 110)
 
     def _missingness_moage(self) -> int:
         """Handles missingness for MOAGE."""
-        return self.__handle_prev_with_gate("decclmot", "moage")
+        return self.__handle_age_ranges("decclmot", "moage", 9, 110)
 
     def _missingness_beremago(self) -> int:
         """Handles missingness for BEREMAGO."""
         if self.formver < 4:
-            return self.__handle_prev_with_gate("berem", "beremago")
+            result = self.__handle_prev_with_gate("berem", "beremago")
+        else:
+            result = self.__handle_b9_prev_value("beremago")
 
-        return self.__handle_b9_prev_value("beremago")
+        if result not in UNKNOWN_CODES:
+            return min(max(15, result), 110)
+
+        return result
 
     #######################################################
     # If BESUBAB =1 and VAR is blank, then VAR should = 0 #
@@ -627,10 +644,13 @@ class UDSFormB9Missingness(UDSMissingness):
         decage = self.uds.get_value("decage", int)
 
         # SAS checks overall for DECAGE = 777
-        if decage == 777:
-            return self.__handle_b9_prev_value("decage")
-
         if decage is not None:
+            if decage == 777:
+                decage = self.__handle_b9_prev_value("decage")
+
+            if decage not in UNKNOWN_CODES:
+                return min(max(15, decage), 110)
+
             return decage
 
         if self.formver == 1 and not self.uds.is_initial():

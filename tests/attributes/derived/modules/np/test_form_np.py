@@ -2,6 +2,7 @@ import pytest
 from nacc_attribute_deriver.attributes.derived.modules.np.form_np import (
     NPFormAttributeCollection,
 )
+
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,

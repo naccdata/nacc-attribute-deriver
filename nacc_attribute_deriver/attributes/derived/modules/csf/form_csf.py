@@ -22,28 +22,28 @@ class CSFAttributeCollection(AttributeCollection):
             msg = f"Current file is not a CSF form: found {module}"
             raise InvalidFieldError(msg)
 
-    def __concentration_within_range(
-        self, field: str, min_value: float, max_value: float
-    ) -> int:
-        """Returns whether the given concentration field is within the
-        specified range."""
+    def __check_concentration(self, field: str) -> int:
+        """Returns 1 if concentration is vavlid, 0 otherwise.
+
+        REGRESSION: this used to check within a specific range, but it is
+            not guaranteed the user enters a value within that range.
+            Missingness logic will enforce the actual values, so for the
+            derived variables just check that it's there and not < 1.
+        """
         value = self.__csf.get_value(field, float)
-        if value is None:
+        if value is None or value < 1:
             return 0
 
-        if value >= min_value and value <= max_value:
-            return 1
-
-        return 0
+        return 1
 
     def _create_naccacsf(self) -> int:
         """Creates NACCACSF: One or more measures of Abeta1-42 reported."""
-        return self.__concentration_within_range("csfabeta", 1, 3200)
+        return self.__check_concentration("csfabeta")
 
     def _create_naccpcsf(self) -> int:
         """Creates NACCPCSF: One or more measures of P-tau181P reported."""
-        return self.__concentration_within_range("csfptau", 1, 500)
+        return self.__check_concentration("csfptau")
 
     def _create_nacctcsf(self) -> int:
         """Creates NACCTCSF: One or more measures of T-tau reported."""
-        return self.__concentration_within_range("csfttau", 1, 2500)
+        return self.__check_concentration("csfttau")

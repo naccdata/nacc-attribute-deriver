@@ -7,6 +7,7 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
     SubjectMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class CSFMissingness(SubjectMissingnessCollection):
@@ -26,11 +27,27 @@ class CSFMissingness(SubjectMissingnessCollection):
 
 
 class CSFFormMissingness(FormMissingnessCollection):
-    """
-    TODO: THIS IS ONLY REQUIRED TO BACKFILL WRITE-IN/KNOWN BLANK VARIABLES TO AVOID
-    THE NOT-IN-CONTAINER ERROR. REMOVE ONCE FEATURE IS ADDED TO ETL GEAR.
-    """
-
     def _missingness_csf(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for CLS form variables."""
         return self.generic_missingness(field, attr_type)
+
+    def __enforce_range(self, field: str, minimum: float, maximum: float) -> float:
+        """Enforce a float range."""
+        result = self.generic_missingness(field, float)
+
+        if result != INFORMED_MISSINGNESS:
+            return min(max(minimum, result), maximum)
+
+        return result
+
+    def _missingness_csfabeta(self) -> float:
+        """Handles missingness for CSFABETA."""
+        return self.__enforce_range("csfabeta", 1.0, 2000.0)
+
+    def _missingness_csfttau(self) -> float:
+        """Handles missingness for CSFTTAU."""
+        return self.__enforce_range("csfttau", 1.0, 2500.0)
+
+    def _missingness_csfptau(self) -> float:
+        """Handles missingness for CSFPTAU."""
+        return self.__enforce_range("csfptau", 1.0, 500.0)
