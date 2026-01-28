@@ -8,6 +8,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Original `visitdate` moved to `c19visitdate` and `clsvisitdate`, respectively
 * Updates to standardize all UDS `FRMDATEX` variables to `YYYY-MM-DD` format
 * Updates to enforce ranges for several variables
+* Updates NP `NACCBRNN` to always return 9 for missing/unknown (previously mix of 8 and 9 depending on version)
 * Updates COVID `C19TxYR` variables to fix 88 to 8888 and 99 to 9999
 * Updates LBD to handle the 0 prev code for `LBSPSYM` and `SCCOFRST` 
 * Updates the V1 drug mappings to align further with legacy results
