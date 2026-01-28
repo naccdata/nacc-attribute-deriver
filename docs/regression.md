@@ -28,7 +28,7 @@ In V1, the A4 form was very different and all medications were written in by han
 
 Because we were unable to identify the mechanism used for that mapping, we somewhat rather brute-forced its migration it to the current codebase. Using what seemed like a text file containing all the write-in values ever submitted for this version of the form, we had ClaudeAI "spellcheck" the write-ins so that they could be more directly mapped to the UDSMEDS table (now dumped to `config/UDSMEDS.csv`) to get the respective drug IDs, and then the results were stored in `config/normalized_drug_ids_v1.csv`.
 
-This file is used as to do the mapping instead - however, it does not perfectly match the legacy mapping, and some write-in values were still unable to be mapped to a drug ID. Because of the ambiguity and inconsistency of many of the write-ins to begin with, we decided that this was an acceptable discrepancy.
+This file is used as to do the mapping instead. It originally did not match the legacy mapping, so we compared the computed results between the new and legacy QAFs to update the mapping to whatever the legacy code did before. Since this is only a V1 issue, and we have long since stopped collectin V1, we settled on basically having every possible value hardcoded.
 
 ### MEDS vs Drugs List
 
