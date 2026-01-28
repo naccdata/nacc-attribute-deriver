@@ -378,14 +378,12 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
             return result
 
-        # REGRESSION: if V1/V2 and any of these variables were set to 88,
-        # this would be recoded to -4. For v1 also returned -4 if it was None
-        if self.formver < 3:
-            value = self.uds.get_value(field, int)
-            if value == 88 or (self.formver < 2 and value is None):
-                return INFORMED_MISSINGNESS
+        # set 88 to -4
+        value = self.uds.get_value(field, int)
+        if value is None or value == 88:
+            return INFORMED_MISSINGNESS
 
-        return self.generic_missingness(field, int)
+        return value
 
     def _missingness_trailarr(self) -> int:
         """Handles missingness for TRAILARR."""
@@ -504,10 +502,9 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """Handles missingness for UDSBENRS."""
         result = self._handle_non_optional_gate("udsbentd", "udsbenrs")
 
-        # some instances where udsbenrs itself is 9, which most likely
-        # means unknown. return 0 in this case for now
+        # some instances where udsbenrs itself is 9, cast to -4
         if result == 9:
-            return 0
+            return INFORMED_MISSINGNESS
 
         return result
 

@@ -347,3 +347,41 @@ class TestUDSFormC1C2Missingness:
 
         assert attr._missingness_logiprev() == 15
         assert attr._missingness_memtime() == 20
+
+    def test_udsbenrs(self, uds_table):
+        """Test when UDSBENRS."""
+        attr = UDSFormC1C2Missingness(uds_table)
+
+        # test it gets set to the gate
+        udsbentd = random.choice([95, 96, 97, 98])
+        uds_table["file.info.forms.json.udsbentd"] = udsbentd
+        assert attr._missingness_udsbenrs() == udsbentd
+
+        # test it gets set to its own thing
+        uds_table["file.info.forms.json.udsbentd"] = 1
+        uds_table["file.info.forms.json.udsbenrs"] = 2
+        assert attr._missingness_udsbenrs() == 2
+
+        # when 9, should be cast to INFORMED_MISSINGNESS
+        uds_table["file.info.forms.json.udsbenrs"] = 9
+        assert attr._missingness_udsbenrs() == INFORMED_MISSINGNESS
+
+    def test_trailx_gate(self, uds_table):
+        """Test TRAILX gate cases."""
+        attr = UDSFormC1C2Missingness(uds_table)
+
+        uds_table["file.info.forms.json"].update(
+            {
+                "traila": 996,  # triggers set-to-gate logic
+                "trailarr": 10,  # should get set to 96
+                "trailali": 20,  # should get set to 96
+                "trailb": 50,  # does NOT trigger set-to-gate logic
+                "trailbrr": 30,  # should be left as-is
+                "trailbli": 88,  # 88 should be set to -4
+            }
+        )
+
+        assert attr._missingness_trailarr() == 96
+        assert attr._missingness_trailali() == 96
+        assert attr._missingness_trailbrr() == 30
+        assert attr._missingness_trailbli() == INFORMED_MISSINGNESS

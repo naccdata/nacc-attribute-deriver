@@ -1,8 +1,4 @@
-"""Class to handle MDS form missingness values.
-
-TODO: THIS IS ONLY REQUIRED TO BACKFILL WRITE-IN/KNOWN BLANK VARIABLES TO AVOID
-THE NOT-IN-CONTAINER ERROR. REMOVE ONCE FEATURE IS ADDED TO ETL GEAR.
-"""
+"""Class to handle MDS form missingness values."""
 
 from typing import Optional, Type
 
@@ -20,3 +16,11 @@ class MDSFormMissingness(FormMissingnessCollection):
         # this is super hacky, but we added mds_ in the front to differentiate
         # from UDS, so strip out
         return self.generic_missingness(field.replace("mds_", ""), attr_type)
+
+    def _missingness_mds_multbrth(self) -> int:
+        """Handles missingness for MULTBRTH."""
+        # need to cast 0s to 9s
+        if self.form.get_value("multbrth", int) == 0:
+            return 9
+
+        return self.generic_missingness("multbrth", int)

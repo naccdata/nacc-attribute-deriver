@@ -121,6 +121,18 @@ class NPMissingness(FormMissingnessCollection):
 
         return self.generic_missingness("nppmih", float)
 
+    ###################
+    # Other variables #
+    ###################
+
+    def _missingness_nplewycs(self) -> int:
+        """Handles missingness for NPLEWYCS."""
+        # cast 0s to -4
+        if self.form.get_value("nplewycs", int) == 0:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness("nplewycs", int)
+
     ####################
     # NPINFX variables #
     ####################
