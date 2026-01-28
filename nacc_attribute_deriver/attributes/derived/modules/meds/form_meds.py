@@ -107,15 +107,24 @@ class MEDSFormAttributeCollection(AttributeCollection):
 
     def _create_drugs_list(self) -> List[str]:
         """Returns list of drugs for this visit."""
+        drugs = []
+
         # in V1, each prescription medication is specified by variables
         # PMA - PMT, need to extract
         if self.__formver == 1:
-            return self.__get_v1_drugs()
+            drugs = self.__get_v1_drugs()
+        else:
+            drugs_str = self.__meds.get_value("drugs_list", str)
+            drugs = sorted(
+                [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
+            )
 
-        drugs_str = self.__meds.get_value("drugs_list", str)
-        return sorted(
-            [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
-        )
+        # do replacements as needed
+        for index, drug_id in enumerate(drugs):
+            if drug_id in DRUG_ID_SUBSTITUTIONS:
+                drugs[index] = DRUG_ID_SUBSTITUTIONS[drug_id]
+
+        return drugs
 
     def __get_v1_drugs(self) -> List[str]:
         """Gets V1 drugs by mapping write-ins to normalized DB."""
