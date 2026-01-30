@@ -1,7 +1,7 @@
 """Class to handle form missingness values that check subject-level derived
 variables."""
 
-from typing import Optional, Type
+from typing import Optional, Tuple, Type
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
@@ -22,6 +22,10 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
     INVALID_TEXT,
     MISSINGNESS_VALUES,
+)
+from nacc_attribute_deriver.utils.date import (
+    find_closest_date,
+    standardize_date,
 )
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
@@ -84,6 +88,31 @@ class FormMissingnessCollection(AttributeCollection):
     def form(self) -> FormNamespace | RawNamespace:
         return self.__form
 
+    def get_visitdate(self) -> Optional[str]:
+        """Visitdate can come in several formats, so resolve everything to
+        YYYY-MM-DD for consistency.
+
+        Returns:
+            visitdate as a string, if found, None otherwise
+        """
+        date_attribute = self.__form.date_attribute
+        if not date_attribute:
+            return None
+
+        raw_visitdate = self.form.get_value(date_attribute, str)
+        if not raw_visitdate:
+            raise AttributeDeriverError(
+                f"Unable to find date attribute {date_attribute}"
+            )
+
+        visitdate = standardize_date(raw_visitdate)
+        if not visitdate:
+            raise AttributeDeriverError(
+                f"Unable to standardize {date_attribute} from {raw_visitdate}"
+            )
+
+        return visitdate
+
     def generic_missingness(
         self, attribute: str, attr_type: Type[T], default: Optional[T] = None
     ) -> T:
@@ -127,8 +156,7 @@ class FormMissingnessCollection(AttributeCollection):
     ) -> T:
         """Handle when the value could be provided by the previous visit.
 
-        If VAR == PREV_CODE, VAR = PREV_VISIT.
-        ELIF VAR is not blank, return None (do not override)
+        If VAR == PREV_CODE, VAR = PREV_VISIT
         ELSE generic missingness
         """
         value = self.__form.get_value(attribute, attr_type)
@@ -140,3 +168,53 @@ class FormMissingnessCollection(AttributeCollection):
                 return prev_value
 
         return self.generic_missingness(attribute, attr_type, default=default)
+
+
+class UDSCorrelatedFormMissingnessCollection(FormMissingnessCollection):
+    """Class to handle missingness values at the file level for standalone
+    forms that need to be correlated with an UDS visit.
+
+    As such, the date attribute is required.
+    """
+
+    def __init__(
+        self,
+        table: SymbolTable,
+        namespace: Type[FormNamespace] | Type[RawNamespace] = FormNamespace,
+        required: frozenset[str] = frozenset(),
+        date_attribute: str = "visitdate",
+    ) -> None:
+        """Initializer."""
+        if not date_attribute:
+            raise AttributeDeriverError("date_attribute required")
+
+        required = required.union([date_attribute])
+        super().__init__(table, namespace, required, date_attribute)
+
+        self.__date_attribute = date_attribute
+        self.__working = WorkingNamespace(table=table)
+
+    def find_closest_uds_visit(self) -> Tuple[str, int]:
+        """Find the closest UDS visit to this form. By calling this, the caller
+        assumes that the UDS forms have already been curated, and that we can
+        find UDS visitdates under subject.working.uds-visitdates.
+
+        Returns:
+            The most recent UDS visit's date and its NACCVNUM (which
+                corresponds to its index in uds-visidates)
+        """
+        visitdate = self.get_visitdate()
+        if not visitdate:
+            raise AttributeDeriverError("Missing visitdate from form header")
+
+        uds_visitdates = self.__working.get_cross_sectional_value(
+            "uds-visitdates", list
+        )
+
+        # this shouldn't happen; assuming at least one UDS visit exists
+        if not uds_visitdates:
+            raise AttributeDeriverError("No UDS visits found to correlate")
+
+        # index + 1 is effectively NACCVNUM
+        uds_visit, index = find_closest_date(uds_visitdates, visitdate)
+        return str(uds_visit), index + 1

@@ -58,7 +58,7 @@ class TestUDSHeaderAttributeCollection:
     def test_get_visitdates(self, table):
         """Tests get_visitdates - should add current visit"""
         attr = UDSHeaderAttributeCollection(table)
-        assert attr.get_visitdates() == [
+        assert attr.get_uds_visitdates() == [
             date(1980, 5, 6),
             date(1980, 10, 10),
             date(2023, 12, 12),

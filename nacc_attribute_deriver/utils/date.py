@@ -188,7 +188,7 @@ def get_unique_years(dates: List[str]) -> Set[int]:
     Args:
         dates: List of dates to get unique years from
     """
-    years = [datetime_from_form_date(x) for x in dates]
+    years = [date_from_form_date(x) for x in dates]
     return set(x.year for x in years if x is not None)
 
 
@@ -223,3 +223,42 @@ def create_death_date(
         ddy = 1
 
     return date_from_form_date(f"{dyr}-{dmo:02d}-{ddy:02d}")
+
+
+def standardize_date(date: Optional[str]) -> Optional[str]:
+    """Standardize date to YYYY-MM-DD format, if provided."""
+    date_obj = date_from_form_date(date)
+    if not date_obj:
+        return None
+
+    return str(date_obj)
+
+
+def find_closest_date(
+    raw_dates: List[str], raw_target_date: str, as_date: bool = False
+) -> Tuple[str | date, int]:
+    """Find the value and index of the closet date in the list of dates to the
+    given target date."""
+    if not raw_dates:
+        raise AttributeDeriverError("Dates list is empty; cannot find closet date")
+
+    # convert all to datetime objects
+    target = date_from_form_date(raw_target_date)
+    dates = [date_from_form_date(x) for x in raw_dates]
+
+    if not target or any(x is None for x in dates):
+        raise AttributeDeriverError(
+            "Failed to convert all dates to datetime objects; cannot "
+            + "find closest date"
+        )
+
+    index = min(range(len(dates)), key=lambda i: abs(dates[i] - target))  # type: ignore
+    result = standardize_date(raw_dates[index])
+
+    if not result:
+        raise AttributeDeriverError(f"Failed to standardize {raw_dates[index]}")
+
+    if as_date:
+        return (dates[index], index)  # type: ignore
+
+    return (result, index)

@@ -44,7 +44,8 @@ class UDSFormD1LegacyMissingness(UDSFormD1Missingness):
 
     def _missingness_demun(self) -> int:
         """Handles missingness for DEMUN."""
-        return self.handle_normcog_gate("demun")
+        result = self.handle_normcog_gate("demun")
+        return result
 
     ########################################
     # Cognitive impairment-gated variables #

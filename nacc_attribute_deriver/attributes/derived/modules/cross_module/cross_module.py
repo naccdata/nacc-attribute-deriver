@@ -19,6 +19,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 )
 from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import UNKNOWN_CODES
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     calculate_months,
@@ -172,9 +173,11 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         result = calculate_months(last_visit, deathdate)
 
-        # handle negative
-        # REGRESSION: RDD limits this 0-100 but no cap in SAS/QAF
-        return 999 if result is None or result < 0 else result
+        # limit 0 - 100
+        if result is None or result in UNKNOWN_CODES:
+            return 999
+
+        return min(result, 100)
 
     # Tried to use all things described in the rdd-np. Many seemed not
     # in the SAS code. Not sure if the MDS "vitalst" is passed through or not.
@@ -278,6 +281,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
                     been stated to have rejoined (via MLST form) BUT have
                     UDS visits after the date of the discontinued MLST form
             2: Minimal contact with ADC but still enrolled
+            5: Affiliate
         """
         # if dead (from NP/MLST), return 0
         if self._create_naccdied() == 1:

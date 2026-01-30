@@ -16,7 +16,6 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
 )
-from nacc_attribute_deriver.utils.date import date_from_form_date
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
 )
@@ -81,13 +80,11 @@ class NPMissingness(FormMissingnessCollection):
 
     def _missingness_np_visitdate(self) -> str:
         """NP visitdate/formdate can come from either variable."""
-        if not self.form.date_attribute:
+        visitdate = self.get_visitdate()
+        if not visitdate:
             raise AttributeDeriverError("No date attribute defined for NP form")
 
-        visitdate = date_from_form_date(
-            self.form.get_required(self.form.date_attribute, str)
-        )
-        return str(visitdate)
+        return visitdate
 
     ####################################
     # Form version-dependent variables #
@@ -113,16 +110,28 @@ class NPMissingness(FormMissingnessCollection):
         nppmih = self.form.get_value("nppmih", float)
         nppmim = self.form.get_value("nppmim", float)
 
-        if nppmih is not None and nppmih != 99:
+        if nppmih == 99:
+            return 99.9
+
+        if nppmih is not None:
             if nppmim is not None:
                 return nppmih + (nppmim / 10)
 
             return nppmih
 
-        if nppmih == 99:
-            return 99.9
-
         return self.generic_missingness("nppmih", float)
+
+    ###################
+    # Other variables #
+    ###################
+
+    def _missingness_nplewycs(self) -> int:
+        """Handles missingness for NPLEWYCS."""
+        # cast 0s to -4
+        if self.form.get_value("nplewycs", int) == 0:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness("nplewycs", int)
 
     ####################
     # NPINFX variables #

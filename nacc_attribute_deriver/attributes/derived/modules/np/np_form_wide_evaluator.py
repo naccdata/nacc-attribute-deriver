@@ -415,7 +415,7 @@ class NPFormWideEvaluator:
             or self.get("npprion") in [3, 9]
             or self.get("npmajor") in [3, 9]
         ):
-            return 8
+            return 9
 
         return 0
 

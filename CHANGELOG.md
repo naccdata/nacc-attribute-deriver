@@ -2,9 +2,21 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.1.0
+
+* Adds logic to correlate standalone forms (COVID, CLS) to the closest UDS visit - assumes all UDS visits have been curated already
+    * Original `visitdate` moved to `c19visitdate` and `clsvisitdate`, respectively
+* Updates to standardize all UDS `FRMDATEX` variables to `YYYY-MM-DD` format
+* Updates to enforce ranges for several variables
+* Updates NP `NACCBRNN` to always return 9 for missing/unknown (previously mix of 8 and 9 depending on version)
+* Updates COVID `C19TxYR` variables to fix 88 to 8888 and 99 to 9999
+* Updates LBD to handle the 0 prev code for `LBSPSYM` and `SCCOFRST` 
+* Updates the V1 drug mappings to align further with legacy results
+    * Also removes `justification` column as it isn't needed
+* Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
+
 ## 2.0.1
 
-* Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
 * Upgrade to Python 3.12 and Pants 2.29.0
 
 ## 2.0.0

@@ -22,6 +22,11 @@ from nacc_attribute_deriver.utils.errors import (
     InvalidFieldError,
 )
 
+# drug IDs that need to be substituted to another
+# TODO: need a way to handle all our different drug references
+# for now just hardcoding because its easiest
+DRUG_ID_SUBSTITUTIONS = {"s10008": "d04523", "s10136": "d04523"}
+
 
 def load_normalized_drugs_list() -> Dict[str, str | None]:
     """Load the normalized drugs list. Done globally so it's only done once per
@@ -98,15 +103,24 @@ class MEDSFormAttributeCollection(AttributeCollection):
 
     def _create_drugs_list(self) -> List[str]:
         """Returns list of drugs for this visit."""
+        drugs = []
+
         # in V1, each prescription medication is specified by variables
         # PMA - PMT, need to extract
         if self.__formver == 1:
-            return self.__get_v1_drugs()
+            drugs = self.__get_v1_drugs()
+        else:
+            drugs_str = self.__meds.get_value("drugs_list", str)
+            drugs = sorted(
+                [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
+            )
 
-        drugs_str = self.__meds.get_value("drugs_list", str)
-        return sorted(
-            [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
-        )
+        # do replacements as needed
+        for index, drug_id in enumerate(drugs):
+            if drug_id in DRUG_ID_SUBSTITUTIONS:
+                drugs[index] = DRUG_ID_SUBSTITUTIONS[drug_id]
+
+        return drugs
 
     def __get_v1_drugs(self) -> List[str]:
         """Gets V1 drugs by mapping write-ins to normalized DB."""
