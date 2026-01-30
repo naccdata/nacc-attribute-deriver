@@ -281,6 +281,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
                     been stated to have rejoined (via MLST form) BUT have
                     UDS visits after the date of the discontinued MLST form
             2: Minimal contact with ADC but still enrolled
+            5: Affiliate
         """
         # if dead (from NP/MLST), return 0
         if self._create_naccdied() == 1:

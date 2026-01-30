@@ -1924,6 +1924,10 @@ uds,height,file.info.resolved.height,update,FALSE,float
 uds,weight,file.info.resolved.weight,update,FALSE,int
 uds,bpsys,file.info.resolved.bpsys,update,FALSE,int
 uds,bpdias,file.info.resolved.bpdias,update,FALSE,int
+uds,bpsysl,file.info.resolved.bpsysl,update,FALSE,int
+uds,bpsysr,file.info.resolved.bpsysr,update,FALSE,int
+uds,bpdiasl,file.info.resolved.bpdiasl,update,FALSE,int
+uds,bpdiasr,file.info.resolved.bpdiasr,update,FALSE,int
 uds,hrate,file.info.resolved.hrate,update,FALSE,int
 uds,vision,file.info.resolved.vision,update,FALSE,int
 uds,viscorr,file.info.resolved.viscorr,update,FALSE,int
