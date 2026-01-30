@@ -217,4 +217,4 @@ class UDSCorrelatedFormMissingnessCollection(FormMissingnessCollection):
 
         # index + 1 is effectively NACCVNUM
         uds_visit, index = find_closest_date(uds_visitdates, visitdate)
-        return uds_visit, index + 1
+        return str(uds_visit), index + 1

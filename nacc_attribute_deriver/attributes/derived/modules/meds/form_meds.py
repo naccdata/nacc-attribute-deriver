@@ -22,14 +22,10 @@ from nacc_attribute_deriver.utils.errors import (
     InvalidFieldError,
 )
 
-
 # drug IDs that need to be substituted to another
 # TODO: need a way to handle all our different drug references
 # for now just hardcoding because its easiest
-DRUG_ID_SUBSTITUTIONS = {
-    "s10008": "d04523",
-    "s10136": "d04523"
-}
+DRUG_ID_SUBSTITUTIONS = {"s10008": "d04523", "s10136": "d04523"}
 
 
 def load_normalized_drugs_list() -> Dict[str, str | None]:

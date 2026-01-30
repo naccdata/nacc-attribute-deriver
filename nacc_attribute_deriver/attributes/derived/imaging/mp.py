@@ -34,7 +34,6 @@ from nacc_attribute_deriver.utils.date import (
     date_from_form_date,
     find_closest_date,
 )
-from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class MPAttributeCollection(AttributeCollection):
@@ -78,15 +77,18 @@ class MPAttributeCollection(AttributeCollection):
         For sessions after the closeset visitdate, days > 0.
         8888 If not applicable/no image available.
         """
-        uds_visitsdates = self.__working.get_cross_sectional_value("uds-visitdates", list)
+        uds_visitsdates = self.__working.get_cross_sectional_value(
+            "uds-visitdates", list
+        )
         if not uds_visitsdates:
             return 8888
 
         # something should be found, else error thrown
         closest, _ = find_closest_date(
-            uds_visitsdates, str(self.__mp.study_date), as_date=True)
+            uds_visitsdates, str(self.__mp.study_date), as_date=True
+        )
 
-        return (self.__mp.study_date - closest).days
+        return (self.__mp.study_date - closest).days  # type: ignore
 
     def get_filename(self, attribute: str) -> str:
         """File locator variable.

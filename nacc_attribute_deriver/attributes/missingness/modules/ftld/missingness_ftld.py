@@ -19,7 +19,6 @@ class FTLDMissingness(SubjectMissingnessCollection):
 
 
 class FTLDFormMissingness(FormMissingnessCollection):
-
     def _missingness_ftld(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for FTLD form variables."""
         return self.generic_missingness(field, attr_type)
@@ -34,7 +33,7 @@ class FTLDFormMissingness(FormMissingnessCollection):
 
     def _missingness_ftdlengt(self) -> int:
         """Handles missingness for FTDLENGT."""
-        ftdlengt = self.form.get_value("ftdlengt", int) 
+        ftdlengt = self.form.get_value("ftdlengt", int)
 
         if ftdlengt is None:
             return INFORMED_MISSINGNESS

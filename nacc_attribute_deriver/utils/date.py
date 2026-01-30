@@ -234,7 +234,9 @@ def standardize_date(date: Optional[str]) -> Optional[str]:
     return str(date_obj)
 
 
-def find_closest_date(raw_dates: List[str], raw_target_date: str, as_date: bool = False) -> Tuple[str | date, int]:
+def find_closest_date(
+    raw_dates: List[str], raw_target_date: str, as_date: bool = False
+) -> Tuple[str | date, int]:
     """Find the value and index of the closet date in the list of dates to the
     given target date."""
     if not raw_dates:
@@ -257,6 +259,6 @@ def find_closest_date(raw_dates: List[str], raw_target_date: str, as_date: bool 
         raise AttributeDeriverError(f"Failed to standardize {raw_dates[index]}")
 
     if as_date:
-        return (dates[index], index)
+        return (dates[index], index)  # type: ignore
 
     return (result, index)
