@@ -12,6 +12,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Updates COVID `C19TxYR` variables to fix 88 to 8888 and 99 to 9999
 * Updates LBD to handle the 0 prev code for `LBSPSYM` and `SCCOFRST` 
 * Updates the V1 drug mappings to align further with legacy results
+* Allows affiliate status to change
     * Also removes `justification` column as it isn't needed
 * Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
 

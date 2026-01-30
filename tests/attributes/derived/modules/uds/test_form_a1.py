@@ -94,6 +94,20 @@ class TestUDSFormA1Attribute:
         set_attribute(table, form_prefix, "sourcenw", 1)
         assert not attr._create_affiliate()
 
+    def test_affiliate_update(self, table):
+        """Tests affiliate case when updated."""
+        # case 1: IVP; nothing set
+        attr = UDSFormA1Attribute(table)
+        assert not attr._create_affiliate()
+
+        # case 2: IVP; subject is set to True
+        table["subject.info.derived.affiliate"] = True
+        assert attr._create_affiliate()
+
+        # case 3: IVP; overrides
+        table["file.info.forms.json.sourcenw"] = 1
+        assert not attr._create_affiliate()
+
     def test_create_naccsex(self, table):
         """Test _create_naccsex."""
         table["file.info.forms.json"].update(

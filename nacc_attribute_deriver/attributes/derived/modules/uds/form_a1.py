@@ -312,17 +312,21 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         There are some nuances, but for now just check for source == 4
         or sourcenw == 2 (non-ADC).
         """
-        # check if affiliate status already determined
-        # TODO - right now once affiliate always affilaite, but should this change
-        # to non-affiliate if a later form defines it as such?
+        # get current status
         affiliate = self.__subject_derived.get_value("affiliate", bool)
-        if affiliate:
-            return True
+        if affiliate is None:
+            affiliate = False
 
         # only provided in IVP
         if self.uds.is_initial():
             source = self.uds.get_value("source", int)
             sourcenw = self.uds.get_value("sourcenw", int)
+
+            # if they're both None, return current status
+            if source is None and sourcenw is None:
+                return affiliate
+
             return source == 4 or sourcenw == 2
 
-        return False
+        # return whatever the current status is
+        return affiliate
