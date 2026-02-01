@@ -1,17 +1,15 @@
 raw_drug,normalized_drug,drug_id
-0,unknown,xxxxxx
-0,unknown,xxxxxx
-0,unknown,xxxxxx
-1,unknown,xxxxxx
-2.5,unknown,xxxxxx
-10,unknown,xxxxxx
-38,unknown,xxxxxx
-40,unknown,xxxxxx
-81,unknown,xxxxxx
-145,unknown,xxxxxx
-180,unknown,xxxxxx
-2000,unknown,xxxxxx
-6441,unknown,xxxxxx
+0,unknown,NO_DRUG_ID
+1,unknown,NO_DRUG_ID
+2.5,unknown,NO_DRUG_ID
+10,unknown,NO_DRUG_ID
+38,unknown,NO_DRUG_ID
+40,unknown,NO_DRUG_ID
+81,unknown,NO_DRUG_ID
+145,unknown,NO_DRUG_ID
+180,unknown,NO_DRUG_ID
+2000,unknown,NO_DRUG_ID
+6441,unknown,NO_DRUG_ID
 ",ec;ozome",unknown,d00859
 ;exa[rp,lexapro,d04812
 ;ipitor,lipitor,d04105
@@ -19,7 +17,7 @@ raw_drug,normalized_drug,drug_id
 ;osomp[ro;,lisinopril,d00732
 ;osompril,lisinopril,d00732
 .zantac,zantac,d00021
-(100/50/100),unknown,xxxxxx
+(100/50/100),unknown,NO_DRUG_ID
 (aricept) donepezil,donepezil,d04099
 (eye qtts) timolol,timolol,d00139
 (lotensin) benazepril,benazepril,d00730
@@ -35,7 +33,7 @@ raw_drug,normalized_drug,drug_id
 a,unknown,NO_DRUG_ID
 a birdteron,abiraterone,d07766
 a-c carbamide,acetazolamide,d00161
-"a,boem",unknown,xxxxxx
+"a,boem",unknown,NO_DRUG_ID
 a;;egra,allegra,d04040
 a;tace,altace,d00728
 a.s.a.,aspirin,d00170
@@ -50,7 +48,7 @@ abilifx,abilify,d04825
 abilify,abilify,d04825
 ability,abilify,d04825
 ablatan,ablavar,d05846
-ablify,unknown,xxxxxx
+ablify,unknown,NO_DRUG_ID
 ablitiy,abilify,d04825
 abreva (10 pct),abreva,d04702
 absolute glaucine eye drop,brimonidine eye drops,NO_DRUG_ID
@@ -89,7 +87,7 @@ acetaminophe,acetaminophen,d00049
 acetaminophen,acetaminophen,d00049
 acetaminophen / codeine #3,tylenol #3,d03423
 acetaminophen #3,tylenol #3,d03423
-acetaminophen 3,tylenol #3,NO_DRUG_ID
+acetaminophen 3,tylenol #3,d03423
 acetaminophen w/codeine,unknown,d03423
 acetaminophen-hydrocodone,unknown,d03428
 acetaminophen-hydrocodone bita,acetaminophen-hydrocodone bitartrate,d03428
@@ -287,7 +285,7 @@ advicor 500 20,advicor,d04787
 advicor 500/20,advicor,d04787
 advil,advil,d00015
 advir,advair,NO_DRUG_ID
-advisor,advair,NO_DRUG_ID
+advisor,advair,d04787
 advodart,avodart,d04788
 adwair,advair,d04611
 aenolol,atenolol,d00004
@@ -353,7 +351,7 @@ albuteral,albuterol,d00749
 albuteral inh,albuterol inhaler,NO_DRUG_ID
 albuteral inhales,albuterol inhaler,NO_DRUG_ID
 albuteral nebulizer,albuterol nebulizer,NO_DRUG_ID
-albuteroal inhaler,albuterol inhaler,NO_DRUG_ID
+albuteroal inhaler,albuterol inhaler,d00749
 albuterol,albuterol,d00749
 albuterol (inhaler),albuterol,d00749
 albuterol (nebuliza),albuterol,d00749
@@ -391,13 +389,14 @@ aldactazide,aldactazide,d03247
 aldactone,aldactone,d00373
 aldalat pl,adalat xl,NO_DRUG_ID
 aldara,unknown,d04125
-aldara cream,aldara cream,NO_DRUG_ID
+aldara cream,aldara cream,d04125
 aldomet,aldomet,d00133
 aledronate,alendronate,d03849
 alegra-d,allegra-d,NO_DRUG_ID
 alendronate,alendronate,d03849
 alendronate/fosamax,unknown,d03849
 alendronath,alendronate,d03849
+alendronate (fosamax),alendronate,d03849
 alenolol,atenolol,d00004
 alenoronate,alendronate,d03849
 alentol,atenolol,d00004
@@ -430,14 +429,14 @@ allerex,allegra,d04040
 allerga,allegra,d04040
 allergan,allergan,d03627
 allergen,allergen,d03627
-allergra,unknown,xxxxxx
+allergra,unknown,NO_DRUG_ID
 allergy 10 shots,allergy immunotherapy,NO_DRUG_ID
 allergy inj,allergy injection,NO_DRUG_ID
 allergy injection,allergen immunotherapy,NO_DRUG_ID
 allergy med.,unknown,d00212
 allergy pill,antihistamine,d00212
 allergy shot,allergen immunotherapy,NO_DRUG_ID
-allergy shots,allergen immunotherapy,xxxxxx
+allergy shots,allergen immunotherapy,NO_DRUG_ID
 alloburinal,unknown,d00023
 alloparinol,allopurinol,d00023
 alloperinol,allopurinol,d00023
@@ -456,7 +455,7 @@ allopurind,allopurinol,d00023
 allopurine,allopurinol,d00023
 allopurinol,allopurinol,d00023
 allopurinol tabs,allopurinol,d00023
-allopurinol?,unknown,xxxxxx
+allopurinol?,unknown,NO_DRUG_ID
 allopurirol,allopurinol,d00023
 allopurlnol,allopurinol,d00023
 allopurnial,allopurinol,d00023
@@ -487,7 +486,7 @@ alphagan (15 pct) (eyedrop),alphagan p,d04048
 alphagan (eyedrop),alphagan,d04048
 alphagan 0.001  2gtts l eye,alphagan,d04048
 alphagan 0.005%,alphagan,d04048
-alphagan 0.015%,alphagan p 0.15%,NO_DRUG_ID
+alphagan 0.015%,alphagan p 0.15%,d04048
 alphagan 0.15%,alphagan,d04048
 alphagan 1 gtt,alphagan,d04048
 alphagan drops,alphagan,d04048
@@ -498,8 +497,8 @@ alphagan gtts,alphagan,d04048
 alphagan gtts od,alphagan,d04048
 alphagan gtts ou,alphagan,d04048
 alphagan opth,alphagan,d04048
-alphagan opth sal,unknown,xxxxxx
-alphagan opthalmic solution,alphagan ophthalmic solution,NO_DRUG_ID
+alphagan opth sal,unknown,d04048
+alphagan opthalmic solution,alphagan ophthalmic solution,d04048
 alphagan ou,alphagan,d04048
 alphagan p,alphagan p,d04048
 alphagan p     2 drops -l eye,alphagan p,d04048
@@ -509,7 +508,7 @@ alphagan p.,alphagan p,d04048
 alphagan-p,alphagan-p,d04048
 alphagen,alphagan,d04048
 alphagen drops,alphagan drops,NO_DRUG_ID
-alphagen opthalmic drops,alphagan ophthalmic drops,NO_DRUG_ID
+alphagen opthalmic drops,alphagan ophthalmic drops,d04048
 alphagon,alphagan,d04048
 alphagran,alfuzosin,d04797
 alphanson,alphagan,d04048
@@ -533,7 +532,7 @@ alprozolone,alprazolam,d00168
 alpurinol,allopurinol,d00023
 alrazolam,alprazolam,d00168
 alrex,alrex,d04292
-alrex 0.2 percent,unknown,xxxxxx
+alrex 0.2 percent,unknown,NO_DRUG_ID
 alrex 0.2%,alrex,d04292
 alrprazolan,alprazolam,d00168
 altaca,altace,d00728
@@ -604,7 +603,7 @@ ambiex,ambien,d00910
 ambin,ambien,d00910
 ambion,ambien,d00910
 ambium,ambien,d00910
-ambrotose,ambrotose,NO_DRUG_ID
+ambrotose,ambrotose,s10105
 amcinonide,amcinonide,d01283
 amcinonide topical cream,amcinonide topical cream,d01283
 amcodarone,amiodarone,d00002
@@ -706,7 +705,7 @@ ammonium lactate (lotion12pct),ammonium lactate,d04049
 ammorthyroid,armour thyroid,d00655
 amoar thyroid,armour thyroid,d00655
 amodarone,amiodarone,d00002
-amonium lactate cream,ammonium lactate cream,NO_DRUG_ID
+amonium lactate cream,ammonium lactate cream,d04049
 amorthyroid,armour thyroid,d00655
 amoryl,unknown,d03864
 amotripoline,amitriptyline,d00146
@@ -714,7 +713,7 @@ amour,armour thyroid,d00655
 amour thyroid,armour thyroid,d00655
 amourthyroid,armour thyroid,d00655
 amox,amoxicillin,d00088
-amox clax,unknown,xxxxxx
+amox clax,unknown,NO_DRUG_ID
 amoxacillin,amoxicillin,d00088
 amoxcillin,amoxicillin,d00088
 amoxicilin,amoxicillin,d00088
@@ -734,7 +733,7 @@ amplodipine,amlodipine,d00689
 amprazale,omeprazole,d00325
 amprazole,omeprazole,d00325
 amtidipine,amlodipine,d00689
-amtode[ressamt,unknown,xxxxxx
+amtode[ressamt,unknown,NO_DRUG_ID
 amtriptyline,amitriptyline,d00146
 amtriptyline hcl,amitriptyline hcl,d00146
 amviencr,ambien cr,d00910
@@ -780,7 +779,7 @@ anphetamine,amphetamine,d00803
 anrvastatin,atorvastatin,d04105
 antabuse,antabuse,d01389
 antacand,atacand,d04322
-antacid,antacid,xxxxxx
+antacid,antacid,NO_DRUG_ID
 antanel,unknown,d04300
 antara,antara,d04286
 anthrotec,arthrotec,d04271
@@ -794,18 +793,18 @@ anticand,nystatin,d01233
 antidepressant,antidepressant,NO_DRUG_ID
 antifungal gel,unknown,d03195
 antihistamine,antihistamine,d00212
-antihypertensive,antihypertensive,xxxxxx
+antihypertensive,antihypertensive,NO_DRUG_ID
 antihypertensive med,antihypertensive medication,NO_DRUG_ID
 antiseizure,antiseizure medication,NO_DRUG_ID
 antivert,antivert,d00859
 antvert,antivert,d00859
-anusol,anusol,xxxxxx
+anusol,anusol,NO_DRUG_ID
 anx,unknown,d00907
 aobuterol,albuterol,d00749
 aot8van,ativan,d00149
 apandan,apidra,d05278
 apap,acetaminophen,d00049
-apap (acetaminophen),unknown,xxxxxx
+apap (acetaminophen),unknown,NO_DRUG_ID
 apap/cod #3,acetaminophen/codeine #3,NO_DRUG_ID
 apap/codeine,acetaminophen/codeine,d03423
 apap/codinin,acetaminophen/codeine,d03423
@@ -1004,7 +1003,7 @@ atenlol,atenolol,d00004
 atenol,atenolol,d00004
 atenol chlor,atenolol chlorthalidone,d03258
 atenol chloride,atenolol,d00004
-atenol of ?,unknown,xxxxxx
+atenol of ?,unknown,NO_DRUG_ID
 atenol/chlor50,atenolol/chlorthalidone,d03258
 atenolal,atenolol,d00004
 atenollol/chlorthal 1/2,atenolol/chlorthalidone,d03258
@@ -1061,7 +1060,7 @@ atrovent 0.06 2sprays,atrovent,d00265
 atrovent 0.06%,atrovent,d00265
 atrovent 1 puff,atrovent,d00265
 atrovent hfa,atrovent hfa,d00265
-atrovent inhailer,atrovent inhaler,NO_DRUG_ID
+atrovent inhailer,atrovent inhaler,d04235
 atrovent inhal,atrovent inhaler,NO_DRUG_ID
 atrovent inhaler,atrovent inhaler,d00265
 atrovent nasal,atrovent nasal,d04235
@@ -1169,7 +1168,8 @@ azelaic (cream 20 pct),azelaic acid,d03848
 azelastine,unknown,d04068
 azetaroncycin,azithromycin,d00091
 azilect,azilect,d05612
-azilect .5,unknown,d05612
+azilect .5,azilect,d05612
+azilect 0.5,azilect,d05612
 azithromycin,azithromycin,d00091
 azma-cort,azmacort,d00620
 azmaart,azmacore,d00620
@@ -1184,7 +1184,7 @@ azopt .01,azopt,d04301
 azopt (eye drop),azopt,d04301
 azopt 0.01,azopt,d04301
 azopt 1  eye drops,azopt,d04301
-azopt 1 percent,unknown,xxxxxx
+azopt 1 percent,unknown,NO_DRUG_ID
 azopt 1%,azopt,d04301
 azopt drops,azopt,d04301
 azopt eye drop,azopt,d04301
@@ -1218,7 +1218,7 @@ b12 inj,cyanocobalamin injection,d00413
 b12 injectible,cyanocobalamin injection,d00413
 b12 injection,cyanocobalamin injection,d00413
 b12 injections,cyanocobalamin,d00413
-b12 shot,cyanocobalamin injection,NO_DRUG_ID
+b12 shot,cyanocobalamin injection,d00413
 b12 spray,vitamin b12 spray,d00413
 b12 sq,cyanocobalamin,d00413
 ba;ta,beta blocker,NO_DRUG_ID
@@ -1320,7 +1320,7 @@ benicar hct(20/12.5mg),benicar hct,d04878
 benicar hct40,benicar hct,d04878
 benicar(40/25mg),benicar,d04801
 benicar/hct,unknown,d04878
-benicar/hct 20/12.5,unknown,xxxxxx
+benicar/hct 20/12.5,unknown,NO_DRUG_ID
 benicar/olmesartan,benicar,d04801
 benicor,benicar,d04801
 benicor hct,benicar hct,d04878
@@ -1333,7 +1333,7 @@ benzanzopril,benazepril,d00730
 benzapril,benazepril,d00730
 benzatropine,benztropine,d00175
 benzepril,benazepril,d00730
-benzodiazepine,unknown,xxxxxx
+benzodiazepine,unknown,NO_DRUG_ID
 benzonatate,benzonatate,d00796
 benzonate,benzonatate,d00796
 benzopril,benazepril,d00730
@@ -1362,7 +1362,7 @@ betalol,atenolol,d00004
 betameth/clotrimazol,betamethasone/clotrimazole,d03561
 betamethasone,betamethasone,d00628
 betamethasone (0.05 pct),betamethasone,d00628
-betamethasone cream,betamethasone cream,NO_DRUG_ID
+betamethasone cream,betamethasone cream,d03197
 betamethasone dipropionate,unknown,d03197
 betamethasone topical,unknown,d03197
 betamethasone velerate,betamethasone valerate,d03197
@@ -1372,8 +1372,8 @@ betaxolol,betaxolol,d00176
 betaxolol 0.5%,betaxolol,d00176
 betaxolol 1 gtt,betaxolol,d00176
 betaxolol hcl 0.25%,betaxolol hydrochloride,d00176
-betaxolol hcl eye drops,betaxolol hydrochloride ophthalmic solution,NO_DRUG_ID
-bethamethosone 0.5 percent,unknown,xxxxxx
+betaxolol hcl eye drops,betaxolol hydrochloride ophthalmic solution,d04038
+bethamethosone 0.5 percent,unknown,NO_DRUG_ID
 bethamethosone 0.5%,betamethasone 0.5%,NO_DRUG_ID
 bethanachol,bethanechol,d01427
 bethanechol chloride,bethanechol chloride,d01427
@@ -1388,7 +1388,7 @@ betophcs,betoptic s,d04038
 betopic,betoptic,d04038
 betopic opthalmic drops,betoptic ophthalmic drops,NO_DRUG_ID
 betoptic,betoptic,d04038
-betoptic 0.25 percent,unknown,xxxxxx
+betoptic 0.25 percent,unknown,NO_DRUG_ID
 betoptic 0.25%,betoptic,d04038
 betoptic 50 eye drops,betoptic s,d04038
 betoptic drops,betoptic,d04038
@@ -1487,7 +1487,7 @@ boxazosin,doxazosin,d00726
 bp,unknown,NO_DRUG_ID
 bp med,blood pressure medication,NO_DRUG_ID
 bp med cantercullia,candesartan,d04322
-bp pill,blood pressure medication,xxxxxx
+bp pill,blood pressure medication,NO_DRUG_ID
 brethine,brethine,d00752
 briazolamide ou,brinzolamide,d04301
 brimanidine tartrate,brimonidine tartrate,d04048
@@ -1572,11 +1572,11 @@ busprione,buspirone,d00182
 butal-asa-caf,fiorinal,d03457
 butalbital,butalbital,d03061
 butalbital/apap,butalbital/acetaminophen,d03061
-butyn,butyn,xxxxxx
+butyn,butyn,NO_DRUG_ID
 byelta,byetta,NO_DRUG_ID
-byeta,byetta,xxxxxx
-byetta,byetta,xxxxxx
-byetta (injection),byetta,xxxxxx
+byeta,byetta,NO_DRUG_ID
+byetta,byetta,NO_DRUG_ID
+byetta (injection),byetta,NO_DRUG_ID
 byetta im,byetta,NO_DRUG_ID
 byettor,bydureon,NO_DRUG_ID
 byproprion,bupropion,d00181
@@ -1598,7 +1598,7 @@ cabodp[a,carbidopa,d00184
 cabudopa,carbidopa,d00184
 cacthelos,catapres,d00044
 cacyclovir,acyclovir,d00001
-cadnet,cardnet,NO_DRUG_ID
+cadnet,cardnet,d05048
 caduct,cardizem,d00045
 caduel,caduet,d05048
 caduer,caduet,d05048
@@ -1628,7 +1628,7 @@ calcet +,calcet,d03137
 calcipotriene,calcipotriene,d03788
 calcipotriene cream,unknown,d03788
 calcitonin,calcitonin,d00598
-calcitonin ns puff,calcitonin nasal spray,NO_DRUG_ID
+calcitonin ns puff,calcitonin nasal spray,d00598
 calcitonin| salmon,calcitonin-salmon,d00598
 calcitriol,calcitriol,d03126
 calcitriol 0.25,calcitriol,d03126
@@ -1638,7 +1638,7 @@ calcitrol,calcitriol,d03126
 calcium,calcium,d00425
 calcium + d,calcium with vitamin d,d03137
 calcium and vit a,calcium and vitamin a,NO_DRUG_ID
-calcium blocker,calcium channel blocker,xxxxxx
+calcium blocker,calcium channel blocker,NO_DRUG_ID
 calcium carbon,calcium carbonate,d00425
 calcium carbonate,calcium carbonate,d00425
 calcium citrate,calcium citrate,d03866
@@ -1650,7 +1650,7 @@ calcium w/ d,calcium with vitamin d,d03137
 calcium/d,calcium with vitamin d,d03137
 calcium/magnesium/zinc+d,calcium magnesium zinc vitamin d supplement,NO_DRUG_ID
 calcium/vit d,calcium carbonate with vitamin d3,d03137
-calcium+vitamin d,calcium carbonate + cholecalciferol,NO_DRUG_ID
+calcium+vitamin d,calcium carbonate + cholecalciferol,d03137
 calclebrex,celebrex,d04380
 caldiazem cd,cardizem cd,d00045
 calexa,celexa,d04332
@@ -1718,7 +1718,7 @@ carbid-levo,carbidopa-levodopa,d03473
 carbid-levo er,carbidopa-levodopa er,d03473
 carbidapa/levodopa,carbidopa/levodopa,d03473
 carbidopa,carbidopa,d00184
-carbidopa  levodopa,unknown,xxxxxx
+carbidopa  levodopa,unknown,NO_DRUG_ID
 carbidopa - levodopa,carbidopa-levodopa,d03473
 carbidopa / levadopa,carbidopa/levodopa,d03473
 carbidopa / levidopa,carbidopa/levodopa,d03473
@@ -1730,7 +1730,7 @@ carbidopa 50/ levodopa 200 sa,carbidopa/levodopa sustained release,NO_DRUG_ID
 carbidopa and levodopa,carbidopa and levodopa,d03473
 carbidopa cr,carbidopa/levodopa cr,d03473
 carbidopa levadopa,carbidopa-levodopa,d03473
-carbidopa levadopa sa,unknown,xxxxxx
+carbidopa levadopa sa,unknown,NO_DRUG_ID
 carbidopa levodopa,carbidopa-levodopa,d03473
 carbidopa levodopa  25 100 mg,unknown,d03473
 carbidopa levodopa 10 100,carbidopa-levodopa,d03473
@@ -1754,7 +1754,7 @@ carbidopa25/ levodopa,carbidopa/levodopa,d03473
 carbidopal levadopa,carbidopa-levodopa,d03473
 carbidopal/leodopa,unknown,d03473
 carbidopal/levo,carbidopa/levodopa,d03473
-carbidopalevo er 50-200,carbidopa-levodopa er 50-200,NO_DRUG_ID
+carbidopalevo er 50-200,carbidopa-levodopa er 50-200,d03473
 carbidopalevodopa,carbidopa-levodopa,d03473
 carbidupa,carbidopa,d00184
 carbitol,carbitol,NO_DRUG_ID
@@ -1785,7 +1785,7 @@ cardizem,cardizem,d00045
 cardizem cd,cardizem cd,d00045
 cardizem cr,unknown,d00045
 cardizem la,cardizem la,d00045
-cardizem xl,cardizem xl,NO_DRUG_ID
+cardizem xl,cardizem xl,d00045
 cardizem-cd,cardizem cd,d00045
 cardizemla,cardizem la,d00045
 cardizemsr,cardizem sr,d00045
@@ -1841,7 +1841,7 @@ catapres tts patch,catapres-tts,d00044
 catapres-tts,catapres-tts,d00044
 catapres-tts1,catapres-tts,d00044
 catapress,catapres,d00044
-catapress clonidine patch,catapres clonidine patch,NO_DRUG_ID
+catapress clonidine patch,catapres clonidine patch,d00044
 catapress patch #3,catapres patch,d00044
 catapress tts,catapres tts,NO_DRUG_ID
 catia xt,catapres xt,d00045
@@ -1855,6 +1855,7 @@ cazt,unknown,NO_DRUG_ID
 cealis,cialis,d04896
 cefadrexil,cefadroxil,d00080
 ceftia,ceftriaxone,d00052
+ceftin,unknown,d00056
 cekenax,celebrex,d04380
 celalopram (celexa),citalopram,d04332
 celbrex,celebrex,d04380
@@ -1903,7 +1904,7 @@ cere folin,cerefolate,NO_DRUG_ID
 cerebrex,celebrex,d04380
 cerefloin,cerebrolysin,d03140
 cerefolin,cerefolin,d03140
-cerefolin nac,cerefolin nac,xxxxxx
+cerefolin nac,cerefolin nac,NO_DRUG_ID
 cerefolin-nac,cerefolin nac,NO_DRUG_ID
 cerefolon,unknown,d03140
 cerefolzn,cerefolzn,NO_DRUG_ID
@@ -1979,7 +1980,7 @@ cholestepure,unknown,r10019
 cholesterol,cholesterol,NO_DRUG_ID
 cholesterol lowering med,statin,NO_DRUG_ID
 cholesterol pill,statin,NO_DRUG_ID
-cholesterol pills,statin,xxxxxx
+cholesterol pills,statin,NO_DRUG_ID
 cholestid,cholestid,d04426
 cholestoff,unknown,s10044
 cholestoral,cholestyramine,d00193
@@ -1988,7 +1989,7 @@ cholestryamine powder 1/2 tsp,cholestyramine,d00193
 cholestyramine,cholestyramine,d00193
 cholestyramine  4 grams,cholestyramine,d00193
 cholestyramine -2grams,cholestyramine,d00193
-cholestyramine powder,cholestyramine powder,NO_DRUG_ID
+cholestyramine powder,cholestyramine powder,d00193
 cholestyramine sucrose,cholestyramine,d00193
 cholicalciferol,cholecalciferol,d03129
 choline,choline,d03159
@@ -2062,6 +2063,7 @@ citalopram hydrobromi,citalopram hydrobromide,d04332
 citalopram hydrobromide,citalopram hydrobromide,d04332
 citalopram hydrodoromide,citalopram hydrobromide,d04332
 citalopram/celexa,citalopram,d04332
+citalopram d/c 2007,citalopram,d04332
 citalopran,citalopram,d04332
 citalopran hbr,citalopram hbr,d04332
 citalopran hydrobranide,citalopram hydrobromide,d04332
@@ -2146,7 +2148,7 @@ clobetasol ointment (0.05 pct),clobetasol propionate,d01288
 clobetasol propinate,clobetasol propionate,d01288
 clobetasol propionate,clobetasol propionate,d01288
 clobetasol propionate ointment,clobetasol propionate,d01288
-clobetasol propionate omt,clobetasol propionate ointment,NO_DRUG_ID
+clobetasol propionate omt,clobetasol propionate ointment,d01288
 clobetasol propioneite,clobetasol propionate,d01288
 clobex,clobex,d01288
 clochicine,colchicine,d00150
@@ -2155,7 +2157,7 @@ clokon,klonopin,d00197
 clomdine,clonidine,d00044
 clomidene,clomiphene,d00569
 clomidine,clonidine,d00044
-clomiparina,unknown,xxxxxx
+clomiparina,unknown,NO_DRUG_ID
 clomipramine,clomipramine,d00876
 clomodine,clonidine,d00044
 clompramine,clomipramine,d00876
@@ -2228,7 +2230,7 @@ clotrimazole (cream),clotrimazole,d01236
 clotrimazole 1 percent,clotrimazole,d01236
 clotrimazole cream,clotrimazole cream,d04395
 clotrimazole cream (1 pct),clotrimazole cream,d04395
-clotrimazole- beta methasone,clotrimazole-betamethasone,NO_DRUG_ID
+clotrimazole- beta methasone,clotrimazole-betamethasone,d04395
 clotrimazoletrache,clotrimazole,d01236
 clouazepam,clonazepam,d00197
 clouzzepam,unknown,d00197
@@ -2383,7 +2385,7 @@ cortisone shots,cortisone,d03205
 corzide,corzide,d03259
 corzine,corazine,NO_DRUG_ID
 cosamin ds,cosamin ds,d04420
-cosamine ds,cosamine ds,NO_DRUG_ID
+cosamine ds,cosamine ds,d04420
 coscopt,cosopt,d04303
 cosept,cosopt,d04303
 cosept eye drops,cosopt eye drops,d04303
@@ -2415,8 +2417,8 @@ cosopt opht -1 drop,cosopt,d04303
 cosopt ophthalmic drops,cosopt,d04303
 cosopt opth,cosopt,d04303
 cosopt opthalimic drop,cosopt ophthalmic drops,d04303
-cosopt opthalmic drops,cosopt ophthalmic drops,NO_DRUG_ID
-cosopt opthalmic solution,cosopt ophthalmic solution,NO_DRUG_ID
+cosopt opthalmic drops,cosopt ophthalmic drops,d04303
+cosopt opthalmic solution,cosopt ophthalmic solution,d04303
 cosopt plus optisol,cosopt,d04303
 cosopt r eye,cosopt,d04303
 cosoptocumeter,cosopt,d04303
@@ -2445,7 +2447,7 @@ coumadin 4mg 5 mg alternating,coumadin,d00022
 coumadine,coumadin,d00022
 coumadn,coumadin,d00022
 coumarin,warfarin,d00022
-coumatin,unknown,xxxxxx
+coumatin,unknown,NO_DRUG_ID
 coumdin,coumadin,d00022
 coumedin,coumadin,d00022
 coumiden,coumadin,d00022
@@ -2555,7 +2557,7 @@ cytotec,cytotec,d00303
 cytra-k,cytra-k,d00439
 cytra-k crystals,cytra-k crystals,d00439
 cytzel,cytomel,d00658
-d,unknown,xxxxxx
+d,unknown,NO_DRUG_ID
 d-allergy,d-allergy,d07810
 d/c,unknown,NO_DRUG_ID
 dacusate sodium,docusate sodium,d01021
@@ -2570,7 +2572,7 @@ darcovet,darvocet,d03434
 darevocet,darvocet,d03434
 darifenacin,darifenacin,d05422
 darocet aap,darvocet,NO_DRUG_ID
-darrocet,darvocet,NO_DRUG_ID
+darrocet,darvocet,d03434
 darvaset,darvocet,d03434
 darvoat,darvocet,NO_DRUG_ID
 darvocet,darvocet,d03434
@@ -2595,7 +2597,7 @@ datril,datril,d04294
 davon,darvon,d00360
 dayaro,dayvigo,d09561
 daypro,daypro,d00853
-dcoran hct,unknown,xxxxxx
+dcoran hct,unknown,NO_DRUG_ID
 ddavp,ddavp,d00583
 debrox,debrox,d03990
 decadron,decadron,d00206
@@ -2621,7 +2623,7 @@ demandex,demadex,d03189
 demedex,demadex,d03189
 demerol,demerol,d00017
 demoral,demerol,d00017
-deneb,unknown,xxxxxx
+deneb,unknown,NO_DRUG_ID
 deovan,diovan,d04113
 depacote,depakote,d03833
 depahate,depakote,d03833
@@ -2754,6 +2756,7 @@ diclofenac sod.,diclofenac sodium,d00848
 diclofenac sodium,diclofenac sodium,d00848
 diclofenacf,diclofenac,d00848
 diclofenacp,diclofenac,d00848
+diclofenac d/c 2007,diclofenac,d00848
 diclofenae,diclofenac,d00848
 diclofenal,diclofenac,d00848
 diclofenax va,diclofenac,d00848
@@ -2775,7 +2778,7 @@ dicyclamine,dicyclomine,d00999
 dicyclomide,unknown,d00999
 dicyclomine,dicyclomine,d00999
 dicyclomine hcl,dicyclomine hydrochloride,d00999
-dicyclonine,dyclonine,NO_DRUG_ID
+dicyclonine,dyclonine,d00999
 didronel,didronel,d00599
 didvan,diovan,d04113
 dieretic,diuretic,NO_DRUG_ID
@@ -2812,7 +2815,7 @@ dihydrochlorothiazide,hydrochlorothiazide,d00253
 dijoxin,digoxin,d00210
 dilacor,dilacor,d00045
 dilacor (diltiazem),dilacor,NO_DRUG_ID
-dilacor xt,dilacor xt,NO_DRUG_ID
+dilacor xt,dilacor xt,d00045
 dilandn,dilantin,d00143
 dilanetan hcl,dilantin,d00143
 dilantiin,dilantin,d00143
@@ -2824,9 +2827,9 @@ dilatizem,diltiazem,d00045
 dilinatin,dilantin,d00143
 dilirozem,diltiazem,d00045
 dilitazem,diltiazem,d00045
-dilitazem xt,diltiazem xt,NO_DRUG_ID
+dilitazem xt,diltiazem xt,d00045
 dilitia xt,diltiazem xt,d00045
-dilitiazam cd,diltiazem cd,NO_DRUG_ID
+dilitiazam cd,diltiazem cd,d00045
 dilitiazem,diltiazem,d00045
 dilitiazem er,diltiazem er,d00045
 dilitiazemco,diltiazem,d00045
@@ -2859,7 +2862,7 @@ diltiazem hydrochloride sr,diltiazem hydrochloride sr,d00045
 diltiazem hydrochloride xr,diltiazem hydrochloride xr,d00045
 diltiazem sa,diltiazem sustained-release,d00045
 diltiazem tx,diltiazem,d00045
-diltiazem xl,diltiazem xl,NO_DRUG_ID
+diltiazem xl,diltiazem xl,d00045
 diltiazem xr,diltiazem xr,d00045
 diltiazem xt,diltiazem xt,d00045
 diltiazen,diltiazem,d00045
@@ -2871,7 +2874,7 @@ diltiazine,diltiazem,d00045
 diltiazom  zt,diltiazem,d00045
 diltiazom cd,diltiazem cd,NO_DRUG_ID
 diltiazum,diltiazem,d00045
-diltiozen cd,diltiazem cd,NO_DRUG_ID
+diltiozen cd,diltiazem cd,d00045
 diltizazem,diltiazem,d00045
 diltizem,diltiazem,d00045
 diltoazem,diltiazem,d00045
@@ -2957,7 +2960,7 @@ disdol,disodium,NO_DRUG_ID
 disipramine,desipramine,d00145
 disipromine,desipramine,d00145
 disopyramide,disopyramide,d00214
-disoxin,unknown,xxxxxx
+disoxin,unknown,NO_DRUG_ID
 dispenidol,droperidol,d00219
 disuxin,digoxin,d00210
 ditalopran,citalopram,d04332
@@ -2982,7 +2985,7 @@ ditropun,ditropan,d00328
 ditrpia,ditropan,d00328
 dittiazem,diltiazem,d00045
 dittiazem xr,diltiazem xr,d00045
-diurectic,diuretic,xxxxxx
+diurectic,diuretic,NO_DRUG_ID
 diuretic,diuretic,d03256
 diuretic (1/2),unknown,NO_DRUG_ID
 diuril,diuril,d00190
@@ -2998,7 +3001,7 @@ divon hct,diovan hct,d04293
 divon(80/12.5mg),diovan,d04113
 diyoxin,digoxin,d00210
 dizoxin,digoxin,d00210
-dmsa,unknown,xxxxxx
+dmsa,unknown,NO_DRUG_ID
 doc q lace,docusate,d01021
 doc-q-lace,doc-q-lace,d01021
 doc-qlace,docusate,d01021
@@ -3054,7 +3057,7 @@ dorozosin mesylate,doxazosin mesylate,d00726
 dorsolamide,dorzolamide,NO_DRUG_ID
 dorzalamide,dorzolamide,NO_DRUG_ID
 dorzolamide,dorzolamide,d03805
-dorzolamide hcl,dorzolamide hcl,NO_DRUG_ID
+dorzolamide hcl,dorzolamide hcl,d03805
 dorzolamide hydrochloride 2%,dorzolamide hydrochloride,d03805
 dorzolamide/ timdol solution,dorzolamide/timolol solution,NO_DRUG_ID
 dostinex,dostinex,d04112
@@ -3064,7 +3067,7 @@ dotrol,detrol,d04294
 doucaste,ducolax,d01021
 dovazosin,doxazosin,d00726
 dovonex,dovonex,d03788
-dovonex ointment,dovonex ointment,NO_DRUG_ID
+dovonex ointment,dovonex ointment,d03788
 dovonix topical,dovonex topical,d03788
 dovonox,dovonex,d03788
 doxacosin,doxazosin,d00726
@@ -3093,7 +3096,7 @@ doxazosyn,doxazosin,d00726
 doxazusin,doxazosin,d00726
 doxcycline,doxycycline,d00037
 doxepin,doxepin,d00217
-doxepin (cream),doxepin cream,NO_DRUG_ID
+doxepin (cream),doxepin cream,d03774
 doxepin hcl,doxepin hcl,d03774
 doxepin hydrochloride,doxepin hydrochloride,d00217
 doxepine,doxepin,d00217
@@ -3214,7 +3217,7 @@ efexo,effexor,d03181
 efexor,effexor,d03181
 effervant,effexor,d03181
 effervent,effexor,d03181
-efferxan,unknown,xxxxxx
+efferxan,unknown,NO_DRUG_ID
 effexar,effexor,d03181
 effexer,effexor,d03181
 effexon,effexor,d03181
@@ -3353,7 +3356,7 @@ epoetin alpha,epoetin alfa,d00223
 epoetin alta,epoetin alfa,d00223
 epoga injection,epoetin alfa,d00223
 epogen,epogen,d00223
-eprocit,epoetin,NO_DRUG_ID
+eprocit,epoetin,d00223
 epzicom,epzicom,d05354
 eql senna laxative,senna,d01013
 eras,unknown,NO_DRUG_ID
@@ -3400,11 +3403,11 @@ estra vapo cra,estradiol vaginal cream,NO_DRUG_ID
 estrace,estrace,d00537
 estrace (estradiol),estrace,d00537
 estrace cream,estrace cream,d00537
-estrace cream (0.5 g),estrace cream,xxxxxx
+estrace cream (0.5 g),estrace cream,NO_DRUG_ID
 estrace cream(0.01%),estrace cream,NO_DRUG_ID
-estrace vag cream,estrace vaginal cream,xxxxxx
-estrace vag. cream,estrace vaginal cream,xxxxxx
-estrace vaginal cream,estrace vaginal cream,xxxxxx
+estrace vag cream,estrace vaginal cream,NO_DRUG_ID
+estrace vag. cream,estrace vaginal cream,NO_DRUG_ID
+estrace vaginal cream,estrace vaginal cream,NO_DRUG_ID
 estracel cream,estrace cream,NO_DRUG_ID
 estraderm,estraderm,d00537
 estraderm patch,estraderm,d00537
@@ -3423,7 +3426,7 @@ estradiol vaginal rin,estradiol vaginal ring,NO_DRUG_ID
 estradol,estradiol,d00537
 estradol cream,estradiol cream,d00537
 estradrol,estradiol,d00537
-estragel,estragel,xxxxxx
+estragel,estragel,NO_DRUG_ID
 estragyn la 5,unknown,d00537
 estraiol,estriol,d05027
 estral,estrace,d00537
@@ -3431,7 +3434,7 @@ estratab,estratab,d00542
 estratest,estratest,d03245
 estratest hs,estratest hs,d03245
 estratest(1.25/2.5mg),estratest,d03245
-estreaent,unknown,xxxxxx
+estreaent,unknown,NO_DRUG_ID
 estrediol,estradiol,d00537
 estriadol,estradiol,d00537
 estriadol cream,estradiol cream,NO_DRUG_ID
@@ -3445,7 +3448,7 @@ estrodal,estradiol,d00537
 estrodera patch,estraderm patch,NO_DRUG_ID
 estroderm,estraderm,d00537
 estroderm patch,estraderm patch,NO_DRUG_ID
-estrogel,estrogel,xxxxxx
+estrogel,estrogel,NO_DRUG_ID
 estrogen,estrogen,d00534
 estrogen  progesterone,estrogen and progesterone,d00550
 estrogen  topical,estrogen topical,d00534
@@ -3493,6 +3496,7 @@ evalapril,enalapril,d00013
 evalopril,enalapril,d00013
 evalpril,unknown,d00013
 evesta,evista,d04261
+evista discontinue,evista,d04261
 evisat,keppra,d04499
 evishe,unknown,NO_DRUG_ID
 evista,evista,d04261
@@ -3678,6 +3682,7 @@ fexofedine,fexofenadine,d04040
 fexofenadene,fexofenadine,d04040
 fexofenadin,fexofenadine,d04040
 fexofenadine,fexofenadine,d04040
+fexofenadine d/c 2007,fexofenadine,d04040
 fexofenadine hcl,fexofenadine hcl,d04040
 fexofenadine hydrochloride,unknown,d04040
 fexofenaldine hcl,fexofenadine hcl,d04040
@@ -3715,7 +3720,7 @@ fioncet with codeine,fioricet with codeine,d03425
 fiorcet,fioricet,d03455
 fiorenal,fiorinal,d03457
 fioricet,fioricet,d03455
-fioricet 50/325/40,unknown,xxxxxx
+fioricet 50/325/40,unknown,NO_DRUG_ID
 fioricet w/cod,fioricet with codeine,d03425
 fiorinal,fiorinal,d03457
 fiorinal cap,fiorinal,d03457
@@ -3781,7 +3786,7 @@ flonase (nasal spray),fluticasone propionate,d04283
 flonase 2 puffs,flonase,d04283
 flonase inhaler,flonase,d04283
 flonase mdi,flonase,d04283
-flonase n.s.,fluticasone nasal spray,NO_DRUG_ID
+flonase n.s.,fluticasone nasal spray,d04283
 flonase nasal,flonase,d04283
 flonase nasal spray,flonase,d04283
 flonase nasal spray 0.05,fluticasone propionate nasal spray,NO_DRUG_ID
@@ -3791,7 +3796,7 @@ flonase/nh,flonase,d04283
 flonax,flonase,d04283
 flonnase,flonase,d04283
 flor nax,florinef,NO_DRUG_ID
-flora q,florinef,NO_DRUG_ID
+flora q,florinef,d03644
 flora-q,unknown,d03644
 floradil inhaler,foradil inhaler,NO_DRUG_ID
 floraster,flomax,d04121
@@ -3829,7 +3834,7 @@ flovoxamine,fluvoxamine,d03804
 flowmax,flomax,d04121
 flowmax cr,flomax cr,NO_DRUG_ID
 floxin,floxin,d00114
-fluasterone,unknown,xxxxxx
+fluasterone,unknown,NO_DRUG_ID
 fluchrocontztiane,fluphenazine,d00237
 flucinolone,fluocinolone,d01293
 flucinolone ointment,fluocinolone acetonide ointment,NO_DRUG_ID
@@ -3861,23 +3866,23 @@ flunisolide (nasal spray),flunisolide,d00761
 flunisolide 2 puffs,flunisolide,d00761
 flunisolide inhal.,flunisolide,d00761
 flunisolide inhaler,flunisolide inhaler,NO_DRUG_ID
-flunisolide nasal 0.025 pct,unknown,xxxxxx
+flunisolide nasal 0.025 pct,unknown,NO_DRUG_ID
 flunisolide nasal 0.025%,flunisolide nasal spray,NO_DRUG_ID
 flunisolide nasal sol.,flunisolide nasal solution,d04279
 flunisolide nasal spray 0.025,flunisolide nasal spray,NO_DRUG_ID
 flunisolide spray,flunisolide nasal spray,d00761
 fluoanomide cream,fluocinolone acetonide cream,NO_DRUG_ID
-fluocin acet 0.025 pct (cream),fluocinolone acetonide,xxxxxx
-fluocinoline acetonide,fluocinolone acetonide,xxxxxx
+fluocin acet 0.025 pct (cream),fluocinolone acetonide,NO_DRUG_ID
+fluocinoline acetonide,fluocinolone acetonide,NO_DRUG_ID
 fluocinolone,fluocinolone,d01294
 fluocinolone (0.01 pct),fluocinolone acetonide,d05527
 fluocinolone 0.01%,fluocinolone acetonide 0.01%,NO_DRUG_ID
 fluocinolone acetonide,fluocinolone acetonide,NO_DRUG_ID
-fluocinoloneacetonide,fluocinolone acetonide,xxxxxx
+fluocinoloneacetonide,fluocinolone acetonide,NO_DRUG_ID
 fluocinonide,fluocinonide,d01294
 fluocinonide crea,fluocinonide cream,d01293
 fluocinonide cream,fluocinonide cream,d01294
-fluocinonide oint,fluocinonide ointment,NO_DRUG_ID
+fluocinonide oint,fluocinonide ointment,d01293
 fluocinonide percent,fluocinonide,d01294
 fluor-op,fluor-op,d03227
 fluoretine,fluoxetine,d00236
@@ -3943,7 +3948,7 @@ fluticasone nasal spray,fluticasone nasal spray,NO_DRUG_ID
 fluticasone propionat,fluticasone propionate,d04283
 fluticasone propionate,fluticasone propionate,d04283
 fluticasone propionate (spray),fluticasone propionate,d04283
-fluticasone propionate nasal,fluticasone propionate nasal,NO_DRUG_ID
+fluticasone propionate nasal,fluticasone propionate nasal,d04283
 fluticasone propionate salmetr,fluticasone propionate/salmeterol,d04283
 fluticasone propionate spray,fluticasone propionate nasal spray,d04283
 fluticasone proponade,fluticasone propionate,d04283
@@ -4133,7 +4138,7 @@ fursosemide,furosemide,d00070
 fusamax,fosamax,d03849
 fusamx,furosemide,d00070
 fusolemide,furosemide,d00070
-fusosemide,unknown,xxxxxx
+fusosemide,unknown,NO_DRUG_ID
 futicazone spray,fluticasone spray,NO_DRUG_ID
 fuxofenadine,fexofenadine,d04040
 fuzosemide,furosemide,d00070
@@ -4269,7 +4274,7 @@ glipiside,glipizide,d00246
 glipizide,glipizide,d00246
 glipizide -er,glipizide extended-release,d00246
 glipizide 5/,glipizide,d00246
-glipizide and metformin,glipizide and metformin,NO_DRUG_ID
+glipizide and metformin,glipizide and metformin,d04823
 glipizide er,glipizide er,d00246
 glipizide extended release,glipizide extended release,d00246
 glipizide sr,glipizide sr,d00246
@@ -4403,7 +4408,7 @@ guifinsine,guaifenesin,d00797
 gumfibroyol,unknown,NO_DRUG_ID
 gupizide,glipizide,d00246
 gwcotrol xl,glucotrol xl,d00246
-gxytral patch,exelon patch,NO_DRUG_ID
+gxytral patch,exelon patch,d00328
 gyburide,glyburide,d00248
 gylburide,glyburide,d00248
 h2 blocker,h2 receptor antagonist,NO_DRUG_ID
@@ -4424,7 +4429,7 @@ hazaar,hyzaar,d03830
 hazuar,haldol,d00027
 hc ointment (1 pct),hydrocortisone ointment,d03205
 hcfz,hydrochlorothiazide,d00253
-hcl,unknown,xxxxxx
+hcl,unknown,NO_DRUG_ID
 hcp lisinopril,lisinopril,d00732
 hct,hydrochlorothiazide,d00253
 hct 2,hydrochlorothiazide,d00253
@@ -4439,22 +4444,24 @@ hctz (dyazide),dyazide,d03052
 hctz 12.5,hydrochlorothiazide,d00253
 hctz 25 triamterene,hydrochlorothiazide/triamterene,d03052
 hctz 6.25,hydrochlorothiazide,d00253
-hctz and triamterene,hydrochlorothiazide and triamterene,NO_DRUG_ID
+hctz and triamterene,hydrochlorothiazide and triamterene,d03052
 hctz hydrochlorot,hydrochlorothiazide,d00253
 hctz triamtelene,hydrochlorothiazide/triamterene,d03052
 hctz triamterene,hydrochlorothiazide/triamterene,d03052
 hctz- avalide,avalide,d04245
 hctz-triamterene,unknown,d03052
+triamterene hctz 37.5/25,unknown,d03052
 hctz(25/12mg),hydrochlorothiazide,d00253
 hctz/ lisinopril,lisinopril/hydrochlorothiazide,NO_DRUG_ID
-hctz/ losartank,hctz/losartan,NO_DRUG_ID
-hctz/losartain potassium,hctz/losartan potassium,NO_DRUG_ID
+hctz/ losartank,hctz/losartan,d03830
+hctz/losartain potassium,hctz/losartan potassium,d03830
 hctz/triam,hydrochlorothiazide/triamterene,d03052
 hctz/triamletrecin,hydrochlorothiazide/triamterene,d03052
 hctz/triamteerene,hctz/triamterene,NO_DRUG_ID
 hctz/triamterene,hydrochlorothiazide/triamterene,d03052
 hctz/triamterene 37.5/25,dyazide,d03052
 hctz/triamterene 75/50 mg,dyazide,d03052
+hctz d/c 2007,hydrochlorothiazide,d00253
 hcyz,hydrochlorothiazide,d00253
 hcz,hydrochlorothiazide,d00253
 heart pill,unknown,NO_DRUG_ID
@@ -4526,7 +4533,7 @@ humulin insulin,humulin,d04369
 humulin l,humulin l,d04371
 humulin l(70/30units),humulin 70/30,d04374
 humulin n,humulin n,d04370
-humulin nph,humulin nph,NO_DRUG_ID
+humulin nph,humulin nph,d04370
 humulin r,humulin r,d04369
 humulin r insulin,humulin r,d04369
 humulinnpen,humulin pen,NO_DRUG_ID
@@ -4647,7 +4654,7 @@ hydrochlortide,hydrochlorothiazide,d00253
 hydrochlothiaze,hydrochlorothiazide,d00253
 hydrochlothiazide,hydrochlorothiazide,d00253
 hydrochlotiazyd,hydrochlorothiazide,d00253
-hydrochlotot,unknown,xxxxxx
+hydrochlotot,unknown,NO_DRUG_ID
 hydrochlrothyazide,hydrochlorothiazide,d00253
 hydrochodin,hydrocodone,d03075
 hydrocholemothiazide,hydrochlorothiazide,d00253
@@ -4694,7 +4701,7 @@ hydrocodone apap,hydrocodone/acetaminophen,NO_DRUG_ID
 hydrocodone apap 10 500 btmk,hydrocodone/acetaminophen,NO_DRUG_ID
 hydrocodone elixir,unknown,d03428
 hydrocodone with apap,hydrocodone with acetaminophen,NO_DRUG_ID
-hydrocodone/,hydrocodone/acetaminophen,NO_DRUG_ID
+hydrocodone/,hydrocodone/acetaminophen,d03075
 hydrocodone/acetamilize,hydrocodone/acetaminophen,NO_DRUG_ID
 hydrocodone/acetaminophen,hydrocodone/acetaminophen,NO_DRUG_ID
 hydrocodone/apap,hydrocodone/acetaminophen,d03428
@@ -4709,7 +4716,7 @@ hydrocortisone,hydrocortisone,d00254
 hydrocortisone (1pct),hydrocortisone,d00254
 hydrocortisone (2.5 pct cream),hydrocortisone,d00254
 hydrocortisone 2.5 pct (cream),hydrocortisone,d00254
-hydrocortisone 2.5 percent,unknown,xxxxxx
+hydrocortisone 2.5 percent,unknown,NO_DRUG_ID
 hydrocortisone 2.5%,hydrocortisone 2.5%,NO_DRUG_ID
 hydrocortisone cream,hydrocortisone cream,d03205
 hydrocortisone cream (1 pct),hydrocortisone cream,d03205
@@ -4747,7 +4754,7 @@ hydroxuvea,hydroxyurea,d01373
 hydroxy,hydroxyzine,d00907
 hydroxy chloroquine,hydroxychloroquine,d00817
 hydroxy hcl,hydroxyzine hcl,d00907
-hydroxychlorogroquine,unknown,xxxxxx
+hydroxychlorogroquine,unknown,NO_DRUG_ID
 hydroxychloroquine,hydroxychloroquine,d00817
 hydroxycloroquine,hydroxychloroquine,d00817
 hydroxyehloroquine,hydroxychloroquine,d00817
@@ -4780,7 +4787,7 @@ hyoscynamide sulfate,hyoscyamine sulfate,d00985
 hypo scyamine er,hyoscyamine er,NO_DRUG_ID
 hypoglycerin,nitroglycerin,d00321
 hyprex,hyprex,NO_DRUG_ID
-hyprex 105,unknown,xxxxxx
+hyprex 105,unknown,NO_DRUG_ID
 hypromeliose,hypromellose,NO_DRUG_ID
 hypromellase  opth. solm,hypromellose ophthalmic solution,NO_DRUG_ID
 hypromellose,hypromellose,NO_DRUG_ID
@@ -4856,7 +4863,7 @@ imdur,imdur,d00269
 imdur er,imdur er,NO_DRUG_ID
 imdurr,imdur,d00269
 imdus,imdur,d00269
-imetrex,unknown,xxxxxx
+imetrex,unknown,NO_DRUG_ID
 imipraimine hcl,imipramine hcl,NO_DRUG_ID
 imipramime,imipramine,d00259
 imipramine,imipramine,d00259
@@ -4929,7 +4936,7 @@ insulin (long acting),insulin glargine,d04538
 insulin (novolum n),novolin n,d04370
 insulin (novolun r),novolin r,d04369
 insulin (units),insulin,d00262
-insulin 100's,unknown,xxxxxx
+insulin 100's,unknown,NO_DRUG_ID
 insulin 22 unit,insulin,d00262
 insulin 70 30,insulin 70/30,NO_DRUG_ID
 insulin 70/30,insulin 70/30,d04374
@@ -4940,7 +4947,7 @@ insulin gargine,insulin glargine,d04538
 insulin glargine,insulin glargine,d04538
 insulin humlog,insulin humalog,d04373
 insulin humulin 70/30,humulin 70/30,d04374
-insulin isophane,unknown,xxxxxx
+insulin isophane,unknown,NO_DRUG_ID
 insulin isophane-insulin regul,unknown,d04374
 insulin lantus,insulin glargine (lantus),d04538
 insulin lispro,unknown,d04373
@@ -4948,9 +4955,9 @@ insulin n,insulin n,NO_DRUG_ID
 insulin nov,insulin novolog,d04697
 insulin nov 70/30,novolin 70/30,d04374
 insulin novolog,insulin aspart,d04697
-insulin nph,insulin nph,xxxxxx
+insulin nph,insulin nph,NO_DRUG_ID
 insulin r,insulin regular,d04369
-insulin reg,regular insulin,NO_DRUG_ID
+insulin reg,regular insulin,d04369
 insulin-humulin,unknown,d04374
 insulin-novalog,insulin novolog,NO_DRUG_ID
 insulin-nph,insulin nph,NO_DRUG_ID
@@ -5011,7 +5018,7 @@ ismo,ismo,d00269
 ismol,isosorbide mononitrate,d00269
 isodril,isordil,d00268
 isombid,isosorbide,d00653
-isoniaid,unknown,xxxxxx
+isoniaid,unknown,NO_DRUG_ID
 isoniazid,isoniazid,d00101
 isophane suspension,nph insulin,NO_DRUG_ID
 isophen-df,unknown,d03298
@@ -5134,7 +5141,7 @@ k-tabs,k-tabs,d00345
 k-tabs (potassium),k-tabs,d00345
 k. tab,potassium tablet,d00345
 k+,potassium,d00345
-k+ (pottassium),potassium,NO_DRUG_ID
+k+ (pottassium),potassium,d00345
 k+ ch 70,potassium chloride,d00345
 k+ chloride,potassium chloride,d00345
 k+ cl,potassium chloride,d00345
@@ -5142,8 +5149,8 @@ k+ gluconate,potassium gluconate,d03789
 k+cl,potassium chloride,d00345
 kaochlor-xr,kaochlor-xr,d00345
 kaopectate,kaopectate,d01026
-kariva,kariva,xxxxxx
-karivac (oral birth control),kariva,xxxxxx
+kariva,kariva,NO_DRUG_ID
+karivac (oral birth control),kariva,NO_DRUG_ID
 kasux,casodex,d03850
 kay ciel 20 meq,kay ciel,d00345
 kayexalate,unknown,d00743
@@ -5260,7 +5267,7 @@ l-thyroxine,levothyroxine,d00278
 l-tyroxine,levothyroxine,d00278
 l. thyroxine,levothyroxine,d00278
 l0ratadine,loratadine,d03050
-la,unknown,xxxxxx
+la,unknown,NO_DRUG_ID
 la detrol,detrol,d04294
 labatolol,labetalol,d00016
 labatrol,labetalol,d00016
@@ -5273,7 +5280,7 @@ labetalot,labetalol,d00016
 labetanol,unknown,d00016
 labetolol,labetalol,d00016
 labetolol (b block),labetalol,d00016
-labetolol hcl,labetalol hcl,NO_DRUG_ID
+labetolol hcl,labetalol hcl,d00016
 labetotol,labetalol,d00016
 labetradol,labetalol,d00016
 labitanol,labetalol,d00016
@@ -5332,7 +5339,7 @@ lantus,lantus,d04538
 lantus /5 units,lantus,d04538
 lantus 10,lantus,d04538
 lantus 10-15,lantus,d04538
-lantus ingulin,lantus insulin,NO_DRUG_ID
+lantus ingulin,lantus insulin,d04538
 lantus insulin,lantus,d04538
 lantus solostar,lantus solostar,NO_DRUG_ID
 lantus solostar pen,unknown,d04538
@@ -5358,17 +5365,17 @@ latanoprose eye drops,latanoprost eye drops,d04017
 latanoprost,latanoprost,d04017
 latanoprost (0.005 pct),latanoprost,NO_DRUG_ID
 latanoprost (0.05 percent),latanoprost,d04017
-latanoprost 0.0005 percent,unknown,xxxxxx
+latanoprost 0.0005 percent,unknown,NO_DRUG_ID
 latanoprost 0.0005%,latanoprost,NO_DRUG_ID
-latanoprost 0.005 percent,unknown,xxxxxx
+latanoprost 0.005 percent,unknown,NO_DRUG_ID
 latanoprost 0.005%,latanoprost,NO_DRUG_ID
-latansoprost,latanoprost,NO_DRUG_ID
+latansoprost,latanoprost,d04017
 latemax drops,latanoprost drops,d04292
 latex - fluid,unknown,NO_DRUG_ID
 latis,latisse,d07374
 latis insulin,lantus insulin,NO_DRUG_ID
 latrel,latuda,d07705
-latulose syrup,lactulose syrup,NO_DRUG_ID
+latulose syrup,lactulose syrup,d01024
 lautus,lotuss,NO_DRUG_ID
 lavabuterol tart,levalbuterol tartrate,NO_DRUG_ID
 lavastatin,lovastatin,d00280
@@ -5424,8 +5431,8 @@ levadopa,unknown,d00277
 levadopa-carbadepa,levodopa-carbidopa,NO_DRUG_ID
 levadoxyl,levoxyl,d00278
 levalbuterol,unknown,d04427
-levalbuterol hcl,levalbuterol hcl,NO_DRUG_ID
-levalbuterol inhaler,levalbuterol inhaler,NO_DRUG_ID
+levalbuterol hcl,levalbuterol hcl,d04427
+levalbuterol inhaler,levalbuterol inhaler,d04427
 levalbuterol tartrate 59 mcg/2,levalbuterol tartrate,d04427
 levaquin,levaquin,d04109
 levatet,levetiracetam,d04499
@@ -5483,7 +5490,7 @@ levoleunolol hydrochlor,levobunolol hydrochloride,NO_DRUG_ID
 levolounolo,levetiracetam,d04499
 levooxl,levoxyl,d00278
 levoquin,levofloxacin,d04109
-levora,levora,xxxxxx
+levora,levora,NO_DRUG_ID
 levoryl,levothyroxine,d00278
 levostatin,lovastatin,d00280
 levosynthroid,levothyroxine,d00278
@@ -5558,7 +5565,7 @@ lexipro,lexapro,d04812
 lexitan,lexapro,d04812
 lexopril,lisinopril,d00732
 lexopro,lexapro,d04812
-lexotan,lexotan,NO_DRUG_ID
+lexotan,lexotan,r10022
 lexothyroixine,levothyroxine,d00278
 lexothyroxine,levothyroxine,d00278
 lexpro,lexapro,d04812
@@ -5637,7 +5644,7 @@ liptor,lipitor,d04105
 liq gel for eye,artificial tears,d03768
 liquid antacid extra,maalox extra strength,NO_DRUG_ID
 liroxatral,doxazosin,d00726
-lisimopril,unknown,xxxxxx
+lisimopril,unknown,NO_DRUG_ID
 lisin/hctz,lisinopril/hydrochlorothiazide,d03266
 lisin/hctz 20/25,lisinopril/hydrochlorothiazide,NO_DRUG_ID
 lisinagnil,lisinopril,d00732
@@ -5646,7 +5653,7 @@ lisinepril,lisinopril,d00732
 lisininopril,lisinopril,d00732
 lisiniopril,lisinopril,d00732
 lisinipril,lisinopril,d00732
-lisinipril hctz,lisinopril hctz,NO_DRUG_ID
+lisinipril hctz,lisinopril hctz,d03266
 lisinmopril,lisinopril,d00732
 lisinnopril,lisinopril,d00732
 lisino,lisinopril,d00732
@@ -5657,7 +5664,7 @@ lisinop-hct2,lisinopril-hydrochlorothiazide,NO_DRUG_ID
 lisinopal,lisinopril,d00732
 lisinopcil,lisinopril,d00732
 lisinopil,lisinopril,d00732
-lisinopl hctz,lisinopril hctz,NO_DRUG_ID
+lisinopl hctz,lisinopril hctz,d03266
 lisinoplul hctz,lisinopril hctz,d03266
 lisinoprel,lisinopril,d00732
 lisinopri,lisinopril,d00732
@@ -5669,7 +5676,7 @@ lisinopril / hchtz,lisinopril/hydrochlorothiazide,d03266
 lisinopril / hcthz,lisinopril/hydrochlorothiazide,d03266
 lisinopril / hctz,lisinopril/hydrochlorothiazide,d03266
 lisinopril 20 12.5,lisinopril/hydrochlorothiazide,NO_DRUG_ID
-lisinopril 20/12.5,lisinopril/hydrochlorothiazide,NO_DRUG_ID
+lisinopril 20/12.5,lisinopril/hydrochlorothiazide,d00732
 lisinopril 40mg,lisinopril,d00732
 lisinopril hc,lisinopril hctz,NO_DRUG_ID
 lisinopril hcl,unknown,d00732
@@ -5689,7 +5696,7 @@ lisinopril/hydrochlorothiazide,lisinopril/hydrochlorothiazide,d03266
 lisinopril/zestril,lisinopril,d00732
 lisinoprol,lisinopril,d00732
 lisinoprol/hctz,lisinopril/hydrochlorothiazide,NO_DRUG_ID
-lisinopryl,unknown,xxxxxx
+lisinopryl,unknown,NO_DRUG_ID
 lisinoril,lisinopril,d00732
 lisinpil,lisinopril,d00732
 lisinpril,lisinopril,d00732
@@ -5717,9 +5724,9 @@ lisroprol,lisinopril,d00732
 lisrwopril,lisinopril,d00732
 litalopram,citalopram,d04332
 lithium,lithium,d00061
-lithium aspartate,lithium aspartate,xxxxxx
+lithium aspartate,lithium aspartate,NO_DRUG_ID
 lithium carbonate,lithium carbonate,d00061
-lithium cr,lithium carbonate extended release,NO_DRUG_ID
+lithium cr,lithium carbonate extended release,d00061
 lithobid,lithobid,d00061
 lithum,unknown,d00061
 livesta,livesta,NO_DRUG_ID
@@ -5902,7 +5909,7 @@ lovol,Unclassified,NO_DRUG_ID
 lovostatin,lovastatin,d00280
 lovothyroxine,levothyroxine,d00278
 lovoxyl,levoxyl,d00278
-low sotren 24fe,unknown,xxxxxx
+low sotren 24fe,unknown,NO_DRUG_ID
 loxapine,loxapine,d00897
 loxipine,unknown,d00897
 lozaar,cozaar,d03821
@@ -5997,7 +6004,7 @@ macrobid,macrobid,d00112
 macrobid (x14 days),macrobid,d00112
 macrodantin,macrodantin,d00112
 madp;p;,unknown,NO_DRUG_ID
-mag delay,mag-delay,xxxxxx
+mag delay,mag-delay,NO_DRUG_ID
 mag ox,mag-ox,d03797
 mag-ox,mag-ox,NO_DRUG_ID
 mag-ox 400,mag-ox 400,d03797
@@ -6137,7 +6144,7 @@ mestinon 30-60 mg,mestinon,d00363
 mestinone,mestinon,d00363
 mesxilam,mexiletine,d00300
 met formin,metformin,d03807
-met formin hcl,metformin hcl,NO_DRUG_ID
+met formin hcl,metformin hcl,d03807
 metacyclin,metacycline,NO_DRUG_ID
 metadate cd,metadate cd,d00900
 metaformin,metformin,d03807
@@ -6276,7 +6283,7 @@ metoprolo,metoprolol,d00134
 metoprolo/er,metoprolol er,d00134
 metoprolo1,metoprolol,d00134
 metoprolol,metoprolol,d00134
-metoprolol - discontinued,unknown,xxxxxx
+metoprolol - discontinued,unknown,NO_DRUG_ID
 metoprolol er,metoprolol er,d00134
 metoprolol succinate,metoprolol succinate,d00134
 metoprolol succinate er,unknown,d00134
@@ -6375,7 +6382,7 @@ miacalcin,miacalcin,d00598
 miacalcin (nasal spray),miacalcin,d00598
 miacalcin nasal,miacalcin nasal,d00598
 miacalcin nasal spray,miacalcin nasal spray,d00598
-miacalcin nasal spray 200 vl .,miacalcin nasal spray,NO_DRUG_ID
+miacalcin nasal spray 200 vl .,miacalcin nasal spray,d00598
 miacalcin nose spray,miacalcin nasal spray,d00598
 miacalcin spray,miacalcin,d00598
 miacalcium,miacalcin,d00598
@@ -6503,12 +6510,12 @@ moexipril,moexipril,d03835
 moisturizing cream,moisturizing cream,d03770
 moisturizing cream oint,moisturizing cream ointment,NO_DRUG_ID
 moloft,zoloft,d00880
-mom,unknown,NO_DRUG_ID
+mom,unknown,d00982
 momatasone furoate,mometasone furoate,d04223
 mometasone cream,mometasone cream,NO_DRUG_ID
 mometasone furoate,mometasone furoate,d04223
 mometasone furote,unknown,d04223
-mometasone inhalation,unknown,xxxxxx
+mometasone inhalation,unknown,NO_DRUG_ID
 mondril,monoril,NO_DRUG_ID
 monipril,monopril,d00242
 monoject,unknown,d04369
@@ -6553,7 +6560,7 @@ mucines,mucinex,d00797
 mucinex,mucinex,d00797
 muco -fen dm,mucinex dm,d03400
 mucofen dm,mucinex dm,d03400
-mucomyst,mucomyst,NO_DRUG_ID
+mucomyst,mucomyst,d00762
 mui,unknown,NO_DRUG_ID
 multi,multivitamin,d03140
 multi vitamin,multivitamin,d03140
@@ -6654,7 +6661,7 @@ namwnda,namenda,d04899
 nanoxin,lanoxin,d00210
 napaxen,naproxen,d00019
 naperson,naproxen,d00019
-naphazoline,naphazoline,NO_DRUG_ID
+naphazoline,naphazoline,d04147
 naphcon a,naphcon-a,d03520
 naprelan,naprelan,d00019
 naprepen,naproxen,d00019
@@ -6680,16 +6687,17 @@ narmenda,unknown,d04899
 narolil,naratriptan,d04285
 narvac,narcan,d00311
 narvasc,norvasc,d00689
-nas0nex,unknown,xxxxxx
+nas0nex,unknown,NO_DRUG_ID
 nasacer,nasacort,d04233
 nasachron,nasalcrom,d04394
 nasacort,nasacort,d04233
+nasacort d/c 2007,nasacort,d04233
 nasacort (nasal spray),nasacort,d04233
 nasacort ag,nasacort aq,d04233
 nasacort aq,nasacort aq,d04233
 nasacort aq spray,nasacort aq,d04233
 nasacort nasal spray,nasacort,d04233
-nasacort qq,unknown,xxxxxx
+nasacort qq,unknown,NO_DRUG_ID
 nasacort spray,nasacort,d04233
 nasacourt,nasacort,d04233
 nasacourt-hq,nasacort,d04233
@@ -6724,7 +6732,7 @@ nasonel spray,nasonex,d04223
 nasonex,nasonex,d04223
 nasonex inhaler,nasonex,d04223
 nasonex nasal spray,nasonex nasal spray,d04223
-nasonex nasel spray,nasonex nasal spray,NO_DRUG_ID
+nasonex nasel spray,nasonex nasal spray,d04223
 nasonex spray,nasonex,d04223
 nasoniex,nasonex,d04223
 nasurt,nasacort,d04233
@@ -6744,7 +6752,7 @@ nazonel spray,nasonex spray,NO_DRUG_ID
 nbaproxen,naproxen,d00019
 nctz,hydrochlorothiazide,d00253
 ne vanac,nevanac,d05633
-nebalizer,nebulizer,xxxxxx
+nebalizer,nebulizer,NO_DRUG_ID
 nebulizer,unknown,NO_DRUG_ID
 nebulizer (albuterol,albuterol,d00749
 nebulizer-bumide,bumetanide,d00179
@@ -6760,7 +6768,7 @@ nemanda,namenda,d04899
 nemantine,namenda,d04899
 nemenda,namenda,d04899
 nenbutrin,bupropion,d00181
-nenrontin,unknown,xxxxxx
+nenrontin,unknown,NO_DRUG_ID
 neo-polymyx,neomycin-polymyxin,NO_DRUG_ID
 neo-synephrine,unknown,d00704
 neoclarityn,neoclarityn,d04785
@@ -6832,7 +6840,7 @@ niaspain,niaspan,d00314
 niaspan,niaspan,d00314
 niaspan cr,niaspan,d00314
 niaspan er,niaspan er,d00314
-niaspan sa,niaspan,NO_DRUG_ID
+niaspan sa,niaspan,d00314
 niaspan-er,niaspan,d00314
 niaspun,niaspan,d00314
 nicardipine,nicardipine,d00315
@@ -6886,7 +6894,7 @@ nifrofurartin,nitrofurantoin,d00112
 nikedipine,nifedipine,d00051
 nilandron,nilandron,d03831
 nilutamide,nilutamide,d03831
-nimodepine,unknown,xxxxxx
+nimodepine,unknown,NO_DRUG_ID
 nimodipine,nimodipine,d00318
 nipedipine,nifedipine,d00051
 niphedical,nifedipine,d00051
@@ -6921,6 +6929,7 @@ nitro-bid,nitro-bid,d00321
 nitro-dur,nitro-dur,d00321
 nitro-dur patch,nitro-dur,d00321
 nitro-quick,nitroquick,d00321
+nitro-quick 0.04,nitroquick,d00321
 nitrobid cream,nitrobid,NO_DRUG_ID
 nitroden patch,nitroglycerin patch,d00321
 nitrodur,nitro-dur,d00321
@@ -6932,7 +6941,7 @@ nitrofur macro,nitrofurantoin macrocrystals,d00112
 nitrofurantion,nitrofurantoin,d00112
 nitrofurantoin,nitrofurantoin,d00112
 nitrofurantoin mono,nitrofurantoin,d00112
-nitrofurau monomac,nitrofurantoin monohydrate macrocrystals,NO_DRUG_ID
+nitrofurau monomac,nitrofurantoin monohydrate macrocrystals,d00112
 nitroglcerin,nitroglycerin,d00321
 nitrogltycerin,nitroglycerin,d00321
 nitroglycarin,nitroglycerin,d00321
@@ -7041,7 +7050,7 @@ norvawsc,norvasc,d00689
 norvax,unknown,d00689
 nosonex,nasonex,d04223
 not known,unknown,NO_DRUG_ID
-notriptyline hydrochloride,unknown,xxxxxx
+notriptyline hydrochloride,unknown,NO_DRUG_ID
 notune thyroin,synthroid,d00278
 noubumetone,nabumetone,d00310
 novalin,novolin,NO_DRUG_ID
@@ -7083,7 +7092,7 @@ noyo alendronate,alendronate,d03849
 nozanex,nasacort,d04233
 nph,nph insulin,NO_DRUG_ID
 nph humulin,humulin n,d04370
-nph insulin,nph insulin,xxxxxx
+nph insulin,nph insulin,NO_DRUG_ID
 nph novolin insulin,novolin n,d04370
 nph/insulin,nph insulin,NO_DRUG_ID
 nprvasc,norvasc,d00689
@@ -7107,7 +7116,7 @@ nydroxyzine,hydroxyzine,d00907
 nydroyurfa,hydroxyurea,d01373
 nyinsyn,nystatin,d01233
 nystatin,nystatin,d01233
-nystatin cream,nystatin cream,NO_DRUG_ID
+nystatin cream,nystatin cream,d04399
 nytol,nytol,d00212
 nyzaar,hyzaar,d03830
 o;,unknown,NO_DRUG_ID
@@ -7137,7 +7146,7 @@ ocuvite,ocuvite,d03145
 ocuvite lutein,ocuvite lutein,d03145
 ocuvite preservision,ocuvite preservision,d03145
 ocuvite tabets,ocuvite,d03145
-ocuvite w/lutein,unknown,xxxxxx
+ocuvite w/lutein,unknown,NO_DRUG_ID
 ocuvtav,ocrevus,d08538
 oetrol la,metoprolol la,NO_DRUG_ID
 ofloxacin,ofloxacin,d00114
@@ -7228,9 +7237,9 @@ opanaer,opana er,d00833
 opmeprazole,omeprazole,d00325
 opremazole,omeprazole,d00325
 opthalmic drops,ophthalmic drops,NO_DRUG_ID
-opticrom eye drops,Unclassified,NO_DRUG_ID
+opticrom eye drops,Unclassified,d00765
 optipranolol,optipranolol,d00297
-optipranolol gtts,metipranolol ophthalmic solution,NO_DRUG_ID
+optipranolol gtts,metipranolol ophthalmic solution,d00297
 optiva,keppra,d04499
 optivar,optivar,d04541
 optivar drops,azelastine ophthalmic,d04541
@@ -7240,7 +7249,7 @@ orencia,orencia,d05694
 oretic,oretic,d00253
 oretic/hctz,hydrochlorothiazide,d00253
 oridia iv  (q 3 mo),orencia,d05694
-orltrohycytine,unknown,xxxxxx
+orltrohycytine,unknown,NO_DRUG_ID
 ornerpazole,omeprazole,d00325
 oromorph,oramorph,NO_DRUG_ID
 orotidine,orotidine,NO_DRUG_ID
@@ -7353,7 +7362,7 @@ oyster shell d,oyster shell calcium,d00425
 oyster-d,oyster-d,d03137
 oyycodone,unknown,d00329
 ozmacort,oramorph,NO_DRUG_ID
-p,unknown,xxxxxx
+p,unknown,NO_DRUG_ID
 pacerone,pacerone,d00002
 paflon,paxlon,NO_DRUG_ID
 pain medication,unknown,NO_DRUG_ID
@@ -7412,7 +7421,7 @@ paroxetine hcl,paroxetine hcl,d03157
 paroxetine hydrochloride,paroxetine hydrochloride,d03157
 paroxetine mcl,paroxetine,d03157
 paroxitine,paroxetine,d03157
-paroxtine,unknown,xxxxxx
+paroxtine,unknown,NO_DRUG_ID
 paroyetine hcl,paroxetine hcl,d03157
 parozetine,paroxetine,d03157
 parpxetome,paroxetine,d03157
@@ -7579,7 +7588,7 @@ plendil er,plendil er,d00231
 plestrol,pravastatin,d00348
 pletal,cilostazol,d04382
 pletol,pletal,d04382
-plixonone,unknown,xxxxxx
+plixonone,unknown,NO_DRUG_ID
 plovan,provigil,d04378
 plovent,flovent,d01296
 pluma (inhaler asthma),pulmicort,NO_DRUG_ID
@@ -7589,9 +7598,9 @@ plurocortisone,prednisolone,d00084
 pneumocort,pulmicort,NO_DRUG_ID
 poatasium chloride,potassium chloride,d00345
 polaramine,unknown,d00784
-policasanol,policosanol,NO_DRUG_ID
+policasanol,policosanol,s10140
 polyeth glycol 3850,polyethylene glycol 3350,d05350
-polyethelene,polyethylene glycol,NO_DRUG_ID
+polyethelene,polyethylene glycol,d05350
 polyethelene glycol,polyethylene glycol,NO_DRUG_ID
 polyethylene,polyethylene glycol,NO_DRUG_ID
 polyethylene gi,polyethylene glycol,NO_DRUG_ID
@@ -7654,12 +7663,12 @@ poxl,unknown,d00189
 poxycycline,doxycycline,d00037
 poxyphene,propoxyphene,d00360
 pozadyne er,razadyne er,d04750
-pracachol,unknown,xxxxxx
+pracachol,unknown,NO_DRUG_ID
 pracil,pravachol,d00348
 pramarin,premarin,d00541
 pramipexole,pramipexole,d04145
 pramonsone,pramoxine,d03546
-pramosone ointment,pramosone ointment,NO_DRUG_ID
+pramosone ointment,pramosone ointment,d03546
 prandan,unknown,d04267
 prandin,prandin,d04267
 prandium,prandin,d04267
@@ -7717,7 +7726,7 @@ prednesone,prednisone,d00350
 predniosone,prednisone,d00350
 prednisdone,prednisolone,d00084
 prednisel,prednisolone,d00084
-prednisolene eye drops,unknown,xxxxxx
+prednisolene eye drops,unknown,NO_DRUG_ID
 prednisoline,prednisolone,d00084
 prednisolme,prednisolone,d00084
 prednisolone,prednisolone,d00084
@@ -7739,7 +7748,7 @@ prednisone (tapering),unknown,d03221
 prednisone 1%,prednisone,d00350
 prednisone 2.5 [every other da,prednisone,d00350
 prednisone acetate,prednisolone acetate,d00084
-prednisone drops,prednisolone drops,NO_DRUG_ID
+prednisone drops,prednisolone drops,d00084
 prednisone eye drops,prednisolone eye drops,d00350
 prednisone forte drugs,prednisolone forte,NO_DRUG_ID
 prednisone solution,prednisone,d00350
@@ -7773,7 +7782,7 @@ premerin,premarin,d00541
 premetrium,prometrium,d00550
 premorin,premarin,d00541
 premphase,premphase,d03819
-prempito,unknown,xxxxxx
+prempito,unknown,NO_DRUG_ID
 prempo,prempro,d03819
 prempril,prinivil,d00732
 prempro,prempro,d03819
@@ -7898,7 +7907,7 @@ progestin,progestin,d00550
 progestin (prempro),prempro,d03819
 progestrone,unknown,d00550
 proglitazore,pioglitazone,d04442
-progly,proglumide,NO_DRUG_ID
+progly,proglumide,r10028
 prograf,prograf,d03752
 prolactinoma bromocustine,bromocriptine,d00178
 prolam,prolamine,NO_DRUG_ID
@@ -8054,7 +8063,7 @@ prylosec,prilosec,d00325
 pseudoep hedrine,pseudoephedrine,d00769
 pseudoephedine,pseudoephedrine,d00769
 pseudoephedrine,pseudoephedrine,d00769
-pseudoephedrine hcl,pseudoephedrine hcl,NO_DRUG_ID
+pseudoephedrine hcl,pseudoephedrine hcl,d00769
 psorafin oint,psoralen ointment,NO_DRUG_ID
 psoralin,psoralen,NO_DRUG_ID
 psyllium,psyllium,d01018
@@ -8081,7 +8090,7 @@ pzamdia,prandin,d04267
 q dall atl,haldol,d00027
 q pap lx str,quetiapine xl,NO_DRUG_ID
 q var,quetiapine,d04220
-q var inhaler,qvar inhaler,NO_DRUG_ID
+q var inhaler,qvar inhaler,d00760
 q-vair,qvar,d00760
 q-var,qvar,d00760
 q-var inhaler,qvar inhaler,d00760
@@ -8175,7 +8184,7 @@ rastasis drops,restasis,d04836
 rauifiduie,unknown,NO_DRUG_ID
 rauitidime,ranitidine,d00021
 rav,unknown,d00021
-raxadyne xl,razadyne xl,NO_DRUG_ID
+raxadyne xl,razadyne xl,d04750
 rayeyne er,requip xl,d04215
 razabyne,razadyne,d04750
 razadin,razadyne,d04750
@@ -8255,7 +8264,7 @@ renagel tablets,renagel,d04363
 renagil,renagel,d04363
 renavite (mvi),renavite,NO_DRUG_ID
 reninyl er,requip xl,d04215
-renlafaxine xr,venlafaxine xr,NO_DRUG_ID
+renlafaxine xr,venlafaxine xr,d03181
 renlimid,revlimid,d05696
 renuiyl,requip,d04215
 replax,relpax,d04849
@@ -8328,7 +8337,7 @@ rhinocort acqua,rhinocort aqua,d03640
 rhinocort aq,rhinocort aqua,d03640
 rhinocort aqua,rhinocort aqua,d03640
 rhinocort nasal spray 1 puff,rhinocort,d03640
-rhinocort ns,unknown,xxxxxx
+rhinocort ns,unknown,NO_DRUG_ID
 rhinocort spray,rhinocort,d03640
 rhinosorct,rhinocort,d03640
 rhyma hcl,rhythmol,NO_DRUG_ID
@@ -8428,7 +8437,7 @@ roscar ecatran,rosuvastatin,d04851
 rosightazone,rosiglitazone,d04434
 rosigitazone,rosiglitazone,d04434
 rosiglitazone,rosiglitazone,d04434
-rosiglitazone maleate,rosiglitazone maleate,NO_DRUG_ID
+rosiglitazone maleate,rosiglitazone maleate,d04434
 rosovastin,rosuvastatin,d04851
 rosula,rosula,d04032
 rosuovastatin,unknown,d04851
@@ -8588,7 +8597,7 @@ seroywel,seroquel,d04220
 sertaline,sertraline,d00880
 sertialin,sertraline,d00880
 sertialine,sertraline,d00880
-sertialine hcl,sertraline hcl,NO_DRUG_ID
+sertialine hcl,sertraline hcl,d00880
 sertizide,sertraline,d00880
 sertnaline,sertraline,d00880
 sertra;ome,sertraline,d00880
@@ -8635,6 +8644,7 @@ simbastatin,simvastatin,d00746
 simbolta,cymbalta,d05355
 simemet,sinemet,d03473
 simenet,sinemet,d03473
+sinemet 25 100  1 2 tablet,sinemet,d03473
 simet,sinemet,d03473
 simethicine,simethicone,d01027
 simethicone,simethicone,d01027
@@ -8676,7 +8686,7 @@ simvislatin,simvastatin,d00746
 simvistatin,simvastatin,d00746
 simvistatin/zantia,simvastatin/zetia,d00746
 simvlatin,simvastatin,d00746
-simvotatin,unknown,xxxxxx
+simvotatin,unknown,NO_DRUG_ID
 simvustin,simvastatin,d00746
 sinamet-cr,sinemet-cr,d03473
 sinaulair,singulair,d04289
@@ -8770,7 +8780,7 @@ sodium blart,sodium bicarbonate,d00440
 sodium cap,sodium chloride capsule,NO_DRUG_ID
 sodium carbonate,sodium carbonate,d00440
 sodium chloride,sodium chloride,d00438
-sodium chloride hypertonity ey,sodium chloride hypertonic eye drops,NO_DRUG_ID
+sodium chloride hypertonity ey,sodium chloride hypertonic eye drops,d03898
 sodium polystyrene,sodium polystyrene sulfonate,d00743
 sodium salicylate,unknown,d00843
 sodium tablets,sodium chloride,d00438
@@ -8802,7 +8812,7 @@ sotelol,sotalol,d00371
 sotensin,lotrel,d03829
 sotolal,sotalol,d00371
 sotolol,sotalol,d00371
-sotolol hcl,sotalol hcl,NO_DRUG_ID
+sotolol hcl,sotalol hcl,d00371
 sotrel,sotolol,NO_DRUG_ID
 sotutol,sotalol,d00371
 soy based estrogen/progesteron,soy isoflavones,NO_DRUG_ID
@@ -8862,7 +8872,7 @@ sporiva,spiriva,d04829
 spriiva,spiriva,d04829
 sprilantin,dilantin,d00143
 springtec,spirintec,NO_DRUG_ID
-sprintec,unknown,xxxxxx
+sprintec,unknown,NO_DRUG_ID
 sprinva inhales,spiriva inhaler,NO_DRUG_ID
 sprycel,sprycel,d05831
 spuivi,spravato,d09174
@@ -8871,6 +8881,7 @@ ssri,selective serotonin reuptake inhibitor,NO_DRUG_ID
 stadol,stadol,d00838
 stalevo,stalevo,d04877
 stalevo(25/100/200mg),stalevo,d04877
+stalevo 25/100/200,stalevo,d04877
 stalveo,stalevo,d04877
 starlix,starlix,d04743
 starlox,starlix,d04743
@@ -8880,8 +8891,8 @@ statin study med,statin,NO_DRUG_ID
 statin study tx,statin,NO_DRUG_ID
 statins,statins,NO_DRUG_ID
 stavelo,stavelo,NO_DRUG_ID
-steareate cream,stearate cream,xxxxxx
-steareate crm.,stearate cream,xxxxxx
+steareate cream,stearate cream,NO_DRUG_ID
+steareate crm.,stearate cream,NO_DRUG_ID
 stelazine,stelazine,d00890
 sterilid,stelazine,d00890
 steroid injection - cortisone,cortisone,d03205
@@ -8900,7 +8911,7 @@ study drug (statin tr,statin,NO_DRUG_ID
 study drug e-2007,perampanel,d07904
 study drug rasagiline,rasagiline,d05612
 study drug-cardiology,unknown,NO_DRUG_ID
-study med,unknown,xxxxxx
+study med,unknown,NO_DRUG_ID
 sucralfate,sucralfate,d00377
 sucralfite,sucralfate,d00377
 sucralfute,sucralfate,d00377
@@ -9133,7 +9144,7 @@ testosterone 1%,testosterone gel 1%,NO_DRUG_ID
 testosterone buccal,striant,d00558
 testosterone capsule,testosterone,d00558
 testosterone cream,testosterone cream,d00558
-testosterone crm,testosterone cream,NO_DRUG_ID
+testosterone crm,testosterone cream,d00558
 testosterone cvp,testosterone cypionate,d00558
 testosterone im,testosterone,d00558
 testosterone ointment,testosterone ointment,d00558
@@ -9144,7 +9155,7 @@ tetracyline,tetracycline,d00041
 tetrocycline,tetracycline,d00041
 tetrozusin,terazosin,d00386
 teva,unknown,NO_DRUG_ID
-tevalosin hcl,telavancin hcl,xxxxxx
+tevalosin hcl,telavancin hcl,NO_DRUG_ID
 tevefen,teveten,d04266
 teveten,teveten,d04266
 teveten hct,teveten hct,d04837
@@ -9161,10 +9172,10 @@ theophylim,unknown,d00142
 theophyline,theophylline,d00142
 theophyllin,unknown,d00142
 theophylline,theophylline,d00142
-theophylline cr,theophylline cr,NO_DRUG_ID
+theophylline cr,theophylline cr,d00142
 thepohylline,theophylline,d00142
 therapram m,therapram m,NO_DRUG_ID
-therazone,unknown,xxxxxx
+therazone,unknown,NO_DRUG_ID
 thiamine,thiamine,d03130
 thiamine hcl,thiamine hydrochloride,d03130
 thiazide,thiazide,d03052
@@ -9255,7 +9266,7 @@ timoptic drops,timoptic,d04037
 timoptic eye drops,timoptic,d04037
 timoptic glaucoma drops,timoptic,d04037
 timoptic ophthalmic drops,timoptic,d04037
-timoptic opthalmic drops,timoptic ophthalmic drops,NO_DRUG_ID
+timoptic opthalmic drops,timoptic ophthalmic drops,d04037
 timoptic xe,timoptic xe,d04037
 timoptic xe gtts,timoptic xe,d04037
 timoptic xl,timoptic xl,d04037
@@ -9269,6 +9280,7 @@ tiotropium bromide,tiotropium bromide,d04829
 tiramidine,tizanidine,d04102
 tizac,tizanidine,d04102
 tizanidine,tizanidine,d04102
+tizanidine d/c 2007,tizanidine,d04102
 tizanidine hcl,tizanidine hydrochloride,d04102
 tl;rl. x.,unknown,NO_DRUG_ID
 tmeophxlinesr,theophylline sr,d00142
@@ -9431,7 +9443,7 @@ travatine,trazodone,d00395
 travitan,travatan,d04753
 travitan gtts ou,travatan,d04753
 travopost,travoprost,d04753
-travopost eye drops,travoprost eye drops,NO_DRUG_ID
+travopost eye drops,travoprost eye drops,d04753
 travopost sollution,travoprost solution,NO_DRUG_ID
 travoprost,travoprost,d04753
 travoprost ophth,travoprost ophthalmic,d04753
@@ -9501,7 +9513,7 @@ triamcinolone (cream 1 pct),triamcinolone,d00620
 triamcinolone (cream),triamcinolone,d00620
 triamcinolone 0.1 cream,triamcinolone acetonide 0.1% cream,NO_DRUG_ID
 triamcinolone 0.1%,triamcinolone,d00620
-triamcinolone 1 percent,unknown,xxxxxx
+triamcinolone 1 percent,unknown,NO_DRUG_ID
 triamcinolone 1%,triamcinolone,d00620
 triamcinolone acetamine,triamcinolone acetonide,d00620
 triamcinolone acetonide,triamcinolone acetonide,d00620
@@ -9509,7 +9521,7 @@ triamcinolone acetonide topica,triamcinolone acetonide topical,d03206
 triamcinolone cream,unknown,d03206
 triamcinolone cream (0.1 pct),triamcinolone cream,d03206
 triamcinolone cream (0.5 pct),triamcinolone acetonide cream,NO_DRUG_ID
-triamcinolone cream 1 percent,unknown,xxxxxx
+triamcinolone cream 1 percent,unknown,NO_DRUG_ID
 triamcinolone cream 1%,triamcinolone acetonide cream 1%,NO_DRUG_ID
 triamcinolone top,triamcinolone topical,d03206
 triamconolone (cream),triamcinolone,d00620
@@ -9518,7 +9530,7 @@ triamelerene/hctz,triamterene/hctz,NO_DRUG_ID
 triamelevene/hctz,triamterene/hctz,NO_DRUG_ID
 triamenterene,triamterene,d00396
 triamerene,triamterene,d00396
-triamerene/hydrochlorothiazide,unknown,xxxxxx
+triamerene/hydrochlorothiazide,unknown,NO_DRUG_ID
 triamertene/hctz,triamterene/hydrochlorothiazide,d03052
 triamesene,triamterene,d00396
 triameterene,triamterene,d00396
@@ -9562,7 +9574,7 @@ triamterene hctz,triamterene-hydrochlorothiazide,d00396
 triamterene w/ hctz,triamterene/hydrochlorothiazide,d03052
 triamterene-hctz,triamterene-hydrochlorothiazide,d03052
 triamterene(75/30mg),triamterene/hydrochlorothiazide,d03052
-triamterene/ hctz,unknown,xxxxxx
+triamterene/ hctz,unknown,NO_DRUG_ID
 triamterene/hctz,triamterene/hydrochlorothiazide,d03052
 triamterene/hctz  75/50 mg,triamterene/hydrochlorothiazide,d03052
 triamterene/hctz 27.5/25 mg,triamterene/hydrochlorothiazide,d03052
@@ -9708,7 +9720,7 @@ tylenol with codeine #3,tylenol with codeine #3,d03423
 tylenol with codeine 300/30,tylenol with codeine,d03423
 tylenol with codiene,unknown,d03423
 tylenol-codeine,tylenol with codeine,d03423
-tylenol-codeine #3,tylenol #3,NO_DRUG_ID
+tylenol-codeine #3,tylenol #3,d03423
 tylenol/codiene#3,unknown,d03423
 tylenole codeine,tylenol with codeine,d03423
 tylnol,tylenol,d00049
@@ -9717,7 +9729,7 @@ ubaxitol,ubrogepant,d09467
 uicodin,vicodin,d03428
 ulonapin,olanzapine,d04050
 uloxatrol,unknown,d04797
-ultra lactate,lactated ringer's solution,NO_DRUG_ID
+ultra lactate,lactated ringer's solution,d03897
 ultracet,ultracet,d04766
 ultracit,ultracet,d04766
 ultram,ultram,d03826
@@ -9729,7 +9741,7 @@ ultravate ointment,ultravate ointment,d01298
 unaphil,uniphy,NO_DRUG_ID
 uni daily sc,insulin glargine,d04538
 uni vase,univasc,d03835
-unicap sr,unicap sr,NO_DRUG_ID
+unicap sr,unicap sr,d03145
 uniphyl,uniphyl,d00142
 uniphyll,uniphyl,d00142
 unirectic,uniretic,d04141
@@ -9852,12 +9864,12 @@ venfer,venofer,d04725
 venicare,venlafaxine,d03181
 venlafaxin hydrochloride,venlafaxine hydrochloride,d03181
 venlafaxine,venlafaxine,d03181
-venlafaxine hcl,venlafaxine hcl,NO_DRUG_ID
+venlafaxine hcl,venlafaxine hcl,d03181
 venlafaxine xr,venlafaxine xr,d03181
 venlafoxine,venlafaxine,d03181
 venlataxine,venlafaxine,d03181
 venlataxinex,unknown,d03181
-ventatcare,unknown,xxxxxx
+ventatcare,unknown,NO_DRUG_ID
 ventolin,ventolin,d00749
 ventolin hfa,ventolin hfa,d00749
 ventolin inhaler,ventolin inhaler,d00749
@@ -9964,7 +9976,7 @@ viokase-16,viokase-16,d01002
 vioxx,vioxx,d04433
 virelle patch,vivelle patch,d00537
 viroptic eye drops,viroptic,d01215
-visicare,visicare,NO_DRUG_ID
+visicare,visicare,d05413
 visicol,visicol,d04160
 vistaril,vistaril,d00907
 vit b 12,vitamin b12,d00413
@@ -10004,6 +10016,7 @@ vitmain b12 shot,vitamin b12 injection,d00413
 vitorin,vytorin,d05348
 vitorin 10/20,vytorin 10/20,d05348
 vitorin 10/40,vytorin 10/40,d05348
+vytorin 10 80,vytorin,d05348
 vitoryn,vytorin,d05348
 vitron c,vitron-c,d07854
 vitron c 200,vitron-c,d07854
@@ -10110,7 +10123,7 @@ welcol,welchol,d04695
 welcor,wellcor,NO_DRUG_ID
 weldool,wellbutrin,d00181
 well bwtein,wellbutrin,d00181
-wellabutrin,unknown,xxxxxx
+wellabutrin,unknown,NO_DRUG_ID
 wellbitrim,wellbutrin,d00181
 wellbrutin xl,wellbutrin xl,d00181
 wellbudrin,wellbutrin,d00181
@@ -10152,7 +10165,7 @@ xalanta,xalatan,d04017
 xalantan,xalatan,d04017
 xalantan (0.005 pct),xalatan,d04017
 xalantan 2.5%,xalatan,d04017
-xalantan drops,xalatan drops,NO_DRUG_ID
+xalantan drops,xalatan drops,d04017
 xalantan o.u.,xalatan,d04017
 xalanthan opth,xalatan,d04017
 xalantin,xalatan,d04017
@@ -10162,7 +10175,7 @@ xalanton,xalatan,d04017
 xalata,xalatan,d04017
 xalatan,xalatan,d04017
 xalatan .0005 percent,xalatan,d04017
-xalatan .005,unknown,xxxxxx
+xalatan .005,xalatan,d04017
 xalatan .005 %,xalatan,d04017
 xalatan (0.005 pct drop),xalatan,d04017
 xalatan (0.005 pct eyedrop),xalatan,d04017
@@ -10192,18 +10205,18 @@ xalatan gtts.,xalatan,d04017
 xalatan med,xalatan,d04017
 xalatan od,xalatan,d04017
 xalatan oph soln,xalatan,d04017
-xalatan ophthamic drops,xalatan ophthalmic drops,NO_DRUG_ID
+xalatan ophthamic drops,xalatan ophthalmic drops,d04017
 xalatan opt,unknown,d04017
 xalatan opth,xalatan,d04017
-xalatan opth soln,xalatan ophthalmic solution,NO_DRUG_ID
+xalatan opth soln,xalatan ophthalmic solution,d04017
 xalatan opthalmic,xalatan ophthalmic,d04017
 xalatan opthalmic solution,xalatan ophthalmic solution,d04017
 xalatan optic solution,xalatan ophthalmic solution,d04017
 xalatan ou,xalatan,d04017
-xalatan qtts,xalatan drops,NO_DRUG_ID
+xalatan qtts,xalatan drops,d04017
 xalatan: eye qtts,xalatan,d04017
 xalatane eye,xalatan,d04017
-xalataneye drop,xalatan eye drops,NO_DRUG_ID
+xalataneye drop,xalatan eye drops,d04017
 xalatar,xalatan,d04017
 xalatin,xalatan,d04017
 xalatin hg,xalatan,d04017
@@ -10212,15 +10225,15 @@ xalatin ou,xalatan,d04017
 xalatn,xalatan,d04017
 xalaton,xalatan,d04017
 xalaton drop,xalatan,d04017
-xalaton opthalmic drops,xalatan ophthalmic drops,NO_DRUG_ID
+xalaton opthalmic drops,xalatan ophthalmic drops,d04017
 xalatoun,xalatan,d04017
 xalatun,xalatan,d04017
 xaletan eyedrops,xalatan,d04017
 xaliproden,xaliproden,s10133
 xalotan,xalatan,d04017
 xaltan,xalatan,d04017
-xaltan eye drops,unknown,xxxxxx
-xaltan opthalmic drops,xalatan ophthalmic drops,NO_DRUG_ID
+xaltan eye drops,unknown,d04017
+xaltan opthalmic drops,xalatan ophthalmic drops,d04017
 xalutan,xalatan,d04017
 xamax,xanax,d00168
 xamenda,namenda,d04899
@@ -10234,7 +10247,7 @@ xanax hundreths,xanax,d00168
 xanax sr,xanax xr,d00168
 xanax xr,xanax xr,d00168
 xanex,xanax,d00168
-xanlatan opthalmalic drops,xalatan ophthalmic drops,NO_DRUG_ID
+xanlatan opthalmalic drops,xalatan ophthalmic drops,d04017
 xanox 0.5,xanax 0.5,d00168
 xantax,xanax,d00168
 xasarel,xarelto,d07356
@@ -10261,8 +10274,8 @@ xylocaine patch,lidocaine patch,d00683
 xyrem,xyrem,d04806
 xytorin,lipitor,d04105
 xyzal,xyzal,d05851
-yasmin,yasmin,xxxxxx
-yazmin (birth control),yasmin,xxxxxx
+yasmin,yasmin,NO_DRUG_ID
+yazmin (birth control),yasmin,NO_DRUG_ID
 ylucotroe,Unclassified,NO_DRUG_ID
 yst-cal 500,os-cal 500,d00425
 yuluta,unknown,NO_DRUG_ID
@@ -10299,6 +10312,7 @@ zegrid,zegerid,d05770
 zeita,zetia,d04824
 zeka,zeka,NO_DRUG_ID
 zelapar,zelapar,d00976
+zelapar 1.25,zelapar,d00976
 zelnor,zelnorm,d04798
 zelnorm,zelnorm,d04798
 zemplair,zemplar,d04312
@@ -10430,10 +10444,14 @@ zyrte,zyrtec,d03827
 zyrtec,zyrtec,d03827
 zyrtec (cetirizine),zyrtec,d03827
 zyrtec d,zyrtec d,d04764
-zyrtec d 12,zyrtec-d 12 hour,NO_DRUG_ID
+zyrtec d 12,zyrtec-d 12 hour,d04764
 zyrtec syrup,zyrtec syrup,d03827
 zyrtec-d,zyrtec-d,d04764
 zyrtex,zyrtec,d03827
 zyrtex d,zyrtec d,d04764
 zytec,zyrtec,d03827
 zytrec,zyrtec,d03827
+nevannac,unknown,d05633
+vioamox,unknown,d04860
+glucosamine hydrochloride,unknown,d04418
+alkets,unknown,d00425
