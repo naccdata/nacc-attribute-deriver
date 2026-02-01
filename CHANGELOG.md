@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.1.1
+
+* Fixes FTLD `ftdratio` if set as 88
+
 ## 2.1.0
 
 * Adds logic to correlate standalone forms (COVID, CLS) to the closest UDS visit - assumes all UDS visits have been curated already
