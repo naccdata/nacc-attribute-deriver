@@ -4,7 +4,8 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 2.1.1
 
-* Fixes FTLD `ftdratio` if set as 88
+* Fixes FTLD `ftdratio` if set as 88 to 88.88
+* Fixes more drugs
 
 ## 2.1.0
 

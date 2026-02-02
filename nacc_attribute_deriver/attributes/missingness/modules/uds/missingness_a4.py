@@ -254,8 +254,8 @@ class UDSFormA4Missingness(UDSMissingness):
             if len(self.__drugs) > index:
                 drug_id = self.__drugs[index]
 
-                # if drug ID doesn't map to a name leave as-is
-                result = UDSMEDS.get(drug_id, drug_id)
+                # if drug ID doesn't map to a name, set to "*Not Codable*"
+                result = UDSMEDS.get(drug_id, "*Not Codable*")
                 if not result:
                     raise AttributeDeriverError(f"No drug for index {index}")
 
