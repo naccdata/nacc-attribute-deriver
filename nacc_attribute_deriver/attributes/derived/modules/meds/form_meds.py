@@ -42,7 +42,7 @@ def load_v1_drugs() -> Dict[str, str | None]:
         for row in reader:
             raw_drug = row["raw_drug"].strip().lower()
             drug_id = row["drug_id"].strip().lower()
-            drugs[name] = drug_id
+            drugs[raw_drug] = drug_id
 
     return drugs
 

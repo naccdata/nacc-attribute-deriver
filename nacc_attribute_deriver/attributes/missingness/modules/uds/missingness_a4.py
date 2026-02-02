@@ -26,9 +26,9 @@ def load_udsmeds() -> Dict[str, str]:
         for row in reader:
             drug_id = row["DRUG_ID"]
 
-            # there are many clashes; only use first one found
             if drug_id in udsmeds:
-                continue
+                raise AttributeDeriverError(
+                    f"Multiple definitions for drug id {drug_id}")
 
             udsmeds[drug_id] = row["DRUG_NAME_UCASE"]
 
