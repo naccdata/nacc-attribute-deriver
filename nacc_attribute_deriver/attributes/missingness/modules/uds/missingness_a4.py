@@ -24,12 +24,9 @@ def load_udsmeds() -> Dict[str, str]:
     with udsmeds_file.open("r") as fh:
         reader = csv.DictReader(fh)
         for row in reader:
+            # there unfortunately can be multiple names for the same
+            # drug id; for now we set it to the latest one
             drug_id = row["DRUG_ID"]
-
-            if drug_id in udsmeds:
-                raise AttributeDeriverError(
-                    f"Multiple definitions for drug id {drug_id}")
-
             udsmeds[drug_id] = row["DRUG_NAME_UCASE"]
 
     return udsmeds
