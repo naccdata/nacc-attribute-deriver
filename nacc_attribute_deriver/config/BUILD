@@ -10,7 +10,7 @@ resources(
 resources(
     name="data",
     sources=[
-        "normalized_drug_ids_v1.csv",
+        "drug_ids_v1.csv",
         "UDSMEDS.csv",
         "uds_ded_matrix.csv",
     ],

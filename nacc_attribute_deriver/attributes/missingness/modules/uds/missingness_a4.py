@@ -24,12 +24,9 @@ def load_udsmeds() -> Dict[str, str]:
     with udsmeds_file.open("r") as fh:
         reader = csv.DictReader(fh)
         for row in reader:
+            # there unfortunately can be multiple names for the same
+            # drug id; for now we set it to the latest one
             drug_id = row["DRUG_ID"]
-
-            # there are many clashes; only use first one found
-            if drug_id in udsmeds:
-                continue
-
             udsmeds[drug_id] = row["DRUG_NAME_UCASE"]
 
     return udsmeds
@@ -254,8 +251,8 @@ class UDSFormA4Missingness(UDSMissingness):
             if len(self.__drugs) > index:
                 drug_id = self.__drugs[index]
 
-                # if drug ID doesn't map to a name leave as-is
-                result = UDSMEDS.get(drug_id, drug_id)
+                # if drug ID doesn't map to a name, set to "*Not Codable*"
+                result = UDSMEDS.get(drug_id, "*Not Codable*")
                 if not result:
                     raise AttributeDeriverError(f"No drug for index {index}")
 
