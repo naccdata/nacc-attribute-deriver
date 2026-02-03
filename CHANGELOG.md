@@ -6,6 +6,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 * Adds a more specific V1 drug mapping based on raw data and legacy output
 * Fixes FTLD `ftdratio` if set as 88 to 88.88
+* Fixes bug where we were assuming longitudinal data was properly sorted, but it may not be in some cases (namely for the drugs list)
 
 ## 2.1.0
 

@@ -75,6 +75,38 @@ class TestSubjectDerivedNamespace:
 
         assert namespace.get_prev_value("var", int) == 3
 
+    def test_get_longitudinal_value_unsorted(self):
+        """Test getting a longitudinal value when the original list is not
+        sorted."""
+        table = SymbolTable(
+            {
+                "subject": {
+                    "info": {
+                        "derived": {
+                            "longitudinal": {
+                                "var": [
+                                    {"date": "2023-01-01", "value": 3},
+                                    {"date": "2021-01-01", "value": 1},
+                                    {"date": "2024-01-01", "value": "4"},
+                                    {"date": "2022-01-01", "value": "2"},
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+        namespace = SubjectDerivedNamespace(table=table)
+        result = namespace.get_longitudinal_value("var", int)
+        assert len(result) == 4
+        for i, date_value in enumerate(result):
+            assert isinstance(date_value, DateTaggedValue)
+            assert str(date_value.date) == f"202{i + 1}-01-01"
+            assert date_value.value == i + 1
+
+        assert namespace.get_prev_value("var", int) == 4
+
     def test_get_cross_sectional_value(self):
         """Test getting a cross sectional value."""
         table = SymbolTable(

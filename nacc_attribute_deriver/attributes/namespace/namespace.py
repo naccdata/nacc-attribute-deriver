@@ -362,6 +362,8 @@ class SubjectDerivedNamespace(BaseNamespace):
         for i, record in enumerate(records):
             records[i] = self.cast_to_dated_tagged_value(attribute, record, attr_type)
 
+        # make sure its sorted by date
+        records.sort(key=lambda x: x.date)
         return records
 
     def get_corresponding_longitudinal_value(
