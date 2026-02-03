@@ -22,6 +22,9 @@ from nacc_attribute_deriver.utils.errors import (
     InvalidFieldError,
 )
 
+# hardcoded replacement mappings
+REPLACEMENT_DRUGS = {"s10008": "d04523", "s10136": "d04523"}
+
 
 def load_v1_drugs() -> Dict[str, str | None]:
     """Load the V1 drugs list. Done globally so it's only done once per
@@ -90,11 +93,15 @@ class MEDSFormAttributeCollection(AttributeCollection):
             drugs = self.__get_v1_drugs()
         else:
             drugs_str = self.__meds.get_value("drugs_list", str)
-            drugs = sorted(
-                [x.strip().lower() for x in drugs_str.split(",")] if drugs_str else []
-            )
+            if drugs_str:
+                drugs = [x.strip().lower() for x in drugs_str.split(",")]
 
-        return drugs
+        # perform replacements as needed
+        for i, drug in enumerate(drugs):
+            if drug in REPLACEMENT_DRUGS:
+                drugs[i] = REPLACEMENT_DRUGS[drug]
+
+        return sorted(drugs)
 
     def __get_v1_drugs(self) -> List[str]:
         """Gets V1 drugs by mapping write-ins to normalized DB."""
@@ -109,4 +116,4 @@ class MEDSFormAttributeCollection(AttributeCollection):
             drug_id = DRUGS_V1.get(drug_name, "xxxxxx")
             drugs_list.append(drug_id if drug_id is not None else drug_name)
 
-        return sorted(drugs_list)
+        return drugs_list

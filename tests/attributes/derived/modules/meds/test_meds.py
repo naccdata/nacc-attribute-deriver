@@ -119,3 +119,20 @@ class TestMEDSFormAttributeCollection:
             "d04824",
             "d04899",
         ]
+
+    def test_replacement(self, table):
+        """Test the two specific S codes get replaced to d04523."""
+        table["file.info.forms.json.drugs_list"] = (
+            "d00004,s10008,d00170,d00269,d00321,s10136,d00732"
+        )
+        meds = MEDSFormAttributeCollection(table)
+
+        assert meds._create_drugs_list() == [
+            "d00004",
+            "d00170",
+            "d00269",
+            "d00321",
+            "d00732",
+            "d04523",
+            "d04523",
+        ]
