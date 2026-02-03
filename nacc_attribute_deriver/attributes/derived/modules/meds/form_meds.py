@@ -106,7 +106,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 continue
 
             drug_name = drug_name.strip().lower()
-            drug_id = DRUGS_V1.get(drug_name, drug_name)
+            drug_id = DRUGS_V1.get(drug_name, "xxxxxx")
             drugs_list.append(drug_id if drug_id is not None else drug_name)
 
         return sorted(drugs_list)

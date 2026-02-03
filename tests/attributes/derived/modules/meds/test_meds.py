@@ -88,7 +88,7 @@ class TestMEDSFormAttributeCollection:
             "d00004",
             "d00253",
             "d00253",
-            "unknown drug",
+            "xxxxxx",  # unknowns are set to xxxxxx
         ]
 
     def test_create_drugs_list_v1_case2(self, v1_table):
