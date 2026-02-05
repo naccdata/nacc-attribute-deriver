@@ -46,8 +46,8 @@ class FTLDFormMissingness(FormMissingnessCollection):
         return min(max(20, ftdlengt), 240)
 
     def _missingness_ftdratio(self) -> float:
-        # correct 88 to 88.8
+        # correct 88 to 88.88
         if self.form.get_value("ftdratio", float) == 88:
-            return 88.8
+            return 88.88
 
         return self.generic_missingness("ftdratio", float)

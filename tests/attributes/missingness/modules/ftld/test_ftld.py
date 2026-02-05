@@ -53,7 +53,7 @@ class TestFTLDMissingness:
         """Test the 88.0 case is handled."""
         attr = FTLDFormMissingness(ftld_table)
         ftld_table["file.info.forms.json.ftdratio"] = 88
-        assert attr._missingness_ftdratio() == 88.8
+        assert attr._missingness_ftdratio() == 88.88
 
         ftld_table["file.info.forms.json.ftdratio"] = 12.3
         assert attr._missingness_ftdratio() == 12.3

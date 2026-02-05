@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.1.2 (unreleased)
+
+* Fixes `ftdratio` typo of 88.8 to 88.8
+
 ## 2.1.1
 
 * Adds a more specific V1 drug mapping based on raw data and legacy output
