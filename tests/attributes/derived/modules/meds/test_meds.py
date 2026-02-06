@@ -5,6 +5,7 @@ from nacc_attribute_deriver.attributes.derived.modules.meds.form_meds import (
     MEDSFormAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 @pytest.fixture(scope="function")
@@ -136,3 +137,19 @@ class TestMEDSFormAttributeCollection:
             "d04523",
             "d04523",
         ]
+
+    def test_meds_date(self, table):
+        """Test date comes from _uds_visitdate."""
+        table["_uds_visitdate"] = "2025-01-01"
+        meds = MEDSFormAttributeCollection(table)
+        assert str(meds.get_date()) == "2025-01-01"
+
+        # assert error raised if no date found
+        table["_uds_visitdate"] = None
+        table["file.info.forms.json.frmdatea4g"] = None
+        table["file.info.forms.json.frmdatea4"] = None
+
+        with pytest.raises(AttributeDeriverError) as e:
+            MEDSFormAttributeCollection(table)
+
+        assert "Cannot determine MEDS form date" in str(e)
