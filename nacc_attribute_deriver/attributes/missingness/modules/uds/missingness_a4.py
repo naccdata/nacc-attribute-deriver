@@ -41,10 +41,10 @@ class UDSFormA4Missingness(UDSMissingness):
         super().__init__(table)
         working = WorkingNamespace(table=table)
 
-        # grab corresponding drugs list, curated from MEDS file
+        # grab corresponding drugs list if formver < 4, curated from
+        # a separate MEDS file
         if self.formver < 4:
-            visitdate = self.uds.get_value("visitdate", str)
-                raise AttributeDeriverError("Cannot determine visitdate")
+            visitdate = self.uds.get_required("visitdate", str)
             self.__drugs = working.get_corresponding_longitudinal_value(  # type: ignore
                 visitdate, "drugs-list", list
             )

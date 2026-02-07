@@ -21,7 +21,6 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
-from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class UDSFormA4Attribute(UDSAttributeCollection):
@@ -70,15 +69,9 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
         # V3 and earlier forms use a supplemental MEDS file, which needs
         # to be mapped to this form's visitdate
-        form_date = self.uds.get_value("frmdatea4", str)
-        if not form_date:  # try visitdate
-            form_date = self.uds.get_value("visitdate", str)
-
-        if not form_date:
-            raise AttributeDeriverError("Cannot determine A4 form date")
-
+        visitdate = self.uds.get_required("visitdate", str)
         drugs = self.__working.get_corresponding_longitudinal_value(  # type: ignore
-            form_date, "drugs-list", list
+            visitdate, "drugs-list", list
         )
 
         if drugs is None:
