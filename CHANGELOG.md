@@ -2,7 +2,7 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 2.1.2 (unreleased)
+## 2.1.2
 
 * Update MEDS and A4 form to date drugs based on UDS visitdates (which must be unique) since `frmdatea4` is not reliable and may conflict with another visit
 * Fixes FTLD `ftdratio` if set as 88 to 88.88
