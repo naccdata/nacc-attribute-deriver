@@ -4,7 +4,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 2.1.2 (unreleased)
 
-* Update MEDS to search first for `_uds_visitdate` since `frmdatea4g` is not reliable
+* Update MEDS and A4 missingness to date drugs based on UDS visitdates (which must be unique) since `frmdatea4` is not reliable and may conflict with another visit
 * Fixes `ftdratio` typo of 88.8 to 88.8
 
 ## 2.1.1

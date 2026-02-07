@@ -43,15 +43,10 @@ class UDSFormA4Missingness(UDSMissingness):
 
         # grab corresponding drugs list, curated from MEDS file
         if self.formver < 4:
-            form_date = self.uds.get_value("frmdatea4", str)
-            if not form_date:  # try visitdate
-                form_date = self.uds.get_value("visitdate", str)
-
-            if not form_date:
-                raise AttributeDeriverError("Cannot determine A4 form date")
-
+            visitdate = self.uds.get_value("visitdate", str)
+                raise AttributeDeriverError("Cannot determine visitdate")
             self.__drugs = working.get_corresponding_longitudinal_value(  # type: ignore
-                form_date, "drugs-list", list
+                visitdate, "drugs-list", list
             )
         else:
             self.__drugs = None
