@@ -70,18 +70,26 @@ class MEDSFormAttributeCollection(AttributeCollection):
 
         self.__formver = self.__meds.get_value("formver", float)
 
-    def get_date(self) -> datetime.date:
-        """Get MEDS date; depends on version."""
-        date_attribute = (
-            "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
-        )
-        formdate = self.__meds.get_value(date_attribute, str)
-        date = date_from_form_date(formdate)
+        # ideally we externally link MEDS to UDS file by UDS visitdate
+        self.__visitdate = date_from_form_date(table.get("_uds_visitdate", None))
 
-        if not date:
+        # if no uds_visitdate, fall back to frmdatea4
+        if not self.__visitdate:
+            date_attribute = (
+                "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
+            )
+            formdate = self.__meds.get_value(date_attribute, str)
+            self.__visitdate = date_from_form_date(formdate)
+
+        if not self.__visitdate:
             raise AttributeDeriverError("Cannot determine MEDS form date")
 
-        return date
+    def get_date(self) -> datetime.date:
+        """Get the corresponding UDS visitdate."""
+        if not self.__visitdate:
+            raise AttributeDeriverError("No MEDS date set")
+
+        return self.__visitdate
 
     def _create_drugs_list(self) -> List[str]:
         """Returns list of drugs for this visit."""

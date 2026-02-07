@@ -2,14 +2,14 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 2.1.2 (unreleased)
+## 2.1.2
 
-* Fixes `ftdratio` typo of 88.8 to 88.8
+* Update MEDS and A4 form to date drugs based on UDS visitdates (which must be unique) since `frmdatea4` is not reliable and may conflict with another visit
+* Fixes FTLD `ftdratio` if set as 88 to 88.88
 
 ## 2.1.1
 
 * Adds a more specific V1 drug mapping based on raw data and legacy output
-* Fixes FTLD `ftdratio` if set as 88 to 88.88
 * Fixes bug where we were assuming longitudinal data was properly sorted, but it may not be in some cases (namely for the drugs list)
 
 ## 2.1.0
