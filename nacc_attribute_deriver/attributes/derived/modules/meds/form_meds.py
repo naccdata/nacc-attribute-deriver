@@ -116,12 +116,16 @@ class MEDSFormAttributeCollection(AttributeCollection):
         # if not in drugs_db, use drug_name
         drugs_list = []
         for i in range(ord("a"), ord("t") + 1):
-            drug_name = self.__meds.get_value(f"pm{chr(i)}", str)
-            if not drug_name:
-                continue
+            # pm = prescription medication
+            # nm = non-presscription medication (over the counter)
+            # vs = vitamin/supplement
+            for prefix in ["pm", "nm", "vs"]:
+                drug_name = self.__meds.get_value(f"{prefix}{chr(i)}", str)
+                if not drug_name:
+                    continue
 
-            drug_name = drug_name.strip().lower()
-            drug_id = DRUGS_V1.get(drug_name, "xxxxxx")
-            drugs_list.append(drug_id if drug_id is not None else drug_name)
+                drug_name = drug_name.strip().lower()
+                drug_id = DRUGS_V1.get(drug_name, "xxxxxx")
+                drugs_list.append(drug_id if drug_id is not None else drug_name)
 
         return drugs_list

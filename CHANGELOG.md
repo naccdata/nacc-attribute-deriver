@@ -4,6 +4,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 2.1.3
 
+* Update to include non-prescription V1 drugs (e.g. over-the-counter and vitamins - was previously only keeping track of prescription drugs)
 * If a header formdate cannot be determined, return blank for missingness instead of throwing error (handles optional forms)
 
 ## 2.1.2
