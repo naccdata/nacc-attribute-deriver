@@ -89,4 +89,10 @@ class TestGenericUDSMissingness:
         assert isinstance(attr._missingness_uds("somestr", str), str)
 
         # test value is actually there
-        uds_table["file.info.forms.json"]
+        uds_table["file.info.forms.json"].update(
+            {"someint": "5", "somefloat": "3.5", "somestr": "hello world"}
+        )
+
+        assert attr._missingness_uds("someint", int) == 5
+        assert attr._missingness_uds("somefloat", float) == 3.5
+        assert attr._missingness_uds("somestr", str) == "hello world"
