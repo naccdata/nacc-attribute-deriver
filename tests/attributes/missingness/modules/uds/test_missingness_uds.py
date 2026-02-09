@@ -3,7 +3,13 @@
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSMissingness,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_uds import (
+    GenericUDSMissingness,
+)
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+)
 
 
 class TestUDSMissingness:
@@ -51,3 +57,36 @@ class TestUDSMissingness:
         uds_table["_prev_record.info.resolved.testval"] = None
         assert attr.handle_prev_visit("testval", int) == INFORMED_MISSINGNESS
         assert attr.handle_prev_visit("testval", int, default=0) == 0
+
+
+class TestGenericUDSMissingness:
+    def test_frmdatex(self, uds_table):
+        """Test missingness on FRMDATEX variables."""
+        attr = GenericUDSMissingness(uds_table)
+
+        # not there
+        assert attr._missingness_uds("frmdatea1a", str) == INFORMED_BLANK
+
+        # is there and valid, but differnt format
+        uds_table["file.info.forms.json.frmdatea1a"] = "01/01/2025"
+        assert attr._missingness_uds("frmdatea1a", str) == "2025-01-01"
+
+        # is there but not valid
+        uds_table["file.info.forms.json.frmdatea1a"] = "N/A"
+        assert attr._missingness_uds("frmdatea1a", str) == INFORMED_BLANK
+
+    def test_generic_missingness(self, uds_table):
+        """Test correct generic types returned."""
+        attr = GenericUDSMissingness(uds_table)
+
+        assert attr._missingness_uds("someint", int) == INFORMED_MISSINGNESS
+        assert isinstance(attr._missingness_uds("someint", int), int)
+
+        assert attr._missingness_uds("somefloat", float) == float(INFORMED_MISSINGNESS)
+        assert isinstance(attr._missingness_uds("somefloat", float), float)
+
+        assert attr._missingness_uds("somestr", str) == INFORMED_BLANK
+        assert isinstance(attr._missingness_uds("somestr", str), str)
+
+        # test value is actually there
+        uds_table["file.info.forms.json"]

@@ -11,7 +11,9 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     T,
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 from nacc_attribute_deriver.utils.date import standardize_date
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class GenericUDSMissingness(UDSMissingness):
@@ -22,9 +24,14 @@ class GenericUDSMissingness(UDSMissingness):
         """Defines general missingness for UDS; -4 if missing."""
 
         # standardize FRMDATEX variables
+        # not all FRMDATEX variables required (optional forms), and some centers
+        # enter something like "NA" instead, so catch and set to blank if not a date
         if field.startswith("frmdate") and attr_type == str:  # noqa: E721
-            formatted_date = standardize_date(self.uds.get_value(field, str))
-            if formatted_date:
-                return formatted_date  # type: ignore
+            try:
+                frmdate = standardize_date(self.uds.get_value(field, str))
+            except AttributeDeriverError:
+                return INFORMED_BLANK  # type: ignore
+
+            return frmdate if frmdate else INFORMED_BLANK  # type: ignore
 
         return self.generic_missingness(field, attr_type)

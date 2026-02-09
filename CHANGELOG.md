@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.1.3
+
+* If a header formdate cannot be determined, return blank for missingness instead of throwing error (handles optional forms)
+
 ## 2.1.2
 
 * Update MEDS and A4 form to date drugs based on UDS visitdates (which must be unique) since `frmdatea4` is not reliable and may conflict with another visit
