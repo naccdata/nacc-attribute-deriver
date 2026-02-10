@@ -68,3 +68,30 @@ class TestUDSFormA1Missingness:
         uds_table["file.info.forms.json.formver"] = 4.0
         attr = UDSFormA1Missingness(uds_table)
         assert attr._missingness_raceaian() == 1
+
+    def test_educ_overwrite(self, uds_table):
+        """Test missingness on EDUC where they enter something in an FVP
+        form."""
+        uds_table["file.info.forms.json"].update(
+            {"formver": "4.0", "educ": 16, "packet": "I"}
+        )
+        attr = UDSFormA1Missingness(uds_table)
+        assert attr._missingness_educ() == 16
+
+        # ensure it's set to prev value, NOT current value on FVP form
+        uds_table["file.info.forms.json"].update(
+            {"formver": "4.0", "educ": 5, "packet": "F"}
+        )
+        uds_table.update(
+            {
+                "_prev_record": {
+                    "info": {
+                        "forms": {"json": {"visitdate": "2020-01-01"}},
+                        "resolved": {"educ": 13},
+                    }
+                }
+            }
+        )
+
+        attr = UDSFormA1Missingness(uds_table)
+        assert attr._missingness_educ() == 13
