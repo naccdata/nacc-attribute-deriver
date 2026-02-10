@@ -36,6 +36,6 @@ class TestB1aFormAttributeCollection:
         attr = B1aFormAttributeCollection(table)
         assert attr._create_bpsysl() == 123
         assert attr._create_bpsysr() == 234
-        assert attr._create_bpdiasl() is None
+        assert attr._create_bpdiasl() == 888  # default set
         assert attr._create_bpdiasr() == 888
         assert attr._create_bpdevice() == 9

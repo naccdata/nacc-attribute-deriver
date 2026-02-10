@@ -129,3 +129,12 @@ class TestUDSFormB1LegacyMissingness:
         assert attr._missingness_bpdiasr() == 70
         assert attr._missingness_bpsysl() == 100
         assert attr._missingness_bpsysr() == 110
+
+        # wrong date - all missing
+        uds_table["file.info.forms.json.visitdate"] = "2025-01-01"
+        attr = UDSFormB1Missingness(uds_table)
+        assert attr._missingness_bpdevice() == INFORMED_MISSINGNESS
+        assert attr._missingness_bpdiasl() == INFORMED_MISSINGNESS
+        assert attr._missingness_bpdiasr() == INFORMED_MISSINGNESS
+        assert attr._missingness_bpsysl() == INFORMED_MISSINGNESS
+        assert attr._missingness_bpsysr() == INFORMED_MISSINGNESS

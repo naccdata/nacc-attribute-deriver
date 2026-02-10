@@ -5,7 +5,6 @@ the MEDS file. Must correspond to an UDS visit.
 """
 
 import datetime
-from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
@@ -49,22 +48,30 @@ class B1aFormAttributeCollection(AttributeCollection):
 
         return self.__visitdate
 
-    def _create_bpsysl(self) -> Optional[int]:
+    def __set_b1a_variable(self, field: str, default: int) -> int:
+        """Ensure a default is set."""
+        value = self.__b1a.get_value(field, int)
+        if value is None:
+            return default
+
+        return value
+
+    def _create_bpsysl(self) -> int:
         """Creates bpsysl."""
-        return self.__b1a.get_value("bpsysl", int)
+        return self.__set_b1a_variable("bpsysl", 888)
 
-    def _create_bpsysr(self) -> Optional[int]:
+    def _create_bpsysr(self) -> int:
         """Creates bpsysr."""
-        return self.__b1a.get_value("bpsysr", int)
+        return self.__set_b1a_variable("bpsysr", 888)
 
-    def _create_bpdiasl(self) -> Optional[int]:
+    def _create_bpdiasl(self) -> int:
         """Creates bpdiasl."""
-        return self.__b1a.get_value("bpdiasl", int)
+        return self.__set_b1a_variable("bpdiasl", 888)
 
-    def _create_bpdiasr(self) -> Optional[int]:
+    def _create_bpdiasr(self) -> int:
         """Creates bpdiasr."""
-        return self.__b1a.get_value("bpdiasr", int)
+        return self.__set_b1a_variable("bpdiasr", 888)
 
-    def _create_bpdevice(self) -> Optional[int]:
+    def _create_bpdevice(self) -> int:
         """Creates bpdevice."""
-        return self.__b1a.get_value("bpdevice", int)
+        return self.__set_b1a_variable("bpdevice", 9)
