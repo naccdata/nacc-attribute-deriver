@@ -245,13 +245,12 @@ class UDSFormA1Attribute(UDSAttributeCollection):
     def _create_naccedulvl(self) -> Optional[int]:  # noqa: C901
         """Creates NACCEDULVL - Highest achieved level of education.
 
-        Source variables only provided in IVP.
+        Source variables only provided in IVP, so skip if not IVP.
         """
         if not self.uds.is_initial():
             return None
 
         if self.formver < 4:
-            # educ is not provided in FVP, so may need to resolve from previous record
             educ = self.uds.get_value("educ", int)
             if educ is None:
                 raise AttributeDeriverError(

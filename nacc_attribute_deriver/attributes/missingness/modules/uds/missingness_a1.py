@@ -1,6 +1,9 @@
 """Class to handle A1-specific missingness values."""
 
+from typing import Optional, Type
+
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.attributes.namespace.namespace import T
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
@@ -37,12 +40,27 @@ class UDSFormA1Missingness(UDSMissingness):
     # Per RDD: "Note that although this variable is not collected
     # at follow-up visits, the value from the initial visit will
     # be shown at all follow-up visits"
+    # We also need to ignore any values they add in FVP.
     ############################################################
+
+    def __handle_a1_prev_visit(
+        self, field: str, attr_type: Type[T], default: Optional[T] = None
+    ) -> T:
+        """Handle A1 prev visit.
+
+        Needs to ignore values added in FVP.
+        """
+        return self.handle_prev_visit(
+            attribute=field,
+            attr_type=attr_type,
+            default=default,
+            ignore_current_value=not self.uds.is_initial(),
+        )
 
     def __handle_generic_a1_missingness(self, field: str) -> int:
         """For most variables the default is 0 in V4, so generalize."""
         default = INFORMED_MISSINGNESS if self.formver < 4 else 0
-        return self.handle_prev_visit(field, int, default=default)
+        return self.__handle_a1_prev_visit(field, int, default=default)
 
     def _missingness_raceaian(self) -> int:
         """Handles missingness for RACEAIAN."""
@@ -306,53 +324,53 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_adistate(self) -> int:
         """Handles missingness for ADISTATE."""
-        return self.handle_prev_visit("adistate", int, default=999)
+        return self.__handle_a1_prev_visit("adistate", int, default=999)
 
     def _missingness_adinat(self) -> int:
         """Handles missingness for ADINAT."""
-        return self.handle_prev_visit("adinat", int, default=999)
+        return self.__handle_a1_prev_visit("adinat", int, default=999)
 
     def _missingness_priocc(self) -> int:
         """Handles missingness for PRIOCC."""
-        return self.handle_prev_visit("priocc", int, default=999)
+        return self.__handle_a1_prev_visit("priocc", int, default=999)
 
     # The following are required so no defaults
 
     def _missingness_birthmo(self) -> int:
         """Handles missingness for BIRTHMO."""
-        return self.handle_prev_visit("birthmo", int)
+        return self.__handle_a1_prev_visit("birthmo", int)
 
     def _missingness_birthyr(self) -> int:
         """Handles missingness for BIRTHYR."""
-        return self.handle_prev_visit("birthyr", int)
+        return self.__handle_a1_prev_visit("birthyr", int)
 
     def _missingness_birthsex(self) -> int:
         """Handles missingness for BIRTHSEX."""
-        return self.handle_prev_visit("birthsex", int)
+        return self.__handle_a1_prev_visit("birthsex", int)
 
     def _missingness_intersex(self) -> int:
         """Handles missingness for INTERSEX."""
-        return self.handle_prev_visit("intersex", int)
+        return self.__handle_a1_prev_visit("intersex", int)
 
     def _missingness_served(self) -> int:
         """Handles missingness for SERVED."""
-        return self.handle_prev_visit("served", int)
+        return self.__handle_a1_prev_visit("served", int)
 
     def _missingness_handed(self) -> int:
         """Handles missingness for HANDED."""
-        return self.handle_prev_visit("handed", int)
+        return self.__handle_a1_prev_visit("handed", int)
 
     def _missingness_educ(self) -> int:
         """Handles missingness for EDUC."""
-        return self.handle_prev_visit("educ", int)
+        return self.__handle_a1_prev_visit("educ", int)
 
     def _missingness_lvleduc(self) -> int:
         """Handles missingness for LVLEDUC."""
-        return self.handle_prev_visit("lvleduc", int)
+        return self.__handle_a1_prev_visit("lvleduc", int)
 
     def _missingness_sourcenw(self) -> int:
         """Handles missingness for SOURCENW."""
-        return self.handle_prev_visit("sourcenw", int)
+        return self.__handle_a1_prev_visit("sourcenw", int)
 
     ######################
     # Write-in variables #
@@ -360,43 +378,43 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_chldhdctry(self) -> str:
         """Handles missingness for CHLDHDCTRY."""
-        return self.handle_prev_visit("chldhdctry", str)
+        return self.__handle_a1_prev_visit("chldhdctry", str)
 
     def _missingness_raceaianx(self) -> str:
         """Handles missingness for RACEAIANX."""
-        return self.handle_prev_visit("raceaianx", str)
+        return self.__handle_a1_prev_visit("raceaianx", str)
 
     def _missingness_ethasnothx(self) -> str:
         """Handles missingness for ETHASNOTHX."""
-        return self.handle_prev_visit("ethasnothx", str)
+        return self.__handle_a1_prev_visit("ethasnothx", str)
 
     def _missingness_ethblkothx(self) -> str:
         """Handles missingness for ETHBLKOTHX."""
-        return self.handle_prev_visit("ethblkothx", str)
+        return self.__handle_a1_prev_visit("ethblkothx", str)
 
     def _missingness_ethhisothx(self) -> str:
         """Handles missingness for ETHHISOTHX."""
-        return self.handle_prev_visit("ethhisothx", str)
+        return self.__handle_a1_prev_visit("ethhisothx", str)
 
     def _missingness_ethmenaotx(self) -> str:
         """Handles missingness for ETHMENAOTX."""
-        return self.handle_prev_visit("ethmenaotx", str)
+        return self.__handle_a1_prev_visit("ethmenaotx", str)
 
     def _missingness_ethnhpiotx(self) -> str:
         """Handles missingness for ETHNHPIOTX."""
-        return self.handle_prev_visit("ethnhpiotx", str)
+        return self.__handle_a1_prev_visit("ethnhpiotx", str)
 
     def _missingness_ethwhiothx(self) -> str:
         """Handles missingness for ETHWHIOTHX."""
-        return self.handle_prev_visit("ethwhiothx", str)
+        return self.__handle_a1_prev_visit("ethwhiothx", str)
 
     def _missingness_genothx(self) -> str:
         """Handles missingness for GENOTHX."""
-        return self.handle_prev_visit("genothx", str)
+        return self.__handle_a1_prev_visit("genothx", str)
 
     def _missingness_sexornothx(self) -> str:
         """Handles missingness for SEXORNOTHX."""
-        return self.handle_prev_visit("sexornothx", str)
+        return self.__handle_a1_prev_visit("sexornothx", str)
 
     ############################W################
     # Legacy variables (only in V3 and earlier) #
@@ -404,11 +422,11 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_sex(self) -> int:
         """Handles missingness for SEX."""
-        return self.handle_prev_visit("sex", int)
+        return self.__handle_a1_prev_visit("sex", int)
 
     def _missingness_hispanic(self) -> int:
         """Handles missingness for HISPANIC."""
-        return self.handle_prev_visit("hispanic", int)
+        return self.__handle_a1_prev_visit("hispanic", int)
 
     def _missingness_hispor(self) -> int:
         """Handles missingness for HISPOR."""
@@ -416,44 +434,44 @@ class UDSFormA1Missingness(UDSMissingness):
         if self.uds.is_initial() and hispanic != 1:
             return 88
 
-        return self.handle_prev_visit("hispor", int)
+        return self.__handle_a1_prev_visit("hispor", int)
 
     def _missingness_hisporx(self) -> str:
         """Handles missingness for HISPORX."""
-        return self.handle_prev_visit("hisporx", str)
+        return self.__handle_a1_prev_visit("hisporx", str)
 
     def _missingness_race(self) -> int:
         """Handles missingness for RACE."""
-        return self.handle_prev_visit("race", int)
+        return self.__handle_a1_prev_visit("race", int)
 
     def _missingness_racex(self) -> str:
         """Handles missingness for RACEX."""
-        return self.handle_prev_visit("racex", str)
+        return self.__handle_a1_prev_visit("racex", str)
 
     def _missingness_racesec(self) -> int:
         """Handles missingness for RACESEC."""
-        return self.handle_prev_visit("racesec", int)
+        return self.__handle_a1_prev_visit("racesec", int)
 
     def _missingness_racesecx(self) -> str:
         """Handles missingness for RACESECX."""
-        return self.handle_prev_visit("racesecx", str)
+        return self.__handle_a1_prev_visit("racesecx", str)
 
     def _missingness_raceter(self) -> int:
         """Handles missingness for RACETER."""
-        return self.handle_prev_visit("raceter", int)
+        return self.__handle_a1_prev_visit("raceter", int)
 
     def _missingness_raceterx(self) -> str:
         """Handles missingness for RACETERX."""
-        return self.handle_prev_visit("raceterx", str)
+        return self.__handle_a1_prev_visit("raceterx", str)
 
     def _missingness_primlang(self) -> int:
         """Handles missingness for PRIMLANG."""
-        return self.handle_prev_visit("primlang", int)
+        return self.__handle_a1_prev_visit("primlang", int)
 
     def _missingness_primlanx(self) -> str:
         """Handles missingness for PRIMLANX."""
-        return self.handle_prev_visit("primlanx", str)
+        return self.__handle_a1_prev_visit("primlanx", str)
 
     def _missingness_source(self) -> int:
         """Handles missingness for SOURCE."""
-        return self.handle_prev_visit("source", int)
+        return self.__handle_a1_prev_visit("source", int)
