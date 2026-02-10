@@ -329,3 +329,11 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
         # return whatever the current status is
         return affiliate
+
+    def _create_birthmo(self) -> Optional[int]:
+        """Returns most current BIRTHMO."""
+        return self.uds.get_value("birthmo", int)
+
+    def _create_birthyr(self) -> Optional[int]:
+        """Returns most current BIRTHYR."""
+        return self.uds.get_value("birthyr", int)

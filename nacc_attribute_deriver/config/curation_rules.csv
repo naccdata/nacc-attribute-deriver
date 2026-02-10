@@ -467,3 +467,5 @@ uds,parkage,subject.info.working.cross-sectional.parkage,update,FALSE
 uds,naccfam,subject.info.derived.longitudinal.naccfam,list,TRUE
 uds,naccmom,subject.info.derived.longitudinal.naccmom,list,TRUE
 uds,naccdad,subject.info.derived.longitudinal.naccdad,list,TRUE
+uds,birthmo,subject.info.resolved.cross-sectional.birthmo,update,FALSE
+uds,birthyr,subject.info.resolved.cross-sectional.birthyr,update,FALSE
