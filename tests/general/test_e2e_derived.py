@@ -539,18 +539,36 @@ def test_b1a():
             "info": {
                 "working": {
                     "longitudinal": {
-                        "blood-addendum": [
-                            {
-                                "date": "2025-01-01",
-                                "value": {
-                                    "bpsysl": 888,
-                                    "bpsysr": 888,
-                                    "bpdiasl": 888,
-                                    "bpdiasr": 888,
-                                    "bpdevice": 9,
-                                },
-                            }
-                        ]
+                        'bpdevice': [
+                           {
+                               'date': '2025-01-01',
+                               'value': 9,
+                           },
+                        ],
+                        'bpdiasl': [
+                           {
+                               'date': '2025-01-01',
+                               'value': 888,
+                           },
+                        ],
+                        'bpdiasr': [
+                           {
+                               'date': '2025-01-01',
+                               'value': 888,
+                           },
+                        ],
+                        'bpsysl': [
+                           {
+                               'date': '2025-01-01',
+                               'value': 888,
+                           },
+                        ],
+                        'bpsysr': [
+                           {
+                               'date': '2025-01-01',
+                               'value': 888,
+                           },
+                        ],
                     }
                 }
             }

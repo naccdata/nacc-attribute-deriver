@@ -17,9 +17,9 @@ def table() -> SymbolTable:
                     "json": {
                         "visitdate": "2025-01-01",
                         "module": "b1a",
-                        "bpsysl": 888,
-                        "bpsysr": "888",
-                        "bpdiasl": "888",
+                        "bpsysl": 123,
+                        "bpsysr": "234",
+                        "bpdiasl": None,
                         "bpdiasr": 888,
                         "bpdevice": "9",
                     }
@@ -34,10 +34,8 @@ class TestB1aFormAttributeCollection:
     def test_create_blood_addendum(self, table):
         """Tests _create_blood_addendum."""
         attr = B1aFormAttributeCollection(table)
-        assert attr._create_blood_addendum() == {
-            "bpsysl": 888,
-            "bpsysr": 888,
-            "bpdiasl": 888,
-            "bpdiasr": 888,
-            "bpdevice": 9,
-        }
+        assert attr._create_bpsysl() == 123
+        assert attr._create_bpsysr() == 234
+        assert attr._create_bpdiasl() is None
+        assert attr._create_bpdiasr() == 888
+        assert attr._create_bpdevice() == 9

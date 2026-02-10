@@ -5,7 +5,7 @@ the MEDS file. Must correspond to an UDS visit.
 """
 
 import datetime
-from typing import Dict
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
@@ -49,14 +49,22 @@ class B1aFormAttributeCollection(AttributeCollection):
 
         return self.__visitdate
 
-    def _create_blood_addendum(self) -> Dict[str, int | None]:
-        """Create the blood addendum info.
+    def _create_bpsysl(self) -> Optional[int]:
+        """Creates bpsysl."""
+        return self.__b1a.get_value("bpsysl", int)
 
-        Temporarily stored in working metadata as a dict to be pulled in
-        for UDS curation.
-        """
-        result = {}
-        for field in ["bpsysl", "bpsysr", "bpdiasl", "bpdiasr", "bpdevice"]:
-            result[field] = self.__b1a.get_value(field, int)
+    def _create_bpsysr(self) -> Optional[int]:
+        """Creates bpsysr."""
+        return self.__b1a.get_value("bpsysr", int)
 
-        return result
+    def _create_bpdiasl(self) -> Optional[int]:
+        """Creates bpdiasl."""
+        return self.__b1a.get_value("bpdiasl", int)
+
+    def _create_bpdiasr(self) -> Optional[int]:
+        """Creates bpdiasr."""
+        return self.__b1a.get_value("bpdiasr", int)
+
+    def _create_bpdevice(self) -> Optional[int]:
+        """Creates bpdevice."""
+        return self.__b1a.get_value("bpdevice", int)
