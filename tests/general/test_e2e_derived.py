@@ -501,3 +501,58 @@ def test_csf():
             }
         },
     }
+
+
+def test_b1a():
+    """Test against minimal B1A data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {
+        "visitdate": "2025-01-01",
+        "module": "b1a",
+        "bpsysl": 888,
+        "bpsysr": "888",
+        "bpdiasl": "888",
+        "bpdiasr": 888,
+        "bpdevice": "9",
+    }
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "b1a")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "forms": {
+                    "json": {
+                        "visitdate": "2025-01-01",
+                        "module": "b1a",
+                        "bpsysl": 888,
+                        "bpsysr": "888",
+                        "bpdiasl": "888",
+                        "bpdiasr": 888,
+                        "bpdevice": "9",
+                    }
+                }
+            }
+        },
+        "subject": {
+            "info": {
+                "working": {
+                    "longitudinal": {
+                        "blood-addendum": [
+                            {
+                                "date": "2025-01-01",
+                                "value": {
+                                    "bpsysl": 888,
+                                    "bpsysr": 888,
+                                    "bpdiasl": 888,
+                                    "bpdiasr": 888,
+                                    "bpdevice": 9,
+                                },
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+    }

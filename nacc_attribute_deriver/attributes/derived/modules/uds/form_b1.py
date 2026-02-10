@@ -5,13 +5,28 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class UDSFormB1Attribute(UDSAttributeCollection):
     """Class to collect UDS B1 attributes."""
+
+    def __init__(self, table: SymbolTable):
+        super().__init__(table)
+        working = WorkingNamespace(table=table)
+
+        # get b1a addendum, if it exists
+        visitdate = self.uds.get_required("visitdate", str)
+        self.__b1a = working.get_corresponding_longitudinal_value(
+            visitdate, "blood-addendum", dict
+        )
 
     @property
     def submitted(self) -> bool:
@@ -131,16 +146,25 @@ class UDSFormB1Attribute(UDSAttributeCollection):
             value of field, if supplemental data provided, else -4
         """
         if self.uds.get_value(gate, int) == 777:
-            value = self.uds.get_value(field, int)
-            if value is None:
-                # TODO: B1a is currently not handled, so these values are missing
-                # for now just return 888 but should throw error once there
-                # raise AttributeDeriverError(
-                #     f"Missing expected value {field} when {gate} == 777 for V3"
-                # )
-                return 888
+            if not self.__b1a:
+                raise AttributeDeriverError(
+                    f"Missing B1a form; expected when {gate} == 777 for V3"
+                )
 
-            return max(minimum, min(maximum, value))
+            value = self.__b1a.get(field)
+            if value is None:
+                raise AttributeDeriverError(
+                    f"Missing expected value {field} when {gate} == 777 for V3"
+                )
+
+            try:
+                if int(value) == 888:
+                    return 888
+                return max(minimum, min(maximum, int(value)))
+            except (ValueError, TypeError) as e:
+                raise AttributeDeriverError(
+                    f"non-integer b1a value for {field}: {value}"
+                ) from e
 
         return INFORMED_MISSINGNESS
 

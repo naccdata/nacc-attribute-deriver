@@ -17,6 +17,7 @@ class FormScope(Scope):
     MILESTONE = "milestone"
     NP = "np"
     MEDS = "meds"
+    B1A = "b1a"
     UDS = "uds"
     FTLD = "ftld"
     LBD = "lbd"
@@ -63,6 +64,7 @@ ScopeLiterals = Literal[
     FormScope.MILESTONE,
     FormScope.NP,
     FormScope.MEDS,
+    FormScope.B1A,
     FormScope.UDS,
     FormScope.FTLD,
     FormScope.LBD,

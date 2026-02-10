@@ -1,6 +1,8 @@
 """Handles the MEDS form.
 
-This is mainly used to inform UDS A4 NACC derived variables.
+This is a UDS-specific form in V3 and earlier that provides the drugs
+data. Must correspond to an UDS visit. This is mainly used to inform UDS
+A4 NACC derived variables.
 """
 
 import csv

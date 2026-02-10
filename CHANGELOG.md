@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 2.1.3
 
 * Update to include non-prescription V1 drugs (e.g. over-the-counter and vitamins - was previously only keeping track of prescription drugs)
+* Update to handle new B1a scope - like MEDS, comes from a separate file and has to be mapped to UDS
 * If a header formdate cannot be determined, return blank for missingness instead of throwing error (handles optional forms)
 * A few other minor fixes from regression testing
 
