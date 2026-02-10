@@ -86,3 +86,46 @@ class TestUDSFormB1LegacyMissingness:
         assert attr._missingness_bpdiasl() == 888
         assert attr._missingness_bpdiasr() == INFORMED_MISSINGNESS
         assert attr._missingness_hrate() == 888
+
+    def test_b1a_addendum(self, uds_table):
+        """Test there is a B1a addendum."""
+        uds_table["file.info.forms.json.visitdate"] = "2026-01-01"
+        uds_table["subject.info.working.longitudinal"] = {
+            "bpdevice": [
+                {
+                    "date": "2026-01-01",
+                    "value": 1,
+                },
+            ],
+            "bpdiasl": [
+                {
+                    "date": "2026-01-01",
+                    "value": 50,
+                },
+            ],
+            "bpdiasr": [
+                {
+                    "date": "2026-01-01",
+                    "value": 70,
+                },
+            ],
+            "bpsysl": [
+                {
+                    "date": "2026-01-01",
+                    "value": 100,
+                },
+            ],
+            "bpsysr": [
+                {
+                    "date": "2026-01-01",
+                    "value": 110,
+                },
+            ],
+        }
+
+        attr = UDSFormB1Missingness(uds_table)
+        assert attr._missingness_bpdevice() == 1
+        assert attr._missingness_bpdiasl() == 50
+        assert attr._missingness_bpdiasr() == 70
+        assert attr._missingness_bpsysl() == 100
+        assert attr._missingness_bpsysr() == 110

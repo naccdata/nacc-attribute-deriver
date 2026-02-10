@@ -539,35 +539,35 @@ def test_b1a():
             "info": {
                 "working": {
                     "longitudinal": {
-                        'bpdevice': [
-                           {
-                               'date': '2025-01-01',
-                               'value': 9,
-                           },
+                        "bpdevice": [
+                            {
+                                "date": "2025-01-01",
+                                "value": 9,
+                            },
                         ],
-                        'bpdiasl': [
-                           {
-                               'date': '2025-01-01',
-                               'value': 888,
-                           },
+                        "bpdiasl": [
+                            {
+                                "date": "2025-01-01",
+                                "value": 888,
+                            },
                         ],
-                        'bpdiasr': [
-                           {
-                               'date': '2025-01-01',
-                               'value': 888,
-                           },
+                        "bpdiasr": [
+                            {
+                                "date": "2025-01-01",
+                                "value": 888,
+                            },
                         ],
-                        'bpsysl': [
-                           {
-                               'date': '2025-01-01',
-                               'value': 888,
-                           },
+                        "bpsysl": [
+                            {
+                                "date": "2025-01-01",
+                                "value": 888,
+                            },
                         ],
-                        'bpsysr': [
-                           {
-                               'date': '2025-01-01',
-                               'value': 888,
-                           },
+                        "bpsysr": [
+                            {
+                                "date": "2025-01-01",
+                                "value": 888,
+                            },
                         ],
                     }
                 }
