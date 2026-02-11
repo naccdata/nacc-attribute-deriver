@@ -95,3 +95,29 @@ class TestUDSFormA1Missingness:
 
         attr = UDSFormA1Missingness(uds_table)
         assert attr._missingness_educ() == 13
+
+    def test_dob_variables(self, uds_table):
+        """Test BIRTHMO/BIRTHYR are pulled from working metadata first, not
+        file data."""
+        uds_table["file.info.forms.json"].update(
+            {"formver": "4.0", "birthmo": 5, "birthyr": 2000}
+        )
+        uds_table.update(
+            {
+                "subject": {
+                    "info": {
+                        "working": {"cross-sectional": {"birthmo": 9, "birthyr": 1950}}
+                    }
+                }
+            }
+        )
+        attr = UDSFormA1Missingness(uds_table)
+        assert attr._missingness_birthmo() == 9
+        assert attr._missingness_birthyr() == 1950
+
+        # if subject metadata is not there, then default to
+        # file-level
+        uds_table.pop("subject")
+        attr = UDSFormA1Missingness(uds_table)
+        assert attr._missingness_birthmo() == 5
+        assert attr._missingness_birthyr() == 2000

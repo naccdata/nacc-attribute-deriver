@@ -6,7 +6,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 * Update to include non-prescription V1 drugs (e.g. over-the-counter and vitamins - was previously only keeping track of prescription drugs)
 * Update to handle new B1a scope - like MEDS, comes from a separate file and has to be mapped to UDS
-* Adds `BIRTHYR` and `BIRTHMO` to write to `subject.info.resolved.cross-sectional.x` to resolve the values changing over time. Should be set to latest
+* Updates to grab `BIRTHMO` and `BIRTHYR` from a pre-computed `subject.info.working.cross-sectional` location instead of files, to account for the fact that DOB can change across forms. The pre-computed value should be the latest
 * Fixes issue of values entered in an A1 FVP visit overwriting IVP, when they should not be provided in the first place. Updates to ignore FVP values
 * If a header formdate cannot be determined, return blank for missingness instead of throwing error (handles optional forms)
 * A few other minor fixes from regression testing

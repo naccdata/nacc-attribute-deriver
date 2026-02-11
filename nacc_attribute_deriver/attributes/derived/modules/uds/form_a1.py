@@ -33,8 +33,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
     def _create_naccage(self) -> int:
-        """Creates NACCAGE (age) Generates DOB from BIRTHMO and BIRTHYR and
-        compares to form date."""
+        """Creates NACCAGE (age)."""
         dob = self.uds.generate_uds_dob()
         visitdate = date_from_form_date(self.uds.get_required("visitdate", str))
 
@@ -329,11 +328,3 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
         # return whatever the current status is
         return affiliate
-
-    def _create_birthmo(self) -> Optional[int]:
-        """Returns most current BIRTHMO."""
-        return self.uds.get_value("birthmo", int)
-
-    def _create_birthyr(self) -> Optional[int]:
-        """Returns most current BIRTHYR."""
-        return self.uds.get_value("birthyr", int)
