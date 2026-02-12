@@ -275,8 +275,6 @@ class CrossModuleAttributeCollection(AttributeCollection):
         Codes:
             0: If subject receives no followup contact (dead, discontinued,
                 or enrolled as initial visit only)
-                8: Returns 8 specifically if enrolled as initial visit only.
-                    NACCACTVS casts this back to 0, NACCNOVS returns it as 8
             1: If subject is under annual followup and expected to make more
                 Includes discontinued subjects who have since rejoined
                 - This seems to also include subject who have not explicitly
@@ -307,14 +305,19 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if self.__subject_derived.get_value("affiliate", bool):
             return 5
 
-        # check milestone protocol
+        # check milestone protocol/udsactiv
         protocol = self.__working_value("milestone-protocol", int)
+        udsactiv = self.__working_value("milestone-udsactiv", int)
 
-        # if protocol == 1 or 3, annual followup expected
-        if protocol in [1, 3]:
+        # inactive
+        if udsactiv == 4:
+            return 0
+
+        # annual followup expected
+        if protocol in [1, 3] or udsactiv in [1, 2]:
             return 1
-        # protocol == 2 is minimal contact
-        if protocol == 2:
+        # minimal contact
+        if protocol == 2 or udsactiv == 3:
             return 2
 
         # protocol == 1 or 3, or just using 1 by default

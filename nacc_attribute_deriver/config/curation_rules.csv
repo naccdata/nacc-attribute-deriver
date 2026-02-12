@@ -23,6 +23,7 @@ milestone,milestone_discday,subject.info.working.cross-sectional.milestone-discd
 milestone,milestone_discmo,subject.info.working.cross-sectional.milestone-discmo,update,FALSE
 milestone,milestone_discyr,subject.info.working.cross-sectional.milestone-discyr,update,FALSE
 milestone,milestone_protocol,subject.info.working.cross-sectional.milestone-protocol,update,FALSE
+milestone,milestone_udsactiv,subject.info.working.cross-sectional.milestone-udsactiv,update,FALSE
 milestone,milestone_renurse,subject.info.working.cross-sectional.milestone-renurse,update,TRUE
 milestone,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
 milestone,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE

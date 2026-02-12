@@ -96,8 +96,13 @@ class MilestoneAttributeCollection(AttributeCollection):
         return self.__milestone.get_value("discont", int) == 1
 
     def _create_milestone_protocol(self) -> Optional[int]:
-        """Return the mielstone protocol."""
+        """Return the milestone protocol. This is used
+        in V2/V3."""
         return self.__milestone.get_value("protocol", int)
+
+    def _create_milestone_udsactiv(self) -> Optional[int]:
+        """Return the milestone udsactv. This is used in V1."""
+        return self.__milestone.get_value("udsactiv", int)
 
     def get_discontinued_date_part(self, attribute: str, change_part: str, visit_part: str) -> int:
         """Get subject discontinued date part. Either explicitly set as
@@ -121,7 +126,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         protocol = self.__milestone.get_value("protocol", int)  # V2/V3
         udsactiv = self.__milestone.get_value("udsactiv", int)  # V1
 
-        if discont == 1 or protocol == 2 or udsactiv == 3:
+        if discont == 1 or protocol == 2 or udsactiv in [3, 4]:
             for field in [attribute, change_part, visit_part]:
                 disc_date = self.__milestone.get_value(field, int)
                 if disc_date is not None:
