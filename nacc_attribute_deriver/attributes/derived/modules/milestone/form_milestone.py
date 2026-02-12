@@ -96,15 +96,22 @@ class MilestoneAttributeCollection(AttributeCollection):
         return self.__milestone.get_value("discont", int) == 1
 
     def _create_milestone_protocol(self) -> Optional[int]:
-        """Return the milestone protocol. This is used
-        in V2/V3."""
+        """Return the milestone protocol.
+
+        This is used in V2/V3.
+        """
         return self.__milestone.get_value("protocol", int)
 
     def _create_milestone_udsactiv(self) -> Optional[int]:
-        """Return the milestone udsactv. This is used in V1."""
+        """Return the milestone udsactv.
+
+        This is used in V1.
+        """
         return self.__milestone.get_value("udsactiv", int)
 
-    def get_discontinued_date_part(self, attribute: str, change_part: str, visit_part: str) -> int:
+    def get_discontinued_date_part(
+        self, attribute: str, change_part: str, visit_part: str
+    ) -> int:
         """Get subject discontinued date part. Either explicitly set as
         discontinued, or minimum contact/followed to autopsy.
 

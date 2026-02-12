@@ -206,6 +206,7 @@ class TestCrossModuleAttribute:
 
         # if MLST explicitly sets to 0, should be 0
         table["subject.info.working.cross-sectional.milestone-renurse"] = {
-            "date": "2026-01-01", "value": 0
+            "date": "2026-01-01",
+            "value": 0,
         }
         assert attr._create_naccnurp() == 0

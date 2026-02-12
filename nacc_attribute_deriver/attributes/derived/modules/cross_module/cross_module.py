@@ -47,9 +47,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self, attribute: str, attribute_type: Type[T]
     ) -> Optional[DateTaggedValue[T]]:
         """Grab latest cross-sectional working value."""
-        return self.__working.get_cross_sectional_dated_value(
-            attribute, attribute_type
-        )
+        return self.__working.get_cross_sectional_dated_value(attribute, attribute_type)
 
     def __determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
@@ -290,7 +288,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # if milestone marked subject as discontinued, and is the latest form,
         # return 0. if there were UDS visits after discontinuation was marked,
         # return 1
-        mlst_discontinued = self.__working_value("milestone-discontinued", int)
+        mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
         if mlst_discontinued and mlst_discontinued.value == 1:
             if self.uds_came_after(mlst_discontinued.date):
                 return 1

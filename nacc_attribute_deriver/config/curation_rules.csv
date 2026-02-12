@@ -18,7 +18,7 @@ milestone,milestone_visitdates,subject.info.working.cross-sectional.milestone-vi
 milestone,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,FALSE
 milestone,milestone_death_month,subject.info.working.cross-sectional.milestone-death-month,update,FALSE
 milestone,milestone_deceased,subject.info.working.cross-sectional.milestone-deceased,update,FALSE
-milestone,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued,update,FALSE
+milestone,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued,update,TRUE
 milestone,milestone_discday,subject.info.working.cross-sectional.milestone-discday,update,FALSE
 milestone,milestone_discmo,subject.info.working.cross-sectional.milestone-discmo,update,FALSE
 milestone,milestone_discyr,subject.info.working.cross-sectional.milestone-discyr,update,FALSE

@@ -7,10 +7,7 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.form_b1 import (
     UDSFormB1Attribute,
 )
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
-from nacc_attribute_deriver.utils.errors import (
-    AttributeDeriverError,
-    InvalidFieldError,
-)
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 ALL_FORMVERS = [1.0, 2.0, 3.0, 3.2, 4.0]
 
@@ -195,13 +192,11 @@ class TestUDSFormB1Attribute:
         attr = UDSFormB1Attribute(uds_table)
         assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 140
 
-        # gate is not 777
+        # gate is not 777 - for now we actually don't care, as long
+        # as there is B1a data
         uds_table["file.info.forms.json.gate"] = 888
         attr = UDSFormB1Attribute(uds_table)
-        assert (
-            attr._handle_v3_blood_pressure("gate", "field", 30, 140)
-            == INFORMED_MISSINGNESS
-        )
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 140
 
     def test_handle_v3_blood_pressure_invalid(self, uds_table):
         """Invalid cases for _handle_v3_blood_pressure."""
@@ -214,11 +209,9 @@ class TestUDSFormB1Attribute:
             {"date": "2025-12-12", "value": 99}
         ]
 
+        # unknown, so 888
         attr = UDSFormB1Attribute(uds_table)
-        with pytest.raises(AttributeDeriverError) as e:
-            attr._handle_v3_blood_pressure("gate", "field", 30, 140)
-
-        assert "Missing expected value field when gate == 777 for V3" in str(e.value)
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 888
 
         # testing B1a form and value are there but not a valid integer
         uds_table["file.info.forms.json.gate"] = 777
