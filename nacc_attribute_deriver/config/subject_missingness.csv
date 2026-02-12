@@ -1,8 +1,8 @@
 scope,function,location,operation,dated,attr_type
 np,npformver,subject.info.derived.cross-sectional.npformver,update,FALSE,int
-milestone,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE,int
-milestone,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE,int
-milestone,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE,int
+mlst,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE,int
+mlst,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE,int
+mlst,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE,int
 apoe,naccapoe,subject.info.derived.cross-sectional.naccapoe,update,FALSE,int
 apoe,naccne4s,subject.info.derived.cross-sectional.naccne4s,update,FALSE,int
 ncrad_biosamples,naccncrd,subject.info.derived.cross-sectional.naccncrd,update,FALSE,int

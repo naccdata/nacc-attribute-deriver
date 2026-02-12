@@ -1,7 +1,7 @@
 """Tests MLST form."""
 
 import pytest
-from nacc_attribute_deriver.attributes.derived.modules.milestone.form_milestone import (
+from nacc_attribute_deriver.attributes.derived.modules.mlst.form_mlst import (
     MilestoneAttributeCollection,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

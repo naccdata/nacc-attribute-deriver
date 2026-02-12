@@ -1104,6 +1104,9 @@ mds,mds_source,file.info.resolved.source,update,FALSE,int
 mds,mds_spect,file.info.resolved.spect,update,FALSE,int
 mds,mds_stroke,file.info.resolved.stroke,update,FALSE,int
 mds,mds_vitalst,file.info.resolved.vitalst,update,FALSE,int
+mlst,header_adcid,file.info.resolved.adcid,update,FALSE,int
+mlst,header_formver,file.info.resolved.formver,update,FALSE,float
+mlst,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
 np,np_adcid,file.info.resolved.adcid,update,FALSE,int
 np,np_formver,file.info.resolved.formver,update,FALSE,float
 np,np_visitdate,file.info.resolved.visitdate,update,FALSE,str

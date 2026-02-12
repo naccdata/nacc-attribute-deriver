@@ -14,7 +14,7 @@ class FormScope(Scope):
     CLS = "cls"
     CSF = "csf"
     MDS = "mds"
-    MILESTONE = "milestone"
+    MLST = "mlst"
     NP = "np"
     MEDS = "meds"
     B1A = "b1a"
@@ -61,7 +61,7 @@ ScopeLiterals = Literal[
     FormScope.CLS,
     FormScope.CSF,
     FormScope.MDS,
-    FormScope.MILESTONE,
+    FormScope.MLST,
     FormScope.NP,
     FormScope.MEDS,
     FormScope.B1A,
