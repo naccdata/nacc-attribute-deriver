@@ -82,17 +82,16 @@ class TestMilestoneAttributeCollection:
         assert attr._create_milestone_discyr() == 2023
 
     def test_discontinued_date_carry_forward(self, table):
-        """Test discontinued date is carried forward on a subsequent
-        MLST form that isn't updating the status, for example one that
-        is reporting death.
-        """
+        """Test discontinued date is carried forward on a subsequent MLST form
+        that isn't updating the status, for example one that is reporting
+        death."""
         table["file.info.forms.json"].update(
             {"deathdy": "2", "deathmo": "5", "deathyr": "2020"}
         )
-        table['subject.info.working.cross-sectional'] = {
+        table["subject.info.working.cross-sectional"] = {
             "milestone-discday": "16",
             "milestone-discmo": "3",
-            "milestone-discyr": "2015"
+            "milestone-discyr": "2015",
         }
 
         attr = MilestoneAttributeCollection(table)
