@@ -1154,7 +1154,7 @@ mlst,phyhome,file.info.resolved.phyhome,update,false,int
 mlst,phyrefus,file.info.resolved.phyrefus,update,false,int
 mlst,phyoth,file.info.resolved.phyoth,update,false,int
 mlst,phyothx,file.info.resolved.phyothx,update,false,str
-mlst,udsactiv,file.info.resolved.udsactiv,update,false,str
+mlst,udsactiv,file.info.resolved.udsactiv,update,false,int
 np,np_adcid,file.info.resolved.adcid,update,FALSE,int
 np,np_formver,file.info.resolved.formver,update,FALSE,float
 np,np_visitdate,file.info.resolved.visitdate,update,FALSE,str
