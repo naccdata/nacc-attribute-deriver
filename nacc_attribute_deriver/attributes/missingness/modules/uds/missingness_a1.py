@@ -467,7 +467,7 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_sex(self) -> int:
         """Handles missingness for SEX."""
-        return self.__handle_a1_prev_visit("sex", int)
+        return self.__handle_a1_prev_visit("sex", int, provided_fvp=True)
 
     def _missingness_hispanic(self) -> int:
         """Handles missingness for HISPANIC."""

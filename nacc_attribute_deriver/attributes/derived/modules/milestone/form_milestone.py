@@ -139,9 +139,10 @@ class MilestoneAttributeCollection(AttributeCollection):
                 if disc_date is not None:
                     return disc_date
 
-        # check if already set
-        existing_value = self.__subject_derived.get_cross_sectional_value(
-            attribute, int
+        # check if already set; these are written to working since
+        # they need to be compared against UDS visits later
+        existing_value = self.__working.get_cross_sectional_value(
+            f"milestone-{attribute}", int
         )
         if existing_value is not None:
             return existing_value
@@ -155,7 +156,11 @@ class MilestoneAttributeCollection(AttributeCollection):
         UDS visit - see
             cross_module._create_naccdsdy
         """
-        return self.get_discontinued_date_part("discday", "changedy", "visitday")
+        result = self.get_discontinued_date_part("discday", "changedy", "visitday")
+        if result == 99:  # could be set to 99 by CHANGEDY
+            return 88
+
+        return result
 
     def _create_milestone_discmo(self) -> int:
         """Carry over DISCMO - Month of discontinuation from annual follow-up.
@@ -164,7 +169,11 @@ class MilestoneAttributeCollection(AttributeCollection):
         UDS visit - see
             cross_module._create_naccdsmo
         """
-        return self.get_discontinued_date_part("discmo", "changemo", "visitmo")
+        result = self.get_discontinued_date_part("discmo", "changemo", "visitmo")
+        if result == 99:  # could be set to 99 by CHANGEMO
+            return 88
+
+        return result
 
     def _create_milestone_discyr(self) -> int:
         """Carry over DISCYR - Year of discontinuation from annual follow-up.
@@ -185,6 +194,14 @@ class MilestoneAttributeCollection(AttributeCollection):
         result = self.__milestone.get_value(attribute, int)
         if result is not None:
             return result
+
+        # check if already set; pulls directly from derived variables
+        # since independent of other scopes (e.g. UDS)
+        existing_value = self.__subject_derived.get_cross_sectional_value(
+            attribute, int
+        )
+        if existing_value is not None:
+            return existing_value
 
         return default
 
