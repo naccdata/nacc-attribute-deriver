@@ -31,18 +31,10 @@ def table() -> SymbolTable:
                                 "2024-02-02",
                                 "2025-03-03",
                             ],
-                            "milestone-discyr": {
-                                "latest": {"date": "2050-03-01", "value": 2050}
-                            },
-                            "milestone-discmo": {
-                                "latest": {"date": "2050-03-01", "value": 3}
-                            },
-                            "milestone-discday": {
-                                "latest": {"date": "2050-03-01", "value": 1}
-                            },
-                            "milestone-renurse": {
-                                "latest": {"date": "2025-01-01", "value": 1}
-                            },
+                            "milestone-discyr": 2050,
+                            "milestone-discmo": 3,
+                            "milestone-discday": 1,
+                            "milestone-renurse": {"date": "2025-01-01", "value": 1},
                             "milestone-visitdates": ["2025-01-01", "2050-03-01"],
                         }
                     }
@@ -214,6 +206,6 @@ class TestCrossModuleAttribute:
 
         # if MLST explicitly sets to 0, should be 0
         table["subject.info.working.cross-sectional.milestone-renurse"] = {
-            "latest": {"date": "2026-01-01", "value": 0}
+            "date": "2026-01-01", "value": 0
         }
         assert attr._create_naccnurp() == 0

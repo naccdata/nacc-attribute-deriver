@@ -4,6 +4,8 @@ This belongs to the cross_module scope and is intended to run last on
 global data. As such, it does not rely on a specific form, but instead
 information stored in subject.info, usually typically
 subject.info.working.cross-sectional
+
+Looks generally at UDS, NP, MLST, and MDS
 """
 
 from datetime import date
@@ -46,7 +48,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
     ) -> Optional[DateTaggedValue[T]]:
         """Grab latest cross-sectional working value."""
         return self.__working.get_cross_sectional_dated_value(
-            f"{attribute}.latest", attribute_type
+            attribute, attribute_type
         )
 
     def __determine_death_date(self) -> Optional[date]:
@@ -290,7 +292,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # if milestone marked subject as discontinued, and is the latest form,
         # return 0. if there were UDS visits after discontinuation was marked,
         # return 1
-        mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
+        mlst_discontinued = self.__working_value("milestone-discontinued", int)
         if mlst_discontinued and mlst_discontinued.value == 1:
             if self.uds_came_after(mlst_discontinued.date):
                 return 1
@@ -378,9 +380,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
         If UDS form came AFTER MLST, return the default (even if MLST
         said discontinued.
         """
-        discyr = self.__working_value("milestone-discyr.latest.value", int)
-        discmo = self.__working_value("milestone-discmo.latest.value", int)
-        discday = self.__working_value("milestone-discday.latest.value", int)
+        discyr = self.__working_value("milestone-discyr", int)
+        discmo = self.__working_value("milestone-discmo", int)
+        discday = self.__working_value("milestone-discday", int)
         uds_date = self.__get_latest_visitdate("uds-visitdates")
 
         if not uds_date:
@@ -396,15 +398,15 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
     def _create_naccdsdy(self) -> int:
         """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discday.latest.value", 88)
+        return self.determine_discontinued_date("milestone-discday", 88)
 
     def _create_naccdsmo(self) -> int:
         """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discmo.latest.value", 88)
+        return self.determine_discontinued_date("milestone-discmo", 88)
 
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discyr.latest.value", 8888)
+        return self.determine_discontinued_date("milestone-discyr", 8888)
 
     def _create_nacccore(self) -> int:
         """Creates NACCCORE - Clinical core participant."""

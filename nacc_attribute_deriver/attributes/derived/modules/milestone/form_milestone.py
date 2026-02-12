@@ -99,10 +99,14 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Return the mielstone protocol."""
         return self.__milestone.get_value("protocol", int)
 
-    def get_discontinued_date_part(self, attribute: str, frmdate: str) -> int:
-        """Get subject discontinued date part.
+    def get_discontinued_date_part(self, attribute: str, change_part: str, visit_part: str) -> int:
+        """Get subject discontinued date part. Either explicitly set as
+        discontinued, or minimum contact/followed to autopsy.
 
         If active or rejoined, return 88 instead.
+
+        If minimal contact (PROTOCOL = 2 or UDSACTIV = 3), then use
+        CHANGEX or VISITX dates as discontinued date.
         """
         default = 88 if attribute != "discyr" else 8888
 
@@ -112,17 +116,16 @@ class MilestoneAttributeCollection(AttributeCollection):
         ):
             return default
 
+        # either explicitly discontinued or minimum contact
         discont = self.__milestone.get_value("discont", int)
-        if discont == 1:
-            result = self.__milestone.get_value(attribute, int)
-            if result is not None:
-                return result
+        protocol = self.__milestone.get_value("protocol", int)  # V2/V3
+        udsactiv = self.__milestone.get_value("udsactiv", int)  # V1
 
-        # if not specified but minimal contact, return the form's date
-        if self.__milestone.get_value("protocol", int) == 2:
-            result = self.__milestone.get_value(frmdate, int)
-            if result is not None:
-                return result
+        if discont == 1 or protocol == 2 or udsactiv == 3:
+            for field in [attribute, change_part, visit_part]:
+                disc_date = self.__milestone.get_value(field, int)
+                if disc_date is not None:
+                    return disc_date
 
         # check if already set
         existing_value = self.__subject_derived.get_cross_sectional_value(
@@ -140,7 +143,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         UDS visit - see
             cross_module._create_naccdsdy
         """
-        return self.get_discontinued_date_part("discday", "visitday")
+        return self.get_discontinued_date_part("discday", "changedy", "visitday")
 
     def _create_milestone_discmo(self) -> int:
         """Carry over DISCMO - Month of discontinuation from annual follow-up.
@@ -149,7 +152,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         UDS visit - see
             cross_module._create_naccdsmo
         """
-        return self.get_discontinued_date_part("discmo", "visitmo")
+        return self.get_discontinued_date_part("discmo", "changemo", "visitmo")
 
     def _create_milestone_discyr(self) -> int:
         """Carry over DISCYR - Year of discontinuation from annual follow-up.
@@ -158,7 +161,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         UDS visit - see
             cross_module._create_naccdsyr
         """
-        result = self.get_discontinued_date_part("discyr", "visityr")
+        result = self.get_discontinued_date_part("discyr", "changeyr", "visityr")
 
         # in this case we do set a minimum of 2005 per RDD
         return max(2005, result)
