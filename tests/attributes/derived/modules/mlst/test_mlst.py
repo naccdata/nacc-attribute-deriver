@@ -32,31 +32,39 @@ class TestMilestoneAttributeCollection:
     """General MLST attribute tests."""
 
     def test_create_milestone_renurse(self, table):
-        """RENURSE was NURSEHOM in older versions; make sure both
-        are accepted, and that it takes the NURSX date variables
-        into account if both are missing."""
+        """RENURSE was NURSEHOM in older versions; make sure both are accepted,
+        and that it takes the NURSX date variables into account if both are
+        missing."""
         # nursehom
-        table["file.info.forms.json"].update(
-            {"nursehom": "1"}
-        )
+        table["file.info.forms.json"].update({"nursehom": "1"})
         attr = MilestoneAttributeCollection(table)
         assert attr._create_milestone_renurse()
 
         # renurse
-        table["file.info.forms.json"].update(
-            {"nursehom": None, "renurse": 1}
-        )
+        table["file.info.forms.json"].update({"nursehom": None, "renurse": 1})
         assert attr._create_milestone_renurse()
 
         # nurse dates
         table["file.info.forms.json"].update(
-            {"nursehom": None, "renurse": None, "nursedy": 2, "nursemo": 8, "nurseyr": 2001}
+            {
+                "nursehom": None,
+                "renurse": None,
+                "nursedy": 2,
+                "nursemo": 8,
+                "nurseyr": 2001,
+            }
         )
         assert attr._create_milestone_renurse()
 
         # all blank
         table["file.info.forms.json"].update(
-            {"nursehom": None, "renurse": None, "nursedy": None, "nursemo": None, "nurseyr": None}
+            {
+                "nursehom": None,
+                "renurse": None,
+                "nursedy": None,
+                "nursemo": None,
+                "nurseyr": None,
+            }
         )
         assert not attr._create_milestone_renurse()
 
@@ -137,13 +145,10 @@ class TestDiscontinuedDates:
         assert attr._create_milestone_discyr() == 2015
 
     def test_discday_multidefinition(self, table):
-        """DISCDAY can come from either DISCDY or DISCDAY, make
-        sure both work.
-        """
+        """DISCDAY can come from either DISCDY or DISCDAY, make sure both
+        work."""
         # discday
-        table["file.info.forms.json"].update(
-            {"discont": "1", "discday": "19"}
-        )
+        table["file.info.forms.json"].update({"discont": "1", "discday": "19"})
 
         attr = MilestoneAttributeCollection(table)
         assert attr._create_milestone_discday() == 19

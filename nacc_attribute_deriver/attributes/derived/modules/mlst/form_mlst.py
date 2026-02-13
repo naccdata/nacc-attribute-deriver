@@ -161,6 +161,7 @@ class MilestoneAttributeCollection(AttributeCollection):
 
     def _create_milestone_discday(self) -> int:
         """Carry over DISCDAY (DISCDY in newer versions)
+
         - Day of discontinuation from annual follow-up.
 
         Used for NACCDSDY, but can potentially be overwritten by a later
@@ -238,9 +239,8 @@ class MilestoneAttributeCollection(AttributeCollection):
         return max(2002, result)
 
     def _create_milestone_renurse(self) -> bool:
-        """Determine RENURSE (NURSEHOM in older versions), needs to be
-        dated to compute NACCNURP.
-        """
+        """Determine RENURSE (NURSEHOM in older versions), needs to be dated to
+        compute NACCNURP."""
         renurse = self.__milestone.get_value("renurse", int)
         if renurse is None:
             renurse = self.__milestone.get_value("nursehom", int)
@@ -253,7 +253,6 @@ class MilestoneAttributeCollection(AttributeCollection):
                 self._create_naccnrmo(),
                 self._create_naccnryr(),
             ]
-            if all(x is not None and x not in [88, 8888] for x in nurse_vars):
-                return 1
+            return all(x is not None and x not in [88, 8888] for x in nurse_vars)
 
         return renurse == 1
