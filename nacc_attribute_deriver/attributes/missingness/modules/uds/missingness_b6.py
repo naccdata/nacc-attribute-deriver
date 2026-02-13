@@ -20,7 +20,7 @@ class UDSFormB6Missingness(UDSMissingness):
     def __handle_nogds_gate(self, field: str) -> int:
         """Handles missingness for GDS vars.
 
-        B6 is optional so may haven ot been submitted.
+        B6 is optional so may have not been submitted.
         """
         if self.submitted:
             nogds = self.uds.get_value("nogds", int)

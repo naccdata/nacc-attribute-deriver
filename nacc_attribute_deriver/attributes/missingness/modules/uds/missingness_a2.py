@@ -41,8 +41,10 @@ class UDSFormA2Missingness(UDSMissingness):
     ##########################
 
     def _missingness_newinf(self) -> int:
-        """Handles missingness for NEWINF. Not collected
-        in IVP so explicitly set to -4."""
+        """Handles missingness for NEWINF.
+
+        Not collected in IVP so explicitly set to -4.
+        """
         if self.uds.is_initial():
             return INFORMED_MISSINGNESS
 
@@ -74,8 +76,10 @@ class UDSFormA2Missingness(UDSMissingness):
         return self.__handle_newinf_gate("inhisp")
 
     def _missingness_inhispor(self) -> int:
-        """Handles missingness for INHISPOR. Also relies
-        on INHISP."""
+        """Handles missingness for INHISPOR.
+
+        Also relies on INHISP.
+        """
         newinf = self.uds.get_value("newinf", int)
         if not self.uds.is_initial() and newinf == 0:
             return INFORMED_MISSINGNESS

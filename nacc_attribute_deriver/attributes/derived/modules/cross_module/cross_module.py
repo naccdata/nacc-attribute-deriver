@@ -386,14 +386,12 @@ class CrossModuleAttributeCollection(AttributeCollection):
         discday = self.__working_value("milestone-discday", int)
         uds_date = self.__get_latest_visitdate("uds-visitdates")
 
-        if not uds_date:
-            return default
-
         # if UDS came after MLST, return default
         if date_came_after_sparse(uds_date, discyr, discmo, discday):
             return default
 
-        # MLST is the latest; return whatever MLST set
+        # MLST is the latest (or only form, which technically isn't possible);
+        # return whatever MLST set
         disc_date = self.__working_value(attribute, int)
         return disc_date if disc_date is not None else default
 

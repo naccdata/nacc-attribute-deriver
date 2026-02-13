@@ -45,17 +45,21 @@ class TestUDSFormA2Missingness:
 
     def test_newinf_packet(self, uds_table):
         """Test NEWINF is always -4 in IVP."""
-        uds_table['file.info.forms.json'].update({
-            'packet': random.choice(["I", "I4"]),
-            'newinf': 1,
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "packet": random.choice(["I", "I4"]),
+                "newinf": 1,
+            }
+        )
         attr = UDSFormA2Missingness(uds_table)
         assert attr._missingness_newinf() == INFORMED_MISSINGNESS
 
-        uds_table['file.info.forms.json'].update({
-            'packet': random.choice(["F", "T"]),
-            'newinf': 1,
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "packet": random.choice(["F", "T"]),
+                "newinf": 1,
+            }
+        )
         attr = UDSFormA2Missingness(uds_table)
         assert attr._missingness_newinf() == 1
 
@@ -63,14 +67,16 @@ class TestUDSFormA2Missingness:
         """Test NEWINF-gated variables."""
         # if IVP, ignore NEWINF even if it's set
         # spot check a few variables
-        uds_table['file.info.forms.json'].update({
-            'packet': 'I',
-            'newinf': 0,
-            'inknown': 32,
-            'ineduc': 13,
-            'inhisp': 9,
-            'inhispor': 5, # gets changed because of INHISP
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "packet": "I",
+                "newinf": 0,
+                "inknown": 32,
+                "ineduc": 13,
+                "inhisp": 9,
+                "inhispor": 5,  # gets changed because of INHISP
+            }
+        )
         attr = UDSFormA2Missingness(uds_table)
 
         assert attr._missingness_inknown() == 32
@@ -80,11 +86,11 @@ class TestUDSFormA2Missingness:
 
         # check INHISP behavior; now INHISP no longer
         # blocking it
-        uds_table['file.info.forms.json.inhisp'] = 2
+        uds_table["file.info.forms.json.inhisp"] = 2
         assert attr._missingness_inhispor() == 5
 
         # now FVP, all should get set to -4
-        uds_table['file.info.forms.json.packet'] = 'F'
+        uds_table["file.info.forms.json.packet"] = "F"
         attr = UDSFormA2Missingness(uds_table)
 
         assert attr._missingness_inknown() == INFORMED_MISSINGNESS
@@ -95,14 +101,13 @@ class TestUDSFormA2Missingness:
     def test_inknown_version(self, uds_table):
         """Test inknkown respects version."""
         # in V3/V4
-        uds_table['file.info.forms.json'].update({
-            "formver": random.choice([3, 4]),
-            "inknown": 35
-        })
+        uds_table["file.info.forms.json"].update(
+            {"formver": random.choice([3, 4]), "inknown": 35}
+        )
         attr = UDSFormA2Missingness(uds_table)
         assert attr._missingness_inknown() == 35
 
         # not in V1/V2
-        uds_table['file.info.forms.json.formver'] = random.choice([1, 2])
+        uds_table["file.info.forms.json.formver"] = random.choice([1, 2])
         attr = UDSFormA2Missingness(uds_table)
         assert attr._missingness_inknown() == INFORMED_MISSINGNESS
