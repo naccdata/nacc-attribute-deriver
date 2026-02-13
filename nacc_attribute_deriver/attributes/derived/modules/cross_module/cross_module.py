@@ -287,13 +287,11 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # if milestone marked subject as discontinued, and is the latest form,
         # return 0. if there were UDS visits after discontinuation was marked,
-        # return 1
-        mlst_discontinued = self.__latest_working_value("milestone-discontinued", bool)
-        if mlst_discontinued and mlst_discontinued.value:
-            if self.uds_came_after(mlst_discontinued.date):
-                return 1
-
-            return 0
+        # basically treat as NOT discontinued and pass through
+        mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
+        if mlst_discontinued and mlst_discontinued.value == 1:
+            if not self.uds_came_after(mlst_discontinued.date):
+                return 0
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
         if self.__determine_prespart() == 1:
@@ -318,7 +316,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if protocol == 2 or udsactiv == 3:
             return 2
 
-        # protocol == 1 or 3, or just using 1 by default
+        # protocol == 1 or 3, or just active
         return 1
 
     def _create_naccnovs(self) -> int:
@@ -359,10 +357,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
                 RENURSE == 0 in a later MLST form
         """
         # get most recent MLST value of renurse
-        renurse_record = self.__latest_working_value("milestone-renurse", bool)
+        renurse_record = self.__latest_working_value("milestone-renurse", int)
 
-        # if MLST value (RENURSE) was NOT set, return 0
-        if not renurse_record or not renurse_record.value:
+        # if MLST value (RENURSE/NURSEHOM) != 1, return 0
+        if not renurse_record or renurse_record.value != 1:
             return 0
 
         # after this point assume renurse_record.value == 1

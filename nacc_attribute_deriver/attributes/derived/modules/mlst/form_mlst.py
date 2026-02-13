@@ -83,7 +83,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Milestone DECEASED."""
         return self.__deceased
 
-    def _create_milestone_discontinued(self) -> bool:
+    def _create_milestone_discontinued(self) -> Optional[int]:
         """Determine if subject is discontinued.
 
         This is a working variable used to derive NACCACTV, which could be
@@ -97,13 +97,14 @@ class MilestoneAttributeCollection(AttributeCollection):
         So this variable is really just letting NACCACTV know that
         the subject was explicitly marked as dicontinued.
         """
-        if (
-            self.__milestone.get_value("rejoin", int) == 1
-            or self.__milestone.get_value("rejoined", int) == 1
-        ):
-            return False
+        rejoin = self.__milestone.get_value("rejoin", int)
+        if rejoin is None:
+            rejoin = self.__milestone.get_value("rejoined", int)
 
-        return self.__milestone.get_value("discont", int) == 1
+        if rejoin == 1:
+            return 0
+
+        return self.__milestone.get_value("discont", int)
 
     def _create_milestone_protocol(self) -> Optional[int]:
         """Return the milestone protocol.
@@ -238,7 +239,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         # in this case we do set a minimum of 2002 per RDD
         return max(2002, result)
 
-    def _create_milestone_renurse(self) -> bool:
+    def _create_milestone_renurse(self) -> Optional[int]:
         """Determine RENURSE (NURSEHOM in older versions), needs to be dated to
         compute NACCNURP."""
         renurse = self.__milestone.get_value("renurse", int)
@@ -246,13 +247,15 @@ class MilestoneAttributeCollection(AttributeCollection):
             renurse = self.__milestone.get_value("nursehom", int)
 
         # if RENURSE/NURSEHM both undefined, see if they set
-        # NURSEDY, NURSEMO, NURSEYR anyways
+        # NURSEDY, NURSEMO, NURSEYR either now or in previous versions
+        # (note these all call )
         if renurse is None:
             nurse_vars = [
                 self._create_naccnrdy(),
                 self._create_naccnrmo(),
                 self._create_naccnryr(),
             ]
-            return all(x is not None and x not in [88, 8888] for x in nurse_vars)
+            if all(x is not None and x not in [88, 8888] for x in nurse_vars):
+                return 1
 
-        return renurse == 1
+        return renurse if renurse is not None else None

@@ -1,5 +1,6 @@
 """Tests MLST form."""
 
+import random
 import pytest
 from nacc_attribute_deriver.attributes.derived.modules.mlst.form_mlst import (
     MilestoneAttributeCollection,
@@ -38,11 +39,11 @@ class TestMilestoneAttributeCollection:
         # nursehom
         table["file.info.forms.json"].update({"nursehom": "1"})
         attr = MilestoneAttributeCollection(table)
-        assert attr._create_milestone_renurse()
+        assert attr._create_milestone_renurse() == 1
 
         # renurse
         table["file.info.forms.json"].update({"nursehom": None, "renurse": 1})
-        assert attr._create_milestone_renurse()
+        assert attr._create_milestone_renurse() == 1
 
         # nurse dates
         table["file.info.forms.json"].update(
@@ -54,7 +55,7 @@ class TestMilestoneAttributeCollection:
                 "nurseyr": 2001,
             }
         )
-        assert attr._create_milestone_renurse()
+        assert attr._create_milestone_renurse() == 1
 
         # all blank
         table["file.info.forms.json"].update(
@@ -66,7 +67,27 @@ class TestMilestoneAttributeCollection:
                 "nurseyr": None,
             }
         )
-        assert not attr._create_milestone_renurse()
+        assert attr._create_milestone_renurse() is None
+
+        # renurse explicitly set something to 0
+        table["file.info.forms.json"].update({random.choice(["renurse", "nursehom"]): 0})
+        assert attr._create_milestone_renurse() == 0
+
+    def test_create_milestone_discontinued(self, table):
+        """Test creating MLST set discontinued."""
+        # discont explicitly = 1
+        table["file.info.forms.json"].update({"discont": "1"})
+        attr = MilestoneAttributeCollection(table)
+        assert attr._create_milestone_discontinued() == 1
+
+        # rejoin or rejoined set
+        rejoin = random.choice(["rejoin", "rejoined"])
+        table["file.info.forms.json"].update({"discont": None, rejoin: 1})
+        assert attr._create_milestone_discontinued() == 0
+
+        # test none set
+        table["file.info.forms.json"].update({"discont": None, rejoin: None})
+        assert attr._create_milestone_discontinued() is None
 
 
 class TestDiscontinuedDates:
