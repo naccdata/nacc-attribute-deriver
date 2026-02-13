@@ -263,4 +263,4 @@ class MilestoneAttributeCollection(AttributeCollection):
             if all(x is not None and x not in [88, 8888] for x in nurse_vars):
                 return 1
 
-        return renurse if renurse is not None else None
+        return renurse
