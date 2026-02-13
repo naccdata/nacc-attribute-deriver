@@ -89,7 +89,8 @@ class MilestoneAttributeCollection(AttributeCollection):
         This is a working variable used to derive NACCACTV, which could be
         overrwritten by a subject rejoining the ADC at a later milestone
         form or having subsequent UDS visit, so needs to be checked
-        in cross_module logic.
+        in cross_module logic. Note if this function returns None,
+        it will not update/override anything a previous MLST form set.
 
         Note we are not including minimal contact in this variable
         (unlike discontinued date) because the derived variables that
@@ -241,7 +242,11 @@ class MilestoneAttributeCollection(AttributeCollection):
 
     def _create_milestone_renurse(self) -> Optional[int]:
         """Determine RENURSE (NURSEHOM in older versions), needs to be dated to
-        compute NACCNURP."""
+        compute NACCNURP.
+
+        Note if this function returns None, it will not update/override
+        anything a previous MLST form set.
+        """
         renurse = self.__milestone.get_value("renurse", int)
         if renurse is None:
             renurse = self.__milestone.get_value("nursehom", int)
