@@ -1,6 +1,6 @@
 """Keeps track of global constants."""
 
-INVALID_TEXT = ["", ".", "`", "--", "-"]
+INVALID_TEXT = ["", ".", "`", "--", "-", "None"]
 INFORMED_MISSINGNESS = -4
 INFORMED_MISSINGNESS_FLOAT = -4.4  # should only be used in NP
 INFORMED_BLANK = "blank"  # will be translated to an overriding None

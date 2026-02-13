@@ -40,18 +40,33 @@ class UDSFormA2Missingness(UDSMissingness):
     # NEWINF-gated variables #
     ##########################
 
+    def _missingness_newinf(self) -> int:
+        """Handles missingness for NEWINF. Not collected
+        in IVP so explicitly set to -4."""
+        if self.uds.is_initial():
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness("newinf", int)
+
     def __handle_newinf_gate(self, field: str) -> int:
         """Handles missingness for variables gated by NEWINF.
 
         NEWINF only provided in FVP.
         """
-        if self.uds.get_value("newinf", int) == 0:
+        newinf = self.uds.get_value("newinf", int)
+        if not self.uds.is_initial() and newinf == 0:
             return INFORMED_MISSINGNESS
 
         return self.generic_missingness(field, int)
 
     def _missingness_inknown(self) -> int:
         """Handles missingness for INKNOWN."""
+
+        # not supposed to be set in versions < 3 but sometimes
+        # is anyways, so explicitly set to -4
+        if self.formver < 3:
+            return INFORMED_MISSINGNESS
+
         return self.__handle_newinf_gate("inknown")
 
     def _missingness_inhisp(self) -> int:
@@ -59,11 +74,16 @@ class UDSFormA2Missingness(UDSMissingness):
         return self.__handle_newinf_gate("inhisp")
 
     def _missingness_inhispor(self) -> int:
-        """Handles missingness for INHISPOR."""
+        """Handles missingness for INHISPOR. Also relies
+        on INHISP."""
+        newinf = self.uds.get_value("newinf", int)
+        if not self.uds.is_initial() and newinf == 0:
+            return INFORMED_MISSINGNESS
+
         if self.uds.get_value("inhisp", int) in [0, 9]:
             return 88
 
-        return self.__handle_newinf_gate("inhispor")
+        return self.generic_missingness("inhispor", int)
 
     def _missingness_inrace(self) -> int:
         """Handles missingness for INRACE."""
