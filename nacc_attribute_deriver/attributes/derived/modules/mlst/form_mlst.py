@@ -93,10 +93,11 @@ class MilestoneAttributeCollection(AttributeCollection):
         it will not update/override anything a previous MLST form set.
 
         Note we are not including minimal contact in this variable
-        (unlike discontinued date) because the derived variables that
-        NACCACTV needs to distinguish between discontinued and minimum contact.
-        So this variable is really just letting NACCACTV know that
-        the subject was explicitly marked as dicontinued.
+        (unlike discontinued date) because NACCACTV needs to separate
+        discontinued (generally) vs minimal contact, unlike the discontinued
+        dates which sort of conflate the two. So this variable is
+        really just letting NACCACTV know that the subject was explicitly
+        marked as dicontinued.
         """
         rejoin = self.__milestone.get_value("rejoin", int)
         if rejoin is None:
