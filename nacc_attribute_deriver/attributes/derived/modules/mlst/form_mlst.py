@@ -252,13 +252,11 @@ class MilestoneAttributeCollection(AttributeCollection):
             renurse = self.__milestone.get_value("nursehom", int)
 
         # if RENURSE/NURSEHM both undefined, see if they set
-        # NURSEDY, NURSEMO, NURSEYR either now or in previous versions
-        # (note these all call )
+        # NURSEDY, NURSEMO, NURSEYR
         if renurse is None:
             nurse_vars = [
-                self._create_naccnrdy(),
-                self._create_naccnrmo(),
-                self._create_naccnryr(),
+                self.__milestone.get_value(x, int)
+                for x in ["nursedy", "nursemo", "nurseyr"]
             ]
             if all(x is not None and x not in [88, 8888] for x in nurse_vars):
                 return 1
