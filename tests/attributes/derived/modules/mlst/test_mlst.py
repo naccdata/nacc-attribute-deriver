@@ -29,7 +29,43 @@ def table() -> SymbolTable:
 
 
 class TestMilestoneAttributeCollection:
-    def test_discontinued_date_explicit(self, table):
+    """General MLST attribute tests."""
+
+    def test_create_milestone_renurse(self, table):
+        """RENURSE was NURSEHOM in older versions; make sure both
+        are accepted, and that it takes the NURSX date variables
+        into account if both are missing."""
+        # nursehom
+        table["file.info.forms.json"].update(
+            {"nursehom": "1"}
+        )
+        attr = MilestoneAttributeCollection(table)
+        assert attr._create_milestone_renurse()
+
+        # renurse
+        table["file.info.forms.json"].update(
+            {"nursehom": None, "renurse": 1}
+        )
+        assert attr._create_milestone_renurse()
+
+        # nurse dates
+        table["file.info.forms.json"].update(
+            {"nursehom": None, "renurse": None, "nursedy": 2, "nursemo": 8, "nurseyr": 2001}
+        )
+        assert attr._create_milestone_renurse()
+
+        # all blank
+        table["file.info.forms.json"].update(
+            {"nursehom": None, "renurse": None, "nursedy": None, "nursemo": None, "nurseyr": None}
+        )
+        assert not attr._create_milestone_renurse()
+
+
+class TestDiscontinuedDates:
+    """Specifically testing discontinued dates which are a bit conflated with
+    minimum contact."""
+
+    def test_date_explicit(self, table):
         """Test discontinued date parts are correct when explicitly
         discontinued."""
         table["file.info.forms.json"].update(
@@ -41,7 +77,7 @@ class TestMilestoneAttributeCollection:
         assert attr._create_milestone_discmo() == 5
         assert attr._create_milestone_discyr() == 2021
 
-    def test_discontinued_date_minimum_contact(self, table):
+    def test_date_minimum_contact(self, table):
         """Test discontinued date parts are correct when set.
 
         to minimum contact - anything after V1.
@@ -66,7 +102,7 @@ class TestMilestoneAttributeCollection:
         assert attr._create_milestone_discmo() == 88
         assert attr._create_milestone_discyr() == 2024
 
-    def test_discontinued_date_minimum_contact_v1(self, table):
+    def test_date_minimum_contact_v1(self, table):
         """Test discontinued date parts are correct when set.
 
         to minimum contact - V1.
@@ -81,7 +117,7 @@ class TestMilestoneAttributeCollection:
         assert attr._create_milestone_discmo() == 11
         assert attr._create_milestone_discyr() == 2023
 
-    def test_discontinued_date_carry_forward(self, table):
+    def test_date_carry_forward(self, table):
         """Test discontinued date is carried forward on a subsequent MLST form
         that isn't updating the status, for example one that is reporting
         death."""
@@ -99,3 +135,23 @@ class TestMilestoneAttributeCollection:
         assert attr._create_milestone_discday() == 16
         assert attr._create_milestone_discmo() == 3
         assert attr._create_milestone_discyr() == 2015
+
+    def test_discday_multidefinition(self, table):
+        """DISCDAY can come from either DISCDY or DISCDAY, make
+        sure both work.
+        """
+        # discday
+        table["file.info.forms.json"].update(
+            {"discont": "1", "discday": "19"}
+        )
+
+        attr = MilestoneAttributeCollection(table)
+        assert attr._create_milestone_discday() == 19
+
+        # discdy
+        table["file.info.forms.json"].update(
+            {"discont": "1", "discday": None, "discdy": "11"}
+        )
+
+        attr = MilestoneAttributeCollection(table)
+        assert attr._create_milestone_discday() == 11

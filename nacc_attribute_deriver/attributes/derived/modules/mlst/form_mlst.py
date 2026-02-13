@@ -86,11 +86,21 @@ class MilestoneAttributeCollection(AttributeCollection):
     def _create_milestone_discontinued(self) -> bool:
         """Determine if subject is discontinued.
 
-        This is a cross-sectional variable that could potentially be
+        This is a working variable used to derive NACCACTV, which could be
         overrwritten by a subject rejoining the ADC at a later milestone
-        form.
+        form or having subsequent UDS visit, so needs to be checked
+        in cross_module logic.
+
+        Note we are not including minimal contact in this variable
+        (unlike discontinued date) because the derived variables that
+        NACCACTV needs to distinguish between discontinued and minimum contact.
+        So this variable is really just letting NACCACTV know that
+        the subject was explicitly marked as dicontinued.
         """
-        if self.__milestone.get_value("rejoin", int) == 1:
+        if (
+            self.__milestone.get_value("rejoin", int) == 1
+            or self.__milestone.get_value("rejoined", int) == 1
+        ):
             return False
 
         return self.__milestone.get_value("discont", int) == 1
@@ -150,13 +160,20 @@ class MilestoneAttributeCollection(AttributeCollection):
         return default
 
     def _create_milestone_discday(self) -> int:
-        """Carry over discday - Day of discontinuation from annual follow-up.
+        """Carry over DISCDAY (DISCDY in newer versions)
+        - Day of discontinuation from annual follow-up.
 
         Used for NACCDSDY, but can potentially be overwritten by a later
         UDS visit - see
             cross_module._create_naccdsdy
         """
-        result = self.get_discontinued_date_part("discday", "changedy", "visitday")
+        # may be discday or discdy; see if discdy (V4) version exists,
+        # otherwise default to discday
+        field = "discdy"
+        if self.__milestone.get_value(field, int) is None:
+            field = "discday"
+
+        result = self.get_discontinued_date_part(field, "changedy", "visitday")
         if result == 99:  # could be set to 99 by CHANGEDY
             return 88
 
@@ -220,12 +237,16 @@ class MilestoneAttributeCollection(AttributeCollection):
         # in this case we do set a minimum of 2002 per RDD
         return max(2002, result)
 
-    def _create_milestone_renurse(self) -> Optional[int]:
-        """Carryover RENURSE, needs to be dated to compute NACCNURP."""
+    def _create_milestone_renurse(self) -> bool:
+        """Determine RENURSE (NURSEHOM in older versions), needs to be
+        dated to compute NACCNURP.
+        """
         renurse = self.__milestone.get_value("renurse", int)
+        if renurse is None:
+            renurse = self.__milestone.get_value("nursehom", int)
 
-        # if V1, RENURSE does not seem to be set/defined,
-        # so manually set it by looking at NURSEDY, NURSEMO, NURSEYR
+        # if RENURSE/NURSEHM both undefined, see if they set
+        # NURSEDY, NURSEMO, NURSEYR anyways
         if renurse is None:
             nurse_vars = [
                 self._create_naccnrdy(),
@@ -235,4 +256,4 @@ class MilestoneAttributeCollection(AttributeCollection):
             if all(x is not None and x not in [88, 8888] for x in nurse_vars):
                 return 1
 
-        return renurse
+        return renurse == 1

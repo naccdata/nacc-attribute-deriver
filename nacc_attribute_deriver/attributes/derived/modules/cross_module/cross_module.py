@@ -288,8 +288,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # if milestone marked subject as discontinued, and is the latest form,
         # return 0. if there were UDS visits after discontinuation was marked,
         # return 1
-        mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
-        if mlst_discontinued and mlst_discontinued.value == 1:
+        mlst_discontinued = self.__latest_working_value("milestone-discontinued", bool)
+        if mlst_discontinued and mlst_discontinued.value:
             if self.uds_came_after(mlst_discontinued.date):
                 return 1
 
@@ -359,10 +359,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
                 RENURSE == 0 in a later MLST form
         """
         # get most recent MLST value of renurse
-        renurse_record = self.__latest_working_value("milestone-renurse", int)
+        renurse_record = self.__latest_working_value("milestone-renurse", bool)
 
-        # if MLST value (RENURSE) is NOT 1, return 0
-        if not renurse_record or renurse_record.value != 1:
+        # if MLST value (RENURSE) was NOT set, return 0
+        if not renurse_record or not renurse_record.value:
             return 0
 
         # after this point assume renurse_record.value == 1
