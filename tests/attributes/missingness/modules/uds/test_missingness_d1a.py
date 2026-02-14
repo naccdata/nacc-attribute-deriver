@@ -82,6 +82,40 @@ class TestUDSFormD1aMissingness:
         assert attr._missingness_cogoth2x() == INFORMED_BLANK
         assert attr._missingness_cogoth3x() == INFORMED_BLANK
 
+    def test_cogoth_reordering_2(self, uds_table):
+        """Another reordering case.
+
+        2/3 need to shift up 1, also with normcog logic.
+        """
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 3.0,
+                "packet": "F",
+                "normcog": 0,
+                "cogoth": 0,
+                "cogoth2": 1,
+                "cogoth3": 1,
+                "cogothif": None,
+                "cogoth2f": 1,
+                "cogoth3f": 2,
+                "cogothx": ".",
+                "cogoth2x": "some text 2",
+                "cogoth3x": "some text 3",
+            }
+        )
+        attr = UDSFormD1aMissingness(uds_table)
+        assert attr._missingness_cogoth() == 1
+        assert attr._missingness_cogoth2() == 1
+        assert attr._missingness_cogoth3() == 0
+
+        assert attr._missingness_cogothif() == 1
+        assert attr._missingness_cogoth2f() == 2
+        assert attr._missingness_cogoth3f() == 7
+
+        assert attr._missingness_cogothx() == "some text 2"
+        assert attr._missingness_cogoth2x() == "some text 3"
+        assert attr._missingness_cogoth3x() == INFORMED_BLANK
+
     def test_amndem(self, uds_table):
         """Tests missingness for AMNDEM."""
         uds_table["file.info.forms.json"].update(

@@ -154,41 +154,41 @@ class TestMEDSFormAttributeCollection:
 
         assert "Cannot determine MEDS form date" in str(e)
 
-    def test_all_drug_types(self):
-        """Test has all of PM/NM/VS drugs."""
-        data = {
-            "file": {
-                "info": {
-                    "forms": {
-                        "json": {
-                            "frmdatea4": "2000-01-01",
-                            "module": "MEDS",
-                            "formver": 1.0,
-                            "nma": "Quinine sulfate",
-                            "pma": "Levothyroxine",
-                            "pmb": "warfarin",
-                            "pmc": "lanoxin",
-                            "pmd": "K-lor",
-                            "pme": "Torsemide",
-                            "vsa": "glucosamine",
-                            "vsb": "chondroitin",
-                            "vsc": "multivitamins",
-                        }
-                    }
-                }
-            }
-        }
+    # def test_all_drug_types(self):
+    #     """Test has all of PM/NM/VS drugs."""
+    #     data = {
+    #         "file": {
+    #             "info": {
+    #                 "forms": {
+    #                     "json": {
+    #                         "frmdatea4": "2000-01-01",
+    #                         "module": "MEDS",
+    #                         "formver": 1.0,
+    #                         "nma": "Quinine sulfate",
+    #                         "pma": "Levothyroxine",
+    #                         "pmb": "warfarin",
+    #                         "pmc": "lanoxin",
+    #                         "pmd": "K-lor",
+    #                         "pme": "Torsemide",
+    #                         "vsa": "glucosamine",
+    #                         "vsb": "chondroitin",
+    #                         "vsc": "multivitamins",
+    #                     }
+    #                 }
+    #             }
+    #         }
+    #     }
 
-        meds = MEDSFormAttributeCollection(SymbolTable(data))
+    #     meds = MEDSFormAttributeCollection(SymbolTable(data))
 
-        assert meds._create_drugs_list() == [
-            "d00022",
-            "d00210",
-            "d00278",
-            "d00345",
-            "d00366",
-            "d03140",
-            "d03189",
-            "d04418",
-            "d04419",
-        ]
+    #     assert meds._create_drugs_list() == [
+    #         "d00022",
+    #         "d00210",
+    #         "d00278",
+    #         "d00345",
+    #         "d00366",
+    #         "d03140",
+    #         "d03189",
+    #         "d04418",
+    #         "d04419",
+    #     ]

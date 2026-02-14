@@ -40,8 +40,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self.__working = WorkingNamespace(table=table)
 
         # if the center is inactive, will override variables like
-        # NACCACTV and NACCNOVS
-        self.__active_center = table['_active_center']
+        # NACCACTV and NACCNOVS; assume True by default
+        self.__active_center = table.get("_active_center", True)
 
     def __working_value(self, attribute: str, attribute_type: Type[T]) -> Optional[T]:
         """Grab cross-sectional working value."""
@@ -293,7 +293,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # return 0. if there were UDS visits after discontinuation was marked,
         # basically treat as NOT discontinued and pass through
         mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
-        if mlst_discontinued and mlst_discontinued.value == 1:
+        if mlst_discontinued and mlst_discontinued.value == 1:  # noqa: SIM102
             if not self.uds_came_after(mlst_discontinued.date):
                 return 0
 

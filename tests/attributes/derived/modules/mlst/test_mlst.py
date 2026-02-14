@@ -70,7 +70,9 @@ class TestMilestoneAttributeCollection:
         assert attr._create_milestone_renurse() is None
 
         # renurse explicitly set something to 0
-        table["file.info.forms.json"].update({random.choice(["renurse", "nursehom"]): 0})
+        table["file.info.forms.json"].update(
+            {random.choice(["renurse", "nursehom"]): 0}
+        )
         assert attr._create_milestone_renurse() == 0
 
     def test_create_milestone_discontinued(self, table):
