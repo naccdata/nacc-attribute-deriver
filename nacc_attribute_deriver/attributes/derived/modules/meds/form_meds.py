@@ -121,7 +121,8 @@ class MEDSFormAttributeCollection(AttributeCollection):
             # pm = prescription medication
             # nm = non-presscription medication (over the counter)
             # vs = vitamin/supplement
-            for prefix in ["pm", "nm", "vs"]:
+            # it seems we are ignoring nm/vs in V1, so only look at pm
+            for prefix in ["pm"]:
                 drug_name = self.__meds.get_value(f"{prefix}{chr(i)}", str)
                 if not drug_name:
                     continue

@@ -208,7 +208,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         # in this case we do set a minimum of 2005 per RDD
         return max(2005, result)
 
-    def get_nursing_home_date_part(self, attribute: str) -> int:
+    def get_nursing_home_date_part(self, attribute: str, derived_attribute: str) -> int:
         """Get subject moved to nursing home date part."""
         default = 88 if attribute != "nurseyr" else 8888
 
@@ -219,7 +219,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         # check if already set; pulls directly from derived variables
         # since independent of other scopes (e.g. UDS)
         existing_value = self.__subject_derived.get_cross_sectional_value(
-            attribute, int
+            derived_attribute, int
         )
         if existing_value is not None:
             return existing_value
@@ -228,15 +228,15 @@ class MilestoneAttributeCollection(AttributeCollection):
 
     def _create_naccnrdy(self) -> int:
         """Creates NACCNRDY - Day permanently moved to nursing home."""
-        return self.get_nursing_home_date_part("nursedy")
+        return self.get_nursing_home_date_part("nursedy", "naccnrdy")
 
     def _create_naccnrmo(self) -> int:
         """Creates NACCNRMO - Month permanently moved to nursing home."""
-        return self.get_nursing_home_date_part("nursemo")
+        return self.get_nursing_home_date_part("nursemo", "naccnrmo")
 
     def _create_naccnryr(self) -> int:
         """Creates NACCNRYR - Year permanently moved to nursing home."""
-        result = self.get_nursing_home_date_part("nurseyr")
+        result = self.get_nursing_home_date_part("nurseyr", "naccnryr")
 
         # in this case we do set a minimum of 2002 per RDD
         return max(2002, result)

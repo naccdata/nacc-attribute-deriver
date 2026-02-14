@@ -39,6 +39,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table=table)
         self.__working = WorkingNamespace(table=table)
 
+        # if the center is inactive, will override variables like
+        # NACCACTV and NACCNOVS
+        self.__active_center = table['_active_center']
+
     def __working_value(self, attribute: str, attribute_type: Type[T]) -> Optional[T]:
         """Grab cross-sectional working value."""
         return self.__working.get_cross_sectional_value(attribute, attribute_type)
@@ -281,8 +285,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
             2: Minimal contact with ADC but still enrolled
             5: Affiliate
         """
-        # if dead (from NP/MLST), return 0
-        if self._create_naccdied() == 1:
+        # it not an active center or dead (from NP/MLST), return 0
+        if not self.__active_center or self._create_naccdied() == 1:
             return 0
 
         # if milestone marked subject as discontinued, and is the latest form,
@@ -324,6 +328,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         telephone. This is ultimately just checking the same things
         NACCACTV is and reinterprets results.
         """
+        # if not an active center, always return 1
+        if not self.__active_center:
+            return 1
+
         # if UDS is the latest one, check UDS prespart == 1 to return 8,
         # otherwise purely based on MLST
         recent_mlst = self.__get_latest_visitdate("milestone-visitdates")
