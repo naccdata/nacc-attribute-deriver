@@ -1,8 +1,11 @@
 """Tests UDS Form A5D2 missingness attributes."""
 
+import random
+
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_a5d2 import (
     UDSFormA5D2Missingness,
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormA5D2Missingness:
@@ -62,3 +65,45 @@ class TestUDSFormA5D2Missingness:
         assert attr._missingness_bcpillsyr() == 999
         assert attr._missingness_bcstartage() == 999
         assert attr._missingness_bcendage() == 888
+
+    def test_handle_arth_gate(self, uds_table):
+        """Test old legacy D2-only variables that rely
+        on ARTH. Using ARTLOEX as a representative to
+        check but several other variables rely on this.
+        """
+        # ARTH = 0 case, expect 8
+        uds_table["file.info.forms.json"].update(
+            {
+                "arth": 0,
+                "artloex": random.choice([None, 0]),
+            }
+        )
+
+        attr = UDSFormA5D2Missingness(uds_table)
+        assert attr._missingness_artloex() == 8
+
+        # ARTH = 8/blank case, expect -4
+        uds_table["file.info.forms.json"].update(
+            {
+                "arth": random.choice([None, 8]),
+                "artloex": random.choice([None, 0]),
+            }
+        )
+        assert attr._missingness_artloex() == INFORMED_MISSINGNESS
+
+        # ARTH = 1 case, generic missingness, returns whatever
+        # it was set to else INFORMED_MISSINGNESS
+        value = random.choice([1, 2, 3, 8, 9])
+        uds_table["file.info.forms.json"].update(
+            {
+                "arth": 1,
+                "artloex": value,
+            }
+        )
+        assert attr._missingness_artloex() == value
+
+        uds_table["file.info.forms.json.artloex"] = 0
+        assert attr._missingness_artloex() == 0
+
+        uds_table["file.info.forms.json.artloex"] = None
+        assert attr._missingness_artloex() == INFORMED_MISSINGNESS
