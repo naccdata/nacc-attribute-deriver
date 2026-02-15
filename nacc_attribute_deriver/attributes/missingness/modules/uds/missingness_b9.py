@@ -26,6 +26,12 @@ class UDSFormB9Missingness(UDSMissingness):
         # b9chg is used extensively in V1 missingness logic
         self.__b9chg = self.uds.get_value("b9chg", int)
 
+        # use formverb9 specifically, but fallback to formver
+        # if not provided
+        self.__formverb9 = self.uds.get_value("formverb9", int)
+        if not self.__formverb9:
+            self.__formverb9 = self.formver
+
     def __handle_b9_prev_value(
         self, field: str, prev_code: int = 777, default: Optional[int] = None
     ) -> int:
@@ -82,7 +88,7 @@ class UDSFormB9Missingness(UDSMissingness):
     ) -> int:
         """Handle cognitive variables, which have some weird recoding logic in
         V1 for FVP."""
-        if self.formver == 1 and not self.uds.is_initial():
+        if self.__formverb9 == 1 and not self.uds.is_initial():
             return self.__handle_cognitive_v1_fvp(field, skip_prev_check)
 
         return self._handle_cascading_gates(
@@ -119,7 +125,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_cogmode(self) -> int:
         """Handles missingness for COGMODE."""
-        if self.formver < 3:
+        if self.__formverb9 < 3:
             result = self.__handle_xmode_v1("cogmode")
             if result is not None:
                 return result
@@ -131,11 +137,11 @@ class UDSFormB9Missingness(UDSMissingness):
         # this explicitly checks for blanks, not just 0 like the usual
         cogfluc = self.uds.get_value("cogfluc", int)
         decclcog = self.uds.get_value("decclcog", int)
-        if self.formver < 4 and decclcog is None and cogfluc is None:
+        if self.__formverb9 < 4 and decclcog is None and cogfluc is None:
             return INFORMED_MISSINGNESS
 
-        gate_list = ["decclcog"] if self.formver < 4 else ["decclin", "decclcog"]
-        default = 0 if self.formver < 4 else None
+        gate_list = ["decclcog"] if self.__formverb9 < 4 else ["decclin", "decclcog"]
+        default = 0 if self.__formverb9 < 4 else None
 
         return self._handle_cascading_gates(gate_list, "cogfluc", 0, default=default)
 
@@ -165,7 +171,7 @@ class UDSFormB9Missingness(UDSMissingness):
     ) -> int:
         """Handle behavior varialbes, which have some weird recoding logic in
         V1."""
-        if self.formver == 1 and not self.uds.is_initial():
+        if self.__formverb9 == 1 and not self.uds.is_initial():
             return self.__handle_behavior_motor_v1_fvp(field)
 
         return self._handle_cascading_gates(
@@ -219,7 +225,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_bemode(self) -> int:
         """Handles missingness for BEMODE."""
-        if self.formver < 3:
+        if self.__formverb9 < 3:
             result = self.__handle_xmode_v1("bemode")
             if result is not None:
                 return result
@@ -231,11 +237,11 @@ class UDSFormB9Missingness(UDSMissingness):
         # this explicitly checks for blanks, not just 0 like the usual
         berem = self.uds.get_value("berem", int)
         decclbe = self.uds.get_value("decclbe", int)
-        if self.formver < 4 and decclbe is None and berem is None:
+        if self.__formverb9 < 4 and decclbe is None and berem is None:
             return INFORMED_MISSINGNESS
 
-        gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
-        default = 0 if self.formver < 4 else None
+        gate_list = ["decclbe"] if self.__formverb9 < 4 else ["decclin", "decclbe"]
+        default = 0 if self.__formverb9 < 4 else None
 
         return self._handle_cascading_gates(gate_list, "berem", 0, default=default)
 
@@ -249,11 +255,11 @@ class UDSFormB9Missingness(UDSMissingness):
         # this explicitly checks for blanks, not just 0 like the usual
         bevwell = self.uds.get_value("bevwell", int)
         decclbe = self.uds.get_value("decclbe", int)
-        if self.formver < 4 and decclbe is None and bevwell is None:
+        if self.__formverb9 < 4 and decclbe is None and bevwell is None:
             return INFORMED_MISSINGNESS
 
-        gate_list = ["decclbe"] if self.formver < 4 else ["decclin", "decclbe"]
-        default = 0 if self.formver < 4 else None
+        gate_list = ["decclbe"] if self.__formverb9 < 4 else ["decclin", "decclbe"]
+        default = 0 if self.__formverb9 < 4 else None
         return self._handle_cascading_gates(gate_list, "bevwell", 0, default=default)
 
     def _missingness_beanx(self) -> int:
@@ -322,7 +328,7 @@ class UDSFormB9Missingness(UDSMissingness):
     ) -> int:
         """Handle motor varialbes, which have some weird recoding logic in
         V1."""
-        if self.formver == 1 and not self.uds.is_initial():
+        if self.__formverb9 == 1 and not self.uds.is_initial():
             return self.__handle_behavior_motor_v1_fvp(field)
 
         return self._handle_cascading_gates(
@@ -347,7 +353,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_momode(self) -> int:
         """Handles missingness for MOMODE."""
-        if self.formver < 3:
+        if self.__formverb9 < 3:
             result = self.__handle_xmode_v1("momode")
             if result is not None:
                 return result
@@ -389,7 +395,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.__check_v3_distinction("momoals"):
             return INFORMED_MISSINGNESS
 
-        return_value = 8 if self.formver < 4 else 0
+        return_value = 8 if self.__formverb9 < 4 else 0
         return self._handle_cascading_gates(
             ["decclin", "decclmot"], "momoals", return_value
         )
@@ -400,9 +406,9 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_course(self) -> int:
         """Handles missingness for COURSE."""
-        if self.formver < 4:
+        if self.__formverb9 < 4:
             course = None
-            if self.formver == 1:
+            if self.__formverb9 == 1:
                 course = self._handle_recodecbm("course", overall=True)
 
             if course is not None:
@@ -422,9 +428,9 @@ class UDSFormB9Missingness(UDSMissingness):
         # in general, I feel like a lot of the logic related to b9chg
         # could be handled differently, but trying to make it match
         # once things are more stable we can rework this
-        if self.formver < 4:
+        if self.__formverb9 < 4:
             frstchg = None
-            if self.formver == 1:
+            if self.__formverb9 == 1:
                 frstchg = self._handle_recodecbm("frstchg", overall=True)
 
             if frstchg is None:
@@ -481,7 +487,7 @@ class UDSFormB9Missingness(UDSMissingness):
         # it seems these specific variables are
         # set to 888 if the below conditions aren't fulfilled,
         # they are are blank, and it's V3
-        default = 888 if self.formver == 3 else None
+        default = 888 if self.__formverb9 == 3 else None
 
         gate_value = self.uds.get_value(gate, int)
         if gate_value == 1:
@@ -531,7 +537,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_beremago(self) -> int:
         """Handles missingness for BEREMAGO."""
-        if self.formver < 4:
+        if self.__formverb9 < 4:
             result = self.__handle_prev_with_gate("berem", "beremago")
         else:
             result = self.__handle_b9_prev_value("beremago")
@@ -590,7 +596,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_mofrst(self) -> int:
         """Handles missingness for MOFRST."""
-        prev_code = 0 if self.formver == 3 else None
+        prev_code = 0 if self.__formverb9 == 3 else None
         return self.handle_prev_visit("mofrst", int, prev_code=prev_code)
 
     def _missingness_befpred(self) -> int:
@@ -598,7 +604,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.__check_v3_distinction("befpred"):
             return INFORMED_MISSINGNESS
 
-        prev_code = 0 if self.formver == 3 else None
+        prev_code = 0 if self.__formverb9 == 3 else None
         return self.handle_prev_visit("befpred", int, prev_code=prev_code)
 
     def _missingness_cogfpred(self) -> int:
@@ -606,7 +612,7 @@ class UDSFormB9Missingness(UDSMissingness):
         if self.__check_v3_distinction("cogfpred"):
             return INFORMED_MISSINGNESS
 
-        prev_code = 0 if self.formver == 3 else None
+        prev_code = 0 if self.__formverb9 == 3 else None
         return self.handle_prev_visit("cogfpred", int, prev_code=prev_code)
 
     def _missingness_befrst(self) -> int:
@@ -619,7 +625,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
     def _missingness_decclin(self) -> int:
         """Handles missingness for DECCLIN."""
-        if self.formver == 1:
+        if self.__formverb9 == 1:
             if self.__b9chg == 3:
                 return 1
             if self.__b9chg == 1:
@@ -653,7 +659,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
             return decage
 
-        if self.formver == 1 and not self.uds.is_initial():
+        if self.__formverb9 == 1 and not self.uds.is_initial():
             b9chg = self.uds.get_value("b9chg", int)
             p_decclin = None
             p_decage = None
@@ -732,6 +738,13 @@ class UDSFormB9Missingness(UDSMissingness):
         if value is not None:
             return value
 
+        # honestly it is unclear to me if it's better for recodecbm to
+        # return the value or None in the default case; however I'm too
+        # afraid to break things and it does look like its mainly the
+        # cognitive variables that recheck the current form's values
+        # after everything
+        value = self.uds.get_value(field, int)
+
         if value is None and not skip_prev_check:
             p_decclin = self.__get_last_set("decclin")
             p_field = self.__get_last_set(field)
@@ -786,17 +799,17 @@ class UDSFormB9Missingness(UDSMissingness):
         """Handles missingness for DECIN."""
         # recodes to 9 on v1/v2 if blank
         decin = self.uds.get_value("decin", int)
-        if self.formver < 3 and decin is None:
+        if self.__formverb9 < 3 and decin is None:
             return 9
 
-        if self.formver == 1 and self.__b9chg in [1, 3]:
+        if self.__formverb9 == 1 and self.__b9chg in [1, 3]:
             return 9
 
         return self.generic_missingness("decin", int)
 
     def _missingness_decsub(self) -> int:
         """Handles missingness for DECSUB."""
-        if self.formver == 1 and self.__b9chg in [1, 3]:
+        if self.__formverb9 == 1 and self.__b9chg in [1, 3]:
             return 9
 
         return self.generic_missingness("decsub", int)

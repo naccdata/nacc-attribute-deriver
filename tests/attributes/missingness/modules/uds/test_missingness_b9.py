@@ -347,11 +347,119 @@ class TestUDSFormB9Missingness:
         assert attr._missingness_decage() == 65
 
     def test_coglang(self, uds_table):
-        """Test COGLANG."""
+        """Test some specific COGLANG cases."""
 
-        # case 1: decclin and decclcog are None, expect 0
+        # CASE 1: decclin and decclcog are None, expect 0
         uds_table["file.info.forms.json"].update(
             {"formver": 2.0, "decclin": None, "decclcog": None, "coglang": None}
         )
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_coglang() == 0
+
+    def test_cogattn(self, uds_table):
+        """Test some specific COGATTN cases."""
+
+        # CASE 1:
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "F",
+                "decclin": None,
+                "decclcog": None,
+                "cogattn": 1,  # should be what gets returned regardless of prev record
+                "b9chg": 3,    # so doesn't do recodebm logic
+            }
+        )
+
+        # so would trigger the previous check; however since
+        # the CURRENT cogattn is set, we should return that (1)
+        uds_table["_prev_record.info.forms.json"].update(
+            {
+                "decclin": 1,
+                "cogattn": 9
+            }
+        )
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_cogattn() == 1
+
+        # CASE 2:
+        # another similar case where it should actually return the
+        # current value even when prev record has decclin = 1 and cogattn = 9
+        # but slightly different values on the current form
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "F",
+                "decclin": 1,
+                "decclcog": None,
+                "cogattn": 0,  # should be what gets returned regardless of prev record
+                "b9chg": 2,    # this + decclin being 1 causes no recodebm logic
+            }
+        )
+
+        # so would trigger the previous check; however since
+        # the CURRENT cogattn is set, we should return that (0 for this case)
+        uds_table["_prev_record.info.forms.json"].update(
+            {
+                "decclin": 1,
+                "cogattn": 9
+            }
+        )
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_cogattn() == 0
+
+        # CASE 3:
+        # this case does trigger recodebm logic; tests a correction from old behavior
+        # regarding whether the previous form is the raw vs missingness values
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "packet": "F",
+                "decclin": None,
+                "decclcog": None,
+                "cogattn": None,
+                "b9chg": 1,    # this + decclin being null runs recodebm logic
+            }
+        )
+
+        # since nothing set in the previous visit, causes the default = 0
+        uds_table["_prev_record.info.forms.json"].update(
+            {
+                "decclin": 1,
+                "cogattn": 1
+            }
+        )
+
+        # old code would return 0 due to directly using previous raw
+        # values; after discussion 1 is the better/more correct behavior
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_cogattn() == 1
+
+    def test_cogjudg(self, uds_table):
+        """Test some specific COGJUDG cases."""
+        # CASE 1: case where formver == 2 but formverb9 = 1, so this
+        # should actually trigger V1 logic and look at previous form
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 2.0,
+                "formverb9": 1.0,
+                "packet": "F",
+                "decclin": None,
+                "decclcog": None,
+                "cogjudg": None,
+                "b9chg": 1,    # this + decclin being null runs recodebm logic
+            }
+        )
+
+        # since nothing set in the previous visit, causes the default = 0
+        uds_table["_prev_record.info.forms.json"].update(
+            {
+                "decclin": 1,
+                "cogjudg": 1
+            }
+        )
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_cogjudg() == 1
