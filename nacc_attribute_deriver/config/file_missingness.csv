@@ -1137,7 +1137,6 @@ mlst,discyr,file.info.resolved.discyr,update,false,int
 mlst,dropreas,file.info.resolved.dropreas,update,false,int
 mlst,discreas,file.info.resolved.discreas,update,false,int
 mlst,discreax,file.info.resolved.discreax,update,false,str
-mlst,formid,file.info.resolved.formid,update,false,int
 mlst,rejoined,file.info.resolved.rejoined,update,false,int
 mlst,nursehom,file.info.resolved.nursehom,update,false,int
 mlst,npsytest,file.info.resolved.npsytest,update,false,int
