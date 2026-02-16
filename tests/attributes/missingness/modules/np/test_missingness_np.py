@@ -37,49 +37,95 @@ class TestNPMissingness:
     def test_recode_10a(self, np_table):
         """Tests the recode_10a logic."""
         attr = NPMissingness(np_table)
-
-        # -4 cases
         assert attr._missingness_npinf1a() == INFORMED_MISSINGNESS
+
+        # V10/V11: -4 cases
         np_table["file.info.forms.json.npinf"] = 0
         assert attr._missingness_npinf1a() == INFORMED_MISSINGNESS
 
-        # 88 case
+        # V10/V11: 88 case
         np_table["file.info.forms.json.npinf"] = 8
         assert attr._missingness_npinf1a() == 88
 
-        # 99 case
+        # V10/V11: 99 case
         np_table["file.info.forms.json.npinf"] = 9
         assert attr._missingness_npinf1a() == 99
 
-    def test_recode_10b(self, np_table):
-        """Tests the recode_10b logic."""
-        attr = NPMissingness(np_table)
+        # V1-9: default case
+        np_table["file.info.forms.json.formver"] = random.choice([1, 7, 8, 9])
+        np_table["file.info.forms.json.npinf"] = None
+        assert attr._missingness_npinf1a() == INFORMED_MISSINGNESS
 
-        # -4.4 cases
+        # any version; set to something case
+        np_table["file.info.forms.json.formver"] = random.choice([1, 7, 8, 9, 10, 11])
+        np_table["file.info.forms.json.npinf1a"] = 3
+        assert attr._missingness_npinf1a() == 3
+
+    def test_recode_10b(self, np_table):
+        """Tests the recode_10b logic"""
+        attr = NPMissingness(np_table)
         assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
+
+        # V10/v11: -4.4 cases
         np_table["file.info.forms.json.npinf"] = 0
         assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
 
-        # 99 case
+        # V10/V11: 99 case
         np_table["file.info.forms.json.npinf"] = 9
         assert attr._missingness_npinf4f() == 99.9
         np_table["file.info.forms.json.npinf"] = None
         np_table["file.info.forms.json.npinf4a"] = 99
         assert attr._missingness_npinf4f() == 99.9
 
-        # 88 case, solely based on gates
+        # V10/V11: 88 case, solely based on gates
         np_table["file.info.forms.json.npinf"] = 8
         assert attr._missingness_npinf4f() == 88.8
         np_table["file.info.forms.json.npinf"] = None
         np_table["file.info.forms.json.npinf4a"] = random.choice([88, 0])
         assert attr._missingness_npinf4f() == 88.8
 
-        # 88 case, based on gate compared to num_infarcts
+        # V10/V11: 88 case, based on gate compared to num_infarcts
         np_table["file.info.forms.json.npinf"] = 1
         np_table["file.info.forms.json.npinf4a"] = random.choice([None, 3, 4])
         assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
         np_table["file.info.forms.json.npinf4a"] = random.choice([1, 2])
         assert attr._missingness_npinf4f() == 88.8
+
+        # V1-9: Only really care about gate value is None or not
+        np_table["file.info.forms.json.formver"] = random.choice([1, 7, 8, 9])
+        np_table["file.info.forms.json.npinf4a"] = None
+        assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
+
+        # valid case for any version, make sure decimal is handled correctly
+        np_table["file.info.forms.json"].update({
+            "formver": random.choice([1, 7, 8, 9, 10, 11]),
+            "npinf": None,
+            "npinf4a": None,
+            "npinf4f": 5,
+            "npinf4g": 2
+        })
+        assert attr._missingness_npinf4f() == 5.2
+
+    def test_recode_10c(self, np_table):
+        """Tests the recode_10c logic"""
+        attr = NPMissingness(np_table)
+        assert attr._missingness_nphemo2() == INFORMED_MISSINGNESS
+
+        # V10/V11: 8/9 cases
+        np_table["file.info.forms.json.nphemo"] = 8
+        assert attr._missingness_nphemo2() == 8
+        np_table["file.info.forms.json.nphemo"] = 9
+        assert attr._missingness_nphemo2() == 9
+
+        # V10/V11: 0 case
+        np_table["file.info.forms.json.nphemo"] = 0
+        assert attr._missingness_nphemo2() == INFORMED_MISSINGNESS
+
+        # any version, something is set case
+        np_table["file.info.forms.json.formver"] = random.choice([1, 7, 8, 9, 10, 11])
+        np_table["file.info.forms.json.nphemo2"] = 6
+        assert attr._missingness_nphemo2() == 6
+
 
     def test_nppmih(self, np_table):
         """Test the NPPMIH decimal case."""
