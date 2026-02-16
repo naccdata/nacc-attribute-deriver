@@ -83,26 +83,55 @@ class MilestoneAttributeCollection(AttributeCollection):
         """Milestone DECEASED."""
         return self.__deceased
 
-    def _create_milestone_discontinued(self) -> bool:
+    def _create_milestone_discontinued(self) -> Optional[int]:
         """Determine if subject is discontinued.
 
-        This is a cross-sectional variable that could potentially be
+        This is a working variable used to derive NACCACTV, which could be
         overrwritten by a subject rejoining the ADC at a later milestone
-        form.
-        """
-        if self.__milestone.get_value("rejoin", int) == 1:
-            return False
+        form or having subsequent UDS visit, so needs to be checked
+        in cross_module logic. Note if this function returns None,
+        it will not update/override anything a previous MLST form set.
 
-        return self.__milestone.get_value("discont", int) == 1
+        Note we are not including minimal contact in this variable
+        (unlike discontinued date) because NACCACTV needs to separate
+        discontinued (generally) vs minimal contact, unlike the discontinued
+        dates which sort of conflate the two. So this variable is
+        really just letting NACCACTV know that the subject was explicitly
+        marked as dicontinued.
+        """
+        rejoin = self.__milestone.get_value("rejoin", int)
+        if rejoin is None:
+            rejoin = self.__milestone.get_value("rejoined", int)
+
+        if rejoin == 1:
+            return 0
+
+        return self.__milestone.get_value("discont", int)
 
     def _create_milestone_protocol(self) -> Optional[int]:
-        """Return the mielstone protocol."""
+        """Return the milestone protocol.
+
+        This is used in V2/V3.
+        """
         return self.__milestone.get_value("protocol", int)
 
-    def get_discontinued_date_part(self, attribute: str, frmdate: str) -> int:
-        """Get subject discontinued date part.
+    def _create_milestone_udsactiv(self) -> Optional[int]:
+        """Return the milestone udsactv.
+
+        This is used in V1.
+        """
+        return self.__milestone.get_value("udsactiv", int)
+
+    def get_discontinued_date_part(
+        self, attribute: str, change_part: str, visit_part: str
+    ) -> int:
+        """Get subject discontinued date part. Either explicitly set as
+        discontinued, or minimum contact/followed to autopsy.
 
         If active or rejoined, return 88 instead.
+
+        If minimal contact (PROTOCOL = 2 or UDSACTIV = 3), then use
+        CHANGEX or VISITX dates as discontinued date.
         """
         default = 88 if attribute != "discyr" else 8888
 
@@ -112,21 +141,21 @@ class MilestoneAttributeCollection(AttributeCollection):
         ):
             return default
 
+        # either explicitly discontinued or minimum contact
         discont = self.__milestone.get_value("discont", int)
-        if discont == 1:
-            result = self.__milestone.get_value(attribute, int)
-            if result is not None:
-                return result
+        protocol = self.__milestone.get_value("protocol", int)  # V2/V3
+        udsactiv = self.__milestone.get_value("udsactiv", int)  # V1
 
-        # if not specified but minimal contact, return the form's date
-        if self.__milestone.get_value("protocol", int) == 2:
-            result = self.__milestone.get_value(frmdate, int)
-            if result is not None:
-                return result
+        if discont == 1 or protocol == 2 or udsactiv in [3, 4]:
+            for field in [attribute, change_part, visit_part]:
+                disc_date = self.__milestone.get_value(field, int)
+                if disc_date is not None:
+                    return disc_date
 
-        # check if already set
-        existing_value = self.__subject_derived.get_cross_sectional_value(
-            attribute, int
+        # check if already set; these are written to working since
+        # they need to be compared against UDS visits later
+        existing_value = self.__working.get_cross_sectional_value(
+            f"milestone-{attribute}", int
         )
         if existing_value is not None:
             return existing_value
@@ -134,13 +163,25 @@ class MilestoneAttributeCollection(AttributeCollection):
         return default
 
     def _create_milestone_discday(self) -> int:
-        """Carry over discday - Day of discontinuation from annual follow-up.
+        """Carry over DISCDAY (DISCDY in newer versions)
+
+        - Day of discontinuation from annual follow-up.
 
         Used for NACCDSDY, but can potentially be overwritten by a later
         UDS visit - see
             cross_module._create_naccdsdy
         """
-        return self.get_discontinued_date_part("discday", "visitday")
+        # may be discday or discdy; see if discdy (V4) version exists,
+        # otherwise default to discday
+        field = "discdy"
+        if self.__milestone.get_value(field, int) is None:
+            field = "discday"
+
+        result = self.get_discontinued_date_part(field, "changedy", "visitday")
+        if result == 99:  # could be set to 99 by CHANGEDY
+            return 88
+
+        return result
 
     def _create_milestone_discmo(self) -> int:
         """Carry over DISCMO - Month of discontinuation from annual follow-up.
@@ -149,7 +190,11 @@ class MilestoneAttributeCollection(AttributeCollection):
         UDS visit - see
             cross_module._create_naccdsmo
         """
-        return self.get_discontinued_date_part("discmo", "visitmo")
+        result = self.get_discontinued_date_part("discmo", "changemo", "visitmo")
+        if result == 99:  # could be set to 99 by CHANGEMO
+            return 88
+
+        return result
 
     def _create_milestone_discyr(self) -> int:
         """Carry over DISCYR - Year of discontinuation from annual follow-up.
@@ -158,12 +203,12 @@ class MilestoneAttributeCollection(AttributeCollection):
         UDS visit - see
             cross_module._create_naccdsyr
         """
-        result = self.get_discontinued_date_part("discyr", "visityr")
+        result = self.get_discontinued_date_part("discyr", "changeyr", "visityr")
 
         # in this case we do set a minimum of 2005 per RDD
         return max(2005, result)
 
-    def get_nursing_home_date_part(self, attribute: str) -> int:
+    def get_nursing_home_date_part(self, attribute: str, derived_attribute: str) -> int:
         """Get subject moved to nursing home date part."""
         default = 88 if attribute != "nurseyr" else 8888
 
@@ -171,34 +216,48 @@ class MilestoneAttributeCollection(AttributeCollection):
         if result is not None:
             return result
 
+        # check if already set; pulls directly from derived variables
+        # since independent of other scopes (e.g. UDS)
+        existing_value = self.__subject_derived.get_cross_sectional_value(
+            derived_attribute, int
+        )
+        if existing_value is not None:
+            return existing_value
+
         return default
 
     def _create_naccnrdy(self) -> int:
         """Creates NACCNRDY - Day permanently moved to nursing home."""
-        return self.get_nursing_home_date_part("nursedy")
+        return self.get_nursing_home_date_part("nursedy", "naccnrdy")
 
     def _create_naccnrmo(self) -> int:
         """Creates NACCNRMO - Month permanently moved to nursing home."""
-        return self.get_nursing_home_date_part("nursemo")
+        return self.get_nursing_home_date_part("nursemo", "naccnrmo")
 
     def _create_naccnryr(self) -> int:
         """Creates NACCNRYR - Year permanently moved to nursing home."""
-        result = self.get_nursing_home_date_part("nurseyr")
+        result = self.get_nursing_home_date_part("nurseyr", "naccnryr")
 
         # in this case we do set a minimum of 2002 per RDD
         return max(2002, result)
 
     def _create_milestone_renurse(self) -> Optional[int]:
-        """Carryover RENURSE, needs to be dated to compute NACCNURP."""
-        renurse = self.__milestone.get_value("renurse", int)
+        """Determine RENURSE (NURSEHOM in older versions), needs to be dated to
+        compute NACCNURP.
 
-        # if V1, RENURSE does not seem to be set/defined,
-        # so manually set it by looking at NURSEDY, NURSEMO, NURSEYR
+        Note if this function returns None, it will not update/override
+        anything a previous MLST form set.
+        """
+        renurse = self.__milestone.get_value("renurse", int)
+        if renurse is None:
+            renurse = self.__milestone.get_value("nursehom", int)
+
+        # if RENURSE/NURSEHM both undefined, see if they set
+        # NURSEDY, NURSEMO, NURSEYR
         if renurse is None:
             nurse_vars = [
-                self._create_naccnrdy(),
-                self._create_naccnrmo(),
-                self._create_naccnryr(),
+                self.__milestone.get_value(x, int)
+                for x in ["nursedy", "nursemo", "nurseyr"]
             ]
             if all(x is not None and x not in [88, 8888] for x in nurse_vars):
                 return 1

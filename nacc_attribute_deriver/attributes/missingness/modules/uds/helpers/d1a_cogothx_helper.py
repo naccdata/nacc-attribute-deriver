@@ -95,7 +95,7 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
                     }
                 )
 
-            if attributes["cogoth3"] == 1:
+            elif attributes["cogoth3"] == 1:
                 attributes.update(
                     {
                         "cogoth": attributes["cogoth3"],

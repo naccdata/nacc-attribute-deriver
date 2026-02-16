@@ -857,9 +857,22 @@ class UDSFormA5D2Missingness(UDSMissingness):
 
     def __handle_arth_gate(self, field: str) -> int:
         """Handles variables gated by ARTH."""
-        arth = self.uds.get_value("arth", int)
-        if arth is None or arth == 0:
-            return 8
+        value = self.uds.get_value(field, int)
+
+        if value is None or value == 0:
+            # if ARTH is 0 (no) return 8 (not assessed)
+            arth = self.uds.get_value("arth", int)
+            if arth == 0:
+                return 8
+
+            # if ARTH = 8/blank (Not assessed)
+            # return -4
+            value = self.uds.get_value(field, int)
+            if arth is None or arth == 8:
+                return INFORMED_MISSINGNESS
+
+            # if ARTH = 1, fallback to generic
+            # missingness
 
         return self.generic_missingness(field, int)
 

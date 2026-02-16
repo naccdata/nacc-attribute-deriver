@@ -5,6 +5,10 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
@@ -12,6 +16,11 @@ from nacc_attribute_deriver.utils.constants import (
 
 class UDSFormB1Attribute(UDSAttributeCollection):
     """Class to collect UDS B1 attributes."""
+
+    def __init__(self, table: SymbolTable):
+        super().__init__(table)
+        self.__visitdate = self.uds.get_required("visitdate", str)
+        self.__working = WorkingNamespace(table=table)
 
     @property
     def submitted(self) -> bool:
@@ -130,18 +139,25 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         Returns:
             value of field, if supplemental data provided, else -4
         """
-        if self.uds.get_value(gate, int) == 777:
+        # look if they provided a B1a form regardless of whether the
+        # gate was 777; otherwise just try to get value directly
+        value = self.__working.get_corresponding_longitudinal_value(
+            self.__visitdate, field, int
+        )
+        if value is None:
             value = self.uds.get_value(field, int)
-            if value is None:
-                # TODO: B1a is currently not handled, so these values are missing
-                # for now just return 888 but should throw error once there
-                # raise AttributeDeriverError(
-                #     f"Missing expected value {field} when {gate} == 777 for V3"
-                # )
+
+        if value is not None:
+            if value == 888:
                 return 888
 
             return max(minimum, min(maximum, value))
 
+        # if gate was 777 and no data, return 888
+        if self.uds.get_value(gate, int) == 777:
+            return 888
+
+        # otherwise, -4
         return INFORMED_MISSINGNESS
 
     def _create_naccbpsysl(self) -> Optional[int]:

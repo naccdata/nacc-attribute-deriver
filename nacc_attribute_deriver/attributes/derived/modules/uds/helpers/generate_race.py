@@ -187,6 +187,7 @@ class RaceResponses:
                 "jamaician",
                 "jamaica",
                 "jamaican",
+                "jamacian",
                 "hispanicdominican",
                 "dominican/hispanic",
                 "nigerian",

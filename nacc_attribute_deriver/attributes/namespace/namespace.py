@@ -303,7 +303,7 @@ class SubjectDerivedNamespace(BaseNamespace):
         try:
             if value.value is not None:
                 value.value = attr_type(value.value)  # type: ignore
-        except TypeError as e:
+        except (ValueError, TypeError) as e:
             raise InvalidFieldError(
                 f"{attribute}.value must be of type {attr_type}"
             ) from e

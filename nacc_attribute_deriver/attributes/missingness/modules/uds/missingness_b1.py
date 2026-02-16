@@ -4,6 +4,10 @@ Only in V3 and earlier.
 """
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingNamespace,
+)
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
     UNKNOWN_CODES,
@@ -11,6 +15,13 @@ from nacc_attribute_deriver.utils.constants import (
 
 
 class UDSFormB1Missingness(UDSMissingness):
+    def __init__(self, table: SymbolTable) -> None:
+        super().__init__(table=table)
+
+        # needed to get B1a variables
+        self.__working = WorkingNamespace(table=table)
+        self.__visitdate = self.uds.get_required("visitdate", str)
+
     def _missingness_height(self) -> float:
         """Handle missingness for HEIGHT. May need to add the decimal in legacy
         versions.
@@ -36,21 +47,33 @@ class UDSFormB1Missingness(UDSMissingness):
     # LEGACY 999 to 888 changes + range enforcement #
     #################################################
 
-    def __handle_b1_ranges(self, field: str, minimum: int, maximum: int) -> int:
+    def __handle_b1_ranges(
+        self, field: str, minimum: int, maximum: int, from_b1a: bool = False
+    ) -> int:
         """Handles the 999 to 888 change - see
         b1structrdd.sas. Also enforce min/max as needed.
         """
+        value: int | None = None
+
+        # if can come from separate b1a form, check that first
+        if self.formver == 3 and from_b1a:
+            value = self.__working.get_corresponding_longitudinal_value(
+                self.__visitdate, field, int
+            )
+
+        if not value:
+            value = self.generic_missingness(field, int)
+
         # Cannot be 999 in V4, so seems okay to not gate based
         # on version
-        if self.uds.get_value(field, int) == 999:
+        if value == 999:
             return 888
 
-        result = self.generic_missingness(field, int)
-        if result not in UNKNOWN_CODES:
+        if value not in UNKNOWN_CODES:
             # enforce specified range
-            return min(max(minimum, result), maximum)
+            return min(max(minimum, value), maximum)
 
-        return result
+        return value
 
     def _missingness_weight(self) -> int:
         """Handles missingness for WEIGHT."""
@@ -64,25 +87,36 @@ class UDSFormB1Missingness(UDSMissingness):
         """Handles missingness for BPDIAS."""
         return self.__handle_b1_ranges("bpdias", 30, 140)
 
-    def _missingness_bpsysl(self) -> int:
-        """Handles missingness for BPSYSL."""
-        return self.__handle_b1_ranges("bpsysl", 70, 230)
-
-    def _missingness_bpsysr(self) -> int:
-        """Handles missingness for BPSYSR."""
-        return self.__handle_b1_ranges("bpsysr", 70, 230)
-
-    def _missingness_bpdiasl(self) -> int:
-        """Handles missingness for BPDIASL."""
-        return self.__handle_b1_ranges("bpdiasl", 30, 140)
-
-    def _missingness_bpdiasr(self) -> int:
-        """Handles missingness for BPDIASR."""
-        return self.__handle_b1_ranges("bpdiasr", 30, 140)
-
     def _missingness_hrate(self) -> int:
         """Handles missingness for HRATE."""
         return self.__handle_b1_ranges("hrate", 33, 160)
+
+    def _missingness_bpsysl(self) -> int:
+        """Handles missingness for BPSYSL."""
+        return self.__handle_b1_ranges("bpsysl", 70, 230, from_b1a=True)
+
+    def _missingness_bpsysr(self) -> int:
+        """Handles missingness for BPSYSR."""
+        return self.__handle_b1_ranges("bpsysr", 70, 230, from_b1a=True)
+
+    def _missingness_bpdiasl(self) -> int:
+        """Handles missingness for BPDIASL."""
+        return self.__handle_b1_ranges("bpdiasl", 30, 140, from_b1a=True)
+
+    def _missingness_bpdiasr(self) -> int:
+        """Handles missingness for BPDIASR."""
+        return self.__handle_b1_ranges("bpdiasr", 30, 140, from_b1a=True)
+
+    def _missingness_bpdevice(self) -> int:
+        """Handles missingness for BPDEVICE."""
+        if self.formver == 3:
+            value = self.__working.get_corresponding_longitudinal_value(
+                self.__visitdate, "bpdevice", int
+            )
+            if value is not None:
+                return value
+
+        return self.generic_missingness("bpdevice", int)
 
     ####################
     # LEGACY with gate #

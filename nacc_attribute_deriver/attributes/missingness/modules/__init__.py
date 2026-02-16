@@ -6,6 +6,6 @@ from .ftld import *
 from .header import *
 from .lbd import *
 from .mds import *
-from .milestone import *
+from .mlst import *
 from .np import *
 from .uds import *

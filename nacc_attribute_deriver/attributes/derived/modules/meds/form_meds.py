@@ -1,6 +1,8 @@
 """Handles the MEDS form.
 
-This is mainly used to inform UDS A4 NACC derived variables.
+This is a UDS-specific form in V3 and earlier that provides the drugs
+data. Must correspond to an UDS visit. This is mainly used to inform UDS
+A4 NACC derived variables.
 """
 
 import csv
@@ -116,12 +118,17 @@ class MEDSFormAttributeCollection(AttributeCollection):
         # if not in drugs_db, use drug_name
         drugs_list = []
         for i in range(ord("a"), ord("t") + 1):
-            drug_name = self.__meds.get_value(f"pm{chr(i)}", str)
-            if not drug_name:
-                continue
+            # pm = prescription medication
+            # nm = non-presscription medication (over the counter)
+            # vs = vitamin/supplement
+            # it seems we are ignoring nm/vs in V1, so only look at pm
+            for prefix in ["pm"]:
+                drug_name = self.__meds.get_value(f"{prefix}{chr(i)}", str)
+                if not drug_name:
+                    continue
 
-            drug_name = drug_name.strip().lower()
-            drug_id = DRUGS_V1.get(drug_name, "xxxxxx")
-            drugs_list.append(drug_id if drug_id is not None else drug_name)
+                drug_name = drug_name.strip().lower()
+                drug_id = DRUGS_V1.get(drug_name, "xxxxxx")
+                drugs_list.append(drug_id if drug_id is not None else drug_name)
 
         return drugs_list

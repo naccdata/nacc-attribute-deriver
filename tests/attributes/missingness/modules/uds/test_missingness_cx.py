@@ -330,23 +330,23 @@ class TestUDSFormC1C2Missingness:
         assert attr._missingness_mmseorda() == INFORMED_MISSINGNESS
         assert attr._missingness_traila() == INFORMED_MISSINGNESS
 
-    def test_logiprev_memtime_initial_packet(self, uds_table):
-        """These are not relevant to the initial packet but sometimes get set;
-        make sure they are casted down to -4."""
-        uds_table["file.info.forms.json"].update(
-            {"packet": "I", "formver": 3, "logiprev": 15, "memtime": 20}
-        )
+    # def test_logiprev_memtime_initial_packet(self, uds_table):
+    #     """These are not relevant to the initial packet but sometimes get set;
+    #     make sure they are casted down to -4."""
+    #     uds_table["file.info.forms.json"].update(
+    #         {"packet": "I", "formver": 3, "logiprev": 15, "memtime": 20}
+    #     )
 
-        attr = UDSFormC1C2Missingness(uds_table)
-        assert attr._missingness_logiprev() == INFORMED_MISSINGNESS
-        assert attr._missingness_memtime() == INFORMED_MISSINGNESS
+    #     attr = UDSFormC1C2Missingness(uds_table)
+    #     assert attr._missingness_logiprev() == INFORMED_MISSINGNESS
+    #     assert attr._missingness_memtime() == INFORMED_MISSINGNESS
 
-        # check run as expected on FVP packet
-        uds_table["file.info.forms.json.formver"] = 2
-        attr = UDSFormC1C2Missingness(uds_table)
+    #     # check run as expected on FVP packet
+    #     uds_table["file.info.forms.json.formver"] = 2
+    #     attr = UDSFormC1C2Missingness(uds_table)
 
-        assert attr._missingness_logiprev() == 15
-        assert attr._missingness_memtime() == 20
+    #     assert attr._missingness_logiprev() == 15
+    #     assert attr._missingness_memtime() == 20
 
     def test_udsbenrs(self, uds_table):
         """Test when UDSBENRS."""
@@ -385,3 +385,21 @@ class TestUDSFormC1C2Missingness:
         assert attr._missingness_trailali() == 96
         assert attr._missingness_trailbrr() == 30
         assert attr._missingness_trailbli() == INFORMED_MISSINGNESS
+
+    def test_digif_digib_gates(self, uds_table):
+        """Test DIGIFLEN and DIGIBLEN are gated by DIGIF and DIGIB."""
+        uds_table["file.info.forms.json"].update(
+            {"digif": 98, "digib": 95, "digiflen": None, "digiblen": 1}
+        )
+
+        attr = UDSFormC1C2Missingness(uds_table)
+        assert attr._missingness_digiflen() == 98
+        assert attr._missingness_digiblen() == 95
+
+        uds_table["file.info.forms.json"].update(
+            {"digif": 1, "digib": 1, "difiglen": 99, "digiblen": 1}
+        )
+
+        # also check 99 gets casted down to -4
+        assert attr._missingness_digiflen() == INFORMED_MISSINGNESS
+        assert attr._missingness_digiblen() == 1

@@ -1,6 +1,6 @@
 """Class to handle NP form missingness values.
 
-See derivenp.sas. This particular form has a lot of recode macros for to
+See derivenp.sas. This particular form has a lot of recode macros to
 handle missingness variables.
 """
 
@@ -13,6 +13,7 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
 from nacc_attribute_deriver.attributes.namespace.namespace import T
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
     INFORMED_MISSINGNESS,
     INFORMED_MISSINGNESS_FLOAT,
 )
@@ -105,7 +106,11 @@ class NPMissingness(FormMissingnessCollection):
     def _missingness_nppmih(self) -> float:
         """Handles missingness for NPPMIH.
 
-        This may have a decimal variable, NPPMIM, added to it.
+        This may have a decimal variable, NPPMIM, added to it. In the
+        old code this used the rec9b macro but it honestly doesn't make
+        sense to do it (it gated itself) and also the other fields that
+        use rec9b also use rec10b, which this doesn't. So separating out
+        to ensure it's its own thing.
         """
         nppmih = self.form.get_value("nppmih", float)
         nppmim = self.form.get_value("nppmim", float)
@@ -133,72 +138,30 @@ class NPMissingness(FormMissingnessCollection):
 
         return self.generic_missingness("nplewycs", int)
 
-    ####################
-    # NPINFX variables #
-    ####################
+    #############################################
+    # RECODE 10a + RECODE 9a (NPINFx variables) #
+    #############################################
 
     def __recode_10a(self, field: str) -> int:
-        """Handles the rec10a macro."""
+        """Handles variables that use the rec10a (v10, 11) and rec9a (other
+        versions) macros."""
+        # rec10a macro
+        npinf = self.form.get_value("npinf", int)
         if self.formver in [10, 11]:
-            npinf = self.form.get_value("npinf", int)
             if npinf == 8:
                 return 88
             if npinf == 9:
                 return 99
 
+        # rec9a macro; unnecessary but keeping it here
+        # to reference the SAS code; can remove once
+        # we're more comfortable with the output
+        else:
+            value = self.form.get_value(field, int)
+            if npinf is None and value is None:
+                return INFORMED_MISSINGNESS
+
         return self.generic_missingness(field, int)
-
-    def __recode_10b(self, field: str, gate: str, num_infarcts: int) -> float:
-        """Handles the rec10b macro, which actually handles two values at once.
-        Also treats them as integers so not sure if they somehow get translated
-        to floats elsewhere?
-
-        The legacy recode macro actually handles two values at once; here
-        we differentiate by looking at the last character of the field, namely
-
-            NPINFxB, NPINFxD, and NPINFxF = 2 digits (e.g. 88)
-            NPINFxC, NPINFxE, and NPINFxG = 1 digit (e.g. 8)
-                ^ these values do not appear in the DEDs so not sure where
-                they come from?
-        """
-        if self.formver in [10, 11]:
-            is_two_digits = field[-1].lower() in ["b", "d", "f"]
-
-            npinf = self.form.get_value("npinf", int)
-            gate_value = self.form.get_value(gate, int)
-
-            if npinf == 8 or gate_value == 88 or gate_value == 0:  # noqa: SIM114
-                return 88.8 if is_two_digits else 8.8
-            elif (
-                npinf == 1
-                and gate_value is not None
-                and (gate_value > 0 and gate_value < num_infarcts)
-            ):
-                return 88.8 if is_two_digits else 8.8
-            elif npinf == 9 or gate_value == 99:
-                return 99.9 if is_two_digits else 9.9
-            elif npinf == 0:
-                return INFORMED_MISSINGNESS_FLOAT
-
-        # fix flat 88s/99s to 88.8/99.9
-        value = self.form.get_value(field, float)
-        if value == 88:
-            return 88.8
-        if value == 8:
-            return 8.8
-        if value == 99:
-            return 99.9
-        if value == 9:
-            return 9.9
-
-        return self.generic_missingness(field, float)
-
-    # REGRESSION: aside from the difference of -4 and blanks
-    # (which we are overriding anyways), not applying the other
-    # recodes doesn't seem to raise regression errors, so
-    # leaving out for now. it's possible they are functionally
-    # useless if existing error checks ensure things are correctly
-    # set to begin with
 
     def _missingness_npinf1a(self) -> int:
         """Handles missingness for NPINF1A."""
@@ -215,6 +178,71 @@ class NPMissingness(FormMissingnessCollection):
     def _missingness_npinf4a(self) -> int:
         """Handles missingness for NPINF4A."""
         return self.__recode_10a("npinf4a")
+
+    ##########################
+    # RECODE 10b + RECODE 9b #
+    ##########################
+
+    def __recode_10b(self, field: str, gate: str, num_infarcts: int) -> float:  # noqa: C901
+        """Handles variables that use the rec10b (v10, 11), and rec9b macros
+        (other versions), which need to handle both a value and its decimal.
+
+        The gates are NPINF and NPINFxA (the latter is passed in).
+
+        We grab the field's decimanl counterpart by looking at the last
+        last character of the field, namely
+            NPINFxB, NPINFxD, and NPINFxF: main field
+            NPINFxC, NPINFxE, and NPINFxG: its decimal counterpart
+        """
+        npinf = self.form.get_value("npinf", int)
+        gate_value = self.form.get_value(gate, int)
+        value = self.form.get_value(field, float)
+
+        # rec10b macro
+        if self.formver in [10, 11]:
+            if npinf == 8 or gate_value == 88 or gate_value == 0:  # noqa: SIM114
+                return 88.8
+            elif (
+                npinf == 1
+                and gate_value is not None
+                and (gate_value > 0 and gate_value < num_infarcts)
+            ):
+                return 88.8
+            elif npinf == 9 or gate_value == 99:
+                return 99.9
+            elif npinf == 0:
+                return INFORMED_MISSINGNESS_FLOAT
+
+        # rec9b macro; unnecessary but keeping it here
+        # to reference the SAS code; can remove once
+        # we're more comfortable with the output
+        elif gate_value is None and value is None:
+            return INFORMED_MISSINGNESS_FLOAT
+
+        if value is None:
+            return INFORMED_MISSINGNESS_FLOAT
+
+        # combining the field with its decimal counterpart
+        decimal_mapping = {"b": "c", "d": "e", "f": "g"}
+
+        last_char = decimal_mapping.get(field[-1].lower())
+        if not last_char:
+            raise AttributeDeriverError(
+                f"Cannot determine decimal counterpart to {field}"
+            )
+
+        value_dec = self.form.get_value(f"{field[0:-1]}{last_char}", int)
+        if value_dec is not None and value_dec != 0:
+            value += value_dec / 10
+
+        # fix flat 88s/99s to 88.8/99.9, since sometimes the decimal
+        # is not set correctly
+        if value == 88:
+            return 88.8
+        if value == 99:
+            return 99.9
+
+        return value
 
     def _missingness_npinf1b(self) -> float:
         """Handles missingness for NPINF1B."""
@@ -263,3 +291,179 @@ class NPMissingness(FormMissingnessCollection):
     def _missingness_npinf4f(self) -> float:
         """Handles missingness for NPINF4F."""
         return self.__recode_10b("npinf4f", "npinf4a", 3)
+
+    ##########################
+    # RECODE 10c + RECODE 9a #
+    ##########################
+
+    def __recode_10c(self, field: str, gate: str) -> int:
+        """Handles the rec10c (formver 10, 11) and rec9a (formver 1-9) macros.
+
+        Both are called for the same variables just dependent on
+        version.
+        """
+        gate_value = self.form.get_value(gate, int)
+        value = self.form.get_value(field, int)
+
+        if self.formver in [10, 11]:
+            if gate_value == 8:
+                return 8
+            if gate_value == 9:
+                return 9
+
+            if gate_value == 0 and value is None:
+                return INFORMED_MISSINGNESS
+
+        # rec9a macro; unnecessary but keeping it here
+        # to reference the SAS code; can remove once
+        # we're more comfortable with the output
+        else:
+            if gate_value is None and value is None:
+                return INFORMED_MISSINGNESS
+
+        return self.generic_missingness(field, int)
+
+    def _missingness_nphemo1(self) -> int:
+        """Handles missingness for NPHEMO1."""
+        return self.__recode_10c("nphemo1", "nphemo")
+
+    def _missingness_nphemo2(self) -> int:
+        """Handles missingness for NPHEMO2."""
+        return self.__recode_10c("nphemo2", "nphemo")
+
+    def _missingness_nphemo3(self) -> int:
+        """Handles missingness for NPHEMO3."""
+        return self.__recode_10c("nphemo3", "nphemo")
+
+    def _missingness_npold1(self) -> int:
+        """Handles missingness for NPOLD1."""
+        return self.__recode_10c("npold1", "npold")
+
+    def _missingness_npold2(self) -> int:
+        """Handles missingness for NPOLD2."""
+        return self.__recode_10c("npold2", "npold")
+
+    def _missingness_npold3(self) -> int:
+        """Handles missingness for NPOLD3."""
+        return self.__recode_10c("npold3", "npold")
+
+    def _missingness_npold4(self) -> int:
+        """Handles missingness for NPOLD4."""
+        return self.__recode_10c("npold4", "npold")
+
+    def _missingness_npoldd1(self) -> int:
+        """Handles missingness for NPOLDD1."""
+        return self.__recode_10c("npoldd1", "npoldd")
+
+    def _missingness_npoldd2(self) -> int:
+        """Handles missingness for NPOLDD2."""
+        return self.__recode_10c("npoldd2", "npoldd")
+
+    def _missingness_npoldd3(self) -> int:
+        """Handles missingness for NPOLDD3."""
+        return self.__recode_10c("npoldd3", "npoldd")
+
+    def _missingness_npoldd4(self) -> int:
+        """Handles missingness for NPOLDD4."""
+        return self.__recode_10c("npoldd4", "npoldd")
+
+    def _missingness_nppath2(self) -> int:
+        """Handles missingness for NPPATH2."""
+        return self.__recode_10c("nppath2", "nppath")
+
+    def _missingness_nppath3(self) -> int:
+        """Handles missingness for NPPATH3."""
+        return self.__recode_10c("nppath3", "nppath")
+
+    def _missingness_nppath4(self) -> int:
+        """Handles missingness for NPPATH4."""
+        return self.__recode_10c("nppath4", "nppath")
+
+    def _missingness_nppath5(self) -> int:
+        """Handles missingness for NPPATH5."""
+        return self.__recode_10c("nppath5", "nppath")
+
+    def _missingness_nppath6(self) -> int:
+        """Handles missingness for NPPATH6."""
+        return self.__recode_10c("nppath6", "nppath")
+
+    def _missingness_nppath7(self) -> int:
+        """Handles missingness for NPPATH7."""
+        return self.__recode_10c("nppath7", "nppath")
+
+    def _missingness_nppath8(self) -> int:
+        """Handles missingness for NPPATH8."""
+        return self.__recode_10c("nppath8", "nppath")
+
+    def _missingness_nppath9(self) -> int:
+        """Handles missingness for NPPATH9."""
+        return self.__recode_10c("nppath9", "nppath")
+
+    def _missingness_nppath10(self) -> int:
+        """Handles missingness for NPPATH10."""
+        return self.__recode_10c("nppath10", "nppath")
+
+    def _missingness_nppath11(self) -> int:
+        """Handles missingness for NPPATH11."""
+        return self.__recode_10c("nppath11", "nppath")
+
+    def _missingness_npftdt2(self) -> int:
+        """Handles missingness for NPFTDT2."""
+        return self.__recode_10c("npftdt2", "npftdtau")
+
+    def _missingness_npftdt5(self) -> int:
+        """Handles missingness for NPFTDT5."""
+        return self.__recode_10c("npftdt5", "npftdtau")
+
+    def _missingness_npftdt6(self) -> int:
+        """Handles missingness for NPFTDT6."""
+        return self.__recode_10c("npftdt6", "npftdtau")
+
+    def _missingness_npftdt7(self) -> int:
+        """Handles missingness for NPFTDT7."""
+        return self.__recode_10c("npftdt7", "npftdtau")
+
+    def _missingness_npftdt8(self) -> int:
+        """Handles missingness for NPFTDT8."""
+        return self.__recode_10c("npftdt8", "npftdtau")
+
+    def _missingness_npftdt9(self) -> int:
+        """Handles missingness for NPFTDT9."""
+        return self.__recode_10c("npftdt9", "npftdtau")
+
+    def _missingness_npftdt10(self) -> int:
+        """Handles missingness for NPFTDT10."""
+        return self.__recode_10c("npftdt10", "npftdtau")
+
+    def _missingness_npoftd1(self) -> int:
+        """Handles missingness for NPOFTD1."""
+        return self.__recode_10c("npoftd1", "npoftd")
+
+    def _missingness_npoftd2(self) -> int:
+        """Handles missingness for NPOFTD2."""
+        return self.__recode_10c("npoftd2", "npoftd")
+
+    def _missingness_npoftd3(self) -> int:
+        """Handles missingness for NPOFTD3."""
+        return self.__recode_10c("npoftd3", "npoftd")
+
+    def _missingness_npoftd4(self) -> int:
+        """Handles missingness for NPOFTD4."""
+        return self.__recode_10c("npoftd4", "npoftd")
+
+    def _missingness_npoftd5(self) -> int:
+        """Handles missingness for NPOFTD5."""
+        return self.__recode_10c("npoftd5", "npoftd")
+
+    #############
+    # Write-ins #
+    #############
+
+    def _missingness_nppathox(self) -> str:
+        """Handles NPPATHOX."""
+        nppathox = self.form.get_value("nppathox", str)
+        nppath = self.form.get_value("nppath", int)
+        if nppath is None and nppathox is None:
+            return INFORMED_BLANK
+
+        return self.generic_missingness("nppathox", str)

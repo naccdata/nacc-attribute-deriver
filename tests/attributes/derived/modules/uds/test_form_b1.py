@@ -1,11 +1,13 @@
 """Tests UDS Form B1 attributes."""
 
+import pytest
 import random
 
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_b1 import (
     UDSFormB1Attribute,
 )
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 ALL_FORMVERS = [1.0, 2.0, 3.0, 3.2, 4.0]
 
@@ -152,28 +154,73 @@ class TestUDSFormB1Attribute:
 
     def test_handle_v3_blood_pressure(self, uds_table):
         """Test _handle_v3_blood_pressure, which is for V3 blood pressure
-        variables."""
+        variables.
+
+        Comes from working metadata.
+        """
         uds_table["file.info.forms.json"].update(
-            {"formver": 3.0, "gate": 777, "field": 123}
+            {"visitdate": "2026-01-01", "formver": 3.0, "gate": 777}
         )
+        uds_table["subject.info.working.longitudinal.field"] = [
+            {"date": "2026-01-01", "value": 123}
+        ]
 
         attr = UDSFormB1Attribute(uds_table)
         assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 123
 
+        # 888 case
+        uds_table["file.info.forms.json"].update(
+            {"visitdate": "2026-01-01", "formver": 3.0, "gate": 777}
+        )
+        uds_table["subject.info.working.longitudinal.field"] = [
+            {"date": "2026-01-01", "value": "888"}
+        ]
+
+        attr = UDSFormB1Attribute(uds_table)
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 888
+
         # min/max enforced
-        uds_table["file.info.forms.json.field"] = 1
+        uds_table["subject.info.working.longitudinal.field"] = [
+            {"date": "2026-01-01", "value": 1}
+        ]
+        attr = UDSFormB1Attribute(uds_table)
         assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 30
-        uds_table["file.info.forms.json.field"] = 200
+
+        uds_table["subject.info.working.longitudinal.field"] = [
+            {"date": "2026-01-01", "value": 200}
+        ]
+        attr = UDSFormB1Attribute(uds_table)
         assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 140
 
-        # gate is not 777
+        # gate is not 777 - for now we actually don't care, as long
+        # as there is B1a data
         uds_table["file.info.forms.json.gate"] = 888
-        assert (
-            attr._handle_v3_blood_pressure("gate", "field", 30, 140)
-            == INFORMED_MISSINGNESS
+        attr = UDSFormB1Attribute(uds_table)
+        assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 140
+
+    def test_handle_v3_blood_pressure_invalid(self, uds_table):
+        """Invalid cases for _handle_v3_blood_pressure."""
+        uds_table["file.info.forms.json"].update(
+            {"visitdate": "2026-01-01", "formver": 3.0, "gate": 777}
         )
 
-        # TODO - testing B1a variable is not there
-        uds_table["file.info.forms.json.gate"] = 777
-        uds_table["file.info.forms.json.field"] = None
+        # testing there is b1a data but wrong date
+        uds_table["subject.info.working.longitudinal.field"] = [
+            {"date": "2025-12-12", "value": 99}
+        ]
+
+        # unknown, so 888
+        attr = UDSFormB1Attribute(uds_table)
         assert attr._handle_v3_blood_pressure("gate", "field", 30, 140) == 888
+
+        # testing B1a form and value are there but not a valid integer
+        uds_table["file.info.forms.json.gate"] = 777
+        uds_table["subject.info.working.longitudinal.field"] = [
+            {"date": "2026-01-01", "value": "n/a"}
+        ]
+
+        attr = UDSFormB1Attribute(uds_table)
+        with pytest.raises(InvalidFieldError) as e:
+            attr._handle_v3_blood_pressure("gate", "field", 30, 140)
+
+        assert "field.value must be of type <class 'int'>" in str(e.value)

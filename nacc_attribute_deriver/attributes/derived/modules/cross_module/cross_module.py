@@ -4,6 +4,8 @@ This belongs to the cross_module scope and is intended to run last on
 global data. As such, it does not rely on a specific form, but instead
 information stored in subject.info, usually typically
 subject.info.working.cross-sectional
+
+Looks generally at UDS, NP, MLST, and MDS
 """
 
 from datetime import date
@@ -37,6 +39,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table=table)
         self.__working = WorkingNamespace(table=table)
 
+        # if the center is inactive, will override variables like
+        # NACCACTV and NACCNOVS; assume True by default
+        self.__active_center = table.get("_active_center", True)
+
     def __working_value(self, attribute: str, attribute_type: Type[T]) -> Optional[T]:
         """Grab cross-sectional working value."""
         return self.__working.get_cross_sectional_value(attribute, attribute_type)
@@ -45,9 +51,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self, attribute: str, attribute_type: Type[T]
     ) -> Optional[DateTaggedValue[T]]:
         """Grab latest cross-sectional working value."""
-        return self.__working.get_cross_sectional_dated_value(
-            f"{attribute}.latest", attribute_type
-        )
+        return self.__working.get_cross_sectional_dated_value(attribute, attribute_type)
 
     def __determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
@@ -273,8 +277,6 @@ class CrossModuleAttributeCollection(AttributeCollection):
         Codes:
             0: If subject receives no followup contact (dead, discontinued,
                 or enrolled as initial visit only)
-                8: Returns 8 specifically if enrolled as initial visit only.
-                    NACCACTVS casts this back to 0, NACCNOVS returns it as 8
             1: If subject is under annual followup and expected to make more
                 Includes discontinued subjects who have since rejoined
                 - This seems to also include subject who have not explicitly
@@ -283,19 +285,17 @@ class CrossModuleAttributeCollection(AttributeCollection):
             2: Minimal contact with ADC but still enrolled
             5: Affiliate
         """
-        # if dead (from NP/MLST), return 0
-        if self._create_naccdied() == 1:
+        # it not an active center or dead (from NP/MLST), return 0
+        if not self.__active_center or self._create_naccdied() == 1:
             return 0
 
         # if milestone marked subject as discontinued, and is the latest form,
         # return 0. if there were UDS visits after discontinuation was marked,
-        # return 1
+        # basically treat as NOT discontinued and pass through
         mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
-        if mlst_discontinued and mlst_discontinued.value == 1:
-            if self.uds_came_after(mlst_discontinued.date):
-                return 1
-
-            return 0
+        if mlst_discontinued and mlst_discontinued.value == 1:  # noqa: SIM102
+            if not self.uds_came_after(mlst_discontinued.date):
+                return 0
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
         if self.__determine_prespart() == 1:
@@ -305,17 +305,22 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if self.__subject_derived.get_value("affiliate", bool):
             return 5
 
-        # check milestone protocol
+        # check milestone protocol/udsactiv
         protocol = self.__working_value("milestone-protocol", int)
+        udsactiv = self.__working_value("milestone-udsactiv", int)
 
-        # if protocol == 1 or 3, annual followup expected
-        if protocol in [1, 3]:
+        # inactive
+        if udsactiv == 4:
+            return 0
+
+        # annual followup expected
+        if protocol in [1, 3] or udsactiv in [1, 2]:
             return 1
-        # protocol == 2 is minimal contact
-        if protocol == 2:
+        # minimal contact
+        if protocol == 2 or udsactiv == 3:
             return 2
 
-        # protocol == 1 or 3, or just using 1 by default
+        # protocol == 1 or 3, or just active
         return 1
 
     def _create_naccnovs(self) -> int:
@@ -323,6 +328,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         telephone. This is ultimately just checking the same things
         NACCACTV is and reinterprets results.
         """
+        # if not an active center, always return 1
+        if not self.__active_center:
+            return 1
+
         # if UDS is the latest one, check UDS prespart == 1 to return 8,
         # otherwise purely based on MLST
         recent_mlst = self.__get_latest_visitdate("milestone-visitdates")
@@ -358,7 +367,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # get most recent MLST value of renurse
         renurse_record = self.__latest_working_value("milestone-renurse", int)
 
-        # if MLST value (RENURSE) is NOT 1, return 0
+        # if MLST value (RENURSE/NURSEHOM) != 1, return 0
         if not renurse_record or renurse_record.value != 1:
             return 0
 
@@ -378,33 +387,31 @@ class CrossModuleAttributeCollection(AttributeCollection):
         If UDS form came AFTER MLST, return the default (even if MLST
         said discontinued.
         """
-        discyr = self.__working_value("milestone-discyr.latest.value", int)
-        discmo = self.__working_value("milestone-discmo.latest.value", int)
-        discday = self.__working_value("milestone-discday.latest.value", int)
+        discyr = self.__working_value("milestone-discyr", int)
+        discmo = self.__working_value("milestone-discmo", int)
+        discday = self.__working_value("milestone-discday", int)
         uds_date = self.__get_latest_visitdate("uds-visitdates")
-
-        if not uds_date:
-            return default
 
         # if UDS came after MLST, return default
         if date_came_after_sparse(uds_date, discyr, discmo, discday):
             return default
 
-        # MLST is the latest; return whatever MLST set
+        # MLST is the latest (or only form, which technically isn't possible);
+        # return whatever MLST set
         disc_date = self.__working_value(attribute, int)
         return disc_date if disc_date is not None else default
 
     def _create_naccdsdy(self) -> int:
         """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discday.latest.value", 88)
+        return self.determine_discontinued_date("milestone-discday", 88)
 
     def _create_naccdsmo(self) -> int:
         """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discmo.latest.value", 88)
+        return self.determine_discontinued_date("milestone-discmo", 88)
 
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discyr.latest.value", 8888)
+        return self.determine_discontinued_date("milestone-discyr", 8888)
 
     def _create_nacccore(self) -> int:
         """Creates NACCCORE - Clinical core participant."""

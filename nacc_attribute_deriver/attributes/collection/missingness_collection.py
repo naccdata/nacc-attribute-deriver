@@ -153,14 +153,24 @@ class FormMissingnessCollection(AttributeCollection):
         prev_code: Optional[T] = None,
         default: Optional[T] = None,
         working: Optional[WorkingNamespace] = None,
+        ignore_current_value: bool = False,
     ) -> T:
         """Handle when the value could be provided by the previous visit.
 
         If VAR == PREV_CODE, VAR = PREV_VISIT
         ELSE generic missingness
+
+        Args:
+            attribute: the attribute to grab
+            attr_type: the type of the attribute
+            prev_code: the prev code to check
+            default: default value to set attribute to, if missing
+            working: working namespace, if pulling from there instead
+                of the prev record
+            ignore_current_value: ignore current value and pull through regardless
         """
         value = self.__form.get_value(attribute, attr_type)
-        if value == prev_code:
+        if value == prev_code or ignore_current_value:
             prev_value = self.__prev_record.get_resolved_value(
                 attribute, attr_type, default=default, working=working
             )
