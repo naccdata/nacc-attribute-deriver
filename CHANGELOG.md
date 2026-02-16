@@ -2,14 +2,13 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 2.2.0
+## 2.1.3
 
-* rc1:
-    * Adds MLST missingness and changes scope to `mlst` not `milestone`
-    * Update to handle new B1a scope - like MEDS, comes from a separate file and has to be mapped to UDS
-    * Updates to grab `BIRTHMO` and `BIRTHYR` from a pre-computed `subject.info.working.cross-sectional` location instead of files, to account for the fact that DOB can change across forms. The pre-computed value should be the latest
-    * Updates to consider center status for `NACCACTV/NACCNOVS`
-    * Fixes a multitude of other edges cases
+* Adds MLST missingness and changes scope to `mlst` not `milestone`
+* Update to handle new B1a scope - like MEDS, comes from a separate file and has to be mapped to UDS
+* Updates to grab `BIRTHMO` and `BIRTHYR` from a pre-computed `subject.info.working.cross-sectional` location instead of files, to account for the fact that DOB can change across forms. The pre-computed value should be the latest
+* Updates to consider center status for `NACCACTV/NACCNOVS`
+* Fixes a multitude of other edges cases
 
 ## 2.1.2
 
@@ -31,8 +30,8 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Updates COVID `C19TxYR` variables to fix 88 to 8888 and 99 to 9999
 * Updates LBD to handle the 0 prev code for `LBSPSYM` and `SCCOFRST` 
 * Updates the V1 drug mappings to align further with legacy results
-* Allows affiliate status to change
     * Also removes `justification` column as it isn't needed
+* Allows affiliate status to change
 * Fixes MQT's `SEX MAPPING` value 9 from "Don't know" to "Unknown"
 
 ## 2.0.1
