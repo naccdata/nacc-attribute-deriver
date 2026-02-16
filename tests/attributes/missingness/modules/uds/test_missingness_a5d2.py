@@ -67,9 +67,10 @@ class TestUDSFormA5D2Missingness:
         assert attr._missingness_bcendage() == 888
 
     def test_handle_arth_gate(self, uds_table):
-        """Test old legacy D2-only variables that rely
-        on ARTH. Using ARTLOEX as a representative to
-        check but several other variables rely on this.
+        """Test old legacy D2-only variables that rely on ARTH.
+
+        Using ARTLOEX as a representative to check but several other
+        variables rely on this.
         """
         # ARTH = 0 case, expect 8
         uds_table["file.info.forms.json"].update(

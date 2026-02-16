@@ -16,7 +16,7 @@ class TestUDSFormB2LegacyMissingness:
                 "formverb2": 1.0,
                 "cvdcog": 0,
                 "cvdimag": 0,
-                "cvdimag1": 0
+                "cvdimag1": 0,
             }
         )
 
@@ -33,7 +33,7 @@ class TestUDSFormB2LegacyMissingness:
                 "formverb2": 2.0,
                 "cvdcog": 0,
                 "cvdimag": 8,
-                "cvdimag1": 2
+                "cvdimag1": 2,
             }
         )
 

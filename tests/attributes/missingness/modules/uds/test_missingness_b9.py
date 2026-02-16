@@ -367,18 +367,13 @@ class TestUDSFormB9Missingness:
                 "decclin": None,
                 "decclcog": None,
                 "cogattn": 1,  # should be what gets returned regardless of prev record
-                "b9chg": 3,    # so doesn't do recodebm logic
+                "b9chg": 3,  # so doesn't do recodebm logic
             }
         )
 
         # so would trigger the previous check; however since
         # the CURRENT cogattn is set, we should return that (1)
-        uds_table["_prev_record.info.forms.json"].update(
-            {
-                "decclin": 1,
-                "cogattn": 9
-            }
-        )
+        uds_table["_prev_record.info.forms.json"].update({"decclin": 1, "cogattn": 9})
 
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_cogattn() == 1
@@ -394,18 +389,13 @@ class TestUDSFormB9Missingness:
                 "decclin": 1,
                 "decclcog": None,
                 "cogattn": 0,  # should be what gets returned regardless of prev record
-                "b9chg": 2,    # this + decclin being 1 causes no recodebm logic
+                "b9chg": 2,  # this + decclin being 1 causes no recodebm logic
             }
         )
 
         # so would trigger the previous check; however since
         # the CURRENT cogattn is set, we should return that (0 for this case)
-        uds_table["_prev_record.info.forms.json"].update(
-            {
-                "decclin": 1,
-                "cogattn": 9
-            }
-        )
+        uds_table["_prev_record.info.forms.json"].update({"decclin": 1, "cogattn": 9})
 
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_cogattn() == 0
@@ -420,17 +410,12 @@ class TestUDSFormB9Missingness:
                 "decclin": None,
                 "decclcog": None,
                 "cogattn": None,
-                "b9chg": 1,    # this + decclin being null runs recodebm logic
+                "b9chg": 1,  # this + decclin being null runs recodebm logic
             }
         )
 
         # since nothing set in the previous visit, causes the default = 0
-        uds_table["_prev_record.info.forms.json"].update(
-            {
-                "decclin": 1,
-                "cogattn": 1
-            }
-        )
+        uds_table["_prev_record.info.forms.json"].update({"decclin": 1, "cogattn": 1})
 
         # old code would return 0 due to directly using previous raw
         # values; after discussion 1 is the better/more correct behavior
@@ -449,17 +434,12 @@ class TestUDSFormB9Missingness:
                 "decclin": None,
                 "decclcog": None,
                 "cogjudg": None,
-                "b9chg": 1,    # this + decclin being null runs recodebm logic
+                "b9chg": 1,  # this + decclin being null runs recodebm logic
             }
         )
 
         # since nothing set in the previous visit, causes the default = 0
-        uds_table["_prev_record.info.forms.json"].update(
-            {
-                "decclin": 1,
-                "cogjudg": 1
-            }
-        )
+        uds_table["_prev_record.info.forms.json"].update({"decclin": 1, "cogjudg": 1})
 
         attr = UDSFormB9Missingness(uds_table)
         assert attr._missingness_cogjudg() == 1

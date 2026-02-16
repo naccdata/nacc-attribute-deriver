@@ -859,7 +859,11 @@ class UDSFormC1C2Missingness(UDSMissingness):
         return self.__handle_invalid_missingness("digif", 99)
 
     def _missingness_digiflen(self) -> int:
-        """Handles missingness for DIGIFLEN."""
+        """Handles missingness for DIGIFLEN; also gated by DIGIF."""
+        result = self.handle_set_to_gate("digif", check_values=[95, 96, 97, 98])
+        if result is not None:
+            return result
+
         return self.__handle_invalid_missingness("digiflen", 99)
 
     def _missingness_digib(self) -> int:
@@ -867,7 +871,11 @@ class UDSFormC1C2Missingness(UDSMissingness):
         return self.__handle_invalid_missingness("digib", 99)
 
     def _missingness_digiblen(self) -> int:
-        """Handles missingness for DIGIBLEN."""
+        """Handles missingness for DIGIBLEN; also gated by DIGIB."""
+        result = self.handle_set_to_gate("digib", check_values=[95, 96, 97, 98])
+        if result is not None:
+            return result
+
         return self.__handle_invalid_missingness("digiblen", 99)
 
     def _missingness_animals(self) -> int:
