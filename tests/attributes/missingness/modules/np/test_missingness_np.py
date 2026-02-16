@@ -62,7 +62,7 @@ class TestNPMissingness:
         assert attr._missingness_npinf1a() == 3
 
     def test_recode_10b(self, np_table):
-        """Tests the recode_10b logic"""
+        """Tests the recode_10b logic."""
         attr = NPMissingness(np_table)
         assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
 
@@ -97,27 +97,31 @@ class TestNPMissingness:
         assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
 
         # valid case for any version, make sure decimal is handled correctly
-        np_table["file.info.forms.json"].update({
-            "formver": random.choice([1, 7, 8, 9, 10, 11]),
-            "npinf": None,
-            "npinf4a": None,
-            "npinf4f": 5,
-            "npinf4g": 2
-        })
+        np_table["file.info.forms.json"].update(
+            {
+                "formver": random.choice([1, 7, 8, 9, 10, 11]),
+                "npinf": None,
+                "npinf4a": None,
+                "npinf4f": 5,
+                "npinf4g": 2,
+            }
+        )
         assert attr._missingness_npinf4f() == 5.2
 
         # test value is set to 88.8 even if decimal is bad
-        np_table["file.info.forms.json"].update({
-            "formver": random.choice([1, 7, 8, 9, 10, 11]),
-            "npinf": None,
-            "npinf4a": None,
-            "npinf4f": 88,
-            "npinf4g": 0
-        })
+        np_table["file.info.forms.json"].update(
+            {
+                "formver": random.choice([1, 7, 8, 9, 10, 11]),
+                "npinf": None,
+                "npinf4a": None,
+                "npinf4f": 88,
+                "npinf4g": 0,
+            }
+        )
         assert attr._missingness_npinf4f() == 88.8
 
     def test_recode_10c(self, np_table):
-        """Tests the recode_10c logic"""
+        """Tests the recode_10c logic."""
         attr = NPMissingness(np_table)
         assert attr._missingness_nphemo2() == INFORMED_MISSINGNESS
 
@@ -135,7 +139,6 @@ class TestNPMissingness:
         np_table["file.info.forms.json.formver"] = random.choice([1, 7, 8, 9, 10, 11])
         np_table["file.info.forms.json.nphemo2"] = 6
         assert attr._missingness_nphemo2() == 6
-
 
     def test_nppmih(self, np_table):
         """Test the NPPMIH decimal case."""

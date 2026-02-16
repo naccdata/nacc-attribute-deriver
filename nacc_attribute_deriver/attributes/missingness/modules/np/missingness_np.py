@@ -106,12 +106,11 @@ class NPMissingness(FormMissingnessCollection):
     def _missingness_nppmih(self) -> float:
         """Handles missingness for NPPMIH.
 
-        This may have a decimal variable, NPPMIM, added to it.
-        In the old code this used the rec9b macro but it honestly
-        doesn't make sense to do it (it gated itself) and
-        also the other fields that use rec9b also use rec10b,
-        which this doesn't. So separating out to ensure it's
-        its own thing.
+        This may have a decimal variable, NPPMIM, added to it. In the
+        old code this used the rec9b macro but it honestly doesn't make
+        sense to do it (it gated itself) and also the other fields that
+        use rec9b also use rec10b, which this doesn't. So separating out
+        to ensure it's its own thing.
         """
         nppmih = self.form.get_value("nppmih", float)
         nppmim = self.form.get_value("nppmim", float)
@@ -144,8 +143,8 @@ class NPMissingness(FormMissingnessCollection):
     #############################################
 
     def __recode_10a(self, field: str) -> int:
-        """Handles variables that use the rec10a (v10, 11) and rec9a
-        (other versions) macros."""
+        """Handles variables that use the rec10a (v10, 11) and rec9a (other
+        versions) macros."""
         # rec10a macro
         npinf = self.form.get_value("npinf", int)
         if self.formver in [10, 11]:
@@ -184,10 +183,9 @@ class NPMissingness(FormMissingnessCollection):
     # RECODE 10b + RECODE 9b #
     ##########################
 
-    def __recode_10b(self, field: str, gate: str, num_infarcts: int) -> float:
-        """Handles variables that use the rec10b (v10, 11),
-        and rec9b macros (other versions), which need to handle both a value
-        and its decimal.
+    def __recode_10b(self, field: str, gate: str, num_infarcts: int) -> float:  # noqa: C901
+        """Handles variables that use the rec10b (v10, 11), and rec9b macros
+        (other versions), which need to handle both a value and its decimal.
 
         The gates are NPINF and NPINFxA (the latter is passed in).
 
@@ -225,11 +223,7 @@ class NPMissingness(FormMissingnessCollection):
             return INFORMED_MISSINGNESS_FLOAT
 
         # combining the field with its decimal counterpart
-        decimal_mapping = {
-            "b": "c",
-            "d": "e",
-            "f": "g"
-        }
+        decimal_mapping = {"b": "c", "d": "e", "f": "g"}
 
         last_char = decimal_mapping.get(field[-1].lower())
         if not last_char:
@@ -303,9 +297,10 @@ class NPMissingness(FormMissingnessCollection):
     ##########################
 
     def __recode_10c(self, field: str, gate: str) -> int:
-        """Handles the rec10c (formver 10, 11) and rec9a
-        (formver 1-9) macros. Both are called for the same
-        variables just dependent on version.
+        """Handles the rec10c (formver 10, 11) and rec9a (formver 1-9) macros.
+
+        Both are called for the same variables just dependent on
+        version.
         """
         gate_value = self.form.get_value(gate, int)
         value = self.form.get_value(field, int)
