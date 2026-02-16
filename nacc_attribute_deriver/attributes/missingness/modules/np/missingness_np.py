@@ -196,7 +196,7 @@ class NPMissingness(FormMissingnessCollection):
         """
         npinf = self.form.get_value("npinf", int)
         gate_value = self.form.get_value(gate, int)
-        value = self.form.get_value(field, int)
+        value = self.form.get_value(field, float)
 
         # rec10b macro
         if self.formver in [10, 11]:
@@ -461,7 +461,9 @@ class NPMissingness(FormMissingnessCollection):
 
     def _missingness_nppathox(self) -> str:
         """Handles NPPATHOX."""
-        if self.form.get_value("nppath") is None:
+        nppathox = self.form.get_value("nppathox", str)
+        nppath = self.form.get_value("nppath", int)
+        if nppath is None and nppathox is None:
             return INFORMED_BLANK
 
         return self.generic_missingness("nppathox", str)

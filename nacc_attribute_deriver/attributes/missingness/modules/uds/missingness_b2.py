@@ -12,9 +12,8 @@ class UDSFormB2Missingness(UDSMissingness):
     def __init__(self, table: SymbolTable) -> None:
         super().__init__(table=table)
 
-        self.__formverb2 = self.uds.get_value("formverb2", int)
-        if not self.__formverb2:
-            self.__formverb2 = self.formver
+        formverb2 = self.uds.get_value("formverb2", int)
+        self.__formverb2 = formverb2 if formverb2 else self.formver
 
     def __handle_b2_missingness(self, field: str) -> int:
         """Ensure anything < V2 gets set to -4."""
