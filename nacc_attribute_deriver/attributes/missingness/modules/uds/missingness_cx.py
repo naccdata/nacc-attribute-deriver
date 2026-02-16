@@ -777,10 +777,6 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_memtime(self) -> int:
         """Handles missingness for MEMTIME."""
-        # sometimes IVP passes through for V3; return informed missingness in that case
-        if self.formver == 3 and self.uds.is_initial():
-            return INFORMED_MISSINGNESS
-
         memtime = self.uds.get_value("memtime", int)
         memunits = self.uds.get_value("memunits", int)
 
