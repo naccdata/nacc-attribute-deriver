@@ -245,12 +245,8 @@ class NPMissingness(FormMissingnessCollection):
         # is not set correctly
         if value == 88:
             return 88.8
-        if value == 8:
-            return 8.8
         if value == 99:
             return 99.9
-        if value == 9:
-            return 9.9
 
         return value
 

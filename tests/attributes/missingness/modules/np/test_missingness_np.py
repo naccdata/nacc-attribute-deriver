@@ -106,6 +106,16 @@ class TestNPMissingness:
         })
         assert attr._missingness_npinf4f() == 5.2
 
+        # test value is set to 88.8 even if decimal is bad
+        np_table["file.info.forms.json"].update({
+            "formver": random.choice([1, 7, 8, 9, 10, 11]),
+            "npinf": None,
+            "npinf4a": None,
+            "npinf4f": 88,
+            "npinf4g": 0
+        })
+        assert attr._missingness_npinf4f() == 88.8
+
     def test_recode_10c(self, np_table):
         """Tests the recode_10c logic"""
         attr = NPMissingness(np_table)
