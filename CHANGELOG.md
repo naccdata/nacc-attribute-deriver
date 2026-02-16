@@ -8,10 +8,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Update to handle new B1a scope - like MEDS, comes from a separate file and has to be mapped to UDS
 * Updates to grab `BIRTHMO` and `BIRTHYR` from a pre-computed `subject.info.working.cross-sectional` location instead of files, to account for the fact that DOB can change across forms. The pre-computed value should be the latest
 * Updates to consider center status for `NACCACTV/NACCNOVS`
-* Fixes several issues related to MLST forms
-* Fixes issue of values entered in an A1 FVP visit overwriting IVP, when they should not be provided in the first place. Updates to ignore FVP values
-* If a header formdate cannot be determined, return blank for missingness instead of throwing error (handles optional forms)
-* A few other minor fixes from regression testing
+* Fixes a multitude of other edges cases
 
 ## 2.1.2
 
