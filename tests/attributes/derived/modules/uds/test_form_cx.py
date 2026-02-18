@@ -5,6 +5,7 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.form_cx import (
     UDSFormCXAttribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 from tests.conftest import set_attribute
 
@@ -25,6 +26,7 @@ def table(uds_table) -> SymbolTable:
             "mocatots": 29,
             "mocbtots": "15",
             "mocacomp": 1,
+            "formverc2": 3.0,
         }
     )
     uds_table["_prev_record.info.forms.json"].update({"educ": "3"})
@@ -76,15 +78,17 @@ class TestUDSFormCXAttribute:
         set_attribute(table, form_prefix, "educ", None)
         assert attr._create_naccmoca() == 99
 
-        # mocatots is 88 or None
+        # mocatots is 88
         set_attribute(table, form_prefix, "mocatots", 88)
         assert attr._create_naccmoca() == 88
+
+        # mocatots is None
         set_attribute(table, form_prefix, "mocatots", None)
-        assert attr._create_naccmoca() == 88
+        assert attr._create_naccmoca() == INFORMED_MISSINGNESS
 
         # if packet IT, ignore
         set_attribute(table, form_prefix, "packet", "IT")
-        assert attr._create_naccmoca() == -4
+        assert attr._create_naccmoca() == INFORMED_MISSINGNESS
 
     def test_create_naccmocb(self, table, form_prefix):
         """Tests creating NACCMOCB.
@@ -95,7 +99,7 @@ class TestUDSFormCXAttribute:
         attr = UDSFormCXAttribute(table)
 
         # default does not fulfill packet conditions, should return None
-        assert attr._create_naccmocb() == -4
+        assert attr._create_naccmocb() == INFORMED_MISSINGNESS
 
         # set packet to IT, should run now
         set_attribute(table, form_prefix, "packet", "IT")
@@ -104,7 +108,7 @@ class TestUDSFormCXAttribute:
 
         # also works if formver is 3.2
         set_attribute(table, form_prefix, "packet", "I")
-        set_attribute(table, form_prefix, "formver", 3.2)
+        set_attribute(table, form_prefix, "formverc2", 3.2)
         attr = UDSFormCXAttribute(table)
         assert attr._create_naccmocb() == 16
 
@@ -131,7 +135,7 @@ class TestUDSFormCXAttribute:
             {
                 "mocbtots": 21,
                 "mocacomp": 1,
-                "formver": 3.2,
+                "formverc2": 3.2,
                 "frmdatec1": None,
                 "frmdatec2": "2020-07-15",
                 "packet": "F",
