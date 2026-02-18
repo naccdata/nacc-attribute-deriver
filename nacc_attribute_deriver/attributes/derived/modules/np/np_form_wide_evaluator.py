@@ -374,7 +374,7 @@ class NPFormWideEvaluator:
             or self.get("npvoth") == 1
             or self.get("nplewy") in [1, 2, 3, 4]
             or self.get("nppick") == 1
-            or self.get("npcor") == 1
+            or self.get("npcort") == 1
             or self.get("npprog") == 1
             or self.get("npfront") == 1
             or self.get("nptau") == 1
@@ -404,7 +404,7 @@ class NPFormWideEvaluator:
             or self.get("npvoth") in [3, 9]
             or self.get("nplewy") in [6, 9]
             or self.get("nppick") in [3, 9]
-            or self.get("npcor") in [3, 9]
+            or self.get("npcort") in [3, 9]
             or self.get("npprog") in [3, 9]
             or self.get("npfront") in [3, 9]
             or self.get("nptau") in [3, 9]
