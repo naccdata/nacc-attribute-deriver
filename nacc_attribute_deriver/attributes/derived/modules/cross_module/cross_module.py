@@ -213,6 +213,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # if mds_mo is not None and mds_mo != 99:
         #     return mds_mo
 
+        # if no MOD but a YOD is available, set MOD to 7
+        if self._create_naccyod() not in [8888, 9999]:
+            return 7
+
         return 99
 
     # SAS seemingly sparse for this. Another one with potential MDS.
