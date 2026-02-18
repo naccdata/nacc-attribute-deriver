@@ -153,9 +153,9 @@ class TestNPMapper:
     def test_map_comb2(self, np_mapper):
         assert np_mapper.map_comb2(0, 1) == 1
         assert np_mapper.map_comb2(1, 5) == 1
-        assert np_mapper.map_comb2(3, 2) == 0
-        assert np_mapper.map_comb2(3, 1) == 1
-        assert np_mapper.map_comb2(0, 3) == 8
+        assert np_mapper.map_comb2(3, 2) == 9
+        assert np_mapper.map_comb2(2, 2) == 0
+        assert np_mapper.map_comb2(3, 3) == 8
         assert np_mapper.map_comb2(8, 8) == 9
 
     def test_banked_v9(self, np_form_attribute_table, form_prefix):

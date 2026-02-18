@@ -208,6 +208,23 @@ class TestCreateNACCCBD:
         assert np_form_attribute._create_nacccbd() == -4
 
 
+class TestCreateNACCPRIO:
+    def test_create_naccprio(self, np_form_attribute_table, form_prefix):
+        np_form_attribute = NPFormAttributeCollection(np_form_attribute_table)
+
+        # default in v1 calls mapgross, so returns 0 since npgross = 2
+        assert np_form_attribute._create_naccprio() == 0
+
+        # v7-9 case; expect 9 from map_comb2
+        set_attribute(np_form_attribute_table, form_prefix, "formver", 9)
+        set_attribute(np_form_attribute_table, form_prefix, "npcj", 2)
+        set_attribute(np_form_attribute_table, form_prefix, "npprion", 3)
+        assert np_form_attribute._create_naccprio() == 9
+
+        # v7-9p; npprion is now the same so expect 0 from map_comb2
+        set_attribute(np_form_attribute_table, form_prefix, "npprion", 2)
+        assert np_form_attribute._create_naccprio() == 0
+
 class TestGeneralNP:
     def test_np_formdate(self, np_form_attribute_table, form_prefix):
         """Test can handle both visitdate and npformdate."""
