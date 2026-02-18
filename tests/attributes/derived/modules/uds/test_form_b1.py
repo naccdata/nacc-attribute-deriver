@@ -99,12 +99,12 @@ class TestUDSFormB1Attribute:
         attr = UDSFormB1Attribute(uds_table)
         assert attr._create_naccbmi() == 888.8
 
-        # test form not submitted; on initial visit should be 888.8, -4 otherwise
+        # test form not submitted; on initial visit should be -4
         uds_table["file.info.forms.json"].update(
             {"b1sub": 0, "weight": 180, "height": 60}
         )
         attr = UDSFormB1Attribute(uds_table)
-        assert attr._create_naccbmi() == 888.8
+        assert attr._create_naccbmi() == -4
 
         uds_table["file.info.forms.json.packet"] = "T"
         attr = UDSFormB1Attribute(uds_table)

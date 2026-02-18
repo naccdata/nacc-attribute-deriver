@@ -2,9 +2,14 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.1.4
+
+* More edge case fixes
+
 ## 2.1.3
 
 * Adds MLST missingness and changes scope to `mlst` not `milestone`
+* Adds some missing NP macro logic
 * Update to handle new B1a scope - like MEDS, comes from a separate file and has to be mapped to UDS
 * Updates to grab `BIRTHMO` and `BIRTHYR` from a pre-computed `subject.info.working.cross-sectional` location instead of files, to account for the fact that DOB can change across forms. The pre-computed value should be the latest
 * Updates to consider center status for `NACCACTV/NACCNOVS`

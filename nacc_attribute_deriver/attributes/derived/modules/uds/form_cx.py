@@ -28,20 +28,13 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         # V3 and earlier, used to differentiate which version was used
         self.__frmdatec1 = self.uds.get_value("frmdatec1", str)
         self.__frmdatec2 = self.uds.get_value("frmdatec2", str)
+        self.__formverc1 = self.uds.get_value("formverc1", float)
+        self.__formverc2 = self.uds.get_value("formverc2", float)
 
         # V4. If C2T is submitted, RMMODEC2C2T must be 1, so used as
         # an indicator of whether or not this is a C2T form
         self.__frmdatec2c2t = self.uds.get_value("frmdatec2c2t", str)
         self.__is_c2t = self.uds.get_value("rmmodec2c2t", int) == 1
-
-    @property
-    def submitted(self) -> bool:
-        """Form is required in V4, for V3 and earlier need to check which form
-        was submitted."""
-        if self.formver < 4:
-            return self.__frmdatec1 is not None or self.__frmdatec2 is not None
-
-        return True
 
     def __calculate_interval_from_a1(self, cmp_date: str) -> int:
         """Calculates discrepency between UDS Form A1 and Form C1/C2."""
@@ -117,61 +110,64 @@ class UDSFormCXAttribute(UDSAttributeCollection):
 
         MoCA Total Score -- corrected for education
         """
-        if self.formver < 3 or not self.submitted:
-            return INFORMED_MISSINGNESS
-
         # In V4 only run for C2, -4 otherwise
-        if self.formver >= 4 and self.__is_c2t:
+        if self.formver >= 4:
+            if self.__is_c2t:
+                return INFORMED_MISSINGNESS
+
+        # In V3 and earlier, only run
+        # if formverc2 = 3 and packet != IT
+        else:
+            packet = self.uds.get_value("packet", str)
+            if not (self.__formverc2 == 3 and packet != "IT"):
+                return INFORMED_MISSINGNESS
+
+        mocatots = self.uds.get_value("mocatots", int)
+        if mocatots is None:
             return INFORMED_MISSINGNESS
+        if mocatots == 88:
+            return 88
 
-        precise_formver = self.uds.get_required("formver", float)
-        packet = self.uds.get_value("packet", str)
+        educ = self.__get_educ()
+        if educ is None or educ == 99:
+            return 99
+        if educ <= 12 and mocatots < 30:
+            return mocatots + 1
 
-        if (self.formver >= 4) or (precise_formver == 3 and packet != "IT"):
-            mocatots = self.uds.get_value("mocatots", int)
-            educ = self.__get_educ()
-            if mocatots is None or mocatots == 88:
-                return 88
-            if educ is None or educ == 99:
-                return 99
-            if educ <= 12 and mocatots < 30:
-                return mocatots + 1
-
-            return mocatots
-
-        return INFORMED_MISSINGNESS
+        return mocatots
 
     def _create_naccmocb(self) -> int:
         """(V3+ only) Creates NACCMOCB.
 
         MoCA-Blind Total Score -- corrected for education
         """
-        if self.formver < 3 or not self.submitted:
-            return INFORMED_MISSINGNESS
-
         # In V4 only run for C2T, -4 otherwise
-        if self.formver >= 4 and not self.__is_c2t:
+        if self.formver >= 4:
+            if not self.__is_c2t:
+                return INFORMED_MISSINGNESS
+
+        # In V3, only run
+        #   if formverc2 = 3.2 OR
+        #   if formverc2 = 3.0 and packet = IT
+        else:
+            packet = self.uds.get_value("packet", str)
+            if self.__formverc2 != 3.2 and not (
+                self.__formverc2 == 3 and packet == "IT"
+            ):
+                return INFORMED_MISSINGNESS
+
+        mocbtots = self.uds.get_value("mocbtots", int)
+        mocacomp = self.uds.get_value("mocacomp", int)
+
+        if mocbtots is None:
             return INFORMED_MISSINGNESS
+        if mocbtots == 88 or mocacomp == 0:
+            return 88
 
-        precise_formver = self.uds.get_required("formver", float)
-        packet = self.uds.get_value("packet", str)
+        educ = self.__get_educ()
+        if educ is None or educ == 99:
+            return 99
+        if educ >= 0 and educ <= 12 and mocbtots >= 0 and mocbtots < 22:
+            return mocbtots + 1
 
-        if (
-            (self.formver >= 4)
-            or (precise_formver == 3.2)
-            or (precise_formver == 3 and packet == "IT")
-        ):
-            mocbtots = self.uds.get_value("mocbtots", int)
-            mocacomp = self.uds.get_value("mocacomp", int)
-            educ = self.__get_educ()
-
-            if mocbtots is None or mocbtots == 88 or mocacomp == 0:
-                return 88
-            if educ is None or educ == 99:
-                return 99
-            if educ >= 0 and educ <= 12 and mocbtots >= 0 and mocbtots < 22:
-                return mocbtots + 1
-
-            return mocbtots
-
-        return INFORMED_MISSINGNESS
+        return mocbtots

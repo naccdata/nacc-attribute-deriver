@@ -229,12 +229,14 @@ class NPFormAttributeCollection(AttributeCollection):
 
         Down syndrome
         """
+        # v10 - 11
+        if self.formver in [10, 11]:
+            nppdxo = self.__np.get_value("nppdxo", int)
+            return 1 if nppdxo == 1 else 7
+
+        # v1 - 9
         npchrom = self.__np.get_value("npchrom", int)
-
-        if self.formver in [10, 11] or self.formver in [7, 8, 9] or self.formver == 1:
-            np_down = 1 if npchrom == 11 else 7
-
-        return np_down
+        return 1 if npchrom == 11 else 7
 
     def _create_naccform(self) -> Optional[int]:
         """Creates the NACCFORM variable.
