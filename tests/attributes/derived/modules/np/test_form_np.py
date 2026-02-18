@@ -225,6 +225,7 @@ class TestCreateNACCPRIO:
         set_attribute(np_form_attribute_table, form_prefix, "npprion", 2)
         assert np_form_attribute._create_naccprio() == 0
 
+
 class TestGeneralNP:
     def test_np_formdate(self, np_form_attribute_table, form_prefix):
         """Test can handle both visitdate and npformdate."""
