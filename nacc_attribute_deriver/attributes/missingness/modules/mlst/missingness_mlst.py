@@ -35,6 +35,7 @@ class MilestoneMissingness(FormMissingnessCollection):
 
         return self.generic_missingness("udsactiv", int)
 
+
 class MilestoneSubjectMissingness(SubjectMissingnessCollection):
     """Class to handle Milestone missingness values at the subject level."""
 

@@ -589,6 +589,13 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def __handle_logiprev_gate(self, field: str) -> int:
         """Handles variables gated by LOGIPREV."""
+        formverc1 = self.uds.get_value("formverc1", int)
+        if not formverc1:
+            formverc1 = self.formver
+
+        if formverc1 == 3 and self.uds.is_initial():
+            return INFORMED_MISSINGNESS
+
         logiprev = self.uds.get_value("logiprev", int)
         if logiprev is None or logiprev in [88, 99]:
             return INFORMED_MISSINGNESS
@@ -621,7 +628,11 @@ class UDSFormC1C2Missingness(UDSMissingness):
         """Handles missingness for LOGIPREV."""
         # sometimes IVP passes through for V3, always return
         # informed missingness in that case
-        if self.formver == 3 and self.uds.is_initial():
+        formverc1 = self.uds.get_value("formverc1", int)
+        if not formverc1:
+            formverc1 = self.formver
+
+        if formverc1 == 3 and self.uds.is_initial():
             return INFORMED_MISSINGNESS
 
         return self.__handle_logiprev_gate("logiprev")

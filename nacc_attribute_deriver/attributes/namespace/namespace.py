@@ -388,7 +388,9 @@ class SubjectDerivedNamespace(BaseNamespace):
 
         return None
 
-    def get_prev(self, attribute: str, attr_type: Type[T]) -> Optional[DateTaggedValue]:
+    def get_prev_longitudinal_record(
+        self, attribute: str, attr_type: Type[T]
+    ) -> Optional[DateTaggedValue]:
         """Gets the previous record - pulls from longitudinal records.
 
         Args:
@@ -418,7 +420,9 @@ class SubjectDerivedNamespace(BaseNamespace):
 
         return prev_record
 
-    def get_prev_value(self, attribute: str, attr_type: Type[T]) -> Optional[T]:
+    def get_prev_longitudinal_value(
+        self, attribute: str, attr_type: Type[T]
+    ) -> Optional[T]:
         """Get prev value, if we don't necessarily care about date.
 
         Args:
@@ -427,7 +431,7 @@ class SubjectDerivedNamespace(BaseNamespace):
         Returns:
             The previous value
         """
-        prev_record = self.get_prev(attribute, attr_type)
+        prev_record = self.get_prev_longitudinal_record(attribute, attr_type)
         return None if prev_record is None else prev_record.value
 
 

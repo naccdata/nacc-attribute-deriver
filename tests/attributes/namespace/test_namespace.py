@@ -73,7 +73,7 @@ class TestSubjectDerivedNamespace:
             assert str(date_value.date) == f"202{i + 1}-01-01"
             assert date_value.value == i + 1
 
-        assert namespace.get_prev_value("var", int) == 3
+        assert namespace.get_prev_longitudinal_value("var", int) == 3
 
     def test_get_longitudinal_value_unsorted(self):
         """Test getting a longitudinal value when the original list is not
@@ -105,7 +105,7 @@ class TestSubjectDerivedNamespace:
             assert str(date_value.date) == f"202{i + 1}-01-01"
             assert date_value.value == i + 1
 
-        assert namespace.get_prev_value("var", int) == 4
+        assert namespace.get_prev_longitudinal_value("var", int) == 4
 
     def test_get_cross_sectional_value(self):
         """Test getting a cross sectional value."""
