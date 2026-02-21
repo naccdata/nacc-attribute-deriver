@@ -95,7 +95,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         we are not writing these values to the cross-sectional location
         in the first place.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value("naccbehf", int)
+        known_value = self.__subject_derived.get_prev_longitudinal_value(
+            "naccbehf", int
+        )
 
         # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
@@ -138,11 +140,16 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 naccbehf = p_befrst
 
         if self.formver >= 3:
-            if befpred == 0:
+            if befpred == 0:  # noqa: SIM102
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
-                elif p_befpred == 0:
-                    naccbehf = 99
+
+                # i think this is unneeded/actually now does the
+                # wrong thing with how we're handling prev/known values
+                # in general only known_value should set 99, not anything
+                # else in the logic
+                # elif p_befpred == 0:
+                #     naccbehf = 99
 
             if naccbehf == 88:
                 naccbehf = 0
@@ -159,7 +166,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         we are not writing these values to the cross-sectional location
         in the first place.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value("naccbefx", str)
+        known_value = self.__subject_derived.get_prev_longitudinal_value(
+            "naccbefx", str
+        )
         if known_value is None:
             known_value = INFORMED_BLANK
 
@@ -184,7 +193,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         we are not writing these values to the cross-sectional location
         in the first place.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value("nacccgfx", str)
+        known_value = self.__subject_derived.get_prev_longitudinal_value(
+            "nacccgfx", str
+        )
         if known_value is None:
             known_value = INFORMED_BLANK
 
@@ -223,7 +234,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         we are not writing these values to the cross-sectional location
         in the first place.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value("nacccogf", int)
+        known_value = self.__subject_derived.get_prev_longitudinal_value(
+            "nacccogf", int
+        )
 
         # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
@@ -240,7 +253,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_cogfrst = self.__get_last_set("cogfrst")
         p_cogfpred = self.__get_last_set("cogfpred")
 
-        # see note in _create_naccbehf; same situation
         if cogfrst is None and cogfpred is None:
             if self.formver >= 3:
                 return 0
@@ -262,8 +274,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
             nacccogf = cogfpred
         elif cogfpred == 0 and p_cogfpred is not None and p_cogfpred != 0:
             nacccogf = p_cogfpred
-        else:
-            nacccogf = 99
 
         if self.formver >= 3 and nacccogf == 88:
             nacccogf = 0
@@ -280,7 +290,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         we are not writing these values to the cross-sectional location
         in the first place.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value("naccmotf", int)
+        known_value = self.__subject_derived.get_prev_longitudinal_value(
+            "naccmotf", int
+        )
 
         # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
@@ -291,7 +303,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         mofrst = self.uds.get_value("mofrst", int)
 
-        # see note in _create_naccbehf; same situation
         if mofrst is None:
             if self.formver >= 3:
                 return 0

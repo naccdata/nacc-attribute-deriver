@@ -150,7 +150,7 @@ class TestUDSFormC1C2Missingness:
         Should parse from logidate_c1.
         """
         uds_table["file.info.forms.json"].update(
-            {"logidate_c1": "2025-06-09", "logiprev": 8}
+            {"logidate_c1": "2025-06-09", "logiprev": 8, "formverc1": 2}
         )
         attr = UDSFormC1C2Missingness(uds_table)
 

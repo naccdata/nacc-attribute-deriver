@@ -7,12 +7,33 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
     SubjectMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class MilestoneMissingness(FormMissingnessCollection):
     def _missingness_mlst(self, field: str, attr_type: Type[T]) -> T:
         """Defines general missingness for Milestone form variables."""
         return self.generic_missingness(field, attr_type)
+
+    def _missingness_protocol(self) -> int:
+        """Handles PROTOCOL (V2+)."""
+        # sometimes they set both PROTOCOL and UDSACTV, return
+        # based on the version
+        formver = self.form.get_value("formver", int)
+        if formver and formver < 2:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness("protocol", int)
+
+    def _missingness_udsactiv(self) -> int:
+        """Handles UDSACTIV (V1 only)."""
+        # sometimes they set both PROTOCOL and UDSACTV, return
+        # based on the version
+        formver = self.form.get_value("formver", int)
+        if formver and formver > 1:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness("udsactiv", int)
 
 
 class MilestoneSubjectMissingness(SubjectMissingnessCollection):

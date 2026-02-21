@@ -238,9 +238,14 @@ class UDSFormA5D2Missingness(UDSMissingness):
     def _missingness_diabtype(self) -> int:
         """Handles missingness for DIABTYPE."""
         diabetes = self.uds.get_value("diabetes", int)
-        if self.formver < 3 and diabetes in [1, 2]:
-            return 9
-        if self.formver < 4 and diabetes in [0, 9]:
+        formvera5 = self.uds.get_value("formvera5", int)
+        if not formvera5:
+            formvera5 = self.formver
+
+        if formvera5 < 3:
+            return INFORMED_MISSINGNESS
+
+        if formvera5 < 4 and diabetes in [0, 9]:
             return 8
 
         return self.__handle_a5d2_gate("diabetes", "diabtype")
