@@ -140,7 +140,7 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 naccbehf = p_befrst
 
         if self.formver >= 3:
-            if befpred == 0:
+            if befpred == 0:  # noqa: SIM102
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
 
@@ -253,7 +253,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         p_cogfrst = self.__get_last_set("cogfrst")
         p_cogfpred = self.__get_last_set("cogfpred")
 
-        # see note in _create_naccbehf; same situation
         if cogfrst is None and cogfpred is None:
             if self.formver >= 3:
                 return 0
@@ -304,7 +303,6 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         mofrst = self.uds.get_value("mofrst", int)
 
-        # see note in _create_naccbehf; same situation
         if mofrst is None:
             if self.formver >= 3:
                 return 0

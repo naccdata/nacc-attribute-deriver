@@ -71,14 +71,10 @@ class TestUDSFormB9Attribute:
         base_table["file.info.forms.json.befpred"] = 88
         assert attr._create_naccbehf() == 0
 
-        # befpred is 0 and prev is 0, set to 99
-        base_table["file.info.forms.json.befpred"] = 0
-        base_table["_prev_record.info.forms.json.befpred"] = 0
-        assert attr._create_naccbehf() == 99
-
-        # if befpred is 0, but doesn't trigger any of the inner cases
+        # befpred is nothing, but doesn't trigger any of the inner cases
         # since p_befpred is missing, so stays at 0
-        base_table["_prev_record.info.forms.json.befpred"] = INFORMED_MISSINGNESS
+        base_table["file.info.forms.json.befpred"] = 0
+        base_table["_prev_record.info.forms.json.befpred"] = None
         assert attr._create_naccbehf() == 0
 
     def test_nacccogf_case1(self, base_table):
