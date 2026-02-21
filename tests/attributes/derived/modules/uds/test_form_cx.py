@@ -84,7 +84,7 @@ class TestUDSFormCXAttribute:
 
         # mocatots is None
         set_attribute(table, form_prefix, "mocatots", None)
-        assert attr._create_naccmoca() == INFORMED_MISSINGNESS
+        assert attr._create_naccmoca() == 88
 
         # if packet IT, ignore
         set_attribute(table, form_prefix, "packet", "IT")

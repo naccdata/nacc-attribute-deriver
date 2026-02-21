@@ -123,9 +123,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
                 return INFORMED_MISSINGNESS
 
         mocatots = self.uds.get_value("mocatots", int)
-        if mocatots is None:
-            return INFORMED_MISSINGNESS
-        if mocatots == 88:
+        if mocatots is None or mocatots == 88:
             return 88
 
         educ = self.__get_educ()
@@ -159,9 +157,7 @@ class UDSFormCXAttribute(UDSAttributeCollection):
         mocbtots = self.uds.get_value("mocbtots", int)
         mocacomp = self.uds.get_value("mocacomp", int)
 
-        if mocbtots is None:
-            return INFORMED_MISSINGNESS
-        if mocbtots == 88 or mocacomp == 0:
+        if mocbtots is None or mocbtots == 88 or mocacomp == 0:
             return 88
 
         educ = self.__get_educ()
