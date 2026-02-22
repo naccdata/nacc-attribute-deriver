@@ -41,8 +41,8 @@ class TestUDSFormD1aMissingness:
         assert attr._missingness_cogoth3() == INFORMED_MISSINGNESS
 
         assert attr._missingness_cogothif() == 8
-        assert attr._missingness_cogoth2f() == INFORMED_MISSINGNESS
-        assert attr._missingness_cogoth3f() == INFORMED_MISSINGNESS
+        assert attr._missingness_cogoth2f() == 8
+        assert attr._missingness_cogoth3f() == 8
 
         assert attr._missingness_cogothx() == INFORMED_BLANK
         assert attr._missingness_cogoth2x() == INFORMED_BLANK
@@ -115,6 +115,24 @@ class TestUDSFormD1aMissingness:
         assert attr._missingness_cogothx() == "some text 2"
         assert attr._missingness_cogoth2x() == "some text 3"
         assert attr._missingness_cogoth3x() == INFORMED_BLANK
+
+    def cogoth_versions(self, uds_table):
+        """Test when the versions are different."""
+        uds_table['file.info.forms.json'].update({
+            "formver": 1.0,
+            "formverd1": 2.0,
+            "normcog": 0,
+            "cogoth": 0,
+            "cogoth2": 0,
+            "cogoth3": 0,
+            "cogohif": None,
+            "cogoth2f": None,
+            "cogoth3f": None
+        })
+
+        attr = UDSFormD1aMissingness(uds_table)
+        assert attr._missingness_cogoth2f() == 7
+        assert attr._missingness_cogoth3f() == 7
 
     def test_amndem(self, uds_table):
         """Tests missingness for AMNDEM."""

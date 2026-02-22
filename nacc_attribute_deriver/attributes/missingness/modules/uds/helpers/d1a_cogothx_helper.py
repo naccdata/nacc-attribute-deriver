@@ -42,7 +42,11 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
         }
 
         # REGRESSION - some explicitly set to -4 if formverd1 == 1.0
-        if self.uds.get_value("formverd1", float) == 1.0:
+        self.__formverd1 = self.uds.get_value("formverd1", float)
+        if not self.__formverd1:
+            self.__formverd1 == self.formver
+
+        if self.__formverd1 == 1.0:
             self.__attributes.update(
                 {
                     x: INFORMED_MISSINGNESS
@@ -121,6 +125,8 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
         # REGRESSION: In v1, COGOTH2F and COGOTH3F really should be -4
         # but it seems the following normcog recode logic is applied anyways
         # and overrides it, so manually handle the V1 case here
-        if self.formver == 1:
+        # This seems weird to me (like why only cogoth2f and cogoth3f?)
+        # so I recommend removing once curation is stable
+        if self.__formverd1 == 1:
             default = 8 if self.normcog == 1 else INFORMED_MISSINGNESS
             attributes.update({"cogoth2f": default, "cogoth3f": default})
