@@ -28,7 +28,7 @@ class UDSFormB9Missingness(UDSMissingness):
 
         # use formverb9 specifically, but fallback to formver
         # if not provided
-        formverb9 = self.uds.get_value("formverb9", int)
+        formverb9 = self.uds.get_value("formverb9", float)
         self.__formverb9 = formverb9 if formverb9 else self.formver
 
     def __handle_b9_prev_value(

@@ -19,7 +19,7 @@ class MilestoneMissingness(FormMissingnessCollection):
         """Handles PROTOCOL (V2+)."""
         # sometimes they set both PROTOCOL and UDSACTV, return
         # based on the version
-        formver = self.form.get_value("formver", int)
+        formver = self.form.get_value("formver", float)
         if formver and formver < 2:
             return INFORMED_MISSINGNESS
 
@@ -29,7 +29,7 @@ class MilestoneMissingness(FormMissingnessCollection):
         """Handles UDSACTIV (V1 only)."""
         # sometimes they set both PROTOCOL and UDSACTV, return
         # based on the version
-        formver = self.form.get_value("formver", int)
+        formver = self.form.get_value("formver", float)
         if formver and formver > 1:
             return INFORMED_MISSINGNESS
 

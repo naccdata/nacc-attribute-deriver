@@ -12,7 +12,7 @@ class UDSFormB2Missingness(UDSMissingness):
     def __init__(self, table: SymbolTable) -> None:
         super().__init__(table=table)
 
-        formverb2 = self.uds.get_value("formverb2", int)
+        formverb2 = self.uds.get_value("formverb2", float)
         self.__formverb2 = formverb2 if formverb2 else self.formver
 
     def __handle_b2_missingness(self, field: str) -> int:

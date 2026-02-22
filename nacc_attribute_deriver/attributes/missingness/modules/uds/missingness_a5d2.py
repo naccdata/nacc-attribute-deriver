@@ -238,7 +238,7 @@ class UDSFormA5D2Missingness(UDSMissingness):
     def _missingness_diabtype(self) -> int:
         """Handles missingness for DIABTYPE."""
         diabetes = self.uds.get_value("diabetes", int)
-        formvera5 = self.uds.get_value("formvera5", int)
+        formvera5 = self.uds.get_value("formvera5", float)
         if not formvera5:
             formvera5 = self.formver
 
