@@ -204,6 +204,6 @@ class TestCrossModuleAttribute:
             table["subject.info.working.cross-sectional.residenc"] = value
             assert attr._create_naccnurp() == 0
 
-        # if MLST explicitly sets to 0, should be 0
+        # if MLST not set, should be 0
         table["subject.info.working.cross-sectional.milestone-renurse"] = None
         assert attr._create_naccnurp() == 0
