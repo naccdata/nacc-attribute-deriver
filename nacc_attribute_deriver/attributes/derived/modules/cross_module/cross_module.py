@@ -19,7 +19,6 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     T,
     WorkingNamespace,
 )
-from nacc_attribute_deriver.schema.rule_types import DateTaggedValue
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import UNKNOWN_CODES
 from nacc_attribute_deriver.utils.date import (
@@ -46,12 +45,6 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def __working_value(self, attribute: str, attribute_type: Type[T]) -> Optional[T]:
         """Grab cross-sectional working value."""
         return self.__working.get_cross_sectional_value(attribute, attribute_type)
-
-    def __latest_working_value(
-        self, attribute: str, attribute_type: Type[T]
-    ) -> Optional[DateTaggedValue[T]]:
-        """Grab latest cross-sectional working value."""
-        return self.__working.get_cross_sectional_dated_value(attribute, attribute_type)
 
     def __determine_death_date(self) -> Optional[date]:
         """Determines the death status, and returns the death date if found.
@@ -293,12 +286,12 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if not self.__active_center or self._create_naccdied() == 1:
             return 0
 
-        # if milestone marked subject as discontinued, and is the latest form,
+        # if milestone marked subject as discontinued, and is the latest date,
         # return 0. if there were UDS visits after discontinuation was marked,
         # basically treat as NOT discontinued and pass through
-        mlst_discontinued = self.__latest_working_value("milestone-discontinued", int)
-        if mlst_discontinued and mlst_discontinued.value == 1:  # noqa: SIM102
-            if not self.uds_came_after(mlst_discontinued.date):
+        mlst_discontinued = self.__working_value("milestone-discontinued", int)
+        if mlst_discontinued == 1:  # noqa: SIM102
+            if not self.check_uds_after_discontinued_mlst():
                 return 0
 
         # if UDS A1 prespart == 1 (initial evaluation only), return 0
@@ -364,26 +357,40 @@ class CrossModuleAttributeCollection(AttributeCollection):
             to a nursing home (RENURSE == 1)
                 This can become a 0 if a later UDS has
                 residenc != 4,9 (primary residence is nursing home or unknown)
-
-                This can also become 0 if a subsequent MLST form EXPLICITLY sets
-                RENURSE == 0 in a later MLST form
         """
         # get most recent MLST value of renurse
-        renurse_record = self.__latest_working_value("milestone-renurse", int)
+        renurse = self.__working_value("milestone-renurse", int)
 
         # if MLST value (RENURSE/NURSEHOM) != 1, return 0
-        if not renurse_record or renurse_record.value != 1:
+        if renurse != 1:
             return 0
 
-        # after this point assume renurse_record.value == 1
+        # after this point assume renurse == 1
         # if a later UDS visit has residenc != null,4,9 then return 0
-        if self.uds_came_after(renurse_record.date):
+        naccnrdy = self.__subject_derived.get_cross_sectional_value("naccnrdy", int)
+        naccnrmo = self.__subject_derived.get_cross_sectional_value("naccnrmo", int)
+        naccnryr = self.__subject_derived.get_cross_sectional_value("naccnryr", int)
+        uds_date = self.__get_latest_visitdate("uds-visitdates")
+
+        if date_came_after_sparse(uds_date, naccnryr, naccnrmo, naccnrdy):
             residenc = self.__working_value("residenc", int)
-            if residenc is not None and residenc in [4, 9]:
+            if residenc is not None and residenc not in [4, 9]:
                 return 0
 
         # since MLST set RENURSE == 1 and UDS did not override, return 1
         return 1
+
+    def check_uds_after_discontinued_mlst(self) -> bool:
+        """Determine UDS came after discontinued MLST.
+
+        Returns True if an UDS visit came after the discontinued date.
+        """
+        discyr = self.__working_value("milestone-discyr", int)
+        discmo = self.__working_value("milestone-discmo", int)
+        discday = self.__working_value("milestone-discday", int)
+        uds_date = self.__get_latest_visitdate("uds-visitdates")
+
+        return date_came_after_sparse(uds_date, discyr, discmo, discday)
 
     def determine_discontinued_date(self, attribute: str, default: int) -> int:
         """Determine the discontinued date part; compare to UDS/NP.
@@ -391,13 +398,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         If UDS form came AFTER MLST, return the default (even if MLST
         said discontinued.
         """
-        discyr = self.__working_value("milestone-discyr", int)
-        discmo = self.__working_value("milestone-discmo", int)
-        discday = self.__working_value("milestone-discday", int)
-        uds_date = self.__get_latest_visitdate("uds-visitdates")
-
         # if UDS came after MLST, return default
-        if date_came_after_sparse(uds_date, discyr, discmo, discday):
+        if self.check_uds_after_discontinued_mlst():
             return default
 
         # MLST is the latest (or only form, which technically isn't possible);

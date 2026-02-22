@@ -34,7 +34,7 @@ def table() -> SymbolTable:
                             "milestone-discyr": 2050,
                             "milestone-discmo": 3,
                             "milestone-discday": 1,
-                            "milestone-renurse": {"date": "2025-01-01", "value": 1},
+                            "milestone-renurse": 1,
                             "milestone-visitdates": ["2025-01-01", "2050-03-01"],
                         }
                     }
@@ -198,15 +198,12 @@ class TestCrossModuleAttribute:
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccnurp() == 1
 
-        # if UDS has residenc == 4 or 9 and came later,
+        # if UDS has residenc != 4 or 9 and came later,
         # set to 0
-        for value in [4, 9]:
+        for value in [1, 2, 3]:
             table["subject.info.working.cross-sectional.residenc"] = value
             assert attr._create_naccnurp() == 0
 
-        # if MLST explicitly sets to 0, should be 0
-        table["subject.info.working.cross-sectional.milestone-renurse"] = {
-            "date": "2026-01-01",
-            "value": 0,
-        }
+        # if MLST not set, should be 0
+        table["subject.info.working.cross-sectional.milestone-renurse"] = None
         assert attr._create_naccnurp() == 0

@@ -18,13 +18,13 @@ mlst,milestone_visitdates,subject.info.working.cross-sectional.milestone-visitda
 mlst,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,FALSE
 mlst,milestone_death_month,subject.info.working.cross-sectional.milestone-death-month,update,FALSE
 mlst,milestone_deceased,subject.info.working.cross-sectional.milestone-deceased,update,FALSE
-mlst,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued,update,TRUE
+mlst,milestone_discontinued,subject.info.working.cross-sectional.milestone-discontinued,update,FALSE
 mlst,milestone_discday,subject.info.working.cross-sectional.milestone-discday,update,FALSE
 mlst,milestone_discmo,subject.info.working.cross-sectional.milestone-discmo,update,FALSE
 mlst,milestone_discyr,subject.info.working.cross-sectional.milestone-discyr,update,FALSE
 mlst,milestone_protocol,subject.info.working.cross-sectional.milestone-protocol,update,FALSE
 mlst,milestone_udsactiv,subject.info.working.cross-sectional.milestone-udsactiv,update,FALSE
-mlst,milestone_renurse,subject.info.working.cross-sectional.milestone-renurse,update,TRUE
+mlst,milestone_renurse,subject.info.working.cross-sectional.milestone-renurse,update,FALSE
 mlst,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE
 mlst,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE
 mlst,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE

@@ -81,7 +81,7 @@ class MilestoneAttributeCollection(AttributeCollection):
 
     def _create_milestone_deceased(self) -> Optional[int]:
         """Milestone DECEASED."""
-        return self.__deceased
+        return 1 if self.__deceased == 1 else None
 
     def _create_milestone_discontinued(self) -> Optional[int]:
         """Determine if subject is discontinued.
@@ -106,7 +106,8 @@ class MilestoneAttributeCollection(AttributeCollection):
         if rejoin == 1:
             return 0
 
-        return self.__milestone.get_value("discont", int)
+        discont = self.__milestone.get_value("discont", int)
+        return 1 if discont == 1 else None
 
     def _create_milestone_protocol(self) -> Optional[int]:
         """Return the milestone protocol.
@@ -242,8 +243,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         return max(2002, result)
 
     def _create_milestone_renurse(self) -> Optional[int]:
-        """Determine RENURSE (NURSEHOM in older versions), needs to be dated to
-        compute NACCNURP.
+        """Determine RENURSE (NURSEHOM in older versions).
 
         Note if this function returns None, it will not update/override
         anything a previous MLST form set.
@@ -262,4 +262,4 @@ class MilestoneAttributeCollection(AttributeCollection):
             if all(x is not None and x not in [88, 8888] for x in nurse_vars):
                 return 1
 
-        return renurse
+        return 1 if renurse == 1 else None
