@@ -65,7 +65,11 @@ class CrossModuleAttributeCollection(AttributeCollection):
         return None
 
     def __get_latest_visitdate(self, attribute: str) -> Optional[date]:
-        """Get the latest UDS visitdate, if UDS visits exist."""
+        """Get the latest visitdate, if visits exist.
+
+        Returns:
+            The latest visitdate, if found, None otherwise
+        """
         visitdates = self.__working_value(attribute, list)
         if not visitdates:
             return None
@@ -329,13 +333,20 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if not self.__active_center:
             return 1
 
+        # from UDS form; if prespart = 1, means initial evaluation only
+        # use this to override naccnovs = 0
+        prespart = self.__determine_prespart()
+
         # if UDS is the latest one, check UDS prespart == 1 to return 8,
         # otherwise purely based on MLST
         recent_mlst = self.__get_latest_visitdate("milestone-visitdates")
         if recent_mlst:
-            prespart = self.__determine_prespart()
             if self.uds_came_after(recent_mlst) and prespart == 1:
                 return 8
+
+        # if no MLST but prespart = 1, return 8 as well
+        elif prespart == 1:
+            return 8
 
         naccactv = self._create_naccactv()
         if naccactv == 1:
