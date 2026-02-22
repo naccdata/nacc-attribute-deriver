@@ -286,7 +286,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if not self.__active_center or self._create_naccdied() == 1:
             return 0
 
-        # if milestone marked subject as discontinued, and is the latest form,
+        # if milestone marked subject as discontinued, and is the latest date,
         # return 0. if there were UDS visits after discontinuation was marked,
         # basically treat as NOT discontinued and pass through
         mlst_discontinued = self.__working_value("milestone-discontinued", int)
@@ -381,7 +381,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         return 1
 
     def check_uds_after_discontinued_mlst(self) -> bool:
-        """Determine if discontinued came after latest UDS visit.
+        """Determine UDS came after discontinued MLST.
 
         Returns True if an UDS visit came after the discontinued date.
         """
