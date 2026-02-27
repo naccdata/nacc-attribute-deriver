@@ -2,7 +2,15 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 2.1.4 - 2.1.6
+## 2.2.0
+
+* Refactors code based on recent discussions involving:
+    * A3 derived variables (`NACCFAM`, `NACCMOM`, and `NACCDAD`)
+    * D1a `NACCMCII`
+    * Milestone-related variables
+* Other edge case fixes
+
+## 2.1.4 - 2.1.5
 
 * More edge case fixes
 

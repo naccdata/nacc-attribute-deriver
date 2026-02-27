@@ -127,7 +127,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if not age:
             return 999
 
-        return age
+        # set minimum of 18
+        return max(age, 18)
 
     def _create_naccautp(self) -> int:
         """Creates NACCAUTP - similar to NACCDIED but also
@@ -174,11 +175,11 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         result = calculate_months(last_visit, deathdate)
 
-        # limit 0 - 100
         if result is None or result in UNKNOWN_CODES:
             return 999
 
-        return min(result, 100)
+        # no longer enforcing a max, so just return as-is
+        return result
 
     # Tried to use all things described in the rdd-np. Many seemed not
     # in the SAS code. Not sure if the MDS "vitalst" is passed through or not.
