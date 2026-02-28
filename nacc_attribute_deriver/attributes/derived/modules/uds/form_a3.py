@@ -7,6 +7,7 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
@@ -24,9 +25,24 @@ class UDSFormA3Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
 
-        handler = LegacyFamilyHandler if self.formver < 4 else FamilyHandler
-        self.__family = handler(uds=self.uds, prev_record=self.prev_record)
+        family_class = A3FamilyHandlerPrevVisit
+        if self.submitted:
+            formvera3 = self.uds.get_value("formvera3", float)
+            if not formvera3:
+                formvera3 = self.formver
+
+            if formvera3 == 1:
+                family_class = A3FamilyHandlerV1
+            elif formvera3 == 2:
+                family_class = A3FamilyHandlerV2
+            elif formvera3 == 3:
+                family_class = A3FamilyHandlerV3
+            else:
+                family_class = A3FamilyHandlerV4
+
+        self.__family = family_class(self.uds, self.__working)
 
     @property
     def submitted(self) -> bool:
@@ -40,51 +56,49 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         # required in V4
         return True
 
-    def __handle_parents(self, derived_var: str, parent: FamilyMemberHandler) -> int:
-        """Handles NACCDAD and NACCMOM."""
+    def __handle_naccfamily(self, derived_var: str, result: int) -> int:
+        """Handles NACCFAM, NACCMOM, and NACCDAD."""
         known_value = self.__subject_derived.get_cross_sectional_value(derived_var, int)
-        # REGRESSION: we are now allowing these values to flip/flop, but
-        # to match regression make it stay 1 if its ever 1
-        # if known_value == 1:
-        #     return known_value
 
         if not self.submitted:
             return known_value if known_value is not None else INFORMED_MISSINGNESS
 
-        return self.__family.determine_naccparent(
-            parent,  # type: ignore
-            known_value if known_value is not None else 9,
-        )
+        # 9 cannot override 0 or 1
+        if result == 9 and known_value in [0, 1]:
+            return known_value
+
+        return result
 
     def _create_naccdad(self) -> int:
         """Creates NACCDAD - Indicator of father with cognitive
         impariment.
         """
-        return self.__handle_parents("naccdad", self.__family.dad)  # type: ignore
+        return self.__handle_naccfamily("naccdad", self.__family.dad_status)
 
     def _create_naccmom(self) -> int:
         """Creates NACCMOM - Indicator of mother with cognitive
         impairment.
         """
-        return self.__handle_parents("naccmom", self.__family.mom)  # type: ignore
+        return self.__handle_naccfamily("naccmom", self.__family.mom_status)
 
     def _create_naccfam(self) -> int:
         """Creates NACCFAM - Indicator of first-degree family
         member with cognitive impariment.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value("naccfam", int)
+        return self.__handle_naccfamily("naccfam", self.__family.family_status())
 
-        # REGRESSION: we are now allowing these values to flip/flop, but
-        # to match regression make it stay 1 if its ever 1
-        # if known_value == 1:
-        #     return known_value
+    def _create_cognitive_status_mom(self) -> int:
+        return self.__family.mom_status
 
-        if not self.submitted:
-            return known_value if known_value is not None else INFORMED_MISSINGNESS
+    def _create_cognitive_status_dad(self) -> int:
+        return self.__family.dad_status
 
-        return self.__family.determine_naccfam(  # type: ignore
-            known_value if known_value is not None else 9
-        )
+    def _create_cognitive_status_sib(self) -> int:
+        return self.__family.sib_status
+
+    def _create_cognitive_status_kid(self) -> int:
+        return self.__family.kid_status
+
 
     ###########
     # V3 ONLY #
