@@ -79,7 +79,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
         if not self.__visitdate:
             # could be any one of these; but generally we expect
             # FRMDATEA4 for V1 and FRMDATEA4D for anything else
-            for date_attribute in ['frmdatea4d', 'frmdatea4', 'frmdatea4g']:
+            for date_attribute in ["frmdatea4d", "frmdatea4", "frmdatea4g"]:
                 formdate = self.__meds.get_value(date_attribute, str)
                 self.__visitdate = date_from_form_date(formdate)
                 if self.__visitdate:

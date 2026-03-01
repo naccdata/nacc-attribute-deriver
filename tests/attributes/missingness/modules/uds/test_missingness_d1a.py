@@ -118,17 +118,19 @@ class TestUDSFormD1aMissingness:
 
     def cogoth_versions(self, uds_table):
         """Test when the versions are different."""
-        uds_table['file.info.forms.json'].update({
-            "formver": 1.0,
-            "formverd1": 2.0,
-            "normcog": 0,
-            "cogoth": 0,
-            "cogoth2": 0,
-            "cogoth3": 0,
-            "cogohif": None,
-            "cogoth2f": None,
-            "cogoth3f": None
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 1.0,
+                "formverd1": 2.0,
+                "normcog": 0,
+                "cogoth": 0,
+                "cogoth2": 0,
+                "cogoth3": 0,
+                "cogohif": None,
+                "cogoth2f": None,
+                "cogoth3f": None,
+            }
+        )
 
         attr = UDSFormD1aMissingness(uds_table)
         assert attr._missingness_cogoth2f() == 7

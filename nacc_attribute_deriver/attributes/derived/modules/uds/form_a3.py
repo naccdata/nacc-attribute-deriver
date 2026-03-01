@@ -15,8 +15,13 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
 
-from .helpers.family_handler import FamilyHandler, LegacyFamilyHandler
-from .helpers.family_member_handler import FamilyMemberHandler
+from .helpers.a3_family_handler import (
+    A3FamilyHandler,
+    A3FamilyHandlerV1,
+    A3FamilyHandlerV2,
+    A3FamilyHandlerV3,
+    A3FamilyHandlerV4,
+)
 
 
 class UDSFormA3Attribute(UDSAttributeCollection):
@@ -27,22 +32,8 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table=table)
         self.__working = WorkingNamespace(table=table)
 
-        family_class = A3FamilyHandlerPrevVisit
-        if self.submitted:
-            formvera3 = self.uds.get_value("formvera3", float)
-            if not formvera3:
-                formvera3 = self.formver
-
-            if formvera3 == 1:
-                family_class = A3FamilyHandlerV1
-            elif formvera3 == 2:
-                family_class = A3FamilyHandlerV2
-            elif formvera3 == 3:
-                family_class = A3FamilyHandlerV3
-            else:
-                family_class = A3FamilyHandlerV4
-
-        self.__family = family_class(self.uds, self.__working)
+        family_handler_class = self.__determine_family_handler()
+        self.__family = family_handler_class(self.uds, self.__working)
 
     @property
     def submitted(self) -> bool:
@@ -55,6 +46,42 @@ class UDSFormA3Attribute(UDSAttributeCollection):
 
         # required in V4
         return True
+
+    def __determine_family_handler(self) -> A3FamilyHandler:
+        """Determine which family handler is used.
+
+        Depends on the form version (and yes there is different logic
+        for every version), and then whether or not that form was
+        changed.
+        """
+        # formvera3 is from legacy forms (V1 - V3) and may not
+        # necessarily be the same as the overall formver
+        formvera3 = self.uds.get_value("formvera3", float)
+        if not formvera3:
+            formvera3 = self.formver
+
+        if self.submitted:
+            # For V3 and V4, there is no A3CHG or similar variable
+            if self.formver == 4:
+                return A3FamilyHandlerV4
+            if formvera3 == 3:
+                return A3FamilyHandlerV3
+
+            # for V1 and V2, see if A3CHG != 1 in FVP, which means
+            # data on the form has changed. If it == 1, then no
+            # data was changed, and we can just bring forward previous
+            # values
+            # TODO: it may not be worth to check the chg variables at all,
+            # or even whether they submitted the form, since for legacy it
+            # is not certain how reliable they are
+            if self.uds.is_initial() or self.uds.get_value("a3chg", int) != 1:
+                if formvera3 == 2:
+                    return A3FamilyHandlerV2
+                if formvera3 == 1:
+                    return A3FamilyHandlerV1
+
+        # in all other cases, just carry forward the previous values
+        return A3FamilyHandlerPrevVisit
 
     def __handle_naccfamily(self, derived_var: str, result: int) -> int:
         """Handles NACCFAM, NACCMOM, and NACCDAD."""
@@ -88,17 +115,20 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         return self.__handle_naccfamily("naccfam", self.__family.family_status())
 
     def _create_cognitive_status_mom(self) -> int:
+        """Keep track of mom's cognitive status."""
         return self.__family.mom_status
 
     def _create_cognitive_status_dad(self) -> int:
+        """Keep track of dad's cognitive status."""
         return self.__family.dad_status
 
     def _create_cognitive_status_sib(self) -> int:
+        """Keep track of sibling's cognitive status."""
         return self.__family.sib_status
 
     def _create_cognitive_status_kid(self) -> int:
+        """Keep track of kid's cognitive status."""
         return self.__family.kid_status
-
 
     ###########
     # V3 ONLY #

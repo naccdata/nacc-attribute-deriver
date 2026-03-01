@@ -1,6 +1,6 @@
 """Tests generate_race_* specifically."""
 
-from nacc_attribute_deriver.attributes.derived.modules.uds.helpers.generate_race import (  # noqa: E501
+from nacc_attribute_deriver.attributes.derived.modules.uds.helpers.a1a2_generate_race import (  # noqa: E501
     generate_race_v3,
     generate_race_v4,
 )

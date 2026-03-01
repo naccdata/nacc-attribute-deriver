@@ -228,6 +228,10 @@ uds,naccom,subject.info.derived.cross-sectional.naccom,update,FALSE
 uds,naccoms,subject.info.derived.cross-sectional.naccoms,update,FALSE
 uds,naccomsx,subject.info.derived.cross-sectional.naccomsx,update,FALSE
 uds,naccomx,subject.info.derived.cross-sectional.naccomx,update,FALSE
+uds,cognitive_status_mom,subject.info.working.cross-sectional.cognitive-status-mom,update,FALSE
+uds,cognitive_status_dad,subject.info.working.cross-sectional.cognitive-status-dad,update,FALSE
+uds,cognitive_status_sib,subject.info.working.cross-sectional.cognitive-status-sib,update,FALSE
+uds,cognitive_status_kid,subject.info.working.cross-sectional.cognitive-status-kid,update,FALSE
 uds,naccamd,file.info.derived.naccamd,update,FALSE
 uds,naccamd,subject.info.derived.longitudinal.naccamd,list,TRUE
 uds,naccaaas,file.info.derived.naccaaas,update,FALSE

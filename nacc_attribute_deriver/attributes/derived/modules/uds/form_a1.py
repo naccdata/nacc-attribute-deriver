@@ -22,7 +22,7 @@ from nacc_attribute_deriver.utils.date import (
 )
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
-from .helpers.generate_race import generate_race_v3, generate_race_v4
+from .helpers.a1a2_generate_race import generate_race_v3, generate_race_v4
 
 
 class UDSFormA1Attribute(UDSAttributeCollection):
