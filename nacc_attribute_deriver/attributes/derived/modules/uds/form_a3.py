@@ -1,6 +1,6 @@
 """Derived variables from form A3: Family History."""
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
@@ -21,6 +21,7 @@ from .helpers.a3_family_handler import (
     A3FamilyHandlerV2,
     A3FamilyHandlerV3,
     A3FamilyHandlerV4,
+    A3FamilyHandlerPrevVisit,
 )
 
 
@@ -33,7 +34,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         self.__working = WorkingNamespace(table=table)
 
         family_handler_class = self.__determine_family_handler()
-        self.__family = family_handler_class(self.uds, self.__working)
+        self.__family = family_handler_class(self.uds, table)
 
     @property
     def submitted(self) -> bool:
@@ -47,7 +48,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         # required in V4
         return True
 
-    def __determine_family_handler(self) -> A3FamilyHandler:
+    def __determine_family_handler(self) -> Type[A3FamilyHandler]:
         """Determine which family handler is used.
 
         Depends on the form version (and yes there is different logic
@@ -100,35 +101,35 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         """Creates NACCDAD - Indicator of father with cognitive
         impariment.
         """
-        return self.__handle_naccfamily("naccdad", self.__family.dad_status)
+        return self.__handle_naccfamily("naccdad", self.__family.record.dad_status)
 
     def _create_naccmom(self) -> int:
         """Creates NACCMOM - Indicator of mother with cognitive
         impairment.
         """
-        return self.__handle_naccfamily("naccmom", self.__family.mom_status)
+        return self.__handle_naccfamily("naccmom", self.__family.record.mom_status)
 
     def _create_naccfam(self) -> int:
         """Creates NACCFAM - Indicator of first-degree family
         member with cognitive impariment.
         """
-        return self.__handle_naccfamily("naccfam", self.__family.family_status())
+        return self.__handle_naccfamily("naccfam", self.__family.record.family_status())
 
     def _create_cognitive_status_mom(self) -> int:
         """Keep track of mom's cognitive status."""
-        return self.__family.mom_status
+        return self.__family.record.mom_status
 
     def _create_cognitive_status_dad(self) -> int:
         """Keep track of dad's cognitive status."""
-        return self.__family.dad_status
+        return self.__family.record.dad_status
 
     def _create_cognitive_status_sib(self) -> int:
         """Keep track of sibling's cognitive status."""
-        return self.__family.sib_status
+        return self.__family.record.sib_status
 
     def _create_cognitive_status_kid(self) -> int:
         """Keep track of kid's cognitive status."""
-        return self.__family.kid_status
+        return self.__family.record.kid_status
 
     ###########
     # V3 ONLY #

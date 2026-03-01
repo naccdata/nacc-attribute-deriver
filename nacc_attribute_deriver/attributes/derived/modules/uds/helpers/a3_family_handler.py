@@ -1,6 +1,7 @@
 """Handles NACCFAM, NACCMOM, and NACCDAD logic."""
 
-from typing import ClassVar, List
+from abc import ABC, abstractmethod
+from typing import ClassVar, Literal, List, Optional
 from pydantic import BaseModel, ValidationError, field_validator
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
@@ -12,9 +13,14 @@ from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
 )
+from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
+
+PARENTS = Literal["mom", "dad"]
+SIBKIDS = Literal["sib", "kid"]
 
 
 class FamilyStatusRecord(BaseModel):
@@ -57,19 +63,23 @@ class FamilyStatusRecord(BaseModel):
         return 9
 
 
-class A3FamilyHandler:
-    def __init__(self, uds: UDSNamespace, working: WorkingNamespace) -> None:
+class A3FamilyHandler(ABC):
+    def __init__(self, uds: UDSNamespace, table: SymbolTable) -> None:
         self.uds = uds
-        self.working = working
-        self.family_record = self.make_family_record()
+        self.__working = WorkingNamespace(table=table)
+        self.__record = self.make_family_record()
 
     def __return_working_value(self, attribute: str) -> int:
         """Return working value.
 
         If not defined, then set to 9 (unknown).
         """
-        result = self.working.get_cross_sectional_value(attribute)
+        result = self.__working.get_cross_sectional_value(attribute, int)
         return result if result is not None else INFORMED_MISSINGNESS
+
+    @property
+    def record(self) -> FamilyStatusRecord:
+        return self.__record
 
     @property
     def prev_mom(self) -> int:
@@ -91,16 +101,58 @@ class A3FamilyHandler:
     def make_family_record(self) -> FamilyStatusRecord:
         pass
 
-    def get_sibkids_amount(self, field: str) -> Optional[int]:
-        """Get number of SIBS/KIDS; needed for all versions."""
-        # get SIBS/KIDS
-        num_group = self.uds.get_value(field, int)
+    @abstractmethod
+    def get_sibkid_group_statuses(self, prefix: SIBKIDS, num_group: int) -> List[int]:
+        """Get the sib/kids statuses for all members.
+
+        Args:
+            prefix: The prefix; should be one of sib or kid
+            num_group: number of members in the group to evaluate
+        Returns:
+            List of status results for each member in the group
+        """
+
+    def run_sibkid_status_logic(self, prefix: SIBKIDS, prev_value: int) -> int:
+        """Run the SIBS/KIDS logic, which has a lot of the same scaffolding
+        just slightly different inner logic.
+
+        Args:
+            prefix: The prefix; should be one of sib or kid
+            prev_value: the previous status for this group
+        Returns:
+            the status for this group as of this visit
+        """
+        # get SIBS/KIDS variable
+        num_group = self.uds.get_value(f"{prefix}s", int)
+
+        # if no SIBS/KIDS, no possible cognitive status other than no
+        if num_group == 0:
+            return 0
 
         # if SIBS/KIDS is unknown, we need to loop through and check all variables
         if num_group in [77, 99]:
-            return 20 if field == "sibs" else 15
+            return 20 if prefix == "sib" else 15
 
-        return num_group
+        # siblings or kids defined; need to iterate over and collect all attributes
+        if num_group is not None and num_group > 0:
+            group_statuses = self.get_sibkid_group_statuses(prefix, num_group)
+
+            if any(x == 1 for x in group_statuses):
+                return 1
+
+            if all(x == 0 for x in group_statuses):
+                return 0
+
+            if prev_value in [0, 1]:
+                return prev_value
+
+            if any(x in [0, 9] for x in group_statuses):
+                return 9
+
+        if prev_value in [0, 1, 9]:
+            return prev_value
+
+        return INFORMED_MISSINGNESS
 
 
 class A3FamilyHandlerPrevVisit(A3FamilyHandler):
@@ -123,62 +175,56 @@ class A3FamilyHandlerV1(A3FamilyHandler):
         return FamilyStatusRecord(
             mom_status=self.__determine_parent_status("momdem", self.prev_mom),
             dad_status=self.__determine_parent_status("daddem", self.prev_dad),
-            sib_status=self.__determine_sibkid_status("sib", "sibsdem", self.prev_sib),
-            kid_status=self.__determine_sibkid_status("kid", "kidsdem", self.prev_kid),
+            sib_status=self.__determine_sibkid_status("sib", self.prev_sib),
+            kid_status=self.__determine_sibkid_status("kid", self.prev_kid),
         )
 
     def __determine_parent_status(self, field: str, prev_value: int) -> int:
         """Determine the parent member's status."""
         # only check if parent changed
-        if not self.uds.is_initial() and self.uds.get_value("parchg") != 1:
+        if not self.uds.is_initial() and self.uds.get_value("parchg", int) != 1:
             return prev_value
 
         demented = self.uds.get_value(field, int)
 
         # definitively set if 0 or 1
         if demented in [0, 1]:
-            return dem_value
+            return demented
 
         # at this point it's 9 or blank or pulling from the
         # previous value, so just return what is already set
         return prev_value
 
-    def __determine_sibkid_status(
-        self, prefix: str, field: str, prev_value: int
-    ) -> int:
+    def __determine_sibkid_status(self, prefix: SIBKIDS, prev_value: int) -> int:
         """Determine the sib or kid status."""
-        if not self.uds.is_initial() and self.uds.get_value(f"{prefix}chg") != 1:
+        # if no change, return previous value
+        if not self.uds.is_initial() and self.uds.get_value(f"{prefix}chg", int) != 1:
             return prev_value
 
-        # if no SIBS/KIDS, no possible cognitive status other than no
-        num_group = self.get_sibkids_amount(f"{prefix}s")
-        if num_group == 0:
-            return 0
+        return self.run_sibkid_status_logic(prefix, prev_value)
 
-        # at least one sib/kid, check if demented explicitly reported
-        # if they're 99 (unknown) fall through to base case
-        if num_group is not None and num_group > 0:
-            demented = self.uds.get_value(field, int)
-            if demented is not None:
-                # definitely a 0 (88 is N/A which usually means no sibs/kids
-                # but check anyways)
-                if demented in [0, 88]:
-                    return 0
+    def get_sibkid_group_statuses(self, prefix: SIBKIDS, num_group: int) -> List[int]:
+        """Get the sib/kids statuses for all members.
 
-                # means at least one sibs/kids is demented, definitely a 1
-                if demented > 0 and demented not in [88, 99]:
-                    return 1
+        For V1, it's actually in one variable, so we ignore num_group
+        and just return a list of size 1 with the determined status from
+        this variable.
+        """
+        demented = self.uds.get_value(f"{prefix}sdem", int)
+        if demented is not None:
+            # definitely a 0 (88 is N/A which usually means no sibs/kids
+            # but check anyways)
+            if demented in [0, 88]:
+                return [0]
 
-                if prev_value in [0, 1]:
-                    return prev_value
+            # means at least one sibs/kids is demented, definitely a 1
+            if demented > 0 and demented not in [88, 99]:
+                return [1]
 
-                if demented == 99:
-                    return 9
+            if demented == 99:
+                return [9]
 
-        if prev_value in [0, 1, 9]:
-            return prev_value
-
-        return INFORMED_MISSINGNESS
+        return [INFORMED_MISSINGNESS]
 
 
 class A3FamilyHandlerV2(A3FamilyHandler):
@@ -198,58 +244,41 @@ class A3FamilyHandlerV2(A3FamilyHandler):
         Same as V1, except swapped meaning of PARCHG.
         """
         # only check if parent changed
-        if not self.uds.is_initial() and self.uds.get_value("parchg") != 0:
+        if not self.uds.is_initial() and self.uds.get_value("parchg", int) != 0:
             return prev_value
 
         demented = self.uds.get_value(field, int)
 
         # definitively set if 0 or 1
         if demented in [0, 1]:
-            return dem_value
+            return demented
 
         # at this point it's 9 or blank or pulling from the
         # previous value, so just return what is already set
         return prev_value
 
-    def __determine_sibkid_status(self, prefix: str, prev_value: int) -> int:
-        """Determine the sib or kid status.
-
-        Unlike V1, we now need to loop over the total possible number of
-        sibs/kids instead of just looking at SIBSDEM and KIDSDEM.
-        """
+    def __determine_sibkid_status(self, prefix: SIBKIDS, prev_value: int) -> int:
+        """Determine the sib or kid status."""
         # if no change, return previous value
         if not self.uds.is_initial() and self.uds.get_value(f"{prefix}chg", int) != 0:
             return prev_value
 
-        # get SIBS/KIDS
-        num_group = self.get_sibkids_amount(f"{prefix}s")
+        return self.run_sibkid_status_logic(prefix, prev_value)
 
-        # if no SIBS/KIDS, no possible cognitive status other than no
-        if num_group == 0:
-            return 0
+    def get_sibkid_group_statuses(self, prefix: SIBKIDS, num_group: int) -> List[int]:
+        """Get the sib/kids statuses for all members.
 
-        # siblings or kids defined; need to iterate over and collect all attributes
-        if num_group is not None and num_group > 0:
-            all_group_statuses = []
-            for i in range(num_group + 1):
-                all_group_statuses.append(self.uds.get_value(f"{prefix}{i}dem", int))
+        Unlike V1, we now need to loop over the total possible number of
+        sibs/kids instead of just looking at SIBSDEM and KIDSDEM.
+        """
+        group_statuses = []
+        for i in range(num_group + 1):
+            demented = self.uds.get_value(f"{prefix}{i}dem", int)
+            group_statuses.append(
+                demented if demented is not None else INFORMED_MISSINGNESS
+            )
 
-            if any(x == 1 for x in all_group_statuses):
-                return 1
-
-            if all(x == 0 for x in all_group_statuses):
-                return 0
-
-            if prev_value in [0, 1]:
-                return prev_value
-
-            if any(x in [0, 9] for x in all_group_statuses):
-                return 9
-
-        if prev_value in [0, 1, 9]:
-            return prev_value
-
-        return INFORMED_MISSINGNESS
+        return group_statuses
 
 
 class A3FamilyHandlerV3(A3FamilyHandler):
@@ -356,61 +385,40 @@ class A3FamilyHandlerV3(A3FamilyHandler):
 
         return INFORMED_MISSINGNESS
 
-    def __determine_parent_status(self, prefix: str, prev_value: int) -> int:
+    def __determine_parent_status(self, prefix: PARENTS, prev_value: int) -> int:
         """Determine the parent member's status."""
-        if not self.uds.is_initial() and self.uds.get_value("nwinfpar") != 1:
+        if not self.uds.is_initial() and self.uds.get_value("nwinfpar", int) != 1:
             return prev_value
 
         return self.__neur_and_prdx_status(f"{prefix}neur", f"{prefix}prdx", prev_value)
 
-    def __determine_sibkids_status(self, prefix: str, prev_value: int) -> int:
-        """Determine the sibs/kids group status."""
-        if not self.uds.is_initial() and self.uds.get_value(f"nwinf{prefix}") != 1:
+    def __determine_sibkid_status(self, prefix: SIBKIDS, prev_value: int) -> int:
+        """Determine the sib or kid status."""
+        # if no change, return previous value
+        if not self.uds.is_initial() and self.uds.get_value(f"nwinf{prefix}", int) != 1:
             return prev_value
 
-        # get SIBS/KIDS
-        num_group = self.get_sibkids_amount(f"{prefix}s")
+        return self.run_sibkid_status_logic(prefix, prev_value)
 
-        # if no SIBS/KIDS, no possible cognitive status other than no
-        if num_group == 0:
-            return 0
+    def get_sibkid_group_statuses(self, prefix: SIBKIDS, num_group: int) -> List[int]:
+        """Get the sib/kids statuses for all members."""
+        group_statuses = []
+        for i in range(1, num_group + 1):
+            group_statuses.append(
+                self.__neur_and_prdx_status(f"{prefix}{i}neu", f"{prefix}{i}pdx", None)
+            )
 
-        # siblings or kids defined; need to iterate over and collect all attributes
-        if num_group is not None and num_group > 0:
-            all_group_statuses = []
-            for i in range(1, num_group + 1):
-                all_group_statuses.append(
-                    self.__neur_and_prdx_status(
-                        f"{prefix}{i}neu", f"{prefix}{i}pdx", None
-                    )
-                )
-
-            if any(x == 1 for x in all_group_statuses):
-                return 1
-
-            if all(x == 0 for x in all_group_statuses):
-                return 0
-
-            if prev_value in [0, 1]:
-                return prev_value
-
-            if any(x in [0, 9] for x in all_group_statuses):
-                return 9
-
-        if prev_value in [0, 1, 9]:
-            return prev_value
-
-        return INFORMED_MISSINGNESS
+        return group_statuses
 
 
 class A3FamilyHandlerV4(A3FamilyHandler):
     """Handles determining family status for V4 forms."""
 
-    def __init__(self, uds: UDSNamespace, working: WorkingNamespace) -> None:
+    def __init__(self, uds: UDSNamespace, table: SymbolTable) -> None:
         # define prev namespace
         self.__prev_record = PreviousRecordNamespace(table=table)
 
-        super().__init__(uds=uds, working=working)
+        super().__init__(uds=uds, table=table)
 
     def make_family_record(self) -> FamilyStatusRecord:
         return FamilyStatusRecord(
@@ -421,8 +429,8 @@ class A3FamilyHandlerV4(A3FamilyHandler):
         )
 
     def __etpr_status(self, field: str, prev_value: Optional[int]) -> int:
-        """Get the member's ETPR status. They're technically string
-        values, but here we treat them as ints.
+        """Get the member's ETPR status. They're technically string values, but
+        here we treat them as ints.
 
         Note prev_etpr is different from prev_value.
             - prev_etpr is what ETPR specifically was set in the previous visit,
@@ -440,12 +448,12 @@ class A3FamilyHandlerV4(A3FamilyHandler):
             # defined. if it is not we have some other problem
             if prev_etpr is None:
                 raise AttributeDeriverError(
-                    f'{field} = 66 but previous {field} value not defined'
+                    f"{field} = 66 but previous {field} value not defined"
                 )
 
             etpr = prev_etpr
 
-        if etpr >= 1 and etpr <= 12:
+        if etpr is not None and etpr >= 1 and etpr <= 12:
             return 1
 
         if etpr == 0:
@@ -462,54 +470,25 @@ class A3FamilyHandlerV4(A3FamilyHandler):
 
         return INFORMED_MISSINGNESS
 
-
     def __determine_parent_status(self, field: str, prev_value: int) -> int:
         """Determine the parent member's status."""
-        if not self.uds.is_initial() and self.uds.get_value("nwinfpar") != 1:
+        if not self.uds.is_initial() and self.uds.get_value("nwinfpar", int) != 1:
             return prev_value
 
         return self.__etpr_status(field, prev_value)
 
-    def __determine_sibkids_status(self, prefix: str, prev_value: int) -> int:
-        """Determine the sibs/kids group status."""
-        if not self.uds.is_initial() and self.uds.get_value(f"nwinf{prefix}") != 1:
+    def __determine_sibkid_status(self, prefix: SIBKIDS, prev_value: int) -> int:
+        """Determine the sib or kid status."""
+        # if no change, return previous value
+        if not self.uds.is_initial() and self.uds.get_value(f"nwinf{prefix}", int) != 1:
             return prev_value
 
-        # get SIBS/KIDS
-        num_group = self.get_sibkids_amount(f"{prefix}s")
+        return self.run_sibkid_status_logic(prefix, prev_value)
 
-        # if no SIBS/KIDS, no possible cognitive status other than no
-        if num_group == 0:
-            return 0
+    def get_sibkid_group_statuses(self, prefix: SIBKIDS, num_group: int) -> List[int]:
+        """Get the sib/kids statuses for all members."""
+        group_statuses = []
+        for i in range(1, num_group + 1):
+            group_statuses.append(self.__etpr_status(f"{prefix}{i}etpr", None))
 
-        # get SIBS/KIDS
-        num_group = self.get_sibkids_amount(f"{prefix}s")
-
-        # if no SIBS/KIDS, no possible cognitive status other than no
-        if num_group == 0:
-            return 0
-
-        # siblings or kids defined; need to iterate over and collect all attributes
-        if num_group is not None and num_group > 0:
-            all_group_statuses = []
-            for i in range(1, num_group + 1):
-                all_group_statuses.append(
-                    self.__etpr_status(f"{prefix}{i}etpr", None)
-                )
-
-            if any(x == 1 for x in all_group_statuses):
-                return 1
-
-            if all(x == 0 for x in all_group_statuses):
-                return 0
-
-            if prev_value in [0, 1]:
-                return prev_value
-
-            if any(x in [0, 9] for x in all_group_statuses):
-                return 9
-
-        if prev_value in [0, 1, 9]:
-            return prev_value
-
-        return INFORMED_MISSINGNESS
+        return group_statuses
