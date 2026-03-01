@@ -7,6 +7,9 @@ moment since nothing is explicitly looking at them.
 """
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_MISSINGNESS,
+)
 
 
 class UDSFormA3Missingness(UDSMissingness):
@@ -24,7 +27,9 @@ class UDSFormA3Missingness(UDSMissingness):
         Set default to -4 instead of blanks since even though these
         are strings, they're not write-ins.
         """
-        return self.handle_prev_visit(field, str, prev_code="66", default="-4")
+        return self.handle_prev_visit(
+            field, str, prev_code="66", default=str(INFORMED_MISSINGNESS)
+        )
 
     def _missingness_mometpr(self) -> str:
         """Handles missingness for MOMETPR."""
