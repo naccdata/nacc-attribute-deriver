@@ -86,8 +86,8 @@ class ParticipantStatus(ABC):
             other_date = date_from_form_date(other.status_date)
 
             if this_date is not None and other_date is not None:
-                return this_date > other_date
-        except (TypeError, ValueError):
+                return this_date < other_date
+        except (TypeError, ValueError, AttributeDeriverError):
             pass
 
         # means at least one of the dates is in partial form
@@ -103,9 +103,9 @@ class ParticipantStatus(ABC):
                 if this_part in invalid_dates or other_part in invalid_dates:
                     break
 
-                if this_part > other_part:
-                    return True
                 if this_part < other_part:
+                    return True
+                if this_part > other_part:
                     return False
 
                 # if equal, go onto next part
@@ -114,7 +114,7 @@ class ParticipantStatus(ABC):
 
         # unable to determine; use form's date by default, which HAS
         # to be defined
-        return self.form_date > other.form_date
+        return self.form_date < other.form_date
 
     @classmethod
     @abstractmethod
@@ -371,18 +371,16 @@ class LatestUDSVisit(ParticipantStatus):
 
 
 class ParticipantStatusHandler:
-    def __init__(self, table: SymbolTable) -> None:
+    def __init__(self, working: WorkingNamespace) -> None:
         """Initializer."""
         # possible statuses. if none of these are set, the participant
         # is presumed active
-        working = WorkingNamespace(table=table)
-
         self.__deceased = DeceasedStatus.create_from_working_namespace(working)
         self.__discontinued = DiscontinuedStatus.create_from_working_namespace(working)
         self.__minimum_contact = MinimumContactStatus.create_from_working_namespace(working)
         self.__initial_visit_only = InitialVisitOnlyStatus.create_from_working_namespace(working)
 
-        # states that can unset the above statuses
+        # states that can unset the above statuses, as they also make the participant active
         self.__rejoined = RejoinedStatus.create_from_working_namespace(working)
         self.__latest_uds = LatestUDSVisit.create_from_working_namespace(working)
 
@@ -403,7 +401,7 @@ class ParticipantStatusHandler:
         # if status is set, but a UDS visit or REJOIN came after, it has
         # effectively been unset; return None
         for state in [self.__latest_uds, self.__rejoined]:
-            if state is not None and attribute < state:
+            if state is not None and state > attribute:
                 return None
 
         # otherwise, the status is the latest and valid, return
@@ -411,23 +409,28 @@ class ParticipantStatusHandler:
 
     @property
     def deceased(self) -> Optional[DeceasedStatus]:
-        """Return if the participant is deceased.
-
-        If a UDS visit or rejoin came after though, return None.
-        """
+        """Return if the participant is deceased."""
         return self.__determine_status_override(self.__deceased)
 
     @property
     def discontinued(self) -> Optional[DiscontinuedStatus]:
+        """Return if the participant is discontinued."""
         return self.__determine_status_override(self.__discontinued)
 
     @property
     def minimum_contact(self) -> Optional[MinimumContactStatus]:
+        """Return if the participant is minimum contact."""
         return self.__determine_status_override(self.__minimum_contact)
 
     @property
     def initial_visit_only(self) -> Optional[InitialVisitOnlyStatus]:
+        """Return if the participant is initial visit only."""
         return self.__determine_status_override(self.__initial_visit_only)
+
+    @property
+    def latest_uds_visit(self) -> Optional[LatestUDSVisit]:
+        """Return the latest UDS visit for the participant."""
+        return self.__latest_uds
 
 
 class CrossModuleAttributeCollection:
