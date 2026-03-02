@@ -19,11 +19,97 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.date import create_death_date
+from nacc_attribute_deriver.utils.date import (
+    create_death_date,
+    make_date_from_parts,
+    standardize_date,
+)
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
     InvalidFieldError,
 )
+
+
+class MilestoneAttributeCollection(AttributeCollection):
+    def __init__(self, table: SymbolTable):
+        self.__milestone = FormNamespace(table=table, required=frozenset(["module"]))
+        self.__working = WorkingNamespace(table=table)
+        self.__subject_derived = SubjectDerivedNamespace(table=table)
+
+    def get_mlst_date(self) -> str:
+        """Get date of this MLST visit as a string."""
+        visitdate = self.__milestone.get_date()
+        if not visitdate:
+            raise AttributeDeriverError("Cannot determine visitdate for MLST visit")
+
+        result = standardize_date(str(visitdate))
+        if not result:
+            raise AttributeDeriverError(
+                f"Cannot standardize MLST visitdate: {visitdate}"
+            )
+
+        return result
+
+    def get_change_date(self) -> str:
+        """Get the date of the status change. Used to denote when REJOIN or
+        PROTOCOl was set.
+
+        The CHANGEx variables are only available in V3. If not provided,
+        default to the MLST visitdate.
+        """
+        changeyr = self.__milestone.get_value("changeyr", int)
+        changemo = self.__milestone.get_value("changemo", int)
+        changedy = self.__milestone.get_value("changedy", int)
+
+        # make change date. if if cannot be made, return MLST date
+        change_date = make_date_from_parts(changeyr, changemo, changedy)
+        if not change_date:
+            return self.get_mlst_date()
+
+        return change_date
+
+    def _create_milestone_discontinued_date(self) -> Optional[str]:
+        """Check if subject is discontinued; if so, create the discontinued
+        date."""
+        # discontinued can be determined by DISCONT = 1 or, for V1
+        # only, UDSACTIV = 4
+        discont = self.__milestone.get_value("discont", int)
+        udsactiv = self.__milestone.get_value("udsactiv", int)
+
+        # not discontinued; return None
+        if discont != 1 and udsactiv != 4:
+            return None
+
+        # first look for discontinued dates explicitly set; if not
+        # provided, default to the MLST visitdate
+        discyr = self.__milestone.get_value("discyr", int)
+        discmo = self.__milestone.get_value("discmo", int)
+        discdy = self.__milestone.get_value("discdy", int)
+
+        # DISCDY is DISCDAY in some forms, so check
+        if not discdy:
+            discdy = self.__milestone.get_value("discday", int)
+
+        # make discontinued date. if if cannot be made, return MLST date
+        discontinued_date = make_date_from_parts(discyr, discmo, discdy)
+        if not discontinued_date:
+            return self.get_mlst_date()
+
+        return discontinued_date
+
+    def _create_milestone_rejoined_date(self) -> Optional[str]:
+        """Check if subject rejoined; if so, create the rejoined date."""
+        # rejoined can only be determined by REJOIN/REJOINED = 1
+        # on the MLST form
+        rejoin = self.__milestone.get_value("rejoin", int)
+        if rejoin is None:
+            rejoin = self.__milestone.get_value("rejoined", int)
+
+        # not rejoined, return None
+        if rejoin != 1:
+            return None
+
+        return self.get_change_date()
 
 
 class MilestoneAttributeCollection(AttributeCollection):

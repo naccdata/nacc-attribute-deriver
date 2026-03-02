@@ -1,4 +1,7 @@
-"""Handles NACCFAM, NACCMOM, and NACCDAD logic."""
+"""Handles NACCFAM, NACCMOM, and NACCDAD logic.
+
+Note every form version has distinct logic.
+"""
 
 from abc import ABC, abstractmethod
 from typing import ClassVar, Literal, List, Optional

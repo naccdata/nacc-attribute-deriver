@@ -225,13 +225,15 @@ def create_death_date(
     return date_from_form_date(f"{dyr}-{dmo:02d}-{ddy:02d}")
 
 
-def standardize_date(date: Optional[str]) -> Optional[str]:
+def standardize_date(date_value: Optional[str | date]) -> Optional[str]:
     """Standardize date to YYYY-MM-DD format, if provided."""
-    date_obj = date_from_form_date(date)
-    if not date_obj:
+    if not isinstance(date_value, date):
+        date_value = date_from_form_date(date_value)
+
+    if not date_value:
         return None
 
-    return str(date_obj)
+    return str(date_value)
 
 
 def find_closest_date(
@@ -262,3 +264,28 @@ def find_closest_date(
         return (dates[index], index)  # type: ignore
 
     return (result, index)
+
+
+def make_date_from_parts(
+    year: Optional[int] = None, month: Optional[int] = None, day: Optional[int] = None
+) -> Optional[str]:
+    """Make date from part variables.
+
+    If all are missing, returns None. Else, if only some parts are
+    missing, set missing parts to 9999-99-99. Return as a string in
+    YYYY-MM-DD format.
+    """
+    # if none are set, return None
+    if not all(x is None for x in [year, month, day]):
+        return None
+
+    # otherwise build the date; set anything missing to 9999-99-99
+    if not year:
+        year = 9999
+    if not month:
+        month = 99
+    if not day:
+        day = 99
+
+    # return in YYYY-MM-DD format
+    return f"{year:04d}-{month:02d}-{day:02d}"
