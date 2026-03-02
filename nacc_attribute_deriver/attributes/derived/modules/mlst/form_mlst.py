@@ -105,11 +105,25 @@ class MilestoneAttributeCollection(AttributeCollection):
         if rejoin is None:
             rejoin = self.__milestone.get_value("rejoined", int)
 
-        # not rejoined, return None
-        if rejoin != 1:
-            return None
+        # rejoined, return change date
+        if rejoin == 1:
+            return self.get_change_date()
 
-        return self.get_change_date()
+        # not rejoined, return None
+        return None
+
+    def _create_milestone_minimum_contact_date(self) -> Optional[str]:
+        """Check if subject was set to minimum contact; based on
+        PROTOCOL = 2 or UDSACTIV = 3."""
+        protocol = self.__milestone.get_value("protocol", int)
+        udsactiv = self.__milestone.get_value("udsactiv", int)
+
+        # set to minimum contact, return change date
+        if protocol == 2 or udsactiv == 3:
+            return self.get_change_date()
+
+        # not minimum contact, return None
+        return None
 
 
 class MilestoneAttributeCollection(AttributeCollection):

@@ -132,8 +132,8 @@ class TestCrossModuleAttribute:
 
         # Milestone death date available
         table["subject.info.working.cross-sectional.np-death-date"] = None
-        # calculates 299, should be range enforced to 100
-        assert attr._create_naccint() == 100
+        # calculates 299, range is no longer enforced to 100 so should stay at 299
+        assert attr._create_naccint() == 299
 
         # MDS death date available
         # NOTE: NACCINT isn't officially calculated for MDS

@@ -29,6 +29,7 @@ See the following for more info:
     - attributes.derived.modules.np.form_np
     - attributes.derived.modules.md.form_mds
 """
+import re
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -117,13 +118,17 @@ class ParticipantStatus(ABC):
 
     @classmethod
     @abstractmethod
-    def create_from_table(cls, table: SymbolTable) -> Optional["ParticipantStatus"]:
+    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["ParticipantStatus"]:
         """Creates the given status using the table information.
 
         If information necessary to set the status is not present,
         returns None. This is effectively the same as saying the
         participant does NOT have that status (e.g. if there is no death
         date reported, that participant is not dead.)
+
+        Args:
+            working: The Working namespace; holds working variables carried
+                over from curation of othe forms
         """
         pass
 
@@ -134,12 +139,13 @@ class DeceasedStatus(ParticipantStatus):
     has_np: bool
 
     @classmethod
-    def create_from_table(cls, table: SymbolTable) -> Optional["DeceasedStatus"]:
+    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["DeceasedStatus"]:
         """Determine if the participant ever died, and grab its corresponding
         latest date. A subject's death can be reported in several ways, in the
         following order of priority:
 
         1. An NP form has been provided
+            - This also sets the has_np flag
         2. Marked as DECEASED on a MLST form
         3. Marked as DECEASED on an MDS form
 
@@ -156,8 +162,6 @@ class DeceasedStatus(ParticipantStatus):
                 just in case it somehow does happen anyways.
         4. If we cannot determine the age at death, set to 999
         """
-        working = WorkingNamespace(table=table)
-
         death_date = None
         has_np = False
 
@@ -211,7 +215,7 @@ class DeceasedStatus(ParticipantStatus):
 @dataclass
 class DiscontinuedStatus(ParticipantStatus):
     @classmethod
-    def create_from_table(cls, table: SymbolTable) -> Optional["DiscontinuedStatus"]:
+    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["DiscontinuedStatus"]:
         """Determine if the participant ever discontinued, and grab its
         corresponding latest date. A subject is denoted as discontinued if they
         are explicitly marked as discontinued on a MLST form.
@@ -219,7 +223,6 @@ class DiscontinuedStatus(ParticipantStatus):
         See form_mlst._create_milestone_discontinued_date for how we
         keep track of this.
         """
-        working = WorkingNamespace(table=table)
         discontinued_date = working.get_cross_sectional_dated_value(
             "milestone-discontinued-date", str
         )
@@ -238,30 +241,76 @@ class DiscontinuedStatus(ParticipantStatus):
 @dataclass
 class MinimumContactStatus(ParticipantStatus):
     @classmethod
-    def create_from_table(cls, table: SymbolTable) -> Optional["MinimumContactStatus"]:
-        pass
+    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["MinimumContactStatus"]:
+        """Determine if the participant was set to minimum contact, and grab its
+        corresponding latest date. A subject is denoted as minimum contact if they
+        explicitly set PROTOCOL/UDSACTIV as such on the MLST form.
+
+        See form_mlst._create_milestone_minimum_contact_date for how we keep
+        track of this.
+        """
+        minimum_contact_date = working.get_cross_sectional_dated_value(
+            "milestone-minimum-contact-date", str
+        )
+
+        # if no minimum contact date set, means not minimum contact. return None
+        if not minimum_contact_date:
+            return None
+
+        return MinimumContactStatus(
+            status="minimum_contact",
+            status_date=minimum_contact_date.value,
+            form_date=minimum_contact_date.date,
+        )
 
 
 @dataclass
 class InitialVisitOnlyStatus(ParticipantStatus):
     @classmethod
-    def create_from_table(
-        cls, table: SymbolTable
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
     ) -> Optional["InitialVisitOnlyStatus"]:
-        pass
+        """Determine if the participant was set to initial visit only, and grab its
+        corresponding latest date. A subject is denoted as initial visit if
+        they submit a single IVP UDS visit with PRESPART = 1 (V3 and earlier).
 
+        This is a rather weak status that gets overriden if there is ANY new
+        data from the participant, and is also not available in V4.
+        """
+        prespart = working.get_cross_sectional_dated_value("prespart", int)
 
-@dataclass
-class UDSAfterMLSTStatus(ParticipantStatus):
-    @classmethod
-    def create_from_table(cls, table: SymbolTable) -> Optional["UDSAfterMLSTStatus"]:
-        pass
+        # not set to initial visit only, return None
+        if prespart is None or prespart.value != 1:
+            return None
+
+        # check if they really only had an initial visit by looking at
+        # number of uds visits; if they did, the original prespart designation
+        # is voided
+        uds_visitdates = working.get_cross_sectional_value("uds-visitdates", list)
+        if uds_visitdates and len(uds_visitdates) > 1:
+            return None
+
+        # check the sole UDS visitdate is the same as the one that defined
+        # the prespart variable; if not, we have a problem
+        uds_visit = date_from_form_date(uds_visitdates[0])
+        if not uds_visit:
+            raise AttributeDeriverError(f"Cannot parse UDS visitdate: {uds_visitdates[0]}")
+
+        if uds_visit != prespart.date:
+            raise AttributeDeriverError(
+                f"PRESPART set date does not match known UDS visit: PRESPART associated with {prespart.date} while UDS visit is {uds_visit}")
+
+        return MinimumContactStatus(
+            status="initial_visit_only",
+            status_date=str(prespart.date),  # status date is same as form date for this one
+            form_date=prespart.date,
+        )
 
 
 @dataclass
 class RejoinedStatus(ParticipantStatus):
     @classmethod
-    def create_from_table(cls, table: SymbolTable) -> Optional["RejoinedStatus"]:
+    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["RejoinedStatus"]:
         """Determine if the participant ever rejoined, and grab its
         corresponding latest date. A subject is denoted as rejoined if they are
         explicitly marked as rejoined on a MLST form. Note this is different
@@ -271,7 +320,6 @@ class RejoinedStatus(ParticipantStatus):
         See form_mlst._create_milestone_rejoined_date for how we keep
         track of this.
         """
-        working = WorkingNamespace(table=table)
         rejoined_date = working.get_cross_sectional_dated_value(
             "milestone-rejoined-date", str
         )
@@ -287,19 +335,56 @@ class RejoinedStatus(ParticipantStatus):
         )
 
 
+@dataclass
+class LatestUDSVisit(ParticipantStatus):
+
+    @classmethod
+    def __get_latest_visitdate(cls, working: WorkingNamespace, attribute: str) -> Optional[date]:
+        """Get the latest visitdate, if visits exist.
+
+        Returns:
+            The latest visitdate, if found, None otherwise
+        """
+        visitdates = working.get_cross_sectional_value(attribute, list)
+        if not visitdates:
+            return None
+
+        sorted_visitdates = sorted(list(visitdates))
+        return date_from_form_date(sorted_visitdates[-1])
+
+    @classmethod
+    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["UDSAfterMLSTStatus"]:
+        """Get the participant's latest UDS visit. If this came after some
+        status change, it can override/reset it.
+        """
+        latest_uds = cls.__get_latest_visitdate(working, "uds-visitdates")
+
+        # no UDS visits; return None
+        if not latest_uds:
+            return None
+
+        return LatestUDSVisit(
+            status='latest_uds_visit',
+            status_date=str(latest_uds),
+            form_date=latest_uds
+        )
+
+
 class ParticipantStatusHandler:
     def __init__(self, table: SymbolTable) -> None:
         """Initializer."""
         # possible statuses. if none of these are set, the participant
         # is presumed active
-        self.__deceased = DeceasedStatus.create_from_table(table)
-        self.__discontinued = DiscontinuedStatus.create_from_table(table)
-        self.__minimum_contact = MinimumContactStatus.create_from_table(table)
-        self.__initial_visit_only = InitialVisitOnlyStatus.create_from_table(table)
+        working = WorkingNamespace(table=table)
+
+        self.__deceased = DeceasedStatus.create_from_working_namespace(working)
+        self.__discontinued = DiscontinuedStatus.create_from_working_namespace(working)
+        self.__minimum_contact = MinimumContactStatus.create_from_working_namespace(working)
+        self.__initial_visit_only = InitialVisitOnlyStatus.create_from_working_namespace(working)
 
         # states that can unset the above statuses
-        self.__rejoined = RejoinedStatus.create_from_table(table)
-        self.__uds_after_mlst = UDSAfterMLSTStatus.create_from_table(table)
+        self.__rejoined = RejoinedStatus.create_from_working_namespace(working)
+        self.__latest_uds = LatestUDSVisit.create_from_working_namespace(working)
 
     def __determine_status_override(
         self, attribute: Optional[ParticipantStatus]
@@ -317,7 +402,7 @@ class ParticipantStatusHandler:
 
         # if status is set, but a UDS visit or REJOIN came after, it has
         # effectively been unset; return None
-        for state in [self.__uds_after_mlst, self.__rejoined]:
+        for state in [self.__latest_uds, self.__rejoined]:
             if state is not None and attribute < state:
                 return None
 

@@ -114,6 +114,7 @@ class A3FamilyHandler(ABC):
         Returns:
             List of status results for each member in the group
         """
+        pass
 
     def run_sibkid_status_logic(self, prefix: SIBKIDS, prev_value: int) -> int:
         """Run the SIBS/KIDS logic, which has a lot of the same scaffolding
@@ -169,6 +170,10 @@ class A3FamilyHandlerPrevVisit(A3FamilyHandler):
             sib_status=self.prev_sib,
             kid_status=self.prev_kid,
         )
+
+    def get_sibkid_group_statuses(self, prefix: SIBKIDS, num_group: int) -> List[int]:
+        """Not needed for this class."""
+        return []
 
 
 class A3FamilyHandlerV1(A3FamilyHandler):
