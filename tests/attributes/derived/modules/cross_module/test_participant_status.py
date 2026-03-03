@@ -1,5 +1,4 @@
-"""Tests participant statuses are set and handled correctly."""
-import pytest
+"""Tests participant statuses are set correctly."""
 import random
 
 from datetime import date
@@ -15,7 +14,6 @@ from nacc_attribute_deriver.attributes.derived.modules.cross_module.participant_
     InitialVisitOnlyStatus,
     LatestUDSVisit,
     RejoinedStatus,
-    ParticipantStatusHandler,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -50,10 +48,6 @@ class TestParticipantStatusCreation:
         assert InitialVisitOnlyStatus.create_from_working_namespace(working) is None
         assert RejoinedStatus.create_from_working_namespace(working) is None
         assert LatestUDSVisit.create_from_working_namespace(working) is None
-
-    # def test_deceased_status(self) -> None:
-    #   """Test the deceased status is set correctly."""
-
 
     def test_discontinued_status(self) -> None:
         """Test the discontinued status is set correctly."""
@@ -158,51 +152,83 @@ class TestParticipantStatusCreation:
         assert status.status_date == '2025-09-29'
         assert status.form_date == date(2025, 9, 29)
 
-
-class TestParticipantStatusHandler:
-
-    def test_status_uds_overrides(self) -> None:
-        """Tests the latest UDS visit overrides other statuses."""
+    def test_deceased_status_np(self) -> None:
+        """Test when the deceased status is set by an NP form."""
         working = create_working({
-            # expected latest UDS visitdate should be 2025-01-01
-            "uds-visitdates": [
-                "2020-03-03", "2025-01-01", "2024-01-02"
-            ],
-
-            # milestone discontinued status has all unknowns, so need
-            # to use visitdate which is still before our last UDS visit
-            "milestone-discontinued-date": {
-                "value": "9999-99-99",
-                "date": "2020-01-02"
+            "np-death-date": {
+                "value": "2025-99-99",  # month and day unknown
+                "date": "2025-07-19"
             },
 
-            # milestone death date is from BEFORE UDS visit even though form is
-            # AFTER UDS visit
-            "milestone-death-date": {
-                "value": "2024-01-01",
-                "date": "2026-01-01"
-            },
-
-            # minimum contact status before date, but form date same as UDS visit
-            # should use status date though
-            "milestone-minimum-contact-date": {
-                "value": "2024-12-15",
-                "date": "2025-01-01"
-            },
-
-            # prespart is set, should be invalidated by the fact that there are
-            # multiple UDS visits
-            "prespart": {
-                "value": 1,
-                "date": "2020-03-03"
-            }
-
+            "np-death-age": 73
         })
 
-        participant = ParticipantStatusHandler(working)
-        assert participant.latest_uds_visit.status_date == "2025-01-01"
+        status = DeceasedStatus.create_from_working_namespace(working)
+        assert status.status == 'deceased'
+        assert status.status_date == '2025-99-99'
+        assert status.form_date == date(2025, 7, 19)
 
-        assert participant.discontinued is None
-        assert participant.deceased is None
-        assert participant.minimum_contact is None
-        assert participant.initial_visit_only is None
+        # deceased-specific variables
+        assert status.age_at_death == 73
+        assert status.has_np is True
+
+    def test_deceased_status_mlst(self) -> None:
+        """Test when the deceased status is set by a MLST form."""
+        working = create_working({
+            "milestone-death-date": {
+                "value": "2025-01-05",
+                "date": "2025-07-23"
+            },
+
+            # provide date of birth to figure out death date from
+            "uds-date-of-birth": "1960-04-01"
+        })
+
+        status = DeceasedStatus.create_from_working_namespace(working)
+        assert status.status == 'deceased'
+        assert status.status_date == '2025-01-05'
+        assert status.form_date == date(2025, 7, 23)
+
+        # deceased-specific variables
+        assert status.age_at_death == 64
+        assert status.has_np is False
+
+        # make milestone death date not fully known, so age at death is 999
+        # since we can't really calculate it
+        working = create_working({
+            "milestone-death-date": {
+                "value": "2025-99-99",
+                "date": "2025-07-23"
+            },
+
+            # provide date of birth to figure out death date from
+            "uds-date-of-birth": "1960-04-01"
+        })
+        status = DeceasedStatus.create_from_working_namespace(working)
+        assert status.status == 'deceased'
+        assert status.status_date == '2025-99-99'
+        assert status.form_date == date(2025, 7, 23)
+
+        # deceased-specific variables
+        assert status.age_at_death == 999
+        assert status.has_np is False
+
+    def test_deceased_status_mds(self) -> None:
+        """Test when the deceased status is set by an MDS form."""
+        working = create_working({
+            "mds-death-date": {
+                "value": "2025-01-99",
+                "date": "2025-08-12"
+            },
+
+            # MDS should have tried to calculate age
+            "mds-death-age": 81
+        })
+        status = DeceasedStatus.create_from_working_namespace(working)
+        assert status.status == 'deceased'
+        assert status.status_date == '2025-01-99'
+        assert status.form_date == date(2025, 8, 12)
+
+        # deceased-specific variables
+        assert status.age_at_death == 81
+        assert status.has_np is False

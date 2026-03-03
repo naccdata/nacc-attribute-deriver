@@ -1,4 +1,4 @@
-"""Data classes to track a participant status.
+"""Data classes to track different participant statuses.
 
 All status changes have two date values: the date
 the status change actually happened, and the date of
@@ -37,15 +37,12 @@ from datetime import date
 from typing import Any, Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    SubjectDerivedNamespace,
     WorkingNamespace,
 )
-from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import UNKNOWN_CODES
+
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
-    calculate_months,
     date_from_form_date,
 )
 
@@ -74,6 +71,26 @@ class ParticipantStatus(ABC):
                 f"Participant status date {self.status} not in "
                 + f"YYYY-MM-DD format: {self.status_date}"
             )
+
+    def __eq__(self, other: "ParticipantStatus") -> bool:
+        """Compare equality by if this status was done on the
+        same day as the other status."""
+        if not isinstance(other, ParticipantStatus):
+            return False
+
+        # if both can be converted to a date, compare like that
+        try:
+            this_date = date_from_form_date(self.status_date)
+            other_date = date_from_form_date(other.status_date)
+
+            if this_date is not None and other_date is not None:
+                return this_date == other_date
+        except (TypeError, ValueError, AttributeDeriverError):
+            pass
+
+        # otherwise just compare the form dates; we don't want
+        # to check equality on any unknowns
+        return self.form_date == other.form_date
 
     def __lt__(self, other: "ParticipantStatus") -> bool:
         """Compare statuses by date of status."""
@@ -181,6 +198,12 @@ class DeceasedStatus(ParticipantStatus):
         # as described above. set to None if it cannot be determined
         # 1. check if NP set it first
         age_at_death = working.get_cross_sectional_value("np-death-age", int)
+
+        # NP MUST report the age at death; if not, we have a problem
+        if has_np and not age_at_death:
+            raise AttributeDeriverError(
+                "Missing NP death age when NP death reported"
+            )
 
         # 2. calculate from UDS visit (includes if MDS was set but they
         # have an UDS visit somehow; prioritize UDS birth date over what
@@ -368,155 +391,3 @@ class LatestUDSVisit(ParticipantStatus):
             status_date=str(latest_uds),
             form_date=latest_uds
         )
-
-
-class ParticipantStatusHandler:
-    def __init__(self, working: WorkingNamespace) -> None:
-        """Initializer."""
-        # possible statuses. if none of these are set, the participant
-        # is presumed active
-        self.__deceased = DeceasedStatus.create_from_working_namespace(working)
-        self.__discontinued = DiscontinuedStatus.create_from_working_namespace(working)
-        self.__minimum_contact = MinimumContactStatus.create_from_working_namespace(working)
-        self.__initial_visit_only = InitialVisitOnlyStatus.create_from_working_namespace(working)
-
-        # states that can unset the above statuses, as they also make the participant active
-        self.__rejoined = RejoinedStatus.create_from_working_namespace(working)
-        self.__latest_uds = LatestUDSVisit.create_from_working_namespace(working)
-
-    def __determine_status_override(
-        self, attribute: Optional[ParticipantStatus]
-    ) -> Optional[Any]:
-        """Determine if the status is valid, e.g. it is the latest and nothing
-        invalidates it.
-
-        A status can be invalidated if either a) they rejoined AFTER
-        this status' date or b) they had a UDS visit AFTER this status'
-        date.
-        """
-        # if status is not set, return None
-        if not attribute:
-            return None
-
-        # if status is set, but a UDS visit or REJOIN came after, it has
-        # effectively been unset; return None
-        for state in [self.__latest_uds, self.__rejoined]:
-            if state is not None and state > attribute:
-                return None
-
-        # otherwise, the status is the latest and valid, return
-        return attribute
-
-    @property
-    def deceased(self) -> Optional[DeceasedStatus]:
-        """Return if the participant is deceased."""
-        return self.__determine_status_override(self.__deceased)
-
-    @property
-    def discontinued(self) -> Optional[DiscontinuedStatus]:
-        """Return if the participant is discontinued."""
-        return self.__determine_status_override(self.__discontinued)
-
-    @property
-    def minimum_contact(self) -> Optional[MinimumContactStatus]:
-        """Return if the participant is minimum contact."""
-        return self.__determine_status_override(self.__minimum_contact)
-
-    @property
-    def initial_visit_only(self) -> Optional[InitialVisitOnlyStatus]:
-        """Return if the participant is initial visit only."""
-        return self.__determine_status_override(self.__initial_visit_only)
-
-    @property
-    def latest_uds_visit(self) -> Optional[LatestUDSVisit]:
-        """Return the latest UDS visit for the participant."""
-        return self.__latest_uds
-
-
-class CrossModuleAttributeCollection:
-    """working pseudocode; will replace the current collection."""
-
-    def __init__(self, table: SymbolTable) -> None:
-        """Initializer."""
-        self.__participant = ParticipantStatusHandler(table)
-        self.__working = WorkingNamespace(table=table)
-
-    def __get_latest_visitdate(self, attribute: str) -> Optional[date]:
-        """Get the latest visitdate, if visits exist.
-
-        Returns:
-            The latest visitdate, if found, None otherwise
-        """
-        visitdates = self.__working.get_cross_sectional_value(attribute, list)
-        if not visitdates:
-            return None
-
-        sorted_visitdates = sorted(list(visitdates))
-        return date_from_form_date(sorted_visitdates[-1])
-
-    ########################
-    # NP DERIVED VARIABLES #
-    ########################
-
-    def _create_naccdage(self) -> int:
-        """Creates NACCDAGE: Age at death.
-
-        Pulls from NP, MLST, and UDS.
-        """
-        deceased = self.__participant.deceased
-
-        # not dead
-        if not deceased:
-            return 888
-
-        # died but no/unknown date date
-        if not deceased.age_at_death:
-            return 999
-
-        return deceased.age_at_death
-
-    def _create_naccint(self) -> int:
-        """Creates NACCINT, which is time interval (months) between last visit
-        (UDS) and death (NP/Milestone).
-
-        Uses NACCDIED and death date calculate.
-        """
-        deceased = self.__participant.deceased
-
-        # not dead
-        if not deceased:
-            return 888
-
-        # died but no/unknown date date
-        if not deceased.status_date:
-            return 999
-
-        # compare to last UDS visit
-        last_visit = self.__get_latest_visitdate("uds-visitdates")
-
-        # no last UDS visit, so can't calculate
-        if not last_visit:
-            return 999
-
-        result = None
-        try:
-            deceased_date = date_from_form_date(deceased.status_date)
-            result = calculate_months(last_visit, deceased_date)
-        except (TypeError, ValueError, AttributeDeriverError):
-            pass
-
-        if result is None or result in UNKNOWN_CODES:
-            return 999
-
-        # no longer enforcing a max, so just return as-is
-        return result
-
-    def _create_naccautp(self) -> int:
-        """Creates NACCAUTP - Neuropathology data from an autopsy available"""
-        deceased = self.__participant.deceased
-
-        # not dead
-        if not deceased:
-            return 8
-
-        return 1 if deceased.has_np else 0

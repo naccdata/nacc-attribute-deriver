@@ -192,39 +192,6 @@ def get_unique_years(dates: List[str]) -> Set[int]:
     return set(x.year for x in years if x is not None)
 
 
-def create_death_date(
-    *,
-    year: Optional[Union[str, int]],
-    month: Optional[Union[str, int]],
-    day: Optional[Union[str, int]],
-) -> Optional[date]:
-    """Creates the death date, handling conventions for unknown dates."""
-
-    if not year:
-        return None
-    if not month:
-        month = "7"
-    if not day:
-        day = "1"
-
-    try:
-        dyr = int(year)
-        dmo = int(month)
-        ddy = int(day)
-    except (TypeError, ValueError):
-        return None
-
-    if dyr == 9999:
-        return None
-
-    if dmo > 12:
-        dmo = 7
-    if ddy > 31:
-        ddy = 1
-
-    return date_from_form_date(f"{dyr}-{dmo:02d}-{ddy:02d}")
-
-
 def standardize_date(date_value: Optional[str | date]) -> Optional[str]:
     """Standardize date to YYYY-MM-DD format, if provided."""
     if not isinstance(date_value, date):
@@ -276,7 +243,7 @@ def make_date_from_parts(
     YYYY-MM-DD format.
     """
     # if none are set, return None
-    if not all(x is None for x in [year, month, day]):
+    if all(x is None for x in [year, month, day]):
         return None
 
     # otherwise build the date; set anything missing to 9999-99-99
