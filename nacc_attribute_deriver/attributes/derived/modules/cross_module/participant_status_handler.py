@@ -8,6 +8,7 @@ If a status change happens at the same date as a REJOIN or UDS VISIT,
 we prioritize the other status change (one way to think of it is they
 completed the UDS visit and then decided to discontinue at the visit).
 """
+
 from typing import Any, Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
@@ -34,15 +35,20 @@ class ParticipantStatusHandler:
         # is presumed active
         self.__deceased = DeceasedStatus.create_from_working_namespace(working)
         self.__discontinued = DiscontinuedStatus.create_from_working_namespace(working)
-        self.__minimum_contact = MinimumContactStatus.create_from_working_namespace(working)
-        self.__initial_visit_only = InitialVisitOnlyStatus.create_from_working_namespace(working)
+        self.__minimum_contact = MinimumContactStatus.create_from_working_namespace(
+            working
+        )
+        self.__initial_visit_only = (
+            InitialVisitOnlyStatus.create_from_working_namespace(working)
+        )
 
         # states that can unset the above statuses, as they also make the participant active
         self.__rejoined = RejoinedStatus.create_from_working_namespace(working)
         self.__latest_uds = LatestUDSVisit.create_from_working_namespace(working)
 
     def __determine_status_override(
-        self, status: Optional[ParticipantStatus],
+        self,
+        status: Optional[ParticipantStatus],
     ) -> Optional[ParticipantStatus]:
         """Determine if the status is valid, e.g. it is the latest and nothing
         invalidates it.
@@ -84,8 +90,8 @@ class ParticipantStatusHandler:
     def initial_visit_only(self) -> Optional[InitialVisitOnlyStatus]:
         """Return if the participant is initial visit only.
 
-        Immediately overridden if ANYTHING else is set. So we just
-        check for existence of other states.
+        Immediately overridden if ANYTHING else is set. So we just check
+        for existence of other states.
         """
         if not self.__initial_visit_only:
             return None
@@ -95,7 +101,6 @@ class ParticipantStatusHandler:
             self.__discontinued,
             self.__minimum_contact,
             self.__rejoined,
-
             # note latest_uds is ignored here since InitialVisitOnlyStatus
             # already validates that there is only one UDS visit and
             # it corresponds to when PRESPART was set

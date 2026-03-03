@@ -29,6 +29,7 @@ See the following for more info:
     - attributes.derived.modules.np.form_np
     - attributes.derived.modules.md.form_mds
 """
+
 import re
 
 from abc import ABC, abstractmethod
@@ -73,8 +74,8 @@ class ParticipantStatus(ABC):
             )
 
     def __eq__(self, other: "ParticipantStatus") -> bool:
-        """Compare equality by if this status was done on the
-        same day as the other status."""
+        """Compare equality by if this status was done on the same day as the
+        other status."""
         if not isinstance(other, ParticipantStatus):
             return False
 
@@ -135,7 +136,9 @@ class ParticipantStatus(ABC):
 
     @classmethod
     @abstractmethod
-    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["ParticipantStatus"]:
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
+    ) -> Optional["ParticipantStatus"]:
         """Creates the given status using the table information.
 
         If information necessary to set the status is not present,
@@ -156,7 +159,9 @@ class DeceasedStatus(ParticipantStatus):
     has_np: bool
 
     @classmethod
-    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["DeceasedStatus"]:
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
+    ) -> Optional["DeceasedStatus"]:
         """Determine if the participant ever died, and grab its corresponding
         latest date. A subject's death can be reported in several ways, in the
         following order of priority:
@@ -201,9 +206,7 @@ class DeceasedStatus(ParticipantStatus):
 
         # NP MUST report the age at death; if not, we have a problem
         if has_np and not age_at_death:
-            raise AttributeDeriverError(
-                "Missing NP death age when NP death reported"
-            )
+            raise AttributeDeriverError("Missing NP death age when NP death reported")
 
         # 2. calculate from UDS visit (includes if MDS was set but they
         # have an UDS visit somehow; prioritize UDS birth date over what
@@ -238,7 +241,9 @@ class DeceasedStatus(ParticipantStatus):
 @dataclass
 class DiscontinuedStatus(ParticipantStatus):
     @classmethod
-    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["DiscontinuedStatus"]:
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
+    ) -> Optional["DiscontinuedStatus"]:
         """Determine if the participant ever discontinued, and grab its
         corresponding latest date. A subject is denoted as discontinued if they
         are explicitly marked as discontinued on a MLST form.
@@ -264,13 +269,15 @@ class DiscontinuedStatus(ParticipantStatus):
 @dataclass
 class MinimumContactStatus(ParticipantStatus):
     @classmethod
-    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["MinimumContactStatus"]:
-        """Determine if the participant was set to minimum contact, and grab its
-        corresponding latest date. A subject is denoted as minimum contact if they
-        explicitly set PROTOCOL/UDSACTIV as such on the MLST form.
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
+    ) -> Optional["MinimumContactStatus"]:
+        """Determine if the participant was set to minimum contact, and grab
+        its corresponding latest date. A subject is denoted as minimum contact
+        if they explicitly set PROTOCOL/UDSACTIV as such on the MLST form.
 
-        See form_mlst._create_milestone_minimum_contact_date for how we keep
-        track of this.
+        See form_mlst._create_milestone_minimum_contact_date for how we
+        keep track of this.
         """
         minimum_contact_date = working.get_cross_sectional_dated_value(
             "milestone-minimum-contact-date", str
@@ -323,11 +330,14 @@ class InitialVisitOnlyStatus(ParticipantStatus):
 
         if uds_visit != prespart.date:
             raise AttributeDeriverError(
-                f"PRESPART set date does not match known UDS visit: PRESPART associated with {prespart.date} while UDS visit is {uds_visit}")
+                f"PRESPART set date does not match known UDS visit: PRESPART associated with {prespart.date} while UDS visit is {uds_visit}"
+            )
 
         return MinimumContactStatus(
             status="initial_visit_only",
-            status_date=str(prespart.date),  # status date is same as form date for this one
+            status_date=str(
+                prespart.date
+            ),  # status date is same as form date for this one
             form_date=prespart.date,
         )
 
@@ -335,7 +345,9 @@ class InitialVisitOnlyStatus(ParticipantStatus):
 @dataclass
 class RejoinedStatus(ParticipantStatus):
     @classmethod
-    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["RejoinedStatus"]:
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
+    ) -> Optional["RejoinedStatus"]:
         """Determine if the participant ever rejoined, and grab its
         corresponding latest date. A subject is denoted as rejoined if they are
         explicitly marked as rejoined on a MLST form. Note this is different
@@ -362,9 +374,10 @@ class RejoinedStatus(ParticipantStatus):
 
 @dataclass
 class LatestUDSVisit(ParticipantStatus):
-
     @classmethod
-    def __get_latest_visitdate(cls, working: WorkingNamespace, attribute: str) -> Optional[date]:
+    def __get_latest_visitdate(
+        cls, working: WorkingNamespace, attribute: str
+    ) -> Optional[date]:
         """Get the latest visitdate, if visits exist.
 
         Returns:
@@ -378,9 +391,12 @@ class LatestUDSVisit(ParticipantStatus):
         return date_from_form_date(sorted_visitdates[-1])
 
     @classmethod
-    def create_from_working_namespace(cls, working: WorkingNamespace) -> Optional["UDSAfterMLSTStatus"]:
-        """Get the participant's latest UDS visit. If this came after some
-        status change, it can override/reset it.
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
+    ) -> Optional["UDSAfterMLSTStatus"]:
+        """Get the participant's latest UDS visit.
+
+        If this came after some status change, it can override/reset it.
         """
         latest_uds = cls.__get_latest_visitdate(working, "uds-visitdates")
 
@@ -389,7 +405,5 @@ class LatestUDSVisit(ParticipantStatus):
             return None
 
         return LatestUDSVisit(
-            status='latest_uds_visit',
-            status_date=str(latest_uds),
-            form_date=latest_uds
+            status="latest_uds_visit", status_date=str(latest_uds), form_date=latest_uds
         )

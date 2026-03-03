@@ -135,10 +135,7 @@ def test_np_form():
                 "working": {
                     "cross-sectional": {
                         "np-death-age": 80,
-                        "np-death-date": {
-                            "value": "2024-12-19",
-                            "date": "2025-01-01"
-                        },
+                        "np-death-date": {"value": "2024-12-19", "date": "2025-01-01"},
                         "np-form-date": "2025-01-01",
                     }
                 },

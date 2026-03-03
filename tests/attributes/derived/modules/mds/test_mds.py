@@ -24,7 +24,7 @@ def table() -> SymbolTable:
                         "deathday": "21",
                         "birthyr": "1960",
                         "birthmo": "2",
-                        "birthday": "17"
+                        "birthday": "17",
                     }
                 }
             }
@@ -44,15 +44,17 @@ class TestMilestoneAttributeCollection:
         assert attr._create_mds_death_date() == "2008-11-21"
 
         # test when unknown parts
-        table['file.info.forms.json'].update({
-            "deathyr": "9999",
-            "deathmo": "3",
-            "deathday": "99",
-        })
+        table["file.info.forms.json"].update(
+            {
+                "deathyr": "9999",
+                "deathmo": "3",
+                "deathday": "99",
+            }
+        )
         assert attr._create_mds_death_date() == "9999-03-99"
 
         # test when not dead
-        table['file.info.forms.json.vitalst'] = 1
+        table["file.info.forms.json.vitalst"] = 1
         assert attr._create_mds_death_date() is None
 
     def test_create_mds_death_age(self, table) -> None:
@@ -63,25 +65,28 @@ class TestMilestoneAttributeCollection:
         assert attr._create_mds_death_age() == 48
 
         # test when death cannot be calculated
-        table['file.info.forms.json'].update({
-            "deathyr": "9999",
-            "deathmo": "99",
-            "deathday": "1",
-        })
+        table["file.info.forms.json"].update(
+            {
+                "deathyr": "9999",
+                "deathmo": "99",
+                "deathday": "1",
+            }
+        )
         assert attr._create_mds_death_age() == 999
 
         # test when birth date cannot be calculated
-        table['file.info.forms.json'].update({
-            "deathyr": "2008",
-            "deathmo": "11",
-            "deathday": "21",
-            "birthyr": "1960",
-            "birthmo": "99",
-            "birthday": "99"
-
-        })
+        table["file.info.forms.json"].update(
+            {
+                "deathyr": "2008",
+                "deathmo": "11",
+                "deathday": "21",
+                "birthyr": "1960",
+                "birthmo": "99",
+                "birthday": "99",
+            }
+        )
         assert attr._create_mds_death_age() == 999
 
         # test when not dead
-        table['file.info.forms.json.vitalst'] = 1
+        table["file.info.forms.json.vitalst"] = 1
         assert attr._create_mds_death_age() is None

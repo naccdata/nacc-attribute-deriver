@@ -9,6 +9,7 @@ denoted in over for cross_module derivation.
 See attributes.derived.modules.cross_module.participant_status to see how
 these end up being handled to determine a participant's status.
 """
+
 from datetime import date
 from typing import Optional
 
@@ -57,9 +58,13 @@ class MilestoneAttributeCollection(AttributeCollection):
 
         return result
 
-    def __create_status_date(self, year_field: str, month_field: str, day_field: str) -> str:
-        """Create the date the status changed. If cannot be determined,
-        return the MLST visit date."""
+    def __create_status_date(
+        self, year_field: str, month_field: str, day_field: str
+    ) -> str:
+        """Create the date the status changed.
+
+        If cannot be determined, return the MLST visit date.
+        """
         year = self.__mlst.get_value(year_field, int)
         month = self.__mlst.get_value(month_field, int)
         day = self.__mlst.get_value(day_field, int)
@@ -86,7 +91,7 @@ class MilestoneAttributeCollection(AttributeCollection):
         # DISCDY is DISCDAY in some forms, so check
         day_field = "discdy"
         if self.__mlst.get_value(day_field, int) is None:
-            day_field = 'discday'
+            day_field = "discday"
 
         return self.__create_status_date("discyr", "discmo", day_field)
 
@@ -101,8 +106,8 @@ class MilestoneAttributeCollection(AttributeCollection):
         return self.__create_status_date("deathyr", "deathmo", "deathdy")
 
     def _create_milesetone_renurse_date(self) -> Optional[str]:
-        """Check if subject moved to a permenant nursing home; if so,
-        create renurse date."""
+        """Check if subject moved to a permenant nursing home; if so, create
+        renurse date."""
         renurse = self.__mlst.get_value("renurse", int)
         if renurse is None:
             renurse = self.__mlst.get_value("nursehom", int)

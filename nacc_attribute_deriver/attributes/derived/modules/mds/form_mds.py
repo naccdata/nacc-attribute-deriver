@@ -16,17 +16,12 @@ from nacc_attribute_deriver.utils.date import (
     date_from_form_date,
     make_date_from_parts,
 )
-from nacc_attribute_deriver.utils.errors import (
-    AttributeDeriverError,
-    InvalidFieldError
-)
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError, InvalidFieldError
 
 
 class MDSFormAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable) -> None:
-        self.__mds = FormNamespace(
-            table=table, required=frozenset(["module"])
-        )
+        self.__mds = FormNamespace(table=table, required=frozenset(["module"]))
         self.__subject_derived = SubjectDerivedNamespace(table=table)
 
         module = self.__mds.get_required("module", str)
@@ -68,7 +63,7 @@ class MDSFormAttributeCollection(AttributeCollection):
         try:
             death_age = calculate_age(
                 date1=date_from_form_date(birthday),
-                date2=date_from_form_date(death_date)
+                date2=date_from_form_date(death_date),
             )
             return death_age
         except (TypeError, ValueError, AttributeDeriverError):
