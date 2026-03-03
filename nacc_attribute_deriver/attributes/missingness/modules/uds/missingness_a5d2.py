@@ -217,22 +217,26 @@ class UDSFormA5D2Missingness(UDSMissingness):
         return self.__handle_a5d2_gate("anxiety", "othanxdis")
 
     def _missingness_angiocp(self) -> int:
-        """Handles missingness for ANGIOCP; only apply for V4+."""
-        if self.formver >= 4:
-            return self.__handle_a5d2_gate("cbstroke", "angiocp")
+        """Handles missingness for ANGIOCP; ignore gate logic in
+        V3 and earlier if ANGIOCP = 1"""
+        angiocp = self.uds.get_value("angiocp", int)
+        if self.formver < 4 and angiocp == 1:
+            return angiocp
 
-        return self.generic_missingness("angiocp", int)
+        return self.__handle_a5d2_gate("cbstroke", "angiocp")
 
     def _missingness_strokmul(self) -> int:
         """Handles missingness for STROKMUL."""
         return self.__handle_a5d2_gate("cbstroke", "strokmul")
 
     def _missingness_ocd(self) -> int:
-        """Handles missingness for OCD; only apply for V4+."""
-        if self.formver >= 4:
-            return self.__handle_a5d2_gate("anxiety", "ocd")
+        """Handles missingness for OCD; ignore gate logic in
+        V3 and earlier if OCD = 1 of 2"""
+        ocd = self.uds.get_value("ocd", int)
+        if self.formver < 4 and ocd in [1, 2]:
+            return ocd
 
-        return self.generic_missingness("ocd", int)
+        return self.__handle_a5d2_gate("anxiety", "ocd")
 
     def _missingness_tiamult(self) -> int:
         """Handles missingness for TIAMULT."""

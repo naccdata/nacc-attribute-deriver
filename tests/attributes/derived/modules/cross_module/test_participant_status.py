@@ -1,6 +1,7 @@
 """Tests participant statuses are set correctly."""
 
 import random
+import pytest
 
 from datetime import date
 from typing import Any, Dict
@@ -16,6 +17,7 @@ from nacc_attribute_deriver.attributes.derived.modules.cross_module.participant_
     LatestUDSVisit,
     RejoinedStatus,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -159,6 +161,21 @@ class TestParticipantStatusCreation:
         # deceased-specific variables
         assert status.age_at_death == 73
         assert status.has_np is True
+
+        # test error is thrown if np-death-age not provided with NP form
+        working = create_working(
+            {
+                "np-death-date": {
+                    "value": "2025-01-12",
+                    "date": "2025-07-19",
+                }
+            }
+        )
+
+        with pytest.raises(AttributeDeriverError) as e:
+            DeceasedStatus.create_from_working_namespace(working)
+
+        assert "Missing NP death age when NP death reported" in str(e)
 
     def test_deceased_status_mlst(self) -> None:
         """Test when the deceased status is set by a MLST form."""

@@ -108,3 +108,35 @@ class TestUDSFormA5D2Missingness:
 
         uds_table["file.info.forms.json.artloex"] = None
         assert attr._missingness_artloex() == INFORMED_MISSINGNESS
+
+    def test_angiocp(self, uds_table) -> None:
+        """Test ANGIOCP; mainly looking gate logic is NOT applied
+        if ANGCIOCP = 1 in V3 and earlier."""
+        # V3 and earlier; ignores gate to retain 1s 
+        uds_table["file.info.forms.json.formver"] = random.choice([1, 2, 3])
+        uds_table["file.info.forms.json.cbstroke"] = 9
+        uds_table["file.info.forms.json.angiocp"] = 1
+        attr = UDSFormA5D2Missingness(uds_table)
+        assert attr._missingness_angiocp() == 1
+
+        # V4; enforces gate
+        uds_table["file.info.forms.json.formver"] = 4
+        attr = UDSFormA5D2Missingness(uds_table)
+        assert attr._missingness_angiocp() == 9
+
+    def test_ocd(self, uds_table) -> None:
+        """Test OCD; mainly looking gate logic is NOT applied
+        if OCD = 1 or 2 in V3 and earlier."""
+        ocd = random.choice([1, 2])
+
+        # V3 and earlier; ignores gate to retain 1s 
+        uds_table["file.info.forms.json.formver"] = random.choice([1, 2, 3])
+        uds_table["file.info.forms.json.anxiety"] = 0
+        uds_table["file.info.forms.json.ocd"] = ocd
+        attr = UDSFormA5D2Missingness(uds_table)
+        assert attr._missingness_ocd() == ocd
+
+        # V4; enforces gate
+        uds_table["file.info.forms.json.formver"] = 4
+        attr = UDSFormA5D2Missingness(uds_table)
+        assert attr._missingness_ocd() == 8

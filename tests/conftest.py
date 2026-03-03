@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Dict, Any
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from pytest import fixture

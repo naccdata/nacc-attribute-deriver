@@ -67,8 +67,8 @@ class FamilyStatusRecord(BaseModel):
 
 
 class A3FamilyHandler(ABC):
-    def __init__(self, uds: UDSNamespace, table: SymbolTable) -> None:
-        self.uds = uds
+    def __init__(self, table: SymbolTable) -> None:
+        self.__uds = UDSNamespace(table)
         self.__working = WorkingNamespace(table=table)
         self.__record = self.make_family_record()
 
@@ -81,24 +81,28 @@ class A3FamilyHandler(ABC):
         return result if result is not None else INFORMED_MISSINGNESS
 
     @property
+    def uds(self) -> UDSNamespace:
+        return self.__uds
+
+    @property
     def record(self) -> FamilyStatusRecord:
         return self.__record
 
     @property
     def prev_mom(self) -> int:
-        return self.__return_working_value("cognitive_status_mom")
+        return self.__return_working_value("cognitive-status-mom")
 
     @property
     def prev_dad(self) -> int:
-        return self.__return_working_value("cognitive_status_dad")
+        return self.__return_working_value("cognitive-status-dad")
 
     @property
     def prev_sib(self) -> int:
-        return self.__return_working_value("cognitive_status_sib")
+        return self.__return_working_value("cognitive-status-sib")
 
     @property
     def prev_kid(self) -> int:
-        return self.__return_working_value("cognitive_status_kid")
+        return self.__return_working_value("cognitive-status-kid")
 
     @abstractmethod
     def make_family_record(self) -> FamilyStatusRecord:
@@ -199,9 +203,16 @@ class A3FamilyHandlerV1(A3FamilyHandler):
         if demented in [0, 1]:
             return demented
 
-        # at this point it's 9 or blank or pulling from the
-        # previous value, so just return what is already set
-        return prev_value
+        # at this point it's a 9 or blank; return prev value if it was set
+        if prev_value in [0, 1, 9]:
+            return prev_value
+
+        # return 9 if it's definite 9
+        if demented == 9:
+            return 9
+
+        # at this point it is just missing data, return missingness
+        return INFORMED_MISSINGNESS
 
     def __determine_sibkid_status(self, prefix: SIBKIDS, prev_value: int) -> int:
         """Determine the sib or kid status."""
@@ -261,9 +272,16 @@ class A3FamilyHandlerV2(A3FamilyHandler):
         if demented in [0, 1]:
             return demented
 
-        # at this point it's 9 or blank or pulling from the
-        # previous value, so just return what is already set
-        return prev_value
+        # at this point it's a 9 or blank; return prev value if it was set
+        if prev_value in [0, 1, 9]:
+            return prev_value
+
+        # return 9 if it's definite 9
+        if demented == 9:
+            return 9
+
+        # at this point it is just missing data, return missingness
+        return INFORMED_MISSINGNESS
 
     def __determine_sibkid_status(self, prefix: SIBKIDS, prev_value: int) -> int:
         """Determine the sib or kid status."""

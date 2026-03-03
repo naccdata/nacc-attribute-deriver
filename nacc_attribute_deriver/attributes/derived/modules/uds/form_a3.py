@@ -34,7 +34,7 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         self.__working = WorkingNamespace(table=table)
 
         family_handler_class = self.__determine_family_handler()
-        self.__family = family_handler_class(self.uds, table)
+        self.__family = family_handler_class(table=table)
 
     @property
     def submitted(self) -> bool:
