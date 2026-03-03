@@ -45,6 +45,7 @@ from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     date_from_form_date,
+    parse_date_parts,
 )
 
 
@@ -65,9 +66,11 @@ class ParticipantStatus(ABC):
     form_date: date
 
     def __post_init__(self):
-        """Ensure date is in YYYY-MM-DD format, even if it has unknown parts
-        like 9999-99-99."""
-        if not re.match(r"^\d{4}-\d{2}-\d{2}$", self.status_date):
+        """Ensure date is in YYYY-MM-DD format."""
+        try:
+            year, month, day = parse_date_parts(self.status_date)
+            self.status_date = f'{year:4d}-{month:02d}-{day:02d}'
+        except AttributeDeriverError:
             raise AttributeDeriverError(
                 f"Participant status date {self.status} not in "
                 + f"YYYY-MM-DD format: {self.status_date}"
@@ -406,4 +409,42 @@ class LatestUDSVisit(ParticipantStatus):
 
         return LatestUDSVisit(
             status="latest_uds_visit", status_date=str(latest_uds), form_date=latest_uds
+        )
+
+
+@dataclass
+class NursingHomeStatus(ParticipantStatus):
+    @classmethod
+    def create_from_working_namespace(
+        cls, working: WorkingNamespace
+    ) -> Optional["UDSAfterMLSTStatus"]:
+        """Get when the participant permenantly moved to a nursing home.
+
+        This status does not interact with other statuses, but instead
+        looks at the latest RESIDENC value from the UDS A1 form that was set.
+        RESIDENC can override/nullify this status if it is anything other
+        than 4 (nursing home) or 9 (unknown) AND came after the day
+        RENURSE from MLST was set. That being said, RESIDENC can never
+        set this variable, only nullify it.
+        """
+        nursing_home_date = working.get_cross_sectional_dated_value(
+            "milestone-renurse-date", str
+        )
+
+        # if no nursing date set from MLSTs, return None
+        if not nursing_home_date:
+            return None
+
+        residenc = working.get_cross_sectional_dated_value(
+            "residenc", int
+        )
+
+        # if RESIDENC nullifies, return None
+        if residenc and residenc.value not in [4, 9]:
+            return None
+
+        return NursingHomeStatus(
+            status="nursing_home",
+            status_date=nursing_home_date.value,
+            form_date=nursing_home_date.date,
         )

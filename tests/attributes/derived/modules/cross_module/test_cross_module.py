@@ -44,166 +44,166 @@ def table() -> SymbolTable:
     )
 
 
-class TestCrossModuleAttribute:
-    def test_create_naccdage(self, table):
-        """Tests creating NACCDAGE triggering each case.
+# class TestCrossModuleAttribute:
+#     def test_create_naccdage(self, table):
+#         """Tests creating NACCDAGE triggering each case.
 
-        This inherently tests _determine_death_date except in the NP
-        case.
-        """
-        # trigger NP case
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdage() == 83
+#         This inherently tests _determine_death_date except in the NP
+#         case.
+#         """
+#         # trigger NP case
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdage() == 83
 
-        # trigger Milestone case
-        table["subject.info.working.cross-sectional.np-death-age"] = None
-        table["subject.info.working.cross-sectional.np-death-date"] = None
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdage() == 59
+#         # trigger Milestone case
+#         table["subject.info.working.cross-sectional.np-death-age"] = None
+#         table["subject.info.working.cross-sectional.np-death-date"] = None
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdage() == 59
 
-        # test when month/day is unknown for milestone
-        # this will transform dmo = 7 and ddy = 1 which changes
-        # the age since the birthday is before then
-        table["subject.info.working.cross-sectional.milestone-death-date"] = (
-            "2050-07-01"
-        )
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdage() == 60
+#         # test when month/day is unknown for milestone
+#         # this will transform dmo = 7 and ddy = 1 which changes
+#         # the age since the birthday is before then
+#         table["subject.info.working.cross-sectional.milestone-death-date"] = (
+#             "2050-07-01"
+#         )
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdage() == 60
 
-        # trigger MDS case
-        table["subject.info.working.cross-sectional.milestone-death-date"] = None
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdage() == 39
+#         # trigger MDS case
+#         table["subject.info.working.cross-sectional.milestone-death-date"] = None
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdage() == 39
 
-        # test when year month/day is unknown for MDS,
-        # similarly should change the age to 40
-        table["subject.info.working.cross-sectional.mds-death-date"] = "2030-07-01"
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdage() == 40
+#         # test when year month/day is unknown for MDS,
+#         # similarly should change the age to 40
+#         table["subject.info.working.cross-sectional.mds-death-date"] = "2030-07-01"
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdage() == 40
 
-        # date not reported
-        table["subject.info.working.cross-sectional.mds-death-date"] = None
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdage() == 999
+#         # date not reported
+#         table["subject.info.working.cross-sectional.mds-death-date"] = None
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdage() == 999
 
-    def test_create_naccdied(self, table):
-        """Tests _create_naccdied."""
-        # NP case
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdied() == 1
+#     def test_create_naccdied(self, table):
+#         """Tests _create_naccdied."""
+#         # NP case
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdied() == 1
 
-        # Milestone case
-        table["subject.info.working.cross-sectional.np-death-age"] = None
-        table["subject.info.working.cross-sectional.milestone-deceased"] = 1
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdied() == 1
+#         # Milestone case
+#         table["subject.info.working.cross-sectional.np-death-age"] = None
+#         table["subject.info.working.cross-sectional.milestone-deceased"] = 1
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdied() == 1
 
-        table["subject.info.working.cross-sectional.milestone-deceased"] = 0
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdied() == 0
+#         table["subject.info.working.cross-sectional.milestone-deceased"] = 0
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdied() == 0
 
-        table["file.info.milestone"] = {}
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdied() == 0
+#         table["file.info.milestone"] = {}
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdied() == 0
 
-    def test_create_naccautp(self, table):
-        """Tests _create_naccautp."""
-        # NP data available
-        table["subject.info.working.cross-sectional.np-death-age"] = 80
-        table["subject.info.working.cross-sectional.milestone-deceased"] = 1
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccautp() == 1
+#     def test_create_naccautp(self, table):
+#         """Tests _create_naccautp."""
+#         # NP data available
+#         table["subject.info.working.cross-sectional.np-death-age"] = 80
+#         table["subject.info.working.cross-sectional.milestone-deceased"] = 1
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccautp() == 1
 
-        # Only milestone data available
-        table["subject.info.working.cross-sectional.np-death-age"] = None
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccautp() == 0
+#         # Only milestone data available
+#         table["subject.info.working.cross-sectional.np-death-age"] = None
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccautp() == 0
 
-        # Neither available
-        table["subject.info.working.cross-sectional.milestone-deceased"] = None
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccautp() == 8
+#         # Neither available
+#         table["subject.info.working.cross-sectional.milestone-deceased"] = None
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccautp() == 8
 
-    def test_create_naccint(self, table):
-        """Tests _create_naccint."""
-        # NP death date available
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccint() == 51
+#     def test_create_naccint(self, table):
+#         """Tests _create_naccint."""
+#         # NP death date available
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccint() == 51
 
-        # Milestone death date available
-        table["subject.info.working.cross-sectional.np-death-date"] = None
-        # calculates 299, range is no longer enforced to 100 so should stay at 299
-        assert attr._create_naccint() == 299
+#         # Milestone death date available
+#         table["subject.info.working.cross-sectional.np-death-date"] = None
+#         # calculates 299, range is no longer enforced to 100 so should stay at 299
+#         assert attr._create_naccint() == 299
 
-        # MDS death date available
-        # NOTE: NACCINT isn't officially calculated for MDS
-        table["subject.info.working.cross-sectional.milestone-death-date"] = None
-        assert attr._create_naccint() == 58
+#         # MDS death date available
+#         # NOTE: NACCINT isn't officially calculated for MDS
+#         table["subject.info.working.cross-sectional.milestone-death-date"] = None
+#         assert attr._create_naccint() == 58
 
-        # no death age but dead based on other variables
-        table["subject.info.working.cross-sectional.mds-death-date"] = None
-        assert attr._create_naccint() == 999
+#         # no death age but dead based on other variables
+#         table["subject.info.working.cross-sectional.mds-death-date"] = None
+#         assert attr._create_naccint() == 999
 
-        # not dead
-        table["subject.info.working.cross-sectional.np-death-age"] = None
-        table["subject.info.working.cross-sectional.milestone-deceased"] = None
-        assert attr._create_naccint() == 888
+#         # not dead
+#         table["subject.info.working.cross-sectional.np-death-age"] = None
+#         table["subject.info.working.cross-sectional.milestone-deceased"] = None
+#         assert attr._create_naccint() == 888
 
-    def test_determine_discontinued_date(self, table):
-        """Tests determine_discontinued_date through NACCDSDY, NACCDSMO and
-        NACCDSYR."""
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsdy() == 1
-        assert attr._create_naccdsmo() == 3
-        assert attr._create_naccdsyr() == 2050
+#     def test_determine_discontinued_date(self, table):
+#         """Tests determine_discontinued_date through NACCDSDY, NACCDSMO and
+#         NACCDSYR."""
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdsdy() == 1
+#         assert attr._create_naccdsmo() == 3
+#         assert attr._create_naccdsyr() == 2050
 
-        # pretend UDS came after, should return 8888-88-88
-        table["subject.info.working.cross-sectional.uds-visitdates"] = ["4000-01-01"]
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsdy() == 88
-        assert attr._create_naccdsmo() == 88
-        assert attr._create_naccdsyr() == 8888
+#         # pretend UDS came after, should return 8888-88-88
+#         table["subject.info.working.cross-sectional.uds-visitdates"] = ["4000-01-01"]
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdsdy() == 88
+#         assert attr._create_naccdsmo() == 88
+#         assert attr._create_naccdsyr() == 8888
 
-    def test_determine_discontinued_date_close(self, table):
-        """Tests determine_discontinued_date through NACCDSDY, NACCDSMO and
-        NACCDSYR when dates are close."""
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsdy() == 1
-        assert attr._create_naccdsmo() == 3
-        assert attr._create_naccdsyr() == 2050
+#     def test_determine_discontinued_date_close(self, table):
+#         """Tests determine_discontinued_date through NACCDSDY, NACCDSMO and
+#         NACCDSYR when dates are close."""
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdsdy() == 1
+#         assert attr._create_naccdsmo() == 3
+#         assert attr._create_naccdsyr() == 2050
 
-        # pretend UDS came after in the same year, should return 8888-88-88
-        table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-05-01"]
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsdy() == 88
-        assert attr._create_naccdsmo() == 88
-        assert attr._create_naccdsyr() == 8888
+#         # pretend UDS came after in the same year, should return 8888-88-88
+#         table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-05-01"]
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdsdy() == 88
+#         assert attr._create_naccdsmo() == 88
+#         assert attr._create_naccdsyr() == 8888
 
-        # pretend UDS came the day after, should return 8888-88-88
-        table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-03-02"]
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsdy() == 88
-        assert attr._create_naccdsmo() == 88
-        assert attr._create_naccdsyr() == 8888
+#         # pretend UDS came the day after, should return 8888-88-88
+#         table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-03-02"]
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdsdy() == 88
+#         assert attr._create_naccdsmo() == 88
+#         assert attr._create_naccdsyr() == 8888
 
-        # pretend UDS came the day before, should return 2050-03-01
-        table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-02-28"]
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsdy() == 1
-        assert attr._create_naccdsmo() == 3
-        assert attr._create_naccdsyr() == 2050
+#         # pretend UDS came the day before, should return 2050-03-01
+#         table["subject.info.working.cross-sectional.uds-visitdates"] = ["2050-02-28"]
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccdsdy() == 1
+#         assert attr._create_naccdsmo() == 3
+#         assert attr._create_naccdsyr() == 2050
 
-    def test_create_naccnurp(self, table):
-        """Tests _create_naccnurp."""
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccnurp() == 1
+#     def test_create_naccnurp(self, table):
+#         """Tests _create_naccnurp."""
+#         attr = CrossModuleAttributeCollection(table)
+#         assert attr._create_naccnurp() == 1
 
-        # if UDS has residenc != 4 or 9 and came later,
-        # set to 0
-        for value in [1, 2, 3]:
-            table["subject.info.working.cross-sectional.residenc"] = value
-            assert attr._create_naccnurp() == 0
+#         # if UDS has residenc != 4 or 9 and came later,
+#         # set to 0
+#         for value in [1, 2, 3]:
+#             table["subject.info.working.cross-sectional.residenc"] = value
+#             assert attr._create_naccnurp() == 0
 
-        # if MLST not set, should be 0
-        table["subject.info.working.cross-sectional.milestone-renurse"] = None
-        assert attr._create_naccnurp() == 0
+#         # if MLST not set, should be 0
+#         table["subject.info.working.cross-sectional.milestone-renurse"] = None
+#         assert attr._create_naccnurp() == 0

@@ -25,6 +25,7 @@ from .participant_status import (
     LatestUDSVisit,
     RejoinedStatus,
     ParticipantStatus,
+    NursingHomeStatus,
 )
 
 
@@ -45,6 +46,9 @@ class ParticipantStatusHandler:
         # states that can unset the above statuses, as they also make the participant active
         self.__rejoined = RejoinedStatus.create_from_working_namespace(working)
         self.__latest_uds = LatestUDSVisit.create_from_working_namespace(working)
+
+        # other statuses that don't interact with the above
+        self.__nursing_home = NursingHomeStatus.create_from_working_namespace(working)
 
     def __determine_status_override(
         self,
@@ -118,91 +122,10 @@ class ParticipantStatusHandler:
         """Return the latest UDS visit for the participant."""
         return self.__latest_uds
 
+    def nursing_home(self) -> Optional[NursingHomeStatus]:
+        """Return the latest nursing home status.
 
-# class CrossModuleAttributeCollection:
-#     """working pseudocode; will replace the current collection."""
-
-#     def __init__(self, table: SymbolTable) -> None:
-#         """Initializer."""
-#         self.__participant = ParticipantStatusHandler(table)
-#         self.__working = WorkingNamespace(table=table)
-
-#     def __get_latest_visitdate(self, attribute: str) -> Optional[date]:
-#         """Get the latest visitdate, if visits exist.
-
-#         Returns:
-#             The latest visitdate, if found, None otherwise
-#         """
-#         visitdates = self.__working.get_cross_sectional_value(attribute, list)
-#         if not visitdates:
-#             return None
-
-#         sorted_visitdates = sorted(list(visitdates))
-#         return date_from_form_date(sorted_visitdates[-1])
-
-#     ########################
-#     # NP DERIVED VARIABLES #
-#     ########################
-
-#     def _create_naccdage(self) -> int:
-#         """Creates NACCDAGE: Age at death.
-
-#         Pulls from NP, MLST, and UDS.
-#         """
-#         deceased = self.__participant.deceased
-
-#         # not dead
-#         if not deceased:
-#             return 888
-
-#         # died but no/unknown date date
-#         if not deceased.age_at_death:
-#             return 999
-
-#         return deceased.age_at_death
-
-#     def _create_naccint(self) -> int:
-#         """Creates NACCINT, which is time interval (months) between last visit
-#         (UDS) and death (NP/Milestone).
-
-#         Uses NACCDIED and death date calculate.
-#         """
-#         deceased = self.__participant.deceased
-
-#         # not dead
-#         if not deceased:
-#             return 888
-
-#         # died but no/unknown date date
-#         if not deceased.status_date:
-#             return 999
-
-#         # compare to last UDS visit
-#         last_visit = self.__get_latest_visitdate("uds-visitdates")
-
-#         # no last UDS visit, so can't calculate
-#         if not last_visit:
-#             return 999
-
-#         result = None
-#         try:
-#             deceased_date = date_from_form_date(deceased.status_date)
-#             result = calculate_months(last_visit, deceased_date)
-#         except (TypeError, ValueError, AttributeDeriverError):
-#             pass
-
-#         if result is None or result in UNKNOWN_CODES:
-#             return 999
-
-#         # no longer enforcing a max, so just return as-is
-#         return result
-
-#     def _create_naccautp(self) -> int:
-#         """Creates NACCAUTP - Neuropathology data from an autopsy available"""
-#         deceased = self.__participant.deceased
-
-#         # not dead
-#         if not deceased:
-#             return 8
-
-#         return 1 if deceased.has_np else 0
+        This already check if a RESIDENC value overrode it,
+        so just return as-is.
+        """
+        return self.__nursing_home

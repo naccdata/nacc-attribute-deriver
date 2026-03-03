@@ -13,7 +13,7 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
-from nacc_attribute_deriver.utils.date import parse_unknown_dates
+from nacc_attribute_deriver.utils.date import parse_date_parts
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
@@ -604,7 +604,7 @@ class UDSFormC1C2Missingness(UDSMissingness):
         # from logidate_c1
         value = self.uds.get_value(field, int)
         if value is None:
-            logiyr, logimo, logiday = parse_unknown_dates(
+            logiyr, logimo, logiday = parse_date_parts(
                 self.uds.get_value("logidate_c1", str)
             )
             if field == "logiyr":

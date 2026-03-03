@@ -16,18 +16,16 @@ from nacc_attribute_deriver.attributes.collection.attribute_collection import (
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
-    T,
     WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import UNKNOWN_CODES
 from nacc_attribute_deriver.utils.date import (
-    calculate_age,
     calculate_months,
-    date_came_after,
-    date_came_after_sparse,
     date_from_form_date,
+    parse_date_parts,
 )
+
+from .participant_status_handler import ParticipantStatusHandler
 
 
 class CrossModuleAttributeCollection(AttributeCollection):
@@ -38,239 +36,103 @@ class CrossModuleAttributeCollection(AttributeCollection):
         self.__subject_derived = SubjectDerivedNamespace(table=table)
         self.__working = WorkingNamespace(table=table)
 
+        # participant handler to keep track of the participant's statuses
+        self.__participant = ParticipantStatusHandler(self.__working)
+
         # if the center is inactive, will override variables like
         # NACCACTV and NACCNOVS; assume True by default
         self.__active_center = table.get("_active_center", True)
-
-    def __working_value(self, attribute: str, attribute_type: Type[T]) -> Optional[T]:
-        """Grab cross-sectional working value."""
-        return self.__working.get_cross_sectional_value(attribute, attribute_type)
-
-    def __determine_death_date(self) -> Optional[date]:
-        """Determines the death status, and returns the death date if found.
-
-        Checks the following forms in order:
-            - NP
-            - Milestone
-            - MDS
-
-        Returns:
-            Death date if found, None otherwise
-        """
-        for field in ["np-death-date", "milestone-death-date", "mds-death-date"]:
-            death_date = date_from_form_date(self.__working_value(field, str))
-            if death_date:
-                return death_date
-
-        return None
-
-    def __get_latest_visitdate(self, attribute: str) -> Optional[date]:
-        """Get the latest visitdate, if visits exist.
-
-        Returns:
-            The latest visitdate, if found, None otherwise
-        """
-        visitdates = self.__working_value(attribute, list)
-        if not visitdates:
-            return None
-
-        sorted_visitdates = sorted(list(visitdates))
-        return date_from_form_date(sorted_visitdates[-1])
-
-    def __determine_prespart(self) -> int:
-        """Generally, PRESPART = 1 means initial visit only. However,
-        if they ended up having more UDS visits, that means they are
-        effectively ignoring/changing that and the participant is
-        actually active, so override the value of PRESPART.
-
-        Returns:
-            1: If PRESPART == 1 and only the initial visit exists
-            0: If PRESPART != 1 or multiple UDS visits (indicating follow-ups)
-        """
-        prespart = self.__working_value("prespart", int)
-        if prespart == 1:
-            # check if they really only had an initial visit by looking at
-            # number of uds visits
-            uds_visitdates = self.__working_value("uds-visitdates", list)
-            if uds_visitdates and len(uds_visitdates) > 1:
-                return 0
-
-        return prespart if prespart is not None else 0
 
     ########################
     # NP DERIVED VARIABLES #
     ########################
 
     def _create_naccdage(self) -> int:
-        """Creates NACCDAGE: Age at death.
-
-        Pulls from NP, MLST, and UDS.
-        """
-        # check that subject is deceased at all
-        mds_vital_status = self.__working_value("mds-vital-status", int)
-        if self._create_naccdied() == 0 and mds_vital_status != 2:
-            return 888
-
-        # NP, grab from NPDAGE
-        npdage = self.__working_value("np-death-age", int)
-        if npdage:
-            return npdage
-
-        # otherwise calculate from DOB/DOD
-        birth_date = date_from_form_date(self.__working_value("uds-date-of-birth", str))
-        death_date = self.__determine_death_date()
-
-        if not birth_date or not death_date:
-            return 999
-
-        age = calculate_age(birth_date, death_date)
-        if not age:
-            return 999
-
-        # set minimum of 18
-        return max(age, 18)
+        """Creates NACCDAGE: Age at death."""
+        deceased = self.__participant.deceased()
+        return 888 if not deceased else deceased.age_at_death
 
     def _create_naccautp(self) -> int:
-        """Creates NACCAUTP - similar to NACCDIED but also
-        needs to differentiate if an NP form was submitted
-        or not.
-        """
-        death_age = self.__working_value("np-death-age", int)
-        deceased = self.__working_value("milestone-deceased", int)
-        np_deceased = death_age is not None
-        mile_deceased = deceased == 1
+        """Creates NACCAUTP - Neuropathology data from an autopsy available"""
+        deceased = self.__participant.deceased()
 
-        # not reported as having died
-        if not np_deceased and not mile_deceased:
+        # not dead
+        if not deceased:
             return 8
 
-        # deceased but no NP data available
-        if mile_deceased and not np_deceased:
-            return 0
-
-        # deceased with NP data available
-        return 1
+        return 1 if deceased.has_np else 0
 
     def _create_naccint(self) -> int:
         """Creates NACCINT, which is time interval (months) between last visit
-        (UDS) and death (NP/Milestone).
-
-        Uses NACCDIED and death date calculate.
+        (UDS) and death (NP/Milestone, technically MDS as well but a subject
+        that died at MDS shouldn't be an UDS participant).
         """
-        naccdied = self._create_naccdied()
-        deathdate = self.__determine_death_date()
+        deceased = self.__participant.deceased()
+        latest_uds_visit = self.__participant.latest_uds_visit()
 
         # not dead
-        if naccdied != 1:
+        if not deceased:
             return 888
-
-        # died but no/unknown death age
-        if naccdied == 1 and not deathdate:
+        if not latest_uds_visit:
             return 999
 
-        # compare to last UDS visit
-        last_visit = self.__get_latest_visitdate("uds-visitdates")
-        if not last_visit:
-            return 999
+        # if death date has unknown parts, infer ONLY if the day is missing
+        # by setting it to 15 (middle of the month). otherwise, just return 999
+        death_date = deceased.status_date
+        if '99' in death_date or '88' in death_date:
+            year, month, day = parse_date_parts(death_date)
+            if year not in [8888, 9999] and month not in [88, 99] and day in [88, 99]:
+                death_date = f'{year}-{month}-15'
+            else:
+                return 999
 
-        result = calculate_months(last_visit, deathdate)
+        # otherwise, we're assuming the death date is known, try to calculate
+        # from the latest UDS date (which should also be known)
+        result = None
+        try:
+            result = calculate_months(
+                date_from_form_date(latest_uds_visit.status_date),
+                date_from_form_date(death_date)
+            )
+        except (TypeError, ValueError, AttributeDeriverError):
+            pass
 
-        if result is None or result in UNKNOWN_CODES:
-            return 999
+        return 999 if not result else result
 
-        # no longer enforcing a max, so just return as-is
-        return result
-
-    # Tried to use all things described in the rdd-np. Many seemed not
-    # in the SAS code. Not sure if the MDS "vitalst" is passed through or not.
     def _create_naccmod(self) -> int:
-        """Create the NACCMOD variable.
+        """Create the NACCMOD - Month of death"""
+        deceased = self.__participant.deceased()
 
-        Month of death. In Milestone and MDS, the month can be unknown
-        (99) so need to inspect directly.
-
-        REGRESSION: RDD only mentions NP/MLST. Ignore MDS?
-        """
-        # check vital status
-        if not self._create_naccdied():
+        # not dead
+        if not deceased:
             return 88
 
-        # NP will always have a known month
-        np_date = self.__working_value("np-death-date", str)
-        death_date = date_from_form_date(np_date)
-        if death_date:
-            return death_date.month
-
-        # Milestone month may be 99
-        milestone_mo = self.__working_value("milestone-death-month", int)
-        if milestone_mo is not None and milestone_mo != 99:
-            return milestone_mo
-
-        # MDS death month may be 99
-        # mds_mo = self.__working_value("mds-death-month", int)
-        # if mds_mo is not None and mds_mo != 99:
-        #     return mds_mo
-
-        # if no MOD but a YOD is available, set MOD to 7
-        if self._create_naccyod() not in [8888, 9999]:
-            return 7
+        # parse out the death month
+        _, month, _ = parse_date_parts(deceased.status_date)
+        if month and month >= 1 and month < 12:
+            return month
 
         return 99
 
-    # SAS seemingly sparse for this. Another one with potential MDS.
     def _create_naccyod(self) -> int:
-        """Create the NACCYOD variable.
+        """Create the NACCYOD - Year of death"""
+        deceased = self.__participant.deceased()
 
-        Year of death.
-
-        REGRESSION: RDD only mentions NP/MLST. Ignore MDS?
-        """
-        # check vital status
-        if not self._create_naccdied():
+        # not dead
+        if not deceased:
             return 8888
 
-        # year always defined if death date exists
-        # note MDS will not trigger the NACCDIED case
-        deathdate = self.__determine_death_date()
-
-        # Explicitly states in rdd-np that this shouldn't precede 1970.
-        # Previously not mentioned in SAS code.
-        if deathdate:
-            return deathdate.year if (deathdate.year >= 1970) else 9999
-
-        return 9999
-
-    def uds_came_after(self, target_date: date | None) -> bool:
-        """Compares UDS and given target dates.
-
-        Returns:
-            True: If UDS > target date
-            False: If UDS <= target_date
-        """
-        uds_date = self.__get_latest_visitdate("uds-visitdates")
-        if not uds_date:
-            # may not be an UDS participant (e.g. MDS/BDS)
-            return False
-
-        return date_came_after(uds_date, target_date)
+        # parse out the death year
+        year, _, _ = parse_date_parts(deceased.status_date)
+        return 9999 if year is None else year
 
     ###############################
     # MILESTONE DERIVED VARIABLES #
     ###############################
 
     def _create_naccdied(self) -> int:
-        """Creates NACCDIED - determined if death
-        has been reported by NP or Milestone form.
-        """
-        death_age = self.__working_value("np-death-age", int)
-        if death_age is not None:
-            return 1
-
-        deceased = self.__working_value("milestone-deceased", int)
-        if deceased == 1:
-            return 1
-
-        return 0
+        """Creates NACCDIED - subject is known to be deceased."""
+        return 1 if self.__participant.deceased() else 0
 
     def _create_naccactv(self) -> int:
         """Creates NACCACTV - Follow-up status at the Alzheimer's
@@ -281,162 +143,139 @@ class CrossModuleAttributeCollection(AttributeCollection):
                 or enrolled as initial visit only)
             1: If subject is under annual followup and expected to make more
                 Includes discontinued subjects who have since rejoined
-                - This seems to also include subject who have not explicitly
+                - This also includes subject who have not explicitly
                     been stated to have rejoined (via MLST form) BUT have
                     UDS visits after the date of the discontinued MLST form
             2: Minimal contact with ADC but still enrolled
             5: Affiliate
         """
-        # it not an active center or dead (from NP/MLST), return 0
-        if not self.__active_center or self._create_naccdied() == 1:
+        # it not an active center, return 0
+        if not self.__active_center:
             return 0
 
-        # if milestone marked subject as discontinued, and is the latest date,
-        # return 0. if there were UDS visits after discontinuation was marked,
-        # basically treat as NOT discontinued and pass through
-        mlst_discontinued = self.__working_value("milestone-discontinued", int)
-        if mlst_discontinued == 1:  # noqa: SIM102
-            if not self.check_uds_after_discontinued_mlst():
-                return 0
-
-        # if UDS A1 prespart == 1 (initial evaluation only), return 0
-        if self.__determine_prespart() == 1:
-            return 0
-
-        # 5 used for affiliates in SAS/R code
+        # if an affiliate, return 5 (not in RDD and won't go in QAF
+        # but just used to differentiate)
         if self.__subject_derived.get_value("affiliate", bool):
             return 5
 
-        # check milestone protocol/udsactiv
-        protocol = self.__working_value("milestone-protocol", int)
-        udsactiv = self.__working_value("milestone-udsactiv", int)
-
-        # inactive
-        if udsactiv == 4:
+        # if dead, discontinued, or initial visit only, return 0
+        if (self.__participant.deceased()
+            or self.__participant.discontinued()
+            or self.__participant.initial_visit_only()
+        ):
             return 0
 
-        # annual followup expected
-        if protocol in [1, 3] or udsactiv in [1, 2]:
-            return 1
-        # minimal contact
-        if protocol == 2 or udsactiv == 3:
+        # if minimal contact, return 2
+        if self.__participant.minimal_contact():
             return 2
 
-        # protocol == 1 or 3, or just active
+        # otherwise presumed active
         return 1
 
     def _create_naccnovs(self) -> int:
         """Creates NACCNOVS - No longer followed annually in person or by
-        telephone. This is ultimately just checking the same things
-        NACCACTV is and reinterprets results.
+        telephone.
         """
-        # if not an active center, always return 1
+        # it not an active center, return 1
         if not self.__active_center:
             return 1
 
-        # from UDS form; if prespart = 1, means initial evaluation only
-        # use this to override naccnovs = 0
-        prespart = self.__determine_prespart()
-
-        # if UDS is the latest one, check UDS prespart == 1 to return 8,
-        # otherwise purely based on MLST
-        recent_mlst = self.__get_latest_visitdate("milestone-visitdates")
-        if recent_mlst:
-            if self.uds_came_after(recent_mlst) and prespart == 1:
-                return 8
-
-        # if no MLST but prespart = 1, return 8 as well
-        elif prespart == 1:
+        # if initial visit only, return 8
+        if self.__participant.initial_visit_only():
             return 8
 
-        naccactv = self._create_naccactv()
-        if naccactv == 1:
-            return 0
-        if naccactv in [0, 2]:
+        # if dead, discontinued, or minimum contact only, return 1
+        if (self.__participant.deceased()
+            or self.__participant.discontinued()
+            or self.__participant.minimum_contact()
+        ):
             return 1
 
-        # only other case is 8 (initial visit only) which we return as-is
-        return naccactv
-
-    def _create_naccnurp(self) -> int:
-        """Creates NACCNURP - Permanently moved to a nursing home.
-
-        Looks at both Milestone and Form A1.
-
-        NOTE: After discussion with RT, this is the agreed-upon behavior:
-            By default always 0 (did not permenantly move to nursing home)
-            Can only change (become 1) through an MLST form indicating PERMANENT move
-            to a nursing home (RENURSE == 1)
-                This can become a 0 if a later UDS has
-                residenc != 4,9 (primary residence is nursing home or unknown)
-        """
-        # get most recent MLST value of renurse
-        renurse = self.__working_value("milestone-renurse", int)
-
-        # if MLST value (RENURSE/NURSEHOM) != 1, return 0
-        if renurse != 1:
-            return 0
-
-        # after this point assume renurse == 1
-        # if a later UDS visit has residenc != null,4,9 then return 0
-        naccnrdy = self.__subject_derived.get_cross_sectional_value("naccnrdy", int)
-        naccnrmo = self.__subject_derived.get_cross_sectional_value("naccnrmo", int)
-        naccnryr = self.__subject_derived.get_cross_sectional_value("naccnryr", int)
-        uds_date = self.__get_latest_visitdate("uds-visitdates")
-
-        if date_came_after_sparse(uds_date, naccnryr, naccnrmo, naccnrdy):
-            residenc = self.__working_value("residenc", int)
-            if residenc is not None and residenc not in [4, 9]:
-                return 0
-
-        # since MLST set RENURSE == 1 and UDS did not override, return 1
+        # otherwise presumed active
         return 1
 
-    def check_uds_after_discontinued_mlst(self) -> bool:
-        """Determine UDS came after discontinued MLST.
+    def _create_naccnurp(self) -> int:
+        """Creates NACCNURP - Permanently moved to a nursing home."""
+        return 1 if self.__participant.nursing_home() else 0
 
-        Returns True if an UDS visit came after the discontinued date.
-        """
-        discyr = self.__working_value("milestone-discyr", int)
-        discmo = self.__working_value("milestone-discmo", int)
-        discday = self.__working_value("milestone-discday", int)
-        uds_date = self.__get_latest_visitdate("uds-visitdates")
+    def _create_naccnrdy(self) -> int:
+        """Creates NACCNRDY - Day permanently moved to nursing home."""
+        nursing_home = self.__participant.nursing_home()
 
-        return date_came_after_sparse(uds_date, discyr, discmo, discday)
+        # has not permenantly moved to a nursing home
+        if not nursing_home:
+            return 88
 
-    def determine_discontinued_date(self, attribute: str, default: int) -> int:
-        """Determine the discontinued date part; compare to UDS/NP.
+        # parse out the nursing home month
+        _, _, day = parse_date_parts(nursing_home.status_date)
+        return 99 if day is None else day
 
-        If UDS form came AFTER MLST, return the default (even if MLST
-        said discontinued.
-        """
-        # if UDS came after MLST, return default
-        if self.check_uds_after_discontinued_mlst():
-            return default
+    def _create_naccnrmo(self) -> int:
+        """Creates NACCNRMO - Month permanently moved to nursing home."""
+        nursing_home = self.__participant.nursing_home()
 
-        # MLST is the latest (or only form, which technically isn't possible);
-        # return whatever MLST set
-        disc_date = self.__working_value(attribute, int)
-        return disc_date if disc_date is not None else default
+        # has not permenantly moved to a nursing home
+        if not nursing_home:
+            return 88
+
+        # parse out the nursing home month
+        _, month, _ = parse_date_parts(nursing_home.status_date)
+        return 99 if month is None else month
+
+    def _create_naccnryr(self) -> int:
+        """Creates NACCNRYR - Year permanently moved to nursing home."""
+        nursing_home = self.__participant.nursing_home()
+
+        # has not permenantly moved to a nursing home
+        if not nursing_home:
+            return 8888
+
+        # parse out the nursing home year
+        year, _, _ = parse_date_parts(nursing_home.status_date)
+        return 9999 if year is None else year
 
     def _create_naccdsdy(self) -> int:
         """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discday", 88)
+        discontinued = self.__participant.discontinued()
+
+        # has not discontinued
+        if not discontinued:
+            return 88
+
+        # parse out the discontinued day
+        _, _, day = parse_date_parts(discontinued.status_date)
+        return 99 if day is None else day
 
     def _create_naccdsmo(self) -> int:
         """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discmo", 88)
+        discontinued = self.__participant.discontinued()
+
+        # has not discontinued
+        if not discontinued:
+            return 88
+
+        # parse out the discontinued month
+        _, month, _ = parse_date_parts(discontinued.status_date)
+        return 99 if month is None else month
 
     def _create_naccdsyr(self) -> int:
         """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
-        return self.determine_discontinued_date("milestone-discyr", 8888)
+        discontinued = self.__participant.discontinued()
+
+        # has not discontinued
+        if not discontinued:
+            return 8888
+
+        # parse out the discontinued year
+        year, _, _ = parse_date_parts(discontinued.status_date)
+        return 9999 if year is None else year
 
     def _create_nacccore(self) -> int:
         """Creates NACCCORE - Clinical core participant."""
         # cannot just check affiliate mainly because of mds_source possibly being 9
-        mds_source = self.__working_value("mds-source", int)
-        uds_source = self.__working_value("uds-source", int)
-        uds_sourcenw = self.__working_value("uds-sourcenw", int)
+        mds_source = self.__working.get_cross_sectional_value("mds-source", int)
+        uds_source = self.__working.get_cross_sectional_value("uds-source", int)
+        uds_sourcenw = self.__working.get_cross_sectional_value("uds-sourcenw", int)
 
         # UDS participant
         if uds_source != 4 and uds_sourcenw != 2 and mds_source is None:
