@@ -440,11 +440,11 @@ class A3FamilyHandlerV3(A3FamilyHandler):
 class A3FamilyHandlerV4(A3FamilyHandler):
     """Handles determining family status for V4 forms."""
 
-    def __init__(self, uds: UDSNamespace, table: SymbolTable) -> None:
+    def __init__(self, table: SymbolTable) -> None:
         # define prev namespace
         self.__prev_record = PreviousRecordNamespace(table=table)
 
-        super().__init__(uds=uds, table=table)
+        super().__init__(table=table)
 
     def make_family_record(self) -> FamilyStatusRecord:
         return FamilyStatusRecord(
