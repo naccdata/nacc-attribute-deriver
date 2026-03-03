@@ -482,8 +482,8 @@ class TestA3FamilyHandlerV2:
                 "sib1dem": 0,
                 "sib2dem": None,
                 "kid1dem": 9,
-                'kid2dem': 9,
-                'kid3dem': None
+                "kid2dem": 9,
+                "kid3dem": None,
             }
         )
         handler = A3FamilyHandlerV2(table)
@@ -503,10 +503,10 @@ class TestA3FamilyHandlerV3:
         table = set_working_family()
         table["file.info.forms.json"].update(
             {
-                'momneur': 1,
-                'momprdx': random.choice(A3FamilyHandlerV3.DXCODES),
-                'dadneur': 1,
-                'dadprdx': 23
+                "momneur": 1,
+                "momprdx": random.choice(A3FamilyHandlerV3.DXCODES),
+                "dadneur": 1,
+                "dadprdx": 23,
             }
         )
         handler = A3FamilyHandlerV3(table)
@@ -518,10 +518,10 @@ class TestA3FamilyHandlerV3:
         # dadneur is 9 even if pdf ix in DXCODES
         table["file.info.forms.json"].update(
             {
-                'momneur': 1,
-                'momprdx': 999,
-                'dadneur': 9,
-                'dadprdx': random.choice(A3FamilyHandlerV3.DXCODES)
+                "momneur": 1,
+                "momprdx": 999,
+                "dadneur": 9,
+                "dadprdx": random.choice(A3FamilyHandlerV3.DXCODES),
             }
         )
         handler = A3FamilyHandlerV3(table)
@@ -534,10 +534,10 @@ class TestA3FamilyHandlerV3:
         table = set_working_family(mom=1, dad=1)
         table["file.info.forms.json"].update(
             {
-                'momneur': random.choice([2, 3, 4, 5, 8]),
-                'momprdx': random.choice(A3FamilyHandlerV3.DXCODES),
-                'dadneur': random.choice([2, 3, 4, 5, 8]),
-                'dadprdx': 36
+                "momneur": random.choice([2, 3, 4, 5, 8]),
+                "momprdx": random.choice(A3FamilyHandlerV3.DXCODES),
+                "dadneur": random.choice([2, 3, 4, 5, 8]),
+                "dadprdx": 36,
             }
         )
         handler = A3FamilyHandlerV3(table)
@@ -548,10 +548,10 @@ class TestA3FamilyHandlerV3:
         table = set_working_family(mom=1, dad=1)
         table["file.info.forms.json"].update(
             {
-                'momneur': 1,
-                'momprdx': 999,
-                'dadneur': 9,
-                'dadprdx': random.choice(A3FamilyHandlerV3.DXCODES)
+                "momneur": 1,
+                "momprdx": 999,
+                "dadneur": 9,
+                "dadprdx": random.choice(A3FamilyHandlerV3.DXCODES),
             }
         )
         handler = A3FamilyHandlerV3(table)
@@ -565,9 +565,9 @@ class TestA3FamilyHandlerV3:
 class TestA3FamilyHandlerV4:
     """Test the A3FamilyHandlerV4 class.
 
-    This one is a bit complicated in that it needs to look at the previous
-    record for a specific variable, not necessarily the previous group
-    status (especially for sibs/kids).
+    This one is a bit complicated in that it needs to look at the
+    previous record for a specific variable, not necessarily the
+    previous group status (especially for sibs/kids).
     """
 
     def test_parent_status_current_visit(self) -> None:
@@ -575,23 +575,13 @@ class TestA3FamilyHandlerV4:
         visit."""
         # case 1 - definite sets to yes/n
         table = set_working_family()
-        table["file.info.forms.json"].update(
-            {
-                'mometpr': '05',
-                'dadetpr': '00'
-            }
-        )
+        table["file.info.forms.json"].update({"mometpr": "05", "dadetpr": "00"})
         handler = A3FamilyHandlerV4(table)
         assert handler.record.mom_status == 1
         assert handler.record.dad_status == 0
 
         # case 2 - definite unknowns
-        table["file.info.forms.json"].update(
-            {
-                'mometpr': '99',
-                'dadetpr': None
-            }
-        )
+        table["file.info.forms.json"].update({"mometpr": "99", "dadetpr": None})
         handler = A3FamilyHandlerV4(table)
         assert handler.record.mom_status == 9
         assert handler.record.dad_status == INFORMED_MISSINGNESS
@@ -600,8 +590,8 @@ class TestA3FamilyHandlerV4:
         table = set_working_family(mom=1, dad=0)
         table["file.info.forms.json"].update(
             {
-                'mometpr': '00',  # will override working value
-                'dadetpr': '99'   # does not override working value
+                "mometpr": "00",  # will override working value
+                "dadetpr": "99",  # does not override working value
             }
         )
         handler = A3FamilyHandlerV4(table)
@@ -609,25 +599,17 @@ class TestA3FamilyHandlerV4:
         assert handler.record.dad_status == 0
 
     def test_parent_status_prev_record(self) -> None:
-        """Test the parent logic works as expected when needing to pull
-        from the previous record. In theory for parents this will be
-        consistent with the working status as well, but we need to
-        differentiate anyways for the kids/sibs.
+        """Test the parent logic works as expected when needing to pull from
+        the previous record.
+
+        In theory for parents this will be consistent with the working
+        status as well, but we need to differentiate anyways for the
+        kids/sibs.
         """
         table = set_working_family()
-        table["file.info.forms.json"].update(
-            {
-                'mometpr': '66',
-                'dadetpr': '66'
-            }
-        )
-        table['_prev_record'] = {
-            'info': {
-                'resolved': {
-                    'mometpr': '09',
-                    'dadetpr': '99'
-                }
-            }
+        table["file.info.forms.json"].update({"mometpr": "66", "dadetpr": "66"})
+        table["_prev_record"] = {
+            "info": {"resolved": {"mometpr": "09", "dadetpr": "99"}}
         }
 
         handler = A3FamilyHandlerV4(table)
@@ -637,19 +619,14 @@ class TestA3FamilyHandlerV4:
         # pull from raw data + has working values
         table = set_working_family(mom=9, dad=0)
         table["file.info.forms.json"].update(
-            {
-                'packet': 'F',
-                'nwinfpar': 1,
-                'mometpr': '66',
-                'dadetpr': '66'
-            }
+            {"packet": "F", "nwinfpar": 1, "mometpr": "66", "dadetpr": "66"}
         )
-        table['_prev_record'] = {
-            'info': {
-                'forms': {
-                    'json': {
-                        'mometpr': '06', # overrides
-                        'dadetpr': '99'  # does not override
+        table["_prev_record"] = {
+            "info": {
+                "forms": {
+                    "json": {
+                        "mometpr": "06",  # overrides
+                        "dadetpr": "99",  # does not override
                     }
                 }
             }
@@ -662,19 +639,14 @@ class TestA3FamilyHandlerV4:
         # nwinfpar != 1 in this case
         table = set_working_family(mom=9, dad=1)
         table["file.info.forms.json"].update(
-            {
-                'packet': 'F',
-                'nwinfpar': 0,
-                'mometpr': '66',
-                'dadetpr': '66'
-            }
+            {"packet": "F", "nwinfpar": 0, "mometpr": "66", "dadetpr": "66"}
         )
-        table['_prev_record'] = {
-            'info': {
-                'forms': {
-                    'json': {
-                        'mometpr': '06', # would have overrode
-                        'dadetpr': '00'  # would have overrode
+        table["_prev_record"] = {
+            "info": {
+                "forms": {
+                    "json": {
+                        "mometpr": "06",  # would have overrode
+                        "dadetpr": "00",  # would have overrode
                     }
                 }
             }
@@ -684,38 +656,39 @@ class TestA3FamilyHandlerV4:
         assert handler.record.mom_status == 9
         assert handler.record.dad_status == 1
 
-
     def test_sibkids_status_prev_record(self) -> None:
-        """Test the sib/kids logic works as expected when needing to pull
-        from the previous record. This can get a bit complicated due
-        to the fact that it is evaluating over ALL sibs/kids.
+        """Test the sib/kids logic works as expected when needing to pull from
+        the previous record.
+
+        This can get a bit complicated due to the fact that it is
+        evaluating over ALL sibs/kids.
         """
         # case 1; updates status
         table = set_working_family(sib=9, kid=1)
         table["file.info.forms.json"].update(
             {
-                'packet': 'F',
-                'nwinfsib': 1,
-                'nwinfkid': 1,
-                'sibs': 2,
-                'kids': 3,
-                'sib1etpr': '66',
-                'sib2etpr': '00',  # will cause the whole status to be 0 now
-                'sib3etpr': '03',  # should be ignored
-                'kid1etpr': '66',
-                'kid2etpr': '66',
-                'kid3etpr': '00',  # will cause the whole status to be 0 now
-                'kid5etpr': '01',  # should be ignored
+                "packet": "F",
+                "nwinfsib": 1,
+                "nwinfkid": 1,
+                "sibs": 2,
+                "kids": 3,
+                "sib1etpr": "66",
+                "sib2etpr": "00",  # will cause the whole status to be 0 now
+                "sib3etpr": "03",  # should be ignored
+                "kid1etpr": "66",
+                "kid2etpr": "66",
+                "kid3etpr": "00",  # will cause the whole status to be 0 now
+                "kid5etpr": "01",  # should be ignored
             }
         )
-        table['_prev_record'] = {
-            'info': {
-                'resolved': {
-                    'sib1etpr': '00',
-                    'sib2etpr': '99',  # what should have caused it to be 9 last time
-                    'kid1etpr': '00',
-                    'kid2etpr': '00',
-                    'kid3etpr': '01',  # what should have caused it to be 1 last time
+        table["_prev_record"] = {
+            "info": {
+                "resolved": {
+                    "sib1etpr": "00",
+                    "sib2etpr": "99",  # what should have caused it to be 9 last time
+                    "kid1etpr": "00",
+                    "kid2etpr": "00",
+                    "kid3etpr": "01",  # what should have caused it to be 1 last time
                 }
             }
         }
@@ -728,26 +701,26 @@ class TestA3FamilyHandlerV4:
         table = set_working_family(sib=1, kid=0)
         table["file.info.forms.json"].update(
             {
-                'packet': 'F',
-                'nwinfsib': 1,
-                'nwinfkid': 1,
-                'sibs': 2,
-                'kids': 3,
-                'sib1etpr': '66',
-                'sib2etpr': '66',
-                'kid1etpr': '66',
-                'kid2etpr': '66',
-                'kid3etpr': '66',
+                "packet": "F",
+                "nwinfsib": 1,
+                "nwinfkid": 1,
+                "sibs": 2,
+                "kids": 3,
+                "sib1etpr": "66",
+                "sib2etpr": "66",
+                "kid1etpr": "66",
+                "kid2etpr": "66",
+                "kid3etpr": "66",
             }
         )
-        table['_prev_record'] = {
-            'info': {
-                'resolved': {
-                    'sib1etpr': '99',
-                    'sib2etpr': '99',
-                    'kid1etpr': '99',
-                    'kid2etpr': '99',
-                    'kid3etpr': '99',
+        table["_prev_record"] = {
+            "info": {
+                "resolved": {
+                    "sib1etpr": "99",
+                    "sib2etpr": "99",
+                    "kid1etpr": "99",
+                    "kid2etpr": "99",
+                    "kid3etpr": "99",
                 }
             }
         }
@@ -759,29 +732,29 @@ class TestA3FamilyHandlerV4:
         table = set_working_family()
         table["file.info.forms.json"].update(
             {
-                'packet': 'F',
-                'nwinfsib': 1,
-                'nwinfkid': 1,
-                'sibs': 2,
-                'kids': 3,
-                'sib1etpr': '99',  # changed to 99
-                'sib2etpr': '66',
-                'kid1etpr': '99',  # change to 99
-                'kid2etpr': '66',
-                'kid3etpr': '66',
+                "packet": "F",
+                "nwinfsib": 1,
+                "nwinfkid": 1,
+                "sibs": 2,
+                "kids": 3,
+                "sib1etpr": "99",  # changed to 99
+                "sib2etpr": "66",
+                "kid1etpr": "99",  # change to 99
+                "kid2etpr": "66",
+                "kid3etpr": "66",
             }
         )
         # in theory this kind of record would have set the overall
         # status to 0, which stays instead of 9, but this is just
         # testing the 66 behavior more than anything
-        table['_prev_record'] = {
-            'info': {
-                'resolved': {
-                    'sib1etpr': '00',
-                    'sib2etpr': '00',
-                    'kid1etpr': '00',
-                    'kid2etpr': '00',
-                    'kid3etpr': '00',
+        table["_prev_record"] = {
+            "info": {
+                "resolved": {
+                    "sib1etpr": "00",
+                    "sib2etpr": "00",
+                    "kid1etpr": "00",
+                    "kid2etpr": "00",
+                    "kid3etpr": "00",
                 }
             }
         }

@@ -91,10 +91,15 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not self.submitted:
             return known_value if known_value is not None else INFORMED_MISSINGNESS
 
-        # 9 cannot override 0 or 1
+        # do not let 9 override 0 or 1
         if result == 9 and known_value in [0, 1]:
             return known_value
 
+        # do not let -4 override a set value
+        if result == INFORMED_MISSINGNESS and known_value in [0, 1, 9]:
+            return known_value
+
+        # return whatever the result was
         return result
 
     def _create_naccdad(self) -> int:
