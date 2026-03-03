@@ -315,9 +315,11 @@ class InitialVisitOnlyStatus(ParticipantStatus):
 
         # check the sole UDS visitdate is the same as the one that defined
         # the prespart variable; if not, we have a problem
-        uds_visit = date_from_form_date(uds_visitdates[0])
+        uds_visit = date_from_form_date(uds_visitdates[0]) if uds_visitdates else None
         if not uds_visit:
-            raise AttributeDeriverError(f"Cannot parse UDS visitdate: {uds_visitdates[0]}")
+            raise AttributeDeriverError(
+                f"Cannot find associated UDS visit for prespart with date: {prespart.date}"
+            )
 
         if uds_visit != prespart.date:
             raise AttributeDeriverError(

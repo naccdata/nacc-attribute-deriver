@@ -42,7 +42,7 @@ class ParticipantStatusHandler:
         self.__latest_uds = LatestUDSVisit.create_from_working_namespace(working)
 
     def __determine_status_override(
-        self, attribute: Optional[ParticipantStatus]
+        self, status: Optional[ParticipantStatus],
     ) -> Optional[ParticipantStatus]:
         """Determine if the status is valid, e.g. it is the latest and nothing
         invalidates it.
@@ -50,19 +50,24 @@ class ParticipantStatusHandler:
         A status can be invalidated if either a) they rejoined AFTER
         this status' date or b) they had a UDS visit AFTER this status'
         date.
+
+        Args:
+            status: The status to determine if whether should be overidden or not
+        Returns:
+            The status if it is still valid, None otherwise
         """
         # if status is not set, return None
-        if not attribute:
+        if not status:
             return None
 
         # if status is set, but a UDS visit or REJOIN came after, it has
         # effectively been unset; return None
         for state in [self.__latest_uds, self.__rejoined]:
-            if state is not None and state > attribute:
+            if state is not None and state > status:
                 return None
 
         # otherwise, the status is the latest and valid, return
-        return attribute
+        return status
 
     def deceased(self) -> Optional[DeceasedStatus]:
         """Return if the participant is deceased."""
@@ -77,8 +82,28 @@ class ParticipantStatusHandler:
         return self.__determine_status_override(self.__minimum_contact)
 
     def initial_visit_only(self) -> Optional[InitialVisitOnlyStatus]:
-        """Return if the participant is initial visit only."""
-        return self.__determine_status_override(self.__initial_visit_only)
+        """Return if the participant is initial visit only.
+
+        Immediately overridden if ANYTHING else is set. So we just
+        check for existence of other states.
+        """
+        if not self.__initial_visit_only:
+            return None
+
+        all_statuses = [
+            self.__deceased,
+            self.__discontinued,
+            self.__minimum_contact,
+            self.__rejoined,
+
+            # note latest_uds is ignored here since InitialVisitOnlyStatus
+            # already validates that there is only one UDS visit and
+            # it corresponds to when PRESPART was set
+        ]
+        if any(x is not None for x in all_statuses):
+            return None
+
+        return self.__initial_visit_only
 
     def rejoined(self) -> Optional[RejoinedStatus]:
         """Return the rejoined status."""

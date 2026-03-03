@@ -85,7 +85,7 @@ class MilestoneAttributeCollection(AttributeCollection):
 
         # DISCDY is DISCDAY in some forms, so check
         day_field = "discdy"
-        if self.__mlst.get(day_field, int) is None:
+        if self.__mlst.get_value(day_field, int) is None:
             day_field = 'discday'
 
         return self.__create_status_date("discyr", "discmo", day_field)
