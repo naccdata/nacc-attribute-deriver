@@ -112,7 +112,7 @@ class TestUDSFormA5D2Missingness:
     def test_angiocp(self, uds_table) -> None:
         """Test ANGIOCP; mainly looking gate logic is NOT applied
         if ANGCIOCP = 1 in V3 and earlier."""
-        # V3 and earlier; ignores gate to retain 1s 
+        # V3 and earlier; ignores gate to retain 1s
         uds_table["file.info.forms.json.formver"] = random.choice([1, 2, 3])
         uds_table["file.info.forms.json.cbstroke"] = 9
         uds_table["file.info.forms.json.angiocp"] = 1
@@ -129,7 +129,7 @@ class TestUDSFormA5D2Missingness:
         if OCD = 1 or 2 in V3 and earlier."""
         ocd = random.choice([1, 2])
 
-        # V3 and earlier; ignores gate to retain 1s 
+        # V3 and earlier; ignores gate to retain 1s
         uds_table["file.info.forms.json.formver"] = random.choice([1, 2, 3])
         uds_table["file.info.forms.json.anxiety"] = 0
         uds_table["file.info.forms.json.ocd"] = ocd

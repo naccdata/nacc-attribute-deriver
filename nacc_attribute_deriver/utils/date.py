@@ -70,20 +70,20 @@ def parse_date_parts(
 
     # YYYY-MM-DD format
     if DATE_FMT_YEAR_FIRST_DASH.match(date_string):
-        date_parts = date_string.split('-')
+        date_parts = date_string.split("-")
 
     # YYYY/MM/DD format
     elif DATE_FMT_YEAR_FIRST_SLASH.match(date_string):
-        date_parts = date_string.split('/')
+        date_parts = date_string.split("/")
 
     # MM-DD-YYYY
     elif DATE_FMT_YEAR_LAST_DASH.match(date_string):
-        date_parts = date_string.split('-')
+        date_parts = date_string.split("-")
         date_parts = [date_parts[2], date_parts[0], date_parts[1]]
 
     # MM/DD/YYYY
     elif DATE_FMT_YEAR_LAST_SLASH.match(date_string):
-        date_parts = date_string.split('/')
+        date_parts = date_string.split("/")
         date_parts = [date_parts[2], date_parts[0], date_parts[1]]
 
     if not date_parts:

@@ -298,7 +298,7 @@ class A3FamilyHandlerV2(A3FamilyHandler):
         sibs/kids instead of just looking at SIBSDEM and KIDSDEM.
         """
         group_statuses = []
-        for i in range(num_group + 1):
+        for i in range(1, num_group + 1):
             demented = self.uds.get_value(f"{prefix}{i}dem", int)
             group_statuses.append(
                 demented if demented is not None else INFORMED_MISSINGNESS

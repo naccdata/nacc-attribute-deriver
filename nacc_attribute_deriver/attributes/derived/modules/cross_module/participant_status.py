@@ -69,7 +69,7 @@ class ParticipantStatus(ABC):
         """Ensure date is in YYYY-MM-DD format."""
         try:
             year, month, day = parse_date_parts(self.status_date)
-            self.status_date = f'{year:4d}-{month:02d}-{day:02d}'
+            self.status_date = f"{year:4d}-{month:02d}-{day:02d}"
         except AttributeDeriverError:
             raise AttributeDeriverError(
                 f"Participant status date {self.status} not in "
@@ -421,11 +421,11 @@ class NursingHomeStatus(ParticipantStatus):
         """Get when the participant permenantly moved to a nursing home.
 
         This status does not interact with other statuses, but instead
-        looks at the latest RESIDENC value from the UDS A1 form that was set.
-        RESIDENC can override/nullify this status if it is anything other
-        than 4 (nursing home) or 9 (unknown) AND came after the day
-        RENURSE from MLST was set. That being said, RESIDENC can never
-        set this variable, only nullify it.
+        looks at the latest RESIDENC value from the UDS A1 form that was
+        set. RESIDENC can override/nullify this status if it is anything
+        other than 4 (nursing home) or 9 (unknown) AND came after the
+        day RENURSE from MLST was set. That being said, RESIDENC can
+        never set this variable, only nullify it.
         """
         nursing_home_date = working.get_cross_sectional_dated_value(
             "milestone-renurse-date", str
@@ -435,9 +435,7 @@ class NursingHomeStatus(ParticipantStatus):
         if not nursing_home_date:
             return None
 
-        residenc = working.get_cross_sectional_dated_value(
-            "residenc", int
-        )
+        residenc = working.get_cross_sectional_dated_value("residenc", int)
 
         # if RESIDENC nullifies, return None
         if residenc and residenc.value not in [4, 9]:

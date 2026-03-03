@@ -65,8 +65,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def _create_naccint(self) -> int:
         """Creates NACCINT, which is time interval (months) between last visit
         (UDS) and death (NP/Milestone, technically MDS as well but a subject
-        that died at MDS shouldn't be an UDS participant).
-        """
+        that died at MDS shouldn't be an UDS participant)."""
         deceased = self.__participant.deceased()
         latest_uds_visit = self.__participant.latest_uds_visit()
 
@@ -79,10 +78,10 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # if death date has unknown parts, infer ONLY if the day is missing
         # by setting it to 15 (middle of the month). otherwise, just return 999
         death_date = deceased.status_date
-        if '99' in death_date or '88' in death_date:
+        if "99" in death_date or "88" in death_date:
             year, month, day = parse_date_parts(death_date)
             if year not in [8888, 9999] and month not in [88, 99] and day in [88, 99]:
-                death_date = f'{year}-{month}-15'
+                death_date = f"{year}-{month}-15"
             else:
                 return 999
 
@@ -92,7 +91,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         try:
             result = calculate_months(
                 date_from_form_date(latest_uds_visit.status_date),
-                date_from_form_date(death_date)
+                date_from_form_date(death_date),
             )
         except (TypeError, ValueError, AttributeDeriverError):
             pass
@@ -159,7 +158,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 5
 
         # if dead, discontinued, or initial visit only, return 0
-        if (self.__participant.deceased()
+        if (
+            self.__participant.deceased()
             or self.__participant.discontinued()
             or self.__participant.initial_visit_only()
         ):
@@ -185,7 +185,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 8
 
         # if dead, discontinued, or minimum contact only, return 1
-        if (self.__participant.deceased()
+        if (
+            self.__participant.deceased()
             or self.__participant.discontinued()
             or self.__participant.minimum_contact()
         ):

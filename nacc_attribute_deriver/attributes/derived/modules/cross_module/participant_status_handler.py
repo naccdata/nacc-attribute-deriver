@@ -125,7 +125,7 @@ class ParticipantStatusHandler:
     def nursing_home(self) -> Optional[NursingHomeStatus]:
         """Return the latest nursing home status.
 
-        This already check if a RESIDENC value overrode it,
-        so just return as-is.
+        This already check if a RESIDENC value overrode it, so just
+        return as-is.
         """
         return self.__nursing_home
