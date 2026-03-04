@@ -175,8 +175,6 @@ uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
 uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
 uds,notdemin,subject.info.working.cross-sectional.notdemin,update,FALSE
-uds,ivcstat,subject.info.working.cross-sectional.ivcstat,update,FALSE
-uds,fvmci,subject.info.working.cross-sectional.fvmci,update,FALSE
 uds,naccavst,subject.info.derived.cross-sectional.naccavst,max,FALSE
 uds,naccavst,file.info.derived.naccvnum,update,FALSE
 uds,naccavst,subject.info.derived.longitudinal.naccvnum,list,TRUE
@@ -376,6 +374,7 @@ uds,naccidem,subject.info.derived.cross-sectional.naccidem,update,FALSE
 uds,naccadmu,subject.info.derived.cross-sectional.naccadmu,update,FALSE
 uds,naccftdm,subject.info.derived.cross-sectional.naccftdm,update,FALSE
 uds,naccwmhsev,subject.info.derived.cross-sectional.naccwmhsev,update,FALSE
+uds,naccmcii_working,subject.info.working.cross-sectional.naccmcii-working,update,FALSE
 uds,naccmcii,subject.info.derived.cross-sectional.naccmcii,update,FALSE
 uds,contributing_diagnosis,subject.info.cognitive.uds.other-diagnosis.initial,initial,TRUE
 uds,contributing_diagnosis,subject.info.cognitive.uds.other-diagnosis.latest,latest,TRUE

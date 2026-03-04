@@ -409,7 +409,7 @@ class A3FamilyHandlerV3(A3FamilyHandler):
         if prev_value in [0, 1, 9]:
             return prev_value
 
-        return neur_value if neur_value is not None else INFORMED_MISSINGNESS
+        return INFORMED_MISSINGNESS
 
     def __determine_parent_status(self, prefix: PARENTS, prev_value: int) -> int:
         """Determine the parent member's status."""

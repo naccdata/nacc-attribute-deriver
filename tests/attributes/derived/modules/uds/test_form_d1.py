@@ -1,6 +1,8 @@
 """Tests UDS Form D1 attributes."""
 
 import pytest
+import random
+
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_d1 import (
     UDSFormDxAttribute,
 )
@@ -156,50 +158,77 @@ class TestUDSFormD1aAttribute:
         attr = UDSFormD1aAttribute(table)
         assert attr._create_naccppme() == -4
 
-    def test_ivcstat(self, table, form_prefix):
-        """Tests ivcstat - helper variable for fvmci/naccmcii."""
-        # normcog already 1 so should return 1
-        attr = UDSFormD1aAttribute(table)
-        assert attr._create_ivcstat() == 1
+    def test_naccmcii_initial_visit(self, uds_table):
+        """Test NACCMCII and its helper working variable at the initial
+        visit."""
+        uds_table["file.info.forms.json.packet"] = "I"
+        uds_table["file.info.forms.json.normcog"] = 1
 
-        # make impnomci 1
-        set_attribute(table, form_prefix, "normcog", 0)
-        set_attribute(table, form_prefix, "impnomci", 1)
-        attr = UDSFormD1aAttribute(table)
-        assert attr._create_ivcstat() == 1
+        # no mci/demented case
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccmcii() == 8
+        assert attr._create_naccmcii_working() == 2
 
-        # both 0 so ivcstat is 0
-        set_attribute(table, form_prefix, "impnomci", 0)
-        assert attr._create_ivcstat() == 0
+        # mci case
+        mci_var = random.choice(["mciamem", "mciaplus", "mcinon1", "mcinon2"])
+        uds_table["file.info.forms.json"].update({"normcog": 0, mci_var: 1})
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccmcii() == 8
+        assert attr._create_naccmcii_working() == 8
 
-        # followup visits should never override
-        set_attribute(table, form_prefix, "impnomci", 1)
-        set_attribute(table, form_prefix, "packet", "f")
-        attr = UDSFormD1aAttribute(table)
-        assert attr._create_ivcstat() is None
+        # demented case
+        uds_table["file.info.forms.json"].update(
+            {"normcog": 0, mci_var: 0, "demented": 1}
+        )
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccmcii() == 8
+        assert attr._create_naccmcii_working() == 8
 
-    # def test_fvmci(self, table, form_prefix, working_derived_prefix):
-    #     """Tests fvmci - helper variable for naccmcii."""
-    #     # should return None on initial visits
-    #     attr = UDSFormD1aAttribute(table)
-    #     assert attr._create_fvmci() is None
+    def test_naccmcii_followup_visit(self, uds_table):
+        """Test NACCMCII and its helper working variable at follow-up
+        visits."""
+        uds_table["file.info.forms.json.packet"] = "F"
+        uds_table["file.info.forms.json.normcog"] = 1
 
-    #     set_attribute(table, form_prefix, "packet", "f")
+        # start NACCMCII at 2 or 0 has only had an initial visit
+        # with no MCI/DEMENTED status
+        uds_table.update(
+            {
+                "subject": {
+                    "info": {
+                        "working": {
+                            "cross-sectional": {
+                                "naccmcii-working": random.choice([0, 2])
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        # nothing reported on this visit, so returns 0
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccmcii() == 0
+        assert attr._create_naccmcii_working() == 0
 
-    #     # should return 1 when mci == 1 and fvmci is None
-    #     set_attribute(table, form_prefix, "mcinon1", 1)
-    #     attr = UDSFormD1aAttribute(table)
-    #     assert attr._create_fvmci() == 1
+        # set progressed directly to dementia
+        uds_table["file.info.forms.json"].update({"normcog": 0, "demented": 1})
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccmcii() == 8
+        assert attr._create_naccmcii_working() == 3
 
-    #     # test when fvmci == 1 and ivcstat == 1
-    #     set_attribute(table, working_derived_prefix, "cross-sectional.fvmci", 0)
-    #     set_attribute(table, working_derived_prefix, "cross-sectional.ivcstat", 1)
-    #     set_attribute(table, form_prefix, "mcinon1", 0)
-    #     set_attribute(table, form_prefix, "demented", 1)
-    #     attr = UDSFormD1aAttribute(table)
-    #     assert attr._create_fvmci() == 2
+        # set progressed to MCI
+        mci_var = random.choice(["mciamem", "mciaplus", "mcinon1", "mcinon2"])
+        uds_table["file.info.forms.json"].update(
+            {"normcog": 0, "demented": 0, mci_var: 1}
+        )
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccmcii() == 1
+        assert attr._create_naccmcii_working() == 1
 
-    #     # mci == 1, return fvmci
-    #     set_attribute(table, working_derived_prefix, "cross-sectional.fvmci", 1)
-    #     set_attribute(table, form_prefix, "mcinon2", 1)
-    #     assert attr._create_fvmci() == 1
+        # now start NACCMCII at 1, 3, or 8; should just return as-is
+        # regardless of what's been set
+        naccmcii = random.choice([1, 3, 8])
+        uds_table["subject.info.working.cross-sectional.naccmcii-working"] = naccmcii
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccmcii() == 1 if naccmcii == 1 else 8
+        assert attr._create_naccmcii_working() == naccmcii
