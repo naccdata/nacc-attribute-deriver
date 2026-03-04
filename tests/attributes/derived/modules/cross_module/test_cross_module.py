@@ -83,6 +83,45 @@ class TestCrossModuleAttribute:
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccint() == 888
 
+    def test_discontinued_dates(self) -> None:
+        """Test discontinued dates are set correctly when only
+        one of or neither of discontinued or minimum contact is defined.
+        """
+        # discontinued defined
+        table = create_working_table(
+            {
+                "milestone-discontinued-date": {
+                    "value": "9999-12-21",
+                    "date": "2024-01-19",
+                }
+            }
+        )
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 9999
+        assert attr._create_naccdsmo() == 12
+        assert attr._create_naccdsdy() == 21
+
+        # minimum contact defined
+        table = create_working_table(
+            {
+                "milestone-minimum-contact-date": {
+                    "value": "2023-01-18",
+                    "date": "2024-01-19",
+                },
+            }
+        )
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 2023
+        assert attr._create_naccdsmo() == 1
+        assert attr._create_naccdsdy() == 18
+
+        # neither defined
+        table = create_working_table({})
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 8888
+        assert attr._create_naccdsmo() == 88
+        assert attr._create_naccdsdy() == 88
+
     def test_discontinued_dates_both_defined(self) -> None:
         """Test discontinued dates are set correctly when both
         discontinued AND minimum contact status is defined.
@@ -141,34 +180,3 @@ class TestCrossModuleAttribute:
         assert attr._create_naccdsyr() == 9999
         assert attr._create_naccdsmo() == 99
         assert attr._create_naccdsdy() == 99
-
-
-    def test_discontinued_dates_only_one_defined(self) -> None:
-        """Test discontinued dates are set correctly when only
-        one of discontinued or minimum contact is defined.
-        """
-        table = create_working_table(
-            {
-                "milestone-discontinued-date": {
-                    "value": "9999-12-21",
-                    "date": "2024-01-19",
-                }
-            }
-        )
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsyr() == 9999
-        assert attr._create_naccdsmo() == 12
-        assert attr._create_naccdsdy() == 21
-
-        table = create_working_table(
-            {
-                "milestone-minimum-contact-date": {
-                    "value": "2023-01-18",
-                    "date": "2024-01-19",
-                },
-            }
-        )
-        attr = CrossModuleAttributeCollection(table)
-        assert attr._create_naccdsyr() == 2023
-        assert attr._create_naccdsmo() == 1
-        assert attr._create_naccdsdy() == 18
