@@ -48,6 +48,8 @@ from nacc_attribute_deriver.utils.date import (
     parse_date_parts,
 )
 
+INVALID_DATES = {8888, 9999, 88, 99, None}
+
 
 @dataclass
 class ParticipantStatus(ABC):
@@ -88,6 +90,7 @@ class ParticipantStatus(ABC):
             other_date = date_from_form_date(other.status_date)
 
             if this_date is not None and other_date is not None:
+                raise ValueError(this_date == other_date)
                 return this_date == other_date
         except (TypeError, ValueError, AttributeDeriverError):
             pass
@@ -115,13 +118,12 @@ class ParticipantStatus(ABC):
         # need to compare part by part. we are assuming values
         # are in YYYY-MM-DD format, so it also evaluates in order
         # of priority
-        invalid_dates = {8888, 9999, 88, 99, None}
         try:
             this_parts = (int(x) for x in self.status_date.split("-"))
             other_parts = (int(x) for x in other.status_date.split("-"))
             for this_part, other_part in zip(this_parts, other_parts):
                 # break at the earliest part in priority that we can't compare
-                if this_part in invalid_dates or other_part in invalid_dates:
+                if this_part in INVALID_DATES or other_part in INVALID_DATES:
                     break
 
                 if this_part < other_part:
@@ -156,7 +158,7 @@ class ParticipantStatus(ABC):
         pass
 
 
-@dataclass
+@dataclass(eq=False)
 class DeceasedStatus(ParticipantStatus):
     age_at_death: int
     has_np: bool
@@ -241,7 +243,7 @@ class DeceasedStatus(ParticipantStatus):
         )
 
 
-@dataclass
+@dataclass(eq=False)
 class DiscontinuedStatus(ParticipantStatus):
     @classmethod
     def create_from_working_namespace(
@@ -269,7 +271,7 @@ class DiscontinuedStatus(ParticipantStatus):
         )
 
 
-@dataclass
+@dataclass(eq=False)
 class MinimumContactStatus(ParticipantStatus):
     @classmethod
     def create_from_working_namespace(
@@ -297,7 +299,7 @@ class MinimumContactStatus(ParticipantStatus):
         )
 
 
-@dataclass
+@dataclass(eq=False)
 class InitialVisitOnlyStatus(ParticipantStatus):
     @classmethod
     def create_from_working_namespace(
@@ -345,7 +347,7 @@ class InitialVisitOnlyStatus(ParticipantStatus):
         )
 
 
-@dataclass
+@dataclass(eq=False)
 class RejoinedStatus(ParticipantStatus):
     @classmethod
     def create_from_working_namespace(
@@ -375,7 +377,7 @@ class RejoinedStatus(ParticipantStatus):
         )
 
 
-@dataclass
+@dataclass(eq=False)
 class LatestUDSVisit(ParticipantStatus):
     @classmethod
     def __get_latest_visitdate(
@@ -412,7 +414,7 @@ class LatestUDSVisit(ParticipantStatus):
         )
 
 
-@dataclass
+@dataclass(eq=False)
 class NursingHomeStatus(ParticipantStatus):
     @classmethod
     def create_from_working_namespace(

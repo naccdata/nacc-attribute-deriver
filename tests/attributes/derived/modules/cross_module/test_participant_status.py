@@ -231,3 +231,39 @@ class TestParticipantStatusCreation:
         # deceased-specific variables
         assert status.age_at_death == 81
         assert status.has_np is False
+
+    def test_status_equality(self) -> None:
+        """Test equality."""
+        # actual dates are the same, should return True
+        working = create_working(
+            {
+                "milestone-discontinued-date": {
+                    "value": "2000-11-12",
+                    "date": "2024-01-19",
+                },
+                "milestone-minimum-contact-date": {
+                    "value": "2000-11-12",
+                    "date": "2024-01-19",
+                },
+            }
+        )
+        discontinued = DiscontinuedStatus.create_from_working_namespace(working)
+        minimum_contact = MinimumContactStatus.create_from_working_namespace(working)
+        assert discontinued == minimum_contact
+
+        # form dates are the same, should return True
+        working = create_working(
+            {
+                "milestone-discontinued-date": {
+                    "value": "9999-99-99",
+                    "date": "2024-01-19",
+                },
+                "milestone-minimum-contact-date": {
+                    "value": "9999-12-15",
+                    "date": "2024-01-19",
+                },
+            }
+        )
+        discontinued = DiscontinuedStatus.create_from_working_namespace(working)
+        minimum_contact = MinimumContactStatus.create_from_working_namespace(working)
+        assert discontinued == minimum_contact

@@ -25,6 +25,7 @@ from nacc_attribute_deriver.utils.date import (
     parse_date_parts,
 )
 
+from .participant_status import ParticipantStatus
 from .participant_status_handler import ParticipantStatusHandler
 
 
@@ -235,40 +236,68 @@ class CrossModuleAttributeCollection(AttributeCollection):
         year, _, _ = parse_date_parts(nursing_home.status_date)
         return 9999 if year is None else year
 
-    def _create_naccdsdy(self) -> int:
-        """Creates NACCDSDY - Day of discontinuation from annual follow-up."""
-        discontinued = self.__participant.discontinued()
+    def __determine_status_for_discontinuation(self) -> Optional[ParticipantStatus]:
+        """Determine which status to use for the discontinuation dates.
 
-        # has not discontinued
-        if not discontinued:
+        Both discontinuation and minimum protocol status can set the discontinuation
+        date.
+        """
+        discontinued = self.__participant.discontinued()
+        minimum_contact = self.__participant.minimum_contact()
+
+        # if both, figure out which one came later and use that; if they're the
+        # same day it doesn't really matter (in terms of dates),
+        # so prioritize discontinued
+        if discontinued and minimum_contact:
+            if minimum_contact < discontinued or minimum_contact == discontinued:
+                return discontinued
+            
+            return minimum_contact
+
+        if discontinued:
+            return discontinued
+        if minimum_contact:
+            return minimum_contact
+
+        return None
+
+    def _create_naccdsdy(self) -> int:
+        """Creates NACCDSDY - Day of discontinuation from annual follow-up.
+
+        Discontinued date can also be set by minimum protocol status.
+        """
+        status = self.__determine_status_for_discontinuation()
+        if not status:
             return 88
 
         # parse out the discontinued day
-        _, _, day = parse_date_parts(discontinued.status_date)
+        _, _, day = parse_date_parts(status.status_date)
         return 99 if day is None else day
 
     def _create_naccdsmo(self) -> int:
-        """Creates NACCDSMO - Month of discontinuation from annual follow-up."""
-        discontinued = self.__participant.discontinued()
+        """Creates NACCDSMO - Month of discontinuation from annual follow-up.
 
-        # has not discontinued
-        if not discontinued:
+        Discontinued date can also be set by minimum protocol status.
+        """
+        status = self.__determine_status_for_discontinuation()
+        if not status:
             return 88
 
         # parse out the discontinued month
-        _, month, _ = parse_date_parts(discontinued.status_date)
+        _, month, _ = parse_date_parts(status.status_date)
         return 99 if month is None else month
 
     def _create_naccdsyr(self) -> int:
-        """Creates NACCDSYR - Year of discontinuation from annual follow-up."""
-        discontinued = self.__participant.discontinued()
+        """Creates NACCDSYR - Year of discontinuation from annual follow-up.
 
-        # has not discontinued
-        if not discontinued:
+        Discontinued date can also be set by minimum protocol status.
+        """
+        status = self.__determine_status_for_discontinuation()
+        if not status:
             return 8888
 
         # parse out the discontinued year
-        year, _, _ = parse_date_parts(discontinued.status_date)
+        year, _, _ = parse_date_parts(status.status_date)
         return 9999 if year is None else year
 
     def _create_nacccore(self) -> int:

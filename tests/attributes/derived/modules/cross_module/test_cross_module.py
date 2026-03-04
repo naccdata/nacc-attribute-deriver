@@ -82,3 +82,93 @@ class TestCrossModuleAttribute:
         )
         attr = CrossModuleAttributeCollection(table)
         assert attr._create_naccint() == 888
+
+    def test_discontinued_dates_both_defined(self) -> None:
+        """Test discontinued dates are set correctly when both
+        discontinued AND minimum contact status is defined.
+        """
+        # set discontinued came later
+        table = create_working_table(
+            {
+                "milestone-discontinued-date": {
+                    "value": "2025-04-99",
+                    "date": "2025-07-19",
+                },
+                "milestone-minimum-contact-date": {
+                    "value": "2024-02-13",
+                    "date": "2024-01-19",
+                },
+            }
+        )
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 2025
+        assert attr._create_naccdsmo() == 4
+        assert attr._create_naccdsdy() == 99
+
+        # set mlst came later but barely
+        table = create_working_table(
+            {
+                "milestone-discontinued-date": {
+                    "value": "2024-02-12",
+                    "date": "2024-05-12",
+                },
+                "milestone-minimum-contact-date": {
+                    "value": "2024-02-13",
+                    "date": "2024-01-19",
+                },
+            }
+        )
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 2024
+        assert attr._create_naccdsmo() == 2
+        assert attr._create_naccdsdy() == 13
+
+        # set dates ambiguous, compare on form date, but both
+        # are still the same, so use discontinued
+        table = create_working_table(
+            {
+                "milestone-discontinued-date": {
+                    "value": "9999-99-99",
+                    "date": "2024-01-19",
+                },
+                "milestone-minimum-contact-date": {
+                    "value": "9999-12-15",
+                    "date": "2024-01-19",
+                },
+            }
+        )
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 9999
+        assert attr._create_naccdsmo() == 99
+        assert attr._create_naccdsdy() == 99
+
+
+    def test_discontinued_dates_only_one_defined(self) -> None:
+        """Test discontinued dates are set correctly when only
+        one of discontinued or minimum contact is defined.
+        """
+        table = create_working_table(
+            {
+                "milestone-discontinued-date": {
+                    "value": "9999-12-21",
+                    "date": "2024-01-19",
+                }
+            }
+        )
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 9999
+        assert attr._create_naccdsmo() == 12
+        assert attr._create_naccdsdy() == 21
+
+        table = create_working_table(
+            {
+                "milestone-minimum-contact-date": {
+                    "value": "2023-01-18",
+                    "date": "2024-01-19",
+                },
+            }
+        )
+        attr = CrossModuleAttributeCollection(table)
+        assert attr._create_naccdsyr() == 2023
+        assert attr._create_naccdsmo() == 1
+        assert attr._create_naccdsdy() == 18
