@@ -72,9 +72,6 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             # data on the form has changed. If it == 1, then no
             # data was changed, and we can just bring forward previous
             # values
-            # TODO: it may not be worth to check the chg variables at all,
-            # or even whether they submitted the form, since for legacy it
-            # is not certain how reliable they are
             if self.uds.is_initial() or self.uds.get_value("a3chg", int) != 1:
                 if formvera3 == 2:
                     return A3FamilyHandlerV2

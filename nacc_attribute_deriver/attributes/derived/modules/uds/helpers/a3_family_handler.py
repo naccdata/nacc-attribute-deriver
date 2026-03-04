@@ -5,7 +5,7 @@ Note every form version has distinct logic.
 
 from abc import ABC, abstractmethod
 from typing import ClassVar, Literal, List, Optional
-from pydantic import BaseModel, ValidationError, field_validator
+from pydantic import BaseModel, ValidationInfo, field_validator
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
@@ -45,10 +45,12 @@ class FamilyStatusRecord(BaseModel):
         "mom_status", "dad_status", "sib_status", "kid_status", mode="after"
     )
     @classmethod
-    def status_valid(cls, value: int) -> int:
+    def status_valid(cls, value: int, info: ValidationInfo) -> int:
         """Ensure the status being set is valid."""
         if value not in [0, 1, 9, INFORMED_MISSINGNESS]:
-            raise ValidationError(f"Unrecognized family member status: {value}")
+            raise ValueError(
+                f"Unrecognized family member status for {info.field_name}: {value}"
+            )
 
         return value
 
@@ -131,7 +133,8 @@ class A3FamilyHandler(ABC):
             the status for this group as of this visit
         """
         # get SIBS/KIDS variable
-        num_group = self.uds.get_value(f"{prefix}s", int)
+        raw_num_group = self.uds.get_value(f"{prefix}s", int)
+        num_group = raw_num_group
 
         # if no SIBS/KIDS, no possible cognitive status other than no
         if num_group == 0:
@@ -139,9 +142,10 @@ class A3FamilyHandler(ABC):
 
         # if SIBS/KIDS is unknown, we need to loop through and check all variables
         if num_group in [77, 99]:
-            return 20 if prefix == "sib" else 15
+            num_group = 20 if prefix == "sib" else 15
 
         # siblings or kids defined; need to iterate over and collect all attributes
+        group_statuses = None
         if num_group is not None and num_group > 0:
             group_statuses = self.get_sibkid_group_statuses(prefix, num_group)
 
@@ -159,6 +163,13 @@ class A3FamilyHandler(ABC):
 
         if prev_value in [0, 1, 9]:
             return prev_value
+
+        # if raw_num_group was 99 and the group statuses is empty
+        # (or all -4), just return 9
+        # basically means they don't know if they have sibs/kids so it makes
+        # sense for no data to be entered
+        if raw_num_group in [77, 99] and (not group_statuses or all(x == INFORMED_MISSINGNESS for x in group_statuses)):
+            return 9
 
         return INFORMED_MISSINGNESS
 

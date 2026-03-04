@@ -29,7 +29,7 @@ def table() -> SymbolTable:
 class TestMilestoneAttributeCollection:
     """General MLST attribute tests."""
 
-    def test_create_milesetone_renurse_date(self, table):
+    def test_create_milestone_renurse_date(self, table):
         """RENURSE was NURSEHOM in older versions; make sure both are accepted,
         and that it takes the NURSX date variables into account if both are
         missing."""
@@ -39,7 +39,7 @@ class TestMilestoneAttributeCollection:
         table["file.info.forms.json"].update(
             {"nursehom": "1", "nurseyr": "2000", "nursemo": "99", "nursedy": 99}
         )
-        assert attr._create_milesetone_renurse_date() == "2000-99-99"
+        assert attr._create_milestone_renurse_date() == "2000-99-99"
 
         # renurse
         table["file.info.forms.json"].update(
@@ -51,17 +51,17 @@ class TestMilestoneAttributeCollection:
                 "nursedy": 21,
             }
         )
-        assert attr._create_milesetone_renurse_date() == "2005-05-21"
+        assert attr._create_milestone_renurse_date() == "2005-05-21"
 
         # date values are missing, should use form date
         table["file.info.forms.json"].update(
             {"nurseyr": None, "nursemo": None, "nursedy": None}
         )
-        assert attr._create_milesetone_renurse_date() == "2020-01-01"
+        assert attr._create_milestone_renurse_date() == "2020-01-01"
 
         # explicitly set to 0
         table["file.info.forms.json"].update({"renurse": 0, "nursehom": 0})
-        assert attr._create_milesetone_renurse_date() is None
+        assert attr._create_milestone_renurse_date() is None
 
         # all blank
         table["file.info.forms.json"].update(
@@ -73,7 +73,7 @@ class TestMilestoneAttributeCollection:
                 "nurseyr": None,
             }
         )
-        assert attr._create_milesetone_renurse_date() is None
+        assert attr._create_milestone_renurse_date() is None
 
     def test_create_milestone_discontinued_date(self, table):
         """Test creating MLST set discontinued."""

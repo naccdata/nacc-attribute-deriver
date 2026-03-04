@@ -166,7 +166,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 0
 
         # if minimal contact, return 2
-        if self.__participant.minimal_contact():
+        if self.__participant.minimum_contact():
             return 2
 
         # otherwise presumed active

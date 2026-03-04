@@ -13,10 +13,9 @@ mds,mds_death_date,subject.info.working.cross-sectional.mds-death-date,update,TR
 mds,mds_death_age,subject.info.working.cross-sectional.mds-death-age,update,FALSE
 mds,mds_source,subject.info.working.cross-sectional.mds-source,update,FALSE
 mds,mds_affiliate,subject.info.derived.affiliate,update,FALSE
-mlst,milestone_visitdates,subject.info.working.cross-sectional.milestone-visitdates,set,FALSE
 mlst,milestone_discontinued_date,subject.info.working.cross-sectional.milestone-discontinued-date,update,TRUE
-mlst,mielstone_rejoined_date,subject.info.working.cross-sectional.milestone-rejoined-date,update,TRUE
-mlst,milestine_minimum_contact_date,subject.info.working.cross-sectional.milestone-minimum-contact-date,update,TRUE
+mlst,milestone_rejoined_date,subject.info.working.cross-sectional.milestone-rejoined-date,update,TRUE
+mlst,milestone_minimum_contact_date,subject.info.working.cross-sectional.milestone-minimum-contact-date,update,TRUE
 mlst,milestone_death_date,subject.info.working.cross-sectional.milestone-death-date,update,TRUE
 mlst,milestone_renurse_date,subject.info.working.cross-sectional.milestone-renurse-date,update,TRUE
 niagads_availability,ngdsgwas,subject.info.derived.cross-sectional.ngdsgwas,update,FALSE

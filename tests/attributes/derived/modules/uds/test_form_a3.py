@@ -426,6 +426,8 @@ class TestUDSFormA3Attribute:
         assert attr._create_naccam() == 3
         set_attribute(table, form_prefix, "fadmut", 0)
         assert attr._create_naccam() == 0
+        set_attribute(table, form_prefix, "fadmut", None)
+        assert attr._create_naccam() == 9
 
         # test superseded cases
         set_attribute(table, subject_derived_prefix, "cross-sectional.naccam", 2)

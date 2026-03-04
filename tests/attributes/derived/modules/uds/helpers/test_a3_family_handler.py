@@ -167,7 +167,7 @@ class TestA3FamilyHandlerV1:
         # whole family is unknown
         assert handler.record.family_status() == INFORMED_MISSINGNESS
 
-    def test_kidsib_status_current_visit(self) -> None:
+    def test_sibkid_status_current_visit(self) -> None:
         """Test the sib/kid logic works as expected when evaluating the current
         visit."""
         # starting as IVP, should look at sibsdem/kidsdem
@@ -243,7 +243,7 @@ class TestA3FamilyHandlerV1:
         assert handler.record.sib_status == 1
         assert handler.record.kid_status == 0
 
-    def test_kidsib_status_fvp_visit(self) -> None:
+    def test_sibkid_status_fvp_visit(self) -> None:
         """Test the sib/kid logic works as expected when evaluating a FVP
         visit."""
         # set no sib/kid change, so ignore values if set and pull
@@ -297,6 +297,38 @@ class TestA3FamilyHandlerV1:
         handler = A3FamilyHandlerV1(table)
         assert handler.record.sib_status == 1
         assert handler.record.kid_status == 0
+
+    def test_sibkid_status_unknown_num(self) -> None:
+        """Test when there is an unknown number of sibs/kids.
+
+        Ultimately doesn't matter for V1 since we just check
+        sibsdem/kidsdem anyways.
+        """
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 99,
+                "kids": 99,
+                "sibsdem": 1,
+                "kidsdem": 0,
+            }
+        )
+        handler = A3FamilyHandlerV1(table)
+        assert handler.record.sib_status == 1
+        assert handler.record.kid_status == 0
+
+        # not set
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 99,
+                "kids": 99,
+                "sibsdem": 99,
+                "kidsdem": None, # kidsdem is just missing
+            }
+        )
+        handler = A3FamilyHandlerV1(table)
+        assert handler.record.sib_status == 9
+        assert handler.record.kid_status == 9
 
 
 class TestA3FamilyHandlerV2:
@@ -376,7 +408,7 @@ class TestA3FamilyHandlerV2:
         # whole family is unknown
         assert handler.record.family_status() == INFORMED_MISSINGNESS
 
-    def test_kidsib_status_current_visit(self) -> None:
+    def test_sibkid_status_current_visit(self) -> None:
         """Test the sib/kid logic works as expected when evaluating the current
         visit and it should be set."""
         table = set_working_family()
@@ -427,7 +459,7 @@ class TestA3FamilyHandlerV2:
         assert handler.record.sib_status == 1
         assert handler.record.kid_status == 1
 
-    def test_kidsib_status_fvp_visit(self) -> None:
+    def test_sibkid_status_fvp_visit(self) -> None:
         """Test the sib/kid logic works as expected when evaluating an FVP
         visit."""
         # should not be evaluated and pull from working data if
@@ -489,6 +521,45 @@ class TestA3FamilyHandlerV2:
         handler = A3FamilyHandlerV2(table)
         assert handler.record.sib_status == 0
         assert handler.record.kid_status == 1
+
+    def test_sibkid_status_unknown_num(self) -> None:
+        """Test when there is an unknown number of sibs/kids.
+
+        Will end up looping through all, so most likely 9
+        unless at least 1 is set to 1 or all are set to 0
+        """
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 99,
+                "kids": 99,
+                "sib20dem": 1,  # set the 20th sibling to 1
+            }
+        )
+
+        # set all kids
+        for i in range(1, 16):
+            table[f'file.info.forms.json.kid{i}dem'] = 0
+
+        handler = A3FamilyHandlerV2(table)
+        assert handler.record.sib_status == 1
+        assert handler.record.kid_status == 0
+
+        # more likely case
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 99,
+                "kids": 99,
+                "sib1dem": 0,
+                "sib2dem": 0,
+                # set nothing for kids, will still expect 9
+            }
+        )
+
+        handler = A3FamilyHandlerV2(table)
+        assert handler.record.sib_status == 9
+        assert handler.record.kid_status == 9
 
 
 class TestA3FamilyHandlerV3:
@@ -557,6 +628,46 @@ class TestA3FamilyHandlerV3:
         handler = A3FamilyHandlerV3(table)
         assert handler.record.mom_status == 1
         assert handler.record.dad_status == 1
+
+    def test_sibkid_status_unknown_num(self) -> None:
+        """Test when there is an unknown number of sibs/kids.
+
+        Will end up looping through all, so most likely 9
+        unless at least 1 is set to 1 or all are set to 0
+        """
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 77,
+                "kids": 77,
+                "sib20neu": 1,  # ensure the 20th sibling is set
+                "sib20pdx": 43
+            }
+        )
+
+        # set all kids
+        for i in range(1, 16):
+            table[f'file.info.forms.json.kid{i}neu'] = 8
+
+        handler = A3FamilyHandlerV3(table)
+        assert handler.record.sib_status == 1
+        assert handler.record.kid_status == 0
+
+        # more likely case
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 77,
+                "kids": 77,
+                "sib1neu": 8,
+                "sib2neu": 8,
+                # set nothing for kids, will still expect 9
+            }
+        )
+
+        handler = A3FamilyHandlerV3(table)
+        assert handler.record.sib_status == 9
+        assert handler.record.kid_status == 9
 
     # TODO: FVP and sib/kid logic; most of how those work have already
     # been tested above, would still be good to be thorough though
@@ -758,6 +869,45 @@ class TestA3FamilyHandlerV4:
                 }
             }
         }
+        handler = A3FamilyHandlerV4(table)
+        assert handler.record.sib_status == 9
+        assert handler.record.kid_status == 9
+
+    def test_sibkid_status_unknown_num(self) -> None:
+        """Test when there is an unknown number of sibs/kids.
+
+        Will end up looping through all, so most likely 9
+        unless at least 1 is set to 1 or all are set to 0
+        """
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 77,
+                "kids": 77,
+                "sib20etpr": '08',  # ensure the 20th sibling is set
+            }
+        )
+
+        # set all kids
+        for i in range(1, 16):
+            table[f'file.info.forms.json.kid{i}etpr'] = '00'
+
+        handler = A3FamilyHandlerV4(table)
+        assert handler.record.sib_status == 1
+        assert handler.record.kid_status == 0
+
+        # more likely case
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "sibs": 77,
+                "kids": 77,
+                "sib1etpr": '00',
+                "sib2etpr": '00',
+                # set nothing for kids, will still expect 9
+            }
+        )
+
         handler = A3FamilyHandlerV4(table)
         assert handler.record.sib_status == 9
         assert handler.record.kid_status == 9

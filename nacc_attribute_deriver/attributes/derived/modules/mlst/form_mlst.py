@@ -105,7 +105,7 @@ class MilestoneAttributeCollection(AttributeCollection):
 
         return self.__create_status_date("deathyr", "deathmo", "deathdy")
 
-    def _create_milesetone_renurse_date(self) -> Optional[str]:
+    def _create_milestone_renurse_date(self) -> Optional[str]:
         """Check if subject moved to a permenant nursing home; if so, create
         renurse date."""
         renurse = self.__mlst.get_value("renurse", int)
