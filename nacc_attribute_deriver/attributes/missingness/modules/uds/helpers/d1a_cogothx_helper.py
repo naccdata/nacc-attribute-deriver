@@ -44,7 +44,7 @@ class D1aCOGOTHXHelper(UDSFormD1Missingness):
         # REGRESSION - some explicitly set to -4 if formverd1 == 1.0
         self.__formverd1 = self.uds.get_value("formverd1", float)
         if not self.__formverd1:
-            self.__formverd1 == self.formver
+            self.__formverd1 = self.formver
 
         if self.__formverd1 == 1.0:
             self.__attributes.update(

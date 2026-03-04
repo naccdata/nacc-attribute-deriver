@@ -8,8 +8,7 @@ subject.info.working.cross-sectional
 Looks generally at UDS, NP, MLST, and MDS
 """
 
-from datetime import date
-from typing import Optional, Type
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
     AttributeCollection,
@@ -24,6 +23,7 @@ from nacc_attribute_deriver.utils.date import (
     date_from_form_date,
     parse_date_parts,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 from .participant_status import ParticipantStatus
 from .participant_status_handler import ParticipantStatusHandler
@@ -89,7 +89,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         # otherwise, we're assuming the death date is known, try to calculate
         # from the latest UDS date (which should also be known)
         result = None
-        try:
+        try:  # noqa: SIM105
             result = calculate_months(
                 date_from_form_date(latest_uds_visit.status_date),
                 date_from_form_date(death_date),
@@ -97,7 +97,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         except (TypeError, ValueError, AttributeDeriverError):
             pass
 
-        return 999 if not result else result
+        return result if result is not None else 999
 
     def _create_naccmod(self) -> int:
         """Create the NACCMOD - Month of death"""
@@ -239,8 +239,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def __determine_status_for_discontinuation(self) -> Optional[ParticipantStatus]:
         """Determine which status to use for the discontinuation dates.
 
-        Both discontinuation and minimum protocol status can set the discontinuation
-        date.
+        Both discontinuation and minimum protocol status can set the
+        discontinuation date.
         """
         discontinued = self.__participant.discontinued()
         minimum_contact = self.__participant.minimum_contact()
@@ -251,7 +251,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
         if discontinued and minimum_contact:
             if minimum_contact < discontinued or minimum_contact == discontinued:
                 return discontinued
-            
+
             return minimum_contact
 
         if discontinued:

@@ -1,6 +1,5 @@
 """Tests MLST form."""
 
-import random
 import pytest
 from nacc_attribute_deriver.attributes.derived.modules.mlst.form_mlst import (
     MilestoneAttributeCollection,

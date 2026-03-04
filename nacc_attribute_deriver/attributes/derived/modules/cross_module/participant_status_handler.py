@@ -9,23 +9,21 @@ we prioritize the other status change (one way to think of it is they
 completed the UDS visit and then decided to discontinue at the visit).
 """
 
-from typing import Any, Optional
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
-    SubjectDerivedNamespace,
     WorkingNamespace,
 )
-
 
 from .participant_status import (
     DeceasedStatus,
     DiscontinuedStatus,
-    MinimumContactStatus,
     InitialVisitOnlyStatus,
     LatestUDSVisit,
-    RejoinedStatus,
-    ParticipantStatus,
+    MinimumContactStatus,
     NursingHomeStatus,
+    ParticipantStatus,
+    RejoinedStatus,
 )
 
 
@@ -43,7 +41,8 @@ class ParticipantStatusHandler:
             InitialVisitOnlyStatus.create_from_working_namespace(working)
         )
 
-        # states that can unset the above statuses, as they also make the participant active
+        # states that can unset the above statuses, as they also make the
+        # participant active
         self.__rejoined = RejoinedStatus.create_from_working_namespace(working)
         self.__latest_uds = LatestUDSVisit.create_from_working_namespace(working)
 

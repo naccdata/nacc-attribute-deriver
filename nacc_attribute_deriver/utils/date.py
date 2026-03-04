@@ -2,7 +2,7 @@
 
 import re
 from datetime import date, datetime
-from typing import List, Optional, Set, Tuple, Union
+from typing import List, Optional, Set, Tuple
 
 from .errors import AttributeDeriverError
 

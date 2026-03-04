@@ -17,11 +17,11 @@ from nacc_attribute_deriver.utils.constants import (
 
 from .helpers.a3_family_handler import (
     A3FamilyHandler,
+    A3FamilyHandlerPrevVisit,
     A3FamilyHandlerV1,
     A3FamilyHandlerV2,
     A3FamilyHandlerV3,
     A3FamilyHandlerV4,
-    A3FamilyHandlerPrevVisit,
 )
 
 
@@ -61,6 +61,9 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         if not formvera3:
             formvera3 = self.formver
 
+        # condense to int to handle 3.2
+        formvera3 = int(formvera3)
+
         if self.submitted:
             # For V3 and V4, there is no A3CHG or similar variable
             if self.formver == 4:
@@ -68,11 +71,17 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             if formvera3 == 3:
                 return A3FamilyHandlerV3
 
-            # for V1 and V2, see if A3CHG != 1 in FVP, which means
-            # data on the form has changed. If it == 1, then no
+            # for V1 and V2, see if A3CHG set in FVP, which means
+            # data on the form has changed. If was not set, then no
             # data was changed, and we can just bring forward previous
-            # values
-            if self.uds.is_initial() or self.uds.get_value("a3chg", int) != 1:
+            # values.
+            # IMPORTANT: V1 and V2 have opposite codes for when a3chg is set
+            a3chg = self.uds.get_value("a3chg", int)
+            if (
+                self.uds.is_initial()
+                or (formvera3 == 2 and a3chg == 0)
+                or (formvera3 == 1 and a3chg == 1)
+            ):
                 if formvera3 == 2:
                     return A3FamilyHandlerV2
                 if formvera3 == 1:

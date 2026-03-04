@@ -30,23 +30,20 @@ See the following for more info:
     - attributes.derived.modules.md.form_mds
 """
 
-import re
-
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Optional
+from typing import Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
-
-from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.utils.date import (
     calculate_age,
     date_from_form_date,
     parse_date_parts,
 )
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 INVALID_DATES = {8888, 9999, 88, 99, None}
 
@@ -72,11 +69,11 @@ class ParticipantStatus(ABC):
         try:
             year, month, day = parse_date_parts(self.status_date)
             self.status_date = f"{year:4d}-{month:02d}-{day:02d}"
-        except AttributeDeriverError:
+        except AttributeDeriverError as e:
             raise AttributeDeriverError(
                 f"Participant status date {self.status} not in "
                 + f"YYYY-MM-DD format: {self.status_date}"
-            )
+            ) from e
 
     def __eq__(self, other: "ParticipantStatus") -> bool:
         """Compare equality by if this status was done on the same day as the
@@ -121,7 +118,7 @@ class ParticipantStatus(ABC):
         try:
             this_parts = (int(x) for x in self.status_date.split("-"))
             other_parts = (int(x) for x in other.status_date.split("-"))
-            for this_part, other_part in zip(this_parts, other_parts):
+            for this_part, other_part in zip(this_parts, other_parts, strict=False):
                 # break at the earliest part in priority that we can't compare
                 if this_part in INVALID_DATES or other_part in INVALID_DATES:
                     break
@@ -330,12 +327,14 @@ class InitialVisitOnlyStatus(ParticipantStatus):
         uds_visit = date_from_form_date(uds_visitdates[0]) if uds_visitdates else None
         if not uds_visit:
             raise AttributeDeriverError(
-                f"Cannot find associated UDS visit for prespart with date: {prespart.date}"
+                "Cannot find associated UDS visit for prespart with "
+                + f"date: {prespart.date}"
             )
 
         if uds_visit != prespart.date:
             raise AttributeDeriverError(
-                f"PRESPART set date does not match known UDS visit: PRESPART associated with {prespart.date} while UDS visit is {uds_visit}"
+                "PRESPART set date does not match known UDS visit: PRESPART "
+                + f"associated with {prespart.date} while UDS visit is {uds_visit}"
             )
 
         return MinimumContactStatus(
@@ -356,8 +355,8 @@ class RejoinedStatus(ParticipantStatus):
         """Determine if the participant ever rejoined, and grab its
         corresponding latest date. A subject is denoted as rejoined if they are
         explicitly marked as rejoined on a MLST form. Note this is different
-        from an "implicit" rejoin via a later UDS Visit; see UDSAfterMLSTStatus
-        for that.
+        from an "implicit" rejoin via a later UDS Visit; see LatestUDSVisit for
+        that.
 
         See form_mlst._create_milestone_rejoined_date for how we keep
         track of this.
@@ -398,7 +397,7 @@ class LatestUDSVisit(ParticipantStatus):
     @classmethod
     def create_from_working_namespace(
         cls, working: WorkingNamespace
-    ) -> Optional["UDSAfterMLSTStatus"]:
+    ) -> Optional["LatestUDSVisit"]:
         """Get the participant's latest UDS visit.
 
         If this came after some status change, it can override/reset it.
@@ -419,7 +418,7 @@ class NursingHomeStatus(ParticipantStatus):
     @classmethod
     def create_from_working_namespace(
         cls, working: WorkingNamespace
-    ) -> Optional["UDSAfterMLSTStatus"]:
+    ) -> Optional["NursingHomeStatus"]:
         """Get when the participant permenantly moved to a nursing home.
 
         This status does not interact with other statuses, but instead

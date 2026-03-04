@@ -1,6 +1,5 @@
 """Tests MDS form."""
 
-import random
 import pytest
 from nacc_attribute_deriver.attributes.derived.modules.mds.form_mds import (
     MDSFormAttributeCollection,

@@ -1,15 +1,13 @@
 """Tests overall participant statuses are handled correctly."""
 
 import pytest
-import random
 
-from datetime import date
 from typing import Any, Dict
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
-from nacc_attribute_deriver.attributes.derived.modules.cross_module.participant_status_handler import (
+from nacc_attribute_deriver.attributes.derived.modules.cross_module.participant_status_handler import (  # noqa: E501
     ParticipantStatusHandler,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable

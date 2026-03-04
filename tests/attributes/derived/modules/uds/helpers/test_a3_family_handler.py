@@ -1,8 +1,6 @@
 """Tests the A3 Family handler."""
 
-import pytest
 import random
-from typing import Any, Dict
 
 from nacc_attribute_deriver.attributes.derived.modules.uds.helpers.a3_family_handler import (  # noqa: E501
     A3FamilyHandlerV1,
@@ -13,9 +11,6 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.helpers.a3_family_han
     FamilyStatusRecord,
 )
 
-from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
-    UDSNamespace,
-)
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
@@ -323,7 +318,7 @@ class TestA3FamilyHandlerV1:
                 "sibs": 99,
                 "kids": 99,
                 "sibsdem": 99,
-                "kidsdem": None, # kidsdem is just missing
+                "kidsdem": None,  # kidsdem is just missing
             }
         )
         handler = A3FamilyHandlerV1(table)
@@ -525,8 +520,8 @@ class TestA3FamilyHandlerV2:
     def test_sibkid_status_unknown_num(self) -> None:
         """Test when there is an unknown number of sibs/kids.
 
-        Will end up looping through all, so most likely 9
-        unless at least 1 is set to 1 or all are set to 0
+        Will end up looping through all, so most likely 9 unless at
+        least 1 is set to 1 or all are set to 0
         """
         table = set_working_family()
         table["file.info.forms.json"].update(
@@ -539,7 +534,7 @@ class TestA3FamilyHandlerV2:
 
         # set all kids
         for i in range(1, 16):
-            table[f'file.info.forms.json.kid{i}dem'] = 0
+            table[f"file.info.forms.json.kid{i}dem"] = 0
 
         handler = A3FamilyHandlerV2(table)
         assert handler.record.sib_status == 1
@@ -632,8 +627,8 @@ class TestA3FamilyHandlerV3:
     def test_sibkid_status_unknown_num(self) -> None:
         """Test when there is an unknown number of sibs/kids.
 
-        Will end up looping through all, so most likely 9
-        unless at least 1 is set to 1 or all are set to 0
+        Will end up looping through all, so most likely 9 unless at
+        least 1 is set to 1 or all are set to 0
         """
         table = set_working_family()
         table["file.info.forms.json"].update(
@@ -641,13 +636,13 @@ class TestA3FamilyHandlerV3:
                 "sibs": 77,
                 "kids": 77,
                 "sib20neu": 1,  # ensure the 20th sibling is set
-                "sib20pdx": 43
+                "sib20pdx": 43,
             }
         )
 
         # set all kids
         for i in range(1, 16):
-            table[f'file.info.forms.json.kid{i}neu'] = 8
+            table[f"file.info.forms.json.kid{i}neu"] = 8
 
         handler = A3FamilyHandlerV3(table)
         assert handler.record.sib_status == 1
@@ -876,21 +871,21 @@ class TestA3FamilyHandlerV4:
     def test_sibkid_status_unknown_num(self) -> None:
         """Test when there is an unknown number of sibs/kids.
 
-        Will end up looping through all, so most likely 9
-        unless at least 1 is set to 1 or all are set to 0
+        Will end up looping through all, so most likely 9 unless at
+        least 1 is set to 1 or all are set to 0
         """
         table = set_working_family()
         table["file.info.forms.json"].update(
             {
                 "sibs": 77,
                 "kids": 77,
-                "sib20etpr": '08',  # ensure the 20th sibling is set
+                "sib20etpr": "08",  # ensure the 20th sibling is set
             }
         )
 
         # set all kids
         for i in range(1, 16):
-            table[f'file.info.forms.json.kid{i}etpr'] = '00'
+            table[f"file.info.forms.json.kid{i}etpr"] = "00"
 
         handler = A3FamilyHandlerV4(table)
         assert handler.record.sib_status == 1
@@ -902,8 +897,8 @@ class TestA3FamilyHandlerV4:
             {
                 "sibs": 77,
                 "kids": 77,
-                "sib1etpr": '00',
-                "sib2etpr": '00',
+                "sib1etpr": "00",
+                "sib2etpr": "00",
                 # set nothing for kids, will still expect 9
             }
         )

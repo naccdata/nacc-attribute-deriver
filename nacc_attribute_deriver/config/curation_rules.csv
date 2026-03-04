@@ -220,6 +220,10 @@ uds,cognitive_status_mom,subject.info.working.cross-sectional.cognitive-status-m
 uds,cognitive_status_dad,subject.info.working.cross-sectional.cognitive-status-dad,update,FALSE
 uds,cognitive_status_sib,subject.info.working.cross-sectional.cognitive-status-sib,update,FALSE
 uds,cognitive_status_kid,subject.info.working.cross-sectional.cognitive-status-kid,update,FALSE
+uds,cognitive_status_mom,subject.info.working.cross-sectional.cognitive-status-mom-debug,list,TRUE
+uds,cognitive_status_dad,subject.info.working.cross-sectional.cognitive-status-dad-debug,list,TRUE
+uds,cognitive_status_sib,subject.info.working.cross-sectional.cognitive-status-sib-debug,list,TRUE
+uds,cognitive_status_kid,subject.info.working.cross-sectional.cognitive-status-kid-debug,list,TRUE
 uds,naccamd,file.info.derived.naccamd,update,FALSE
 uds,naccamd,subject.info.derived.longitudinal.naccamd,list,TRUE
 uds,naccaaas,file.info.derived.naccaaas,update,FALSE

@@ -4,14 +4,15 @@ Note every form version has distinct logic.
 """
 
 from abc import ABC, abstractmethod
-from typing import ClassVar, Literal, List, Optional
+from typing import ClassVar, List, Literal, Optional
+
 from pydantic import BaseModel, ValidationInfo, field_validator
 
-from nacc_attribute_deriver.attributes.namespace.namespace import (
-    WorkingNamespace,
-)
 from nacc_attribute_deriver.attributes.namespace.keyed_namespace import (
     PreviousRecordNamespace,
+)
+from nacc_attribute_deriver.attributes.namespace.namespace import (
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
     UDSNamespace,
@@ -168,7 +169,9 @@ class A3FamilyHandler(ABC):
         # (or all -4), just return 9
         # basically means they don't know if they have sibs/kids so it makes
         # sense for no data to be entered
-        if raw_num_group in [77, 99] and (not group_statuses or all(x == INFORMED_MISSINGNESS for x in group_statuses)):
+        if raw_num_group in [77, 99] and (
+            not group_statuses or all(x == INFORMED_MISSINGNESS for x in group_statuses)
+        ):
             return 9
 
         return INFORMED_MISSINGNESS
@@ -271,10 +274,12 @@ class A3FamilyHandlerV2(A3FamilyHandler):
     def __determine_parent_status(self, field: str, prev_value: int) -> int:
         """Determine the parent member's status.
 
-        Same as V1, except swapped meaning of PARCHG.
+        Same as V1, except swapped meaning of PARCHG. Now, a 0 means that
+        data changed. Since 0 is conflated with blanks, we also let parchg = blank
+        go through for evaluation.
         """
         # only check if parent changed
-        if not self.uds.is_initial() and self.uds.get_value("parchg", int) != 0:
+        if not self.uds.is_initial() and self.uds.get_value("parchg", int) == 1:
             return prev_value
 
         demented = self.uds.get_value(field, int)
@@ -295,9 +300,13 @@ class A3FamilyHandlerV2(A3FamilyHandler):
         return INFORMED_MISSINGNESS
 
     def __determine_sibkid_status(self, prefix: SIBKIDS, prev_value: int) -> int:
-        """Determine the sib or kid status."""
+        """Determine the sib or kid status.
+
+        Now, a 0 means that data changed. Since 0 is conflated with blanks,
+        we also let sibchg/kidchg = blank go through for evaluation.
+        """
         # if no change, return previous value
-        if not self.uds.is_initial() and self.uds.get_value(f"{prefix}chg", int) != 0:
+        if not self.uds.is_initial() and self.uds.get_value(f"{prefix}chg", int) == 1:
             return prev_value
 
         return self.run_sibkid_status_logic(prefix, prev_value)
@@ -322,7 +331,8 @@ class A3FamilyHandlerV3(A3FamilyHandler):
     """Handles determining family status for V3 forms.
 
     This version relies on two variables for each member:
-        - MOMNEUR, DADNEUR, SIBxNEU, KIDxNEU: if set to 1, has a primary neurological problem
+        - MOMNEUR, DADNEUR, SIBxNEU, KIDxNEU: if set to 1, has a primary
+          neurological problem
         - MOMPRDX, DADPRDX, SIBPxDX, KIDxPDX: the diagnosis code, must match below list
 
     Both must be true for the member's status to = 1.

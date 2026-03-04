@@ -9,7 +9,7 @@ from typing import Any, Dict
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
-from nacc_attribute_deriver.attributes.derived.modules.cross_module.participant_status import (
+from nacc_attribute_deriver.attributes.derived.modules.cross_module.participant_status import (  # noqa: E501
     DeceasedStatus,
     DiscontinuedStatus,
     MinimumContactStatus,

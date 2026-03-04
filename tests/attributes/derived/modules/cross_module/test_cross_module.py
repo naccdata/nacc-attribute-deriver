@@ -1,6 +1,5 @@
 """Tests cross-module attributes."""
 
-import pytest
 from typing import Any, Dict
 
 from nacc_attribute_deriver.attributes.derived.modules.cross_module import (
@@ -84,9 +83,8 @@ class TestCrossModuleAttribute:
         assert attr._create_naccint() == 888
 
     def test_discontinued_dates(self) -> None:
-        """Test discontinued dates are set correctly when only
-        one of or neither of discontinued or minimum contact is defined.
-        """
+        """Test discontinued dates are set correctly when only one of or
+        neither of discontinued or minimum contact is defined."""
         # discontinued defined
         table = create_working_table(
             {
@@ -123,9 +121,8 @@ class TestCrossModuleAttribute:
         assert attr._create_naccdsdy() == 88
 
     def test_discontinued_dates_both_defined(self) -> None:
-        """Test discontinued dates are set correctly when both
-        discontinued AND minimum contact status is defined.
-        """
+        """Test discontinued dates are set correctly when both discontinued AND
+        minimum contact status is defined."""
         # set discontinued came later
         table = create_working_table(
             {
