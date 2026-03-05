@@ -228,7 +228,6 @@ class TestParticipantStatusCreation:
         working = create_working(
             {
                 "milestone-death-date": {"value": "2025-99-99", "date": "2025-07-23"},
-                # provide date of birth to figure out death date from
                 "uds-date-of-birth": "1960-04-01",
             }
         )
@@ -239,6 +238,24 @@ class TestParticipantStatusCreation:
 
         # deceased-specific variables
         assert status.age_at_death == 999
+        assert status.has_np is False
+
+        # make milestone death date only have the day unknown, so it does try to
+        # calculate it
+        working = create_working(
+            {
+                "milestone-death-date": {"value": "2025-06-99", "date": "2025-07-23"},
+                # provide date of birth to figure out death date from
+                "uds-date-of-birth": "1940-04-01",
+            }
+        )
+        status = DeceasedStatus.create_from_working_namespace(working)
+        assert status.status == "deceased"
+        assert status.status_date == "2025-06-99"
+        assert status.form_date == date(2025, 7, 23)
+
+        # deceased-specific variables
+        assert status.age_at_death == 85  # approximated death date
         assert status.has_np is False
 
     def test_deceased_status_mds(self) -> None:

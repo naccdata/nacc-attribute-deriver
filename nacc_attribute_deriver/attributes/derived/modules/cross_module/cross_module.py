@@ -19,6 +19,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
+    approximate_date,
     calculate_months,
     date_from_form_date,
     parse_date_parts,
@@ -78,16 +79,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # if death date has unknown parts, infer ONLY if the day is missing
         # by setting it to 15 (middle of the month). otherwise, just return 999
-        death_date = deceased.status_date
-        if "99" in death_date or "88" in death_date:
-            year, month, day = parse_date_parts(death_date)
-            if year not in [8888, 9999] and month not in [88, 99] and day in [88, 99]:
-                death_date = f"{year}-{month}-15"
-            else:
-                return 999
+        death_date = approximate_date(deceased.status_date)
 
-        # otherwise, we're assuming the death date is known, try to calculate
-        # from the latest UDS date (which should also be known)
+        # try to calculate from the latest UDS date (which should also be known)
         result = None
         try:  # noqa: SIM105
             result = calculate_months(

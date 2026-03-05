@@ -217,3 +217,20 @@ def make_date_from_parts(
 
     # return in YYYY-MM-DD format
     return f"{year:04d}-{month:02d}-{day:02d}"
+
+
+def approximate_date(date_string: str) -> str:
+    """Approximate a date if the day is unknown.
+
+    If only the day is unknown (e.g. 2025-05-99), approximate by setting the
+    day value to 15. Done to estimate time differences.
+
+    Returns the approximate date if it is created, otherwise just returns
+    the date as-is.
+    """
+    if date_string.endswith("-99") or date_string.endswith("-88"):
+        year, month, day = parse_date_parts(date_string)
+        if year not in [8888, 9999] and month not in [88, 99] and day in [88, 99]:
+            return f"{year:4d}-{month:02d}-15"
+
+    return date_string

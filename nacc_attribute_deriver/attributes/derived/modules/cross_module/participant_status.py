@@ -38,6 +38,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
 from nacc_attribute_deriver.utils.date import (
+    approximate_date,
     calculate_age,
     date_from_form_date,
     parse_date_parts,
@@ -197,7 +198,9 @@ class DeceasedStatus(ParticipantStatus):
         # full death date (no unknown parts)
         if not age_at_death:
             try:
-                death_date_parsed = date_from_form_date(death_date.value)
+                # if only the day is unknown, try to approximate
+                death_date_parsed = approximate_date(death_date.value)
+                death_date_parsed = date_from_form_date(death_date_parsed)
                 birth_date = date_from_form_date(
                     working.get_cross_sectional_value("uds-date-of-birth", str)
                 )

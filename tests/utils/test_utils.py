@@ -3,6 +3,7 @@
 import pytest
 
 from nacc_attribute_deriver.utils.date import (
+    approximate_date,
     datetime_from_form_date,
     find_closest_date,
     standardize_date,
@@ -58,3 +59,10 @@ class TestDateUtils:
         assert find_closest_date(
             ["2025/01/01", "01/01/2026", "2027-01-01"], "01-01-2025"
         ) == ("2025-01-01", 0)
+
+    def test_approximate_date(self):
+        """Test date is approximated when only the day is unknown."""
+        assert approximate_date("2025-01-99") == "2025-01-15"
+        assert approximate_date("2025-01-88") == "2025-01-15"
+        assert approximate_date("2025-99-88") == "2025-99-88"
+        assert approximate_date("9999-01-99") == "9999-01-99"

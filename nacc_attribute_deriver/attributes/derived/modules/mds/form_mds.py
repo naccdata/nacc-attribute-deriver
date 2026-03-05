@@ -12,6 +12,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.date import (
+    approximate_date,
     calculate_age,
     date_from_form_date,
     make_date_from_parts,
@@ -50,14 +51,17 @@ class MDSFormAttributeCollection(AttributeCollection):
         if self.__mds.get_value("vitalst", int) != 2:
             return None
 
-        # get death date
-        death_date = self._create_mds_death_date()
+        # get death date; approximate if just the day is unknown
+        death_date = approximate_date(self._create_mds_death_date())
 
         # make birth date
         year = self.__mds.get_value("birthyr", int)  # required
         month = self.__mds.get_value("birthmo", int)  # can be 99
         day = self.__mds.get_value("birthday", int)  # can be 99
         birthday = make_date_from_parts(year=year, month=month, day=day)
+
+        # also approximate birthday if just the day is unknown
+        birthday = approximate_date(birthday)
 
         # try to calculate age
         try:
