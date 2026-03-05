@@ -109,10 +109,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # parse out the death month
         _, month, _ = parse_date_parts(deceased.status_date)
-        if month and month >= 1 and month < 12:
-            return month
-
-        return 99
+        return 99 if month is None else month
 
     def _create_naccyod(self) -> int:
         """Create the NACCYOD - Year of death"""
