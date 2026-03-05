@@ -13,6 +13,7 @@ from nacc_attribute_deriver.attributes.derived.modules.cross_module.participant_
     DeceasedStatus,
     DiscontinuedStatus,
     MinimumContactStatus,
+    NursingHomeStatus,
     InitialVisitOnlyStatus,
     LatestUDSVisit,
     RejoinedStatus,
@@ -140,6 +141,32 @@ class TestParticipantStatusCreation:
         assert status.status == "latest_uds_visit"
         assert status.status_date == "2025-09-29"
         assert status.form_date == date(2025, 9, 29)
+
+    def test_nursing_home_status(self) -> None:
+        """Test that the nursing home status is set correctly."""
+        # set nursing and residenc status; residenc came before
+        working = create_working(
+            {
+                "milestone-renurse-date": {"value": "2025-02-09", "date": "2025-02-09"},
+                "residenc": {"value": 1, "date": "2020-08-09"},
+            }
+        )
+
+        status = NursingHomeStatus.create_from_working_namespace(working)
+        assert status.status == "nursing_home"
+        assert status.status_date == "2025-02-09"
+        assert status.form_date == date(2025, 2, 9)
+
+        # now have residenc come after; nursing home status should not
+        # be set in that case
+        working = create_working(
+            {
+                "milestone-renurse-date": {"value": "2010-07-19", "date": "2010-03-06"},
+                "residenc": {"value": 1, "date": "2020-10-23"},
+            }
+        )
+
+        assert NursingHomeStatus.create_from_working_namespace(working) is None
 
     def test_deceased_status_np(self) -> None:
         """Test when the deceased status is set by an NP form."""

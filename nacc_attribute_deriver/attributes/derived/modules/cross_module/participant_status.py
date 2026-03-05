@@ -30,7 +30,6 @@ See the following for more info:
     - attributes.derived.modules.md.form_mds
 """
 
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date
 from typing import Optional
@@ -49,7 +48,7 @@ INVALID_DATES = {8888, 9999, 88, 99, None}
 
 
 @dataclass
-class ParticipantStatus(ABC):
+class ParticipantStatus:
     """Data class to represent a participant status."""
 
     # name of the status
@@ -135,24 +134,6 @@ class ParticipantStatus(ABC):
         # unable to determine; use form's date by default, which HAS
         # to be defined
         return self.form_date < other.form_date
-
-    @classmethod
-    @abstractmethod
-    def create_from_working_namespace(
-        cls, working: WorkingNamespace
-    ) -> Optional["ParticipantStatus"]:
-        """Creates the given status using the table information.
-
-        If information necessary to set the status is not present,
-        returns None. This is effectively the same as saying the
-        participant does NOT have that status (e.g. if there is no death
-        date reported, that participant is not dead.)
-
-        Args:
-            working: The Working namespace; holds working variables carried
-                over from curation of othe forms
-        """
-        pass
 
 
 @dataclass(eq=False)
@@ -436,14 +417,24 @@ class NursingHomeStatus(ParticipantStatus):
         if not nursing_home_date:
             return None
 
-        residenc = working.get_cross_sectional_dated_value("residenc", int)
-
-        # if RESIDENC nullifies, return None
-        if residenc and residenc.value not in [4, 9]:
-            return None
-
-        return NursingHomeStatus(
+        # create status; still need to compare to RESIDENC before setting
+        nursing_status = NursingHomeStatus(
             status="nursing_home",
             status_date=nursing_home_date.value,
             form_date=nursing_home_date.date,
         )
+
+        # get RESIDENC result, and turn into status to compare if needed
+        residenc = working.get_cross_sectional_dated_value("residenc", int)
+
+        # if RESIDENC came after and nullifies, return None
+        if residenc and residenc.value not in [4, 9]:
+            residenc_status = ParticipantStatus(
+                status="residenc",
+                status_date=str(residenc.date),
+                form_date=residenc.date,
+            )
+            if nursing_status < residenc_status:
+                return None
+
+        return nursing_status

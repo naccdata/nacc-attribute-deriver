@@ -10,6 +10,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, ConfigDict, field_serializer
+
 from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 
 T = TypeVar("T")
