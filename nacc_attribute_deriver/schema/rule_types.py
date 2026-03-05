@@ -10,6 +10,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, ConfigDict, field_serializer
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
 
 T = TypeVar("T")
 
@@ -29,6 +30,13 @@ class DateTaggedValue(BaseModel, Generic[T]):
     @field_serializer("date")
     def serialize_date_as_str(self, date: datetime.date):
         return str(date)
+
+    @field_serializer("value")
+    def serialize_informed_blanks(self, value: T):
+        if value == INFORMED_BLANK:
+            return ""
+
+        return value
 
     def __lt__(self, other: object) -> bool:
         if not isinstance(other, DateTaggedValue):
