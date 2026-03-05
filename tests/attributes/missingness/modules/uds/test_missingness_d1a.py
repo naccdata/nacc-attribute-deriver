@@ -21,8 +21,8 @@ class TestUDSFormD1aMissingness:
         # this specific set always force-resolves due to
         # potential need to reorder
         assert attr._missingness_cogoth() == 0
-        assert attr._missingness_cogoth2() == 8
-        assert attr._missingness_cogoth3() == 8
+        assert attr._missingness_cogoth2() == INFORMED_MISSINGNESS  # not in V1
+        assert attr._missingness_cogoth3() == INFORMED_MISSINGNESS  # not in V1
 
         assert attr._missingness_cogothif() == 8
         assert attr._missingness_cogoth2f() == 8

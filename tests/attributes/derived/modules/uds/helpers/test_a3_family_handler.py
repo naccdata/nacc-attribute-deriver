@@ -458,13 +458,13 @@ class TestA3FamilyHandlerV2:
         """Test the sib/kid logic works as expected when evaluating an FVP
         visit."""
         # should not be evaluated and pull from working data if
-        # sibchg/kidchg is not 0
+        # sibchg/kidchg is not 0/blank
         table = set_working_family(sib=0, kid=0)
         table["file.info.forms.json"].update(
             {
                 "packet": "F",
                 "sibchg": 1,
-                "kidchg": None,
+                "kidchg": 1,
                 "sibs": 2,
                 "kids": 5,
                 "sib1dem": 1,
@@ -483,7 +483,7 @@ class TestA3FamilyHandlerV2:
             {
                 "packet": "F",
                 "sibchg": 0,
-                "kidchg": 0,
+                "kidchg": None,
                 "sibs": 3,
                 "kids": 5,
                 "sib1dem": 1,

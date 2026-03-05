@@ -176,6 +176,12 @@ class CrossModuleAttributeCollection(AttributeCollection):
     def _create_naccnovs(self) -> int:
         """Creates NACCNOVS - No longer followed annually in person or by
         telephone.
+
+        Codes:
+            0: Still receiving annual follow-up in person or by telephone (active)
+            1: No longer receiving annual follow-up in person or by telephone
+            8: Not applicable, enrolled for initial visit only
+
         """
         # it not an active center, return 1
         if not self.__active_center:
@@ -193,8 +199,8 @@ class CrossModuleAttributeCollection(AttributeCollection):
         ):
             return 1
 
-        # otherwise presumed active
-        return 1
+        # otherwise presumed active (0)
+        return 0
 
     def _create_naccnurp(self) -> int:
         """Creates NACCNURP - Permanently moved to a nursing home."""
