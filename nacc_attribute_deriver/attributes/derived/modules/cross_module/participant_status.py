@@ -360,22 +360,6 @@ class RejoinedStatus(ParticipantStatus):
 @dataclass(eq=False)
 class LatestUDSVisit(ParticipantStatus):
     @classmethod
-    def __get_latest_visitdate(
-        cls, working: WorkingNamespace, attribute: str
-    ) -> Optional[date]:
-        """Get the latest visitdate, if visits exist.
-
-        Returns:
-            The latest visitdate, if found, None otherwise
-        """
-        visitdates = working.get_cross_sectional_value(attribute, list)
-        if not visitdates:
-            return None
-
-        sorted_visitdates = sorted(list(visitdates))
-        return date_from_form_date(sorted_visitdates[-1])
-
-    @classmethod
     def create_from_working_namespace(
         cls, working: WorkingNamespace
     ) -> Optional["LatestUDSVisit"]:
@@ -383,7 +367,12 @@ class LatestUDSVisit(ParticipantStatus):
 
         If this came after some status change, it can override/reset it.
         """
-        latest_uds = cls.__get_latest_visitdate(working, "uds-visitdates")
+        visitdates = working.get_cross_sectional_value('uds-visitdates', list)
+        if not visitdates:
+            return None
+
+        sorted_visitdates = sorted(list(visitdates))
+        latest_uds = date_from_form_date(sorted_visitdates[-1])
 
         # no UDS visits; return None
         if not latest_uds:
@@ -407,7 +396,7 @@ class NursingHomeStatus(ParticipantStatus):
         set. RESIDENC can override/nullify this status if it is anything
         other than 4 (nursing home) or 9 (unknown) AND came after the
         day RENURSE from MLST was set. That being said, RESIDENC can
-        never set this variable, only nullify it.
+        never set this status, only nullify it.
         """
         nursing_home_date = working.get_cross_sectional_dated_value(
             "milestone-renurse-date", str

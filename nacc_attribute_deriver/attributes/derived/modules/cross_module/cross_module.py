@@ -178,7 +178,6 @@ class CrossModuleAttributeCollection(AttributeCollection):
             0: Still receiving annual follow-up in person or by telephone (active)
             1: No longer receiving annual follow-up in person or by telephone
             8: Not applicable, enrolled for initial visit only
-
         """
         # it not an active center, return 1
         if not self.__active_center:
