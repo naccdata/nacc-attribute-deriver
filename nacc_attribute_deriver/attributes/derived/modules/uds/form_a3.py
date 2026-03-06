@@ -1,12 +1,13 @@
 """Derived variables from form A3: Family History."""
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     SubjectDerivedNamespace,
+    WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
@@ -14,8 +15,14 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
 
-from .helpers.family_handler import FamilyHandler, LegacyFamilyHandler
-from .helpers.family_member_handler import FamilyMemberHandler
+from .helpers.a3_family_handler import (
+    A3FamilyHandler,
+    A3FamilyHandlerPrevVisit,
+    A3FamilyHandlerV1,
+    A3FamilyHandlerV2,
+    A3FamilyHandlerV3,
+    A3FamilyHandlerV4,
+)
 
 
 class UDSFormA3Attribute(UDSAttributeCollection):
@@ -24,9 +31,10 @@ class UDSFormA3Attribute(UDSAttributeCollection):
     def __init__(self, table: SymbolTable):
         super().__init__(table)
         self.__subject_derived = SubjectDerivedNamespace(table=table)
+        self.__working = WorkingNamespace(table=table)
 
-        handler = LegacyFamilyHandler if self.formver < 4 else FamilyHandler
-        self.__family = handler(uds=self.uds, prev_record=self.prev_record)
+        family_handler_class = self.__determine_family_handler()
+        self.__family = family_handler_class(table=table)
 
     @property
     def submitted(self) -> bool:
@@ -40,51 +48,99 @@ class UDSFormA3Attribute(UDSAttributeCollection):
         # required in V4
         return True
 
-    def __handle_parents(self, derived_var: str, parent: FamilyMemberHandler) -> int:
-        """Handles NACCDAD and NACCMOM."""
+    def __determine_family_handler(self) -> Type[A3FamilyHandler]:
+        """Determine which family handler is used.
+
+        Depends on the form version (and yes there is different logic
+        for every version), and then whether or not that form was
+        changed.
+        """
+        # formvera3 is from legacy forms (V1 - V3) and may not
+        # necessarily be the same as the overall formver
+        formvera3 = self.uds.get_value("formvera3", float)
+        if not formvera3:
+            formvera3 = self.formver
+
+        # condense to int to handle 3.2
+        formvera3 = int(formvera3)
+
+        if self.submitted:
+            # For V3 and V4, there is no A3CHG or similar variable
+            if self.formver == 4:
+                return A3FamilyHandlerV4
+            if formvera3 == 3:
+                return A3FamilyHandlerV3
+
+            # for V1 and V2, see if A3CHG set in FVP, which means
+            # data on the form has changed. If was not set, then no
+            # data was changed, and we can just bring forward previous
+            # values.
+            # IMPORTANT: V1 and V2 have opposite codes for when a3chg is set
+            a3chg = self.uds.get_value("a3chg", int)
+            if (
+                self.uds.is_initial()
+                or (formvera3 == 2 and a3chg == 0)
+                or (formvera3 == 1 and a3chg == 1)
+            ):
+                if formvera3 == 2:
+                    return A3FamilyHandlerV2
+                if formvera3 == 1:
+                    return A3FamilyHandlerV1
+
+        # in all other cases, just carry forward the previous values
+        return A3FamilyHandlerPrevVisit
+
+    def __handle_naccfamily(self, derived_var: str, result: int) -> int:
+        """Handles NACCFAM, NACCMOM, and NACCDAD."""
         known_value = self.__subject_derived.get_cross_sectional_value(derived_var, int)
-        # REGRESSION: we are now allowing these values to flip/flop, but
-        # to match regression make it stay 1 if its ever 1
-        # if known_value == 1:
-        #     return known_value
 
         if not self.submitted:
             return known_value if known_value is not None else INFORMED_MISSINGNESS
 
-        return self.__family.determine_naccparent(
-            parent,  # type: ignore
-            known_value if known_value is not None else 9,
-        )
+        # do not let 9 override 0 or 1
+        if result == 9 and known_value in [0, 1]:
+            return known_value
+
+        # do not let -4 override a set value
+        if result == INFORMED_MISSINGNESS and known_value in [0, 1, 9]:
+            return known_value
+
+        # return whatever the result was
+        return result
 
     def _create_naccdad(self) -> int:
         """Creates NACCDAD - Indicator of father with cognitive
         impariment.
         """
-        return self.__handle_parents("naccdad", self.__family.dad)  # type: ignore
+        return self.__handle_naccfamily("naccdad", self.__family.record.dad_status)
 
     def _create_naccmom(self) -> int:
         """Creates NACCMOM - Indicator of mother with cognitive
         impairment.
         """
-        return self.__handle_parents("naccmom", self.__family.mom)  # type: ignore
+        return self.__handle_naccfamily("naccmom", self.__family.record.mom_status)
 
     def _create_naccfam(self) -> int:
         """Creates NACCFAM - Indicator of first-degree family
         member with cognitive impariment.
         """
-        known_value = self.__subject_derived.get_cross_sectional_value("naccfam", int)
+        return self.__handle_naccfamily("naccfam", self.__family.record.family_status())
 
-        # REGRESSION: we are now allowing these values to flip/flop, but
-        # to match regression make it stay 1 if its ever 1
-        # if known_value == 1:
-        #     return known_value
+    def _create_cognitive_status_mom(self) -> int:
+        """Keep track of mom's cognitive status."""
+        return self.__family.record.mom_status
 
-        if not self.submitted:
-            return known_value if known_value is not None else INFORMED_MISSINGNESS
+    def _create_cognitive_status_dad(self) -> int:
+        """Keep track of dad's cognitive status."""
+        return self.__family.record.dad_status
 
-        return self.__family.determine_naccfam(  # type: ignore
-            known_value if known_value is not None else 9
-        )
+    def _create_cognitive_status_sib(self) -> int:
+        """Keep track of sibling's cognitive status."""
+        return self.__family.record.sib_status
+
+    def _create_cognitive_status_kid(self) -> int:
+        """Keep track of kid's cognitive status."""
+        return self.__family.record.kid_status
 
     ###########
     # V3 ONLY #

@@ -11,7 +11,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
-from nacc_attribute_deriver.utils.date import create_death_date
+from nacc_attribute_deriver.utils.date import make_date_from_parts
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
     InvalidFieldError,
@@ -50,6 +50,9 @@ class NPFormAttributeCollection(AttributeCollection):
 
         self.mapper = NPMapper(self.__np, self.formver)
         self.form_evaluator = NPFormWideEvaluator(self.__np, self.mapper, self.formver)
+
+    def get_date(self) -> Optional[date]:
+        return self.__np.get_date()
 
     def _create_npformver(self) -> int:
         """Form version.
@@ -558,7 +561,7 @@ class NPFormAttributeCollection(AttributeCollection):
         variables."""
         return self.__np.get_value("npdage", int)
 
-    def _create_np_death_date(self) -> Optional[date]:
+    def _create_np_death_date(self) -> Optional[str]:
         """Create NP death date; used to determine a lot of death-related
         variables."""
         if self.__np.get_value("npdage", int) is None:
@@ -568,7 +571,7 @@ class NPFormAttributeCollection(AttributeCollection):
         month = self.__np.get_value("npdodmo", int)
         day = self.__np.get_value("npdoddy", int)
 
-        return create_death_date(year=year, month=month, day=day)
+        return make_date_from_parts(year=year, month=month, day=day)
 
     def _create_np_form_date(self) -> str:
         """Create NP form date - needed to compare when this was submitted

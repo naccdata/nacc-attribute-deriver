@@ -8,10 +8,14 @@ Form B9 is required and expected to have been filled out.
 
 There is a lot of carrying over of previous values and recoding in the original
 SAS, resulting in pretty confusing logic, which may not be super clear here
-either.
+either. It could definitely be updated and take better advantage of the how
+the new system handles longitudinal values, but for now leaving as-is.
+
+REGRESSION: A lot of these variables are supposed to be cross-sectional,
+but they're actually being treated as longitudinal.
 """
 
-from typing import Optional
+from typing import Optional, Tuple
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import (
     UDSAttributeCollection,
@@ -83,28 +87,37 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         return value
 
-    def _create_naccbehf(self) -> int:  # noqa: C901
-        """Create NACCBEHF, indicate the predominant symptom that was first
-        recognized as a decline in the subject's behavior.
+    def __naccbehf_logic(self) -> Tuple[int, str]:  # noqa: C901
+        """Helps create NACCBEHF and NACCBEFX. NACCBEFX is strongly
+        dependent on NACCBEHF and should only be set/carried forward
+        depending on the results of NACCBEHF. Namely, NACCBEFX can only
+        be set if NACCBEHF = 10 and the visit that sets it defined the
+        variables needed for NACCBEFX, otherwise it should be None.
 
-        Depends on previous vars (p_decclin, p_befrst, p_befpred)
+        Logic also depends on previous vars (p_decclin, p_befrst, p_befpred)
 
-        REGRESSION: Supposed to be cross-sectional, but being treated as
-        longitudinal. Eventually change curation_rules.csv to fix that.
-        For now, the known_value will not effect the previous logic since
-        we are not writing these values to the cross-sectional location
-        in the first place.
+        Returns:
+            Computed NACCBHEF and NACCBEFX
         """
-        known_value = self.__subject_derived.get_prev_longitudinal_value(
+        known_naccbehf = self.__subject_derived.get_prev_longitudinal_value(
             "naccbehf", int
         )
+        known_naccbefx = self.__subject_derived.get_prev_longitudinal_value(
+            "naccbefx", str
+        )
+
+        if known_naccbefx is None:
+            known_naccbefx = INFORMED_BLANK
 
         # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
-            return known_value if known_value is not None else INFORMED_MISSINGNESS
+            if known_naccbehf is not None:
+                return (known_naccbehf, known_naccbefx)
 
-        if known_value is None:
-            known_value = 99
+            return (INFORMED_MISSINGNESS, INFORMED_BLANK)
+
+        if known_naccbehf is None:
+            known_naccbehf = 99
 
         befrst = self.harmonize_befrst()
         befpred = self.uds.get_value("befpred", int)  # v3+
@@ -123,9 +136,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         """
         if naccbehf is None:
             if self.formver >= 3:
-                return 0
+                return (0, INFORMED_BLANK)
             elif self.__decclin == 0:
-                return 0
+                return (0, INFORMED_BLANK)
 
         p_decclin = self.__get_last_set("decclin")
         p_befrst = self.__get_last_set("befrst")
@@ -144,70 +157,41 @@ class UDSFormB9Attribute(UDSAttributeCollection):
                 if p_befpred is not None and p_befpred != 0:
                     naccbehf = p_befpred
 
-                # i think this is unneeded/actually now does the
-                # wrong thing with how we're handling prev/known values
-                # in general only known_value should set 99, not anything
-                # else in the logic
-                # elif p_befpred == 0:
-                #     naccbehf = 99
-
             if naccbehf == 88:
                 naccbehf = 0
 
-        return naccbehf if naccbehf is not None else known_value
+        # now see if naccbefx should be set
+        naccbefx = None
+        if naccbehf == 10:
+            if self.formver < 3:
+                naccbefx = self.uds.get_value("befrstx", str)
+            else:
+                naccbefx = self.uds.get_value("befpredx", str)
+
+        if naccbefx is None:
+            naccbefx = INFORMED_BLANK
+
+        return (
+            (naccbehf, naccbefx)
+            if naccbehf is not None
+            else (known_naccbehf, known_naccbefx)
+        )
+
+    def _create_naccbehf(self) -> int:
+        """Create NACCBEHF, indicate the predominant symptom that was first
+        recognized as a decline in the subject's behavior."""
+        naccbehf, _ = self.__naccbehf_logic()
+        return naccbehf
 
     def _create_naccbefx(self) -> str:
         """Create NACCBEFX, specification of other predominant symptom that was
         first recognized as a decline in the subject's behavior.
 
-        REGRESSION: Supposed to be cross-sectional, but being treated as
-        longitudinal. Eventually change curation_rules.csv to fix that.
-        For now, the known_value will not effect the previous logic since
-        we are not writing these values to the cross-sectional location
-        in the first place.
+        This value should only be set if NACCBHEF = 10, and may
+        carry through with it as a pair.
         """
-        known_value = self.__subject_derived.get_prev_longitudinal_value(
-            "naccbefx", str
-        )
-        if known_value is None:
-            known_value = INFORMED_BLANK
-
-        if self._create_naccbehf() != 10:
-            return known_value
-
-        result = None
-        if self.formver < 3:
-            result = self.uds.get_value("befrstx", str)
-        else:
-            result = self.uds.get_value("befpredx", str)
-
-        return result if result is not None else known_value
-
-    def _create_nacccgfx(self) -> str:
-        """Creates NACCCGFX, specification for other predominant symptom first
-        recognized as a decline in the subject's cognition.
-
-        REGRESSION: Supposed to be cross-sectional, but being treated as
-        longitudinal. Eventually change curation_rules.csv to fix that.
-        For now, the known_value will not effect the previous logic since
-        we are not writing these values to the cross-sectional location
-        in the first place.
-        """
-        known_value = self.__subject_derived.get_prev_longitudinal_value(
-            "nacccgfx", str
-        )
-        if known_value is None:
-            known_value = INFORMED_BLANK
-
-        # not defined in V4
-        if self.formver == 4:
-            return known_value
-
-        cogfprex = self.uds.get_value("cogfprex", str)
-        cogfrstx = self.uds.get_value("cogfrstx", str)
-
-        result = cogfprex if cogfprex is not None else cogfrstx
-        return result if result is not None else known_value
+        _, naccbefx = self.__naccbehf_logic()
+        return naccbefx
 
     def harmonize_cogfrst(self) -> Optional[int]:
         """Updates COGFRST for NACCCOGF harmonization.
@@ -224,26 +208,36 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         return cogfrst
 
-    def _create_nacccogf(self) -> int:  # noqa: C901
-        """Creates NACCCOGF, Indicate the predominant symptom that was first
-        recognized as a decline in the subject's cognition.
+    def __nacccogf_logic(self) -> Tuple[int, str]:  # noqa: C901
+        """Helps create NACCCOGF and NACCCGFX. NACCCGFX is strongly
+        dependent on NACCCOGF and should only be set/carried forward
+        depending on the results of NACCCOGF. Namely, NACCCGFX can only
+        be set if NACCCOGF = 8 and the visit that sets it defined the
+        variables needed for NACCCGFX, otherwise it should be None.
 
-        REGRESSION: Supposed to be cross-sectional, but being treated as
-        longitudinal. Eventually change curation_rules.csv to fix that.
-        For now, the known_value will not effect the previous logic since
-        we are not writing these values to the cross-sectional location
-        in the first place.
+        Logic also depends on previous vars (p_decclin, p_cogfrst, p_cogfpred)
+
+        Returns:
+            Computed NACCCOGF and NACCCGFX
         """
-        known_value = self.__subject_derived.get_prev_longitudinal_value(
+        known_nacccogf = self.__subject_derived.get_prev_longitudinal_value(
             "nacccogf", int
         )
+        known_nacccgfx = self.__subject_derived.get_prev_longitudinal_value(
+            "nacccgfx", str
+        )
+        if known_nacccgfx is None:
+            known_nacccgfx = INFORMED_BLANK
 
         # not defined in V4; -4 instead of 99 if no known value
         if self.formver == 4:
-            return known_value if known_value is not None else INFORMED_MISSINGNESS
+            if known_nacccogf is not None:
+                return (known_nacccogf, known_nacccgfx)
 
-        if known_value is None:
-            known_value = 99
+            return (INFORMED_MISSINGNESS, INFORMED_BLANK)
+
+        if known_nacccogf is None:
+            known_nacccogf = 99
 
         cogfrst = self.harmonize_cogfrst()
         cogfpred = self.uds.get_value("cogfpred", int)
@@ -255,9 +249,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
 
         if cogfrst is None and cogfpred is None:
             if self.formver >= 3:
-                return 0
+                return (0, INFORMED_BLANK)
             elif self.__decclin == 0:
-                return 0
+                return (0, INFORMED_BLANK)
 
         # V2 and earlier
         if cogfrst == 88 or (self.__b9_changes and p_decclin == 0):
@@ -278,18 +272,42 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         if self.formver >= 3 and nacccogf == 88:
             nacccogf = 0
 
-        return nacccogf if nacccogf is not None else known_value
+        # now, see if NACCCGFX should be set
+        nacccgfx = None
+        if nacccogf == 8:
+            cogfprex = self.uds.get_value("cogfprex", str)
+            cogfrstx = self.uds.get_value("cogfrstx", str)
+
+            nacccgfx = cogfprex if cogfprex is not None else cogfrstx
+
+        if nacccgfx is None:
+            nacccgfx = INFORMED_BLANK
+
+        return (
+            (nacccogf, nacccgfx)
+            if nacccogf is not None
+            else (known_nacccogf, known_nacccgfx)
+        )
+
+    def _create_nacccogf(self) -> int:
+        """Creates NACCCOGF, Indicate the predominant symptom that was first
+        recognized as a decline in the subject's cognition."""
+        nacccogf, _ = self.__nacccogf_logic()
+        return nacccogf
+
+    def _create_nacccgfx(self) -> str:
+        """Creates NACCCGFX, specification for other predominant symptom first
+        recognized as a decline in the subject's cognition.
+
+        This value should only be set if NACCCOGF = 8, and may
+        carry through with it as a pair.
+        """
+        _, nacccgfx = self.__nacccogf_logic()
+        return nacccgfx
 
     def _create_naccmotf(self) -> int:  # noqa: C901
         """Creates NACCMOTF, Indicate the predominant symptom that was first
-        recognized as a decline in the subject's motor function.
-
-        REGRESSION: Supposed to be cross-sectional, but being treated as
-        longitudinal. Eventually change curation_rules.csv to fix that.
-        For now, the known_value will not effect the previous logic since
-        we are not writing these values to the cross-sectional location
-        in the first place.
-        """
+        recognized as a decline in the subject's motor function."""
         known_value = self.__subject_derived.get_prev_longitudinal_value(
             "naccmotf", int
         )

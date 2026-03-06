@@ -10,7 +10,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
-from .helpers.generate_race import generate_race_v3
+from .helpers.a1a2_generate_race import generate_race_v3
 
 
 class UDSFormA2Attribute(UDSAttributeCollection):

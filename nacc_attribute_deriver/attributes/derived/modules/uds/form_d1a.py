@@ -524,69 +524,6 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         # in general should be set, but sometimes we don't receive an initial visit
         return naccidem
 
-    def _create_naccmcii(self) -> int:
-        """Creates NACCMCII - Incident MCI during USD follow-up.
-
-        Being very verbose with the comments here because what is happening
-        is quite confusing, especially if you try to read the SAS code.
-
-        Requires working variables IVCSTAT and FVMCI which keep track of cognitive
-        and MCI status at the initial visit + every consequent follow-up visit.
-        This is a lot more involved than just looking at the previous record, which
-        is why _prev_record logic isn't used here (also IVCSTAT and FVMCI were
-        already being used by the legacy code anyways so I reworked them.)
-
-        NOTE ON OLD SAS CODE (V3 and earlier):
-
-        This code was quite frankly probably just wrong, and very difficult to
-        read. Despite initial visit logic being in both SAS/RDD, it didnt seem
-        to match the old QAF, as if it wasn't considering the initial visit at all,
-        or in a very weird/incorrect manner, despite it being a significant part
-        of this variable.
-
-        We are assuming that going forward it has been "corrected", even if it
-        does not match older QAFs.
-        """
-        ivcstat = self.working.get_cross_sectional_value("ivcstat", int)
-        fvmci = self.working.get_cross_sectional_value("fvmci", int)
-
-        # Means MCI or demented at initial visit (ivcstat == 2) OR
-        # progressed directly to demented at a followup visit (fvmci == 2)
-        # NACCMCII stays at 8 for subject
-        if ivcstat == 2 or fvmci == 2:
-            return 8
-
-        # if fvmci/naccmcii == 1, then that means a preceding FVP form saw
-        # progression to MCI. it doesn't matter which variable we actually check,
-        # so just use FVMCI since we already pulled it
-        if fvmci == 1:
-            return 1
-
-        # if initial visit (true initial, not I4) also set to 8
-        # however, NACCMCII may not stay here
-        if self.uds.is_initial() and not self.uds.is_i4():
-            # REGRESSION - SHOULD RETURN 8, BUT LEGACY RETURNS 0; FIX LATER
-            return 8
-            # return 0
-
-        # okay now we know we're on an FVP form, that they weren't MCI/demented at
-        # the initial visit, and that they haven't progressed directly to demented
-        # or MCI already in a preceding FVP form.
-        # we can assume we are on the following case:
-        # "NORMCOG = 1 or IMPNOMCI = 1" at IVP is true
-        # this is the same as ivcstat == 1; technically ivcstat can = 0 as well,
-        # but we are ignoring that, see comments below. If it ends up being
-        # a problem, can maybe return -4 in that case
-
-        # Point being, if we got here we consider that condition true, and all
-        # we care about is the current MCI status, so just return that :)
-        return self.generate_mci()
-
-    """
-    The following are working variables (non-NACC derived variables but used
-    to help derive other NAC-derived variables.) Need to be created FIRST.
-    """
-
     def _create_notdemin(self) -> Optional[int]:
         """Creates NOTDEMIN, which is a helper variable for whether someone is
         demented at the initial visit.
@@ -603,90 +540,78 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
 
         return 0
 
-    def _create_ivcstat(self) -> Optional[int]:
-        """Creates IVCSTAT - initial visit cognitive status.
+    def _create_naccmcii(self) -> int:
+        """Creates NACCMCII - Incident MCI during USD follow-up.
 
-        Helper variable for NACCMCII. Only defined at initial visit.
-        Reworked a bit to account for V4 logic. Returns:
+        Because this variable conflates different situations for a value of 8,
+        we use a helper variable called naccmcii-working to help differentiate
+        the three more easily. It does the actual logic just with different
+        codes to separate the situations specified under a value of 8, since
+        we can't tell the difference once they're conflated.
 
-        1 - if NORMCOG or IMPNOMCI = 1 at initial visit normal cognition or
-            cognitively impaired not MCI. Used to help determine if NACCMCI is
-            0 or 1.
-        2 - if MCI or DEMENTED = 1 at initial visit (MCI or demented). Used
-            to set NACCMCI to 8 in all cases.
-        0 - All other cases. Technically I don't think this is possible, but
-            leaving because 0 existed in the legacy code and I'm too afraid to
-            change it quite yet. But it basically would imply they are none of
-            NORMCOG, IMPNOMCI, MCI, or DEMENTED which doesn't make sense and I'm
-            not sure is possible given error checks.
-
-        SAS code (V1 - V3) only returned 0 and 1, but it is unclear to me how
-        it was accounting for MCI/demented at the intial visit since it seems
-        like it wasn't (? or doing it in a very weird way with calculating
-        FVMCI) so 2 has been added to account for it now, and the meaning
-        of 0 probably changed.
+        Possible codes:
+            0: Did not progress to MCI.
+            1: Progressed to MCI.
+            8: Initial visit only, progressed to demented directly without incident
+                MCI, or had a diagnosis of MCI or dementia at initial visit.
+                - Will be treated as codes 2, 3, and 8 in naccmcii-working, respectively
         """
-        # I4 is interesting as it could go V3 IVP -> V3 FVP -> V4 I4
-        # since we are curating in order, we also skip I4 since it's not
-        # the "true" initial visit
-        if not self.uds.is_initial() or self.uds.is_i4():
-            return None
+        working_naccmcii = self._create_naccmcii_working()
+        if working_naccmcii in [2, 3, 8]:
+            return 8
 
-        if self.normcog == 1 or self.uds.get_value("impnomci", int) == 1:
-            return 1
+        return working_naccmcii
 
-        # REGRESSION: PREVIOUS CODE SEEMED TO NOT CONSIDER MCI OR DEMENTED
-        # AT INITIAL VISIT. NEED TO DO THAT, BUT DISABLE FOR NOW
-        # FOR TESTING
-        if self.generate_mci() == 1 or self.demented == 1:
-            return 2
+    def _create_naccmcii_working(self) -> int:
+        """Working NACCMII variable. Does the actual NACCMCII calculations, but
+        has different return values to differentiate between the two situations
+        that end up conflating to a value of 8.
 
-        return 0
-
-    def _create_fvmci(self) -> Optional[int]:
-        """Creates FVMCI - followup-visit MCI.
-
-        Helper variable for NACCMCII. Only defined in follow-up visits.
-        Returns:
-
-        1 - if MCI at some follow-up visit. Once it's 1, FVMCI always
-            stays 1
-        2 - If progressed to demented without MCI diagnosis. Once its 2,
-            FVMCI always stays 2
-        0 - No MCI/progression to demented without MCI otherwise
-
-        SAS code (V1 - V3) was also including IVCSTAT in option 2; however
-        this honestly made it very confusing, so separating it out and having
-        the NACCMCII logic check the two directly (instead of just FVMCI and
-        an implicit version of IVCSTAT) so it's more clear.
+        Possible codes:
+            0: Did not progress to MCI.
+            1: Progressed to MCI.
+            2: Initial visit only (and not MCI/demented).
+            3: Progressed directly to dementia without incident MCI
+            8: Had a diagnosis of MCI or dementia at initial visit.
         """
-        # I4 is interesting as it could go V3 IVP -> V3 FVP -> V4 I4
-        # in the case of NACCMCII, we consider I4 a "pseudo-follow-up"
-        # of sorts we do need to track the status of
+        # initial visit, return 2 or 8
         if self.uds.is_initial() and not self.uds.is_i4():
-            return None
+            if self.demented == 1 or self.generate_mci() == 1:
+                return 8
 
-        fvmci = self.working.get_cross_sectional_value("fvmci", int)
-
-        # Means we progressed directly to dementia without MCI diagnosis,
-        # in an earlier visit, so stay there even if the form lists subject
-        # as MCI now
-        if fvmci == 2:
             return 2
 
-        # if MCI is 1 or FVMCI (MCI at some followup-visit) is 1, return 1
-        # basically if it's ever 1, FVMCI stays at 1
-        if self.generate_mci() == 1 or fvmci == 1:
+        # get working value; if missing, throw an error because that
+        # should not happen (means no initial visit)
+        working_naccmcii = self.working.get_cross_sectional_value(
+            "naccmcii-working", int
+        )
+        if working_naccmcii is None:
+            raise AttributeDeriverError(
+                "Missing naccmcii-working for NACCMCII on a follow-up visit"
+            )
+
+        # if working_naccmcii is already 1, 3, or 8, these states cannot
+        # be overridden, so just return those
+        if working_naccmcii in [1, 3, 8]:
+            return working_naccmcii
+
+        # means working_naccmcii is 0 or 2, which means we have
+        # so far not seen MCI or DEMENTED
+        # evaluate what the current visit does then
+
+        # if current visit reports demented, means a direct
+        # progression, so return 3
+        if self.demented == 1:
+            return 3
+
+        # if current visit reports MCI, means progressed to MCI,
+        # so return 1
+        if self.generate_mci() == 1:
             return 1
 
-        # if demented, means we progressed here directly; return 2
-        # REGRESSION: seems to not consider this either?
-        if self.demented == 1:
-            return 2
-
-        # if this form does not give us any new information, return whatever
-        # FVMCI was; default 0 for no MCI or demented at followup visit
-        return fvmci if fvmci is not None else 0
+        # otherwise, we have not progressed to MCI, return 0
+        return 0
 
     def generate_nodx(self) -> int:
         """No diagnosis - used to derive other variables."""

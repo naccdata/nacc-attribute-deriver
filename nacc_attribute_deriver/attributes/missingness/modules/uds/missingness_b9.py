@@ -542,7 +542,7 @@ class UDSFormB9Missingness(UDSMissingness):
             result = self.__handle_b9_prev_value("beremago")
 
         if result not in UNKNOWN_CODES:
-            return min(max(15, result), 110)
+            return min(max(5, result), 110)
 
         return result
 

@@ -75,13 +75,15 @@ class MEDSFormAttributeCollection(AttributeCollection):
         # ideally we externally link MEDS to UDS file by UDS visitdate
         self.__visitdate = date_from_form_date(table.get("_uds_visitdate", None))
 
-        # if no uds_visitdate, fall back to frmdatea4
+        # if no uds_visitdate, fall back to form dates
         if not self.__visitdate:
-            date_attribute = (
-                "frmdatea4" if (self.__formver and self.__formver < 2) else "frmdatea4g"
-            )
-            formdate = self.__meds.get_value(date_attribute, str)
-            self.__visitdate = date_from_form_date(formdate)
+            # could be any one of these; but generally we expect
+            # FRMDATEA4 for V1 and FRMDATEA4D for anything else
+            for date_attribute in ["frmdatea4d", "frmdatea4", "frmdatea4g"]:
+                formdate = self.__meds.get_value(date_attribute, str)
+                self.__visitdate = date_from_form_date(formdate)
+                if self.__visitdate:
+                    break
 
         if not self.__visitdate:
             raise AttributeDeriverError("Cannot determine MEDS form date")

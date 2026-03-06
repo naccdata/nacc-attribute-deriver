@@ -9,7 +9,10 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.form_b9_raw import (
     UDSFormB9RawAttribute,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+)
 
 
 @pytest.fixture(scope="function")
@@ -76,6 +79,29 @@ class TestUDSFormB9Attribute:
         base_table["file.info.forms.json.befpred"] = 0
         base_table["_prev_record.info.forms.json.befpred"] = None
         assert attr._create_naccbehf() == 0
+
+    def test_naccbehf_naccbefx_changes(self, base_table):
+        """Test when NACCBEHF was 10 and had an associated NACCBEFX, but
+        changes and should no longer be set."""
+        base_table.update(
+            {
+                "subject": {
+                    "info": {
+                        "derived": {
+                            "longitudinal": {
+                                "naccbehf": [{"value": 10, "date": "2000-01-01"}],
+                                "naccbefx": [
+                                    {"value": "dummy-text", "date": "2000-01-01"}
+                                ],
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        attr = UDSFormB9Attribute(base_table)
+        assert attr._create_naccbehf() == 0
+        assert attr._create_naccbefx() == INFORMED_BLANK
 
     def test_nacccogf_case1(self, base_table):
         """Tests NACCCOGF case 1.
