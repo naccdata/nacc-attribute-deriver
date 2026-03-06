@@ -49,7 +49,12 @@ class UDSFormA4Missingness(UDSMissingness):
                 visitdate, "drugs-list", list
             )
         else:
-            self.__drugs = None
+            # collect from rxnormid values
+            self.__drugs = []
+            for i in range(1, 41):
+                rxnorm = self.uds.get_value(f"rxnormid{i}", str)
+                if rxnorm is not None:
+                    self.__drugs.append(rxnorm.strip())
 
     def _missingness_anymeds(self) -> int:
         """Handles missingness for ANYMEDS."""
@@ -71,7 +76,12 @@ class UDSFormA4Missingness(UDSMissingness):
         if self.formver < 4:
             return INFORMED_BLANK
 
-        return self.generic_missingness(field, str)
+        if self.__drugs:
+            index = int(field.replace("rxnormid", "")) - 1
+            if len(self.__drugs) > index:
+                return self.__drugs[index]
+
+        return INFORMED_BLANK
 
     def _missingness_rxnormid1(self) -> str:
         """Handles missingness for RXNORMID1."""
@@ -253,7 +263,7 @@ class UDSFormA4Missingness(UDSMissingness):
 
                 return result
 
-        return self.generic_missingness(field, str)
+        return INFORMED_BLANK
 
     def _missingness_drug1(self) -> str:
         """Handles missingness for DRUG1."""
