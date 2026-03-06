@@ -75,7 +75,7 @@ class ParticipantStatus:
                 + f"YYYY-MM-DD format: {self.status_date}"
             ) from e
 
-    def __eq__(self, other: "ParticipantStatus") -> bool:
+    def __eq__(self, other: object) -> bool:
         """Compare equality by if this status was done on the same day as the
         other status."""
         if not isinstance(other, ParticipantStatus):
@@ -96,7 +96,7 @@ class ParticipantStatus:
         # to check equality on any unknowns
         return self.form_date == other.form_date
 
-    def __lt__(self, other: "ParticipantStatus") -> bool:
+    def __lt__(self, other: object) -> bool:
         """Compare statuses by date of status."""
         if not isinstance(other, ParticipantStatus):
             return False
@@ -199,8 +199,8 @@ class DeceasedStatus(ParticipantStatus):
         if not age_at_death:
             try:
                 # if only the day is unknown, try to approximate
-                death_date_parsed = approximate_date(death_date.value)
-                death_date_parsed = date_from_form_date(death_date_parsed)
+                death_date_parsed_str = approximate_date(death_date.value)
+                death_date_parsed = date_from_form_date(death_date_parsed_str)
                 birth_date = date_from_form_date(
                     working.get_cross_sectional_value("uds-date-of-birth", str)
                 )
@@ -321,7 +321,7 @@ class InitialVisitOnlyStatus(ParticipantStatus):
                 + f"associated with {prespart.date} while UDS visit is {uds_visit}"
             )
 
-        return MinimumContactStatus(
+        return InitialVisitOnlyStatus(
             status="initial_visit_only",
             status_date=str(
                 prespart.date
@@ -370,7 +370,7 @@ class LatestUDSVisit(ParticipantStatus):
 
         If this came after some status change, it can override/reset it.
         """
-        visitdates = working.get_cross_sectional_value('uds-visitdates', list)
+        visitdates = working.get_cross_sectional_value("uds-visitdates", list)
         if not visitdates:
             return None
 

@@ -1,3 +1,4 @@
+# mypy: disable-error-code="union-attr"
 """Tests the A3 Family handler."""
 
 import random
@@ -26,7 +27,7 @@ def set_working_family(
     kid: int = INFORMED_MISSINGNESS,
 ) -> SymbolTable:
     """Set the family working data."""
-    table = SymbolTable(
+    return SymbolTable(
         {
             "subject": {
                 "info": {
@@ -58,7 +59,6 @@ def set_working_family(
             },
         }
     )
-    return table
 
 
 class TestA3FamilyHandlerPrevVisit:

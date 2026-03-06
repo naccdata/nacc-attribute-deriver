@@ -1,3 +1,4 @@
+# mypy: disable-error-code="union-attr"
 """Tests participant statuses are set correctly."""
 
 import random

@@ -1,3 +1,4 @@
+# mypy: disable-error-code="union-attr"
 """Tests overall participant statuses are handled correctly."""
 
 import pytest

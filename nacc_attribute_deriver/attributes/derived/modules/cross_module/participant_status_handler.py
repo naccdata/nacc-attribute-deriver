@@ -9,7 +9,7 @@ we prioritize the other status change (one way to think of it is they
 completed the UDS visit and then decided to discontinue at the visit).
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
@@ -52,7 +52,7 @@ class ParticipantStatusHandler:
     def __determine_status_override(
         self,
         status: Optional[ParticipantStatus],
-    ) -> Optional[ParticipantStatus]:
+    ) -> Optional[Any]:
         """Determine if the status is valid, e.g. it is the latest and nothing
         invalidates it.
 
