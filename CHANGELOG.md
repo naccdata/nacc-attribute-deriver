@@ -12,8 +12,8 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Other edge case fixes
 
 * rc2:
-    * Reorders `rxnormid` values in case they left certain ones empty
-    * Don't make `birthyr` and `birthmo` required as they are not provided in V4 FVP
+    * Removes gaps in `rxnormid` values in case they left certain ones empty
+    * Loosen some restrictions to account for V4 FVP not collecting certain variables
 
 ## 2.1.4 - 2.1.5
 

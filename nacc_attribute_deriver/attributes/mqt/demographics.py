@@ -37,7 +37,7 @@ class DemographicsAttributeCollection(AttributeCollection):
         {1: "Male", 2: "Female", 8: "Prefer not to answer", 9: "Unknown"}
     )
 
-    def _create_uds_sex(self) -> str:
+    def _create_uds_sex(self) -> Optional[str]:
         """UDS sex."""
         field = "sex" if self.__formver < 4 else "birthsex"
         sex = self.__uds.get_value(field, int)
@@ -45,6 +45,10 @@ class DemographicsAttributeCollection(AttributeCollection):
         mapped_sex = self.SEX_MAPPING.get(sex)  # type: ignore
 
         if not mapped_sex:
+            # if V4 FVP, let through
+            if not self.__uds.is_initial() and self.__formver >= 4:
+                return None
+
             raise InvalidFieldError(f"Invalid/unknown sex code: {sex}")
 
         return mapped_sex
