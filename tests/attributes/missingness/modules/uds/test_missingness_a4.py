@@ -63,25 +63,27 @@ class TestUDSFormA4Missingness:
         assert attr._missingness_anymeds() == 0
 
     def test_missingness_rxnormid(self, uds_table):
-        """Test RXNORMIDs are handled correctly, including
-        when there are gaps in the order."""
-        uds_table['file.info.forms.json'].update({
-            # three random rxnormids were filled, should
-            # resolve to rxnormid1 - 5 in order
-            'rxnormid1': '00000',
-            'rxnormid15': '12345',
-            'rxnormid18': '67890',
-            'rxnormid37': '11111',
-            'rxnormid40': '99999',
-            'rxnormid41': 'xxxxx',  # not valid
-            'formver': 4
-        })
+        """Test RXNORMIDs are handled correctly, including when there are gaps
+        in the order."""
+        uds_table["file.info.forms.json"].update(
+            {
+                # three random rxnormids were filled, should
+                # resolve to rxnormid1 - 5 in order
+                "rxnormid1": "00000",
+                "rxnormid15": "12345",
+                "rxnormid18": "67890",
+                "rxnormid37": "11111",
+                "rxnormid40": "99999",
+                "rxnormid41": "xxxxx",  # not valid
+                "formver": 4,
+            }
+        )
         attr = UDSFormA4Missingness(uds_table)
-        assert attr._missingness_rxnormid1() == '00000'
-        assert attr._missingness_rxnormid2() == '12345'
-        assert attr._missingness_rxnormid3() == '67890'
-        assert attr._missingness_rxnormid4() == '11111'
-        assert attr._missingness_rxnormid5() == '99999'
+        assert attr._missingness_rxnormid1() == "00000"
+        assert attr._missingness_rxnormid2() == "12345"
+        assert attr._missingness_rxnormid3() == "67890"
+        assert attr._missingness_rxnormid4() == "11111"
+        assert attr._missingness_rxnormid5() == "99999"
         assert attr._missingness_rxnormid6() == INFORMED_BLANK
         assert attr._missingness_rxnormid15() == INFORMED_BLANK
         assert attr._missingness_rxnormid18() == INFORMED_BLANK
