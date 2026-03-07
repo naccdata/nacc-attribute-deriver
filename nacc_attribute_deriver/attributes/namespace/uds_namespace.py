@@ -28,8 +28,6 @@ class UDSNamespace(FormNamespace):
                     "module",
                     "packet",
                     "formver",
-                    "birthmo",
-                    "birthyr",
                     "naccid",
                     "adcid",
                 }
@@ -87,10 +85,10 @@ class UDSNamespace(FormNamespace):
         the file's metadata.
         """
         birthmo = self.__working.get_cross_sectional_value(
-            "birthmo", int, default=self.get_required("birthmo", int)
+            "birthmo", int, default=self.get_value("birthmo", int)
         )
         birthyr = self.__working.get_cross_sectional_value(
-            "birthyr", int, default=self.get_required("birthyr", int)
+            "birthyr", int, default=self.get_value("birthyr", int)
         )
 
         if not birthmo or not birthyr:

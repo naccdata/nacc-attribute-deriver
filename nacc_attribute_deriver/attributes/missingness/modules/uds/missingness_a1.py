@@ -529,7 +529,7 @@ class UDSFormA1Missingness(UDSMissingness):
     def _missingness_birthmo(self) -> int:
         """Handles missingness for BIRTHMO."""
         result = self.__working.get_cross_sectional_value(
-            "birthmo", int, default=self.uds.get_required("birthmo", int)
+            "birthmo", int, default=self.uds.get_value("birthmo", int)
         )
 
         if not result:
@@ -540,7 +540,7 @@ class UDSFormA1Missingness(UDSMissingness):
     def _missingness_birthyr(self) -> int:
         """Handles missingness for BIRTHYR."""
         result = self.__working.get_cross_sectional_value(
-            "birthyr", int, default=self.uds.get_required("birthyr", int)
+            "birthyr", int, default=self.uds.get_value("birthyr", int)
         )
 
         if not result:

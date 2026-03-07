@@ -195,6 +195,7 @@ class TestUDSFormC1C2Missingness:
                 "udsverti": None,
             }
         )
+        assert attr._missingness_udsvertn() == 97
         assert attr._missingness_udsverte() == 97
         assert attr._missingness_udsverti() == 97
 
@@ -207,8 +208,23 @@ class TestUDSFormC1C2Missingness:
                 "udsverti": None,
             }
         )
+        assert attr._missingness_udsvertn() == 98
         assert attr._missingness_udsverte() == 98
         assert attr._missingness_udsverti() == 98
+
+        # test when the gates are different values
+        uds_table["file.info.forms.json"].update(
+            {
+                "udsverfc": 95,
+                "udsverlc": 96,  # this should be picked
+                "udsvertn": None,
+                "udsverte": None,
+                "udsverti": None,
+            }
+        )
+        assert attr._missingness_udsvertn() == 96
+        assert attr._missingness_udsverte() == 96
+        assert attr._missingness_udsverti() == 96
 
     def test_writeins(self, uds_table):
         """Test write-ins."""

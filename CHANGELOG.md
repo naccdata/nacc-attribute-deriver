@@ -4,11 +4,16 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 2.2.0
 
-* Refactors code based on recent discussions involving:
-    * A3 derived variables (`NACCFAM`, `NACCMOM`, and `NACCDAD`)
-    * D1a `NACCMCII`
-    * Milestone-related variables
-* Other edge case fixes
+* rc1:
+    * Refactors code based on recent discussions involving:
+        * A3 derived variables (`NACCFAM`, `NACCMOM`, and `NACCDAD`)
+        * D1a `NACCMCII`
+        * Milestone-related variables
+    * Other edge case fixes
+
+* rc2:
+    * Removes gaps in `rxnormid` values in case they left certain ones empty
+    * Fixes a few issues related to V4 FVP visits
 
 ## 2.1.4 - 2.1.5
 

@@ -550,12 +550,12 @@ class UDSFormC1C2Missingness(UDSMissingness):
 
     def _missingness_udsvertn(self) -> int:
         """Handles missingness for UDSVERTN."""
-        # REGRESSION: Checks UDSVERFC first, then UDSVERLC
-        result = self._handle_non_optional_gate("udsverfc", "udsvertn")
+        # REGRESSION: Checks UDSVERLC first, then UDSVERFC
+        result = self._handle_non_optional_gate("udsverlc", "udsvertn")
         if result is None or result in [95, 96, 97, 98]:
             return result
 
-        return self._handle_non_optional_gate("udsverlc", "udsvertn")
+        return self._handle_non_optional_gate("udsverfc", "udsvertn")
 
     def _missingness_udsverte(self) -> int:
         """Handles missingness for UDSVERTE."""
