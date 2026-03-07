@@ -13,6 +13,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 * rc2:
     * Reorders `rxnormid` values in case they left certain ones empty
+    * Don't make `birthyr` and `birthmo` required as they are not provided in V4 FVP
 
 ## 2.1.4 - 2.1.5
 
