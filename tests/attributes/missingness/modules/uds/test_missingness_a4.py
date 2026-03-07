@@ -9,7 +9,10 @@ from typing import Any, Dict
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_a4 import (
     UDSFormA4Missingness,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+)
 
 
 @pytest.fixture(scope="function")
@@ -53,14 +56,21 @@ class TestUDSFormA4Missingness:
         assert attr._missingness_drug_id6() == INFORMED_BLANK
 
     def test_missingness_anymeds(self, drugs_table, uds_table):
-        """Test ANYMEDS is solely based on drugs list."""
+        """Test ANYMEDS is based on drugs list and A4SUB."""
+        # drugs exist, set to 1
         attr = UDSFormA4Missingness(drugs_table)
         drugs_table["file.info.forms.json.anymeds"] = random.choice([0, 2])
         assert attr._missingness_anymeds() == 1
 
+        # a4sub = 1, set to 0
         attr = UDSFormA4Missingness(uds_table)
+        uds_table["file.info.forms.json.a4sub"] = 1
         uds_table["file.info.forms.json.anymeds"] = 1
         assert attr._missingness_anymeds() == 0
+
+        # a4sub = 0/blank, set to -4
+        uds_table["file.info.forms.json.a4sub"] = random.choice([0, None])
+        assert attr._missingness_anymeds() == INFORMED_MISSINGNESS
 
     def test_missingness_rxnormid(self, uds_table):
         """Test RXNORMIDs are handled correctly, including when there are gaps

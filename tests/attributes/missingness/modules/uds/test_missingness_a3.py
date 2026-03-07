@@ -24,12 +24,14 @@ class TestUDSFormA3Missingness:
                 }
             }
         )
-        uds_table['file.info.forms.json'].update({
-            'formver': 4,
-            'packet': 'F',
-            'nwinfpar': '1',
-            'mometpr': '66'  # should pull previous record
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 4,
+                "packet": "F",
+                "nwinfpar": "1",
+                "mometpr": "66",  # should pull previous record
+            }
+        )
         attr = UDSFormA3Missingness(uds_table)
         assert attr._missingness_mometpr() == "05"
 
@@ -48,16 +50,18 @@ class TestUDSFormA3Missingness:
                 }
             }
         )
-        uds_table['file.info.forms.json'].update({
-            'formver': 4,
-            'packet': 'F',
-            'nwinfpar': '0',  # will ignore current and pull through prev  
-            'mometpr': '12'
-        })
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 4,
+                "packet": "F",
+                "nwinfpar": "0",  # will ignore current and pull through prev
+                "mometpr": "12",
+            }
+        )
 
         attr = UDSFormA3Missingness(uds_table)
         assert attr._missingness_mometpr() == "10"
 
         # set newinfpar to 1, should now use current
-        uds_table['file.info.forms.json.nwinfpar'] = '1'
+        uds_table["file.info.forms.json.nwinfpar"] = "1"
         assert attr._missingness_mometpr() == "12"

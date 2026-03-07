@@ -10,9 +10,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import (
-    INFORMED_BLANK,
-)
+from nacc_attribute_deriver.utils.constants import INFORMED_BLANK, INFORMED_MISSINGNESS
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
@@ -57,13 +55,18 @@ class UDSFormA4Missingness(UDSMissingness):
                     self.__drugs.append(rxnorm.strip())
 
     def _missingness_anymeds(self) -> int:
-        """Handles missingness for ANYMEDS."""
-        # it seems in older versions, they could submit MEDS but
-        # still set ANYMEDS to 0, or vice versa, so legacy code
-        # fixes it by checking if there are actually drugs and
-        # basing ANYMEDS off of that
+        """Handles missingness for ANYMEDS.
+
+        Due to inconsistency of how ANYMEDS/A4SUBS/MEDS existence, we
+        sort of ignore ANYMEDS and prioritze basing if off of a MEDS
+        file existing or A4SUBS being explicitly set.
+        """
         if self.formver < 4:
-            return 1 if self.__drugs else 0
+            if self.__drugs:
+                return 1
+
+            a4sub = self.uds.get_value("a4sub", int)
+            return 0 if a4sub == 1 else INFORMED_MISSINGNESS
 
         return self.generic_missingness("anymeds", int)
 

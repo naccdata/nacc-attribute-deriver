@@ -13,7 +13,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 * rc2:
     * Removes gaps in `rxnormid` values in case they left certain ones empty
-    * Loosen some restrictions to account for V4 FVP not collecting certain variables
+    * Fixes a few issues related to V4 FVP visits
 
 ## 2.1.4 - 2.1.5
 

@@ -22,7 +22,7 @@ class UDSFormA3Missingness(UDSMissingness):
         variables = 0), then we also need to pull through the previous
         visit.
 
-        In short, if we see 66 or NWINFx = 1, then pull through the
+        In short, if we see 66 or NWINFx = 0, then pull through the
         previous value.
 
         Set default to -4 instead of blanks since even though these
@@ -32,9 +32,7 @@ class UDSFormA3Missingness(UDSMissingness):
         if self.formver < 4:
             return str(INFORMED_MISSINGNESS)
 
-        if (not self.uds.is_initial()
-            and self.uds.get_value(nwinf_field, int) == 0
-        ):
+        if not self.uds.is_initial() and self.uds.get_value(nwinf_field, int) == 0:
             ignore_current_value = True
         else:
             ignore_current_value = False
