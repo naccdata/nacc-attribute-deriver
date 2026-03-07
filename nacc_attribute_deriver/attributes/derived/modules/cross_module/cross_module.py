@@ -50,9 +50,9 @@ class CrossModuleAttributeCollection(AttributeCollection):
     ########################
 
     def _create_naccdage(self) -> int:
-        """Creates NACCDAGE: Age at death."""
+        """Creates NACCDAGE: Age at death. Set minimum to 18."""
         deceased = self.__participant.deceased()
-        return 888 if not deceased else deceased.age_at_death
+        return 888 if not deceased else max(18, deceased.age_at_death)
 
     def _create_naccautp(self) -> int:
         """Creates NACCAUTP - Neuropathology data from an autopsy available"""
