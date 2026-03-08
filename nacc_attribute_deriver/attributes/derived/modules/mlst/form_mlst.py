@@ -33,7 +33,9 @@ from nacc_attribute_deriver.utils.errors import (
 
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__mlst = FormNamespace(table=table, required=frozenset(["module", "formver"]))
+        self.__mlst = FormNamespace(
+            table=table, required=frozenset(["module", "formver"])
+        )
         self.__working = WorkingNamespace(table=table)
 
         module = self.__mlst.get_required("module", str)

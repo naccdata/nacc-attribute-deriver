@@ -27,7 +27,6 @@ from .participant_status import (
     RejoinedStatus,
 )
 
-
 # get today's date at the global level so it's consistent
 # throughout runtime
 TODAY_DATE = date.today()

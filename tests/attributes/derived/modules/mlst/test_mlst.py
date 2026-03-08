@@ -14,11 +14,7 @@ def table() -> SymbolTable:
         "file": {
             "info": {
                 "forms": {
-                    "json": {
-                        "visitdate": "2020-01-01",
-                        "module": "MLST",
-                        "formver": 3
-                    }
+                    "json": {"visitdate": "2020-01-01", "module": "MLST", "formver": 3}
                 }
             }
         }
