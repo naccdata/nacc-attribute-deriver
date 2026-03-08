@@ -704,6 +704,18 @@ class TestA3FamilyHandlerV4:
         assert handler.record.mom_status == 0
         assert handler.record.dad_status == 0
 
+        # case 4 - be sure ETPR = 10 does not set to 1
+        table = set_working_family()
+        table["file.info.forms.json"].update(
+            {
+                "mometpr": "10",  # does not set
+                "dadetpr": "11",  # does set
+            }
+        )
+        handler = A3FamilyHandlerV4(table)
+        assert handler.record.mom_status == 0
+        assert handler.record.dad_status == 1
+
     def test_parent_status_prev_record(self) -> None:
         """Test the parent logic works as expected when needing to pull from
         the previous record.

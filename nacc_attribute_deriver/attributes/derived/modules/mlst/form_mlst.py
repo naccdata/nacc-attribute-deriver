@@ -33,13 +33,17 @@ from nacc_attribute_deriver.utils.errors import (
 
 class MilestoneAttributeCollection(AttributeCollection):
     def __init__(self, table: SymbolTable):
-        self.__mlst = FormNamespace(table=table, required=frozenset(["module"]))
+        self.__mlst = FormNamespace(
+            table=table, required=frozenset(["module", "formver"])
+        )
         self.__working = WorkingNamespace(table=table)
 
         module = self.__mlst.get_required("module", str)
         if module.upper() != "MLST":
             msg = f"Current file is not a MLST form: found {module}"
             raise InvalidFieldError(msg)
+
+        self.__formver = self.__mlst.get_required("formver", int)
 
     def get_date(self) -> Optional[date]:
         return self.__mlst.get_date()
@@ -129,6 +133,11 @@ class MilestoneAttributeCollection(AttributeCollection):
 
     def _create_milestone_rejoined_date(self) -> Optional[str]:
         """Check if subject rejoined; if so, create the rejoined date."""
+        # In V2 and earlier, sometimes a REJOIN is reported in the
+        # same MLST visit as a deceased status. Ignore if that is the case.
+        if self.__formver < 3 and self.__mlst.get_value("deceased", int) == 1:
+            return None
+
         # rejoined can only be determined by REJOIN/REJOINED = 1
         # on the MLST form
         rejoin = self.__mlst.get_value("rejoin", int)

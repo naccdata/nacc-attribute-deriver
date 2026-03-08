@@ -9,7 +9,10 @@ from typing import Any, Dict
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_a4 import (
     UDSFormA4Missingness,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+)
 
 
 @pytest.fixture(scope="function")
@@ -53,11 +56,46 @@ class TestUDSFormA4Missingness:
         assert attr._missingness_drug_id6() == INFORMED_BLANK
 
     def test_missingness_anymeds(self, drugs_table, uds_table):
-        """Test ANYMEDS is solely based on drugs list."""
+        """Test ANYMEDS is based on drugs list and A4SUB."""
+        # drugs exist, set to 1
         attr = UDSFormA4Missingness(drugs_table)
         drugs_table["file.info.forms.json.anymeds"] = random.choice([0, 2])
         assert attr._missingness_anymeds() == 1
 
+        # a4sub = 1, set to 0
         attr = UDSFormA4Missingness(uds_table)
+        uds_table["file.info.forms.json.a4sub"] = 1
         uds_table["file.info.forms.json.anymeds"] = 1
         assert attr._missingness_anymeds() == 0
+
+        # a4sub = 0/blank, set to -4
+        uds_table["file.info.forms.json.a4sub"] = random.choice([0, None])
+        assert attr._missingness_anymeds() == INFORMED_MISSINGNESS
+
+    def test_missingness_rxnormid(self, uds_table):
+        """Test RXNORMIDs are handled correctly, including when there are gaps
+        in the order."""
+        uds_table["file.info.forms.json"].update(
+            {
+                # three random rxnormids were filled, should
+                # resolve to rxnormid1 - 5 in order
+                "rxnormid1": "00000",
+                "rxnormid15": "12345",
+                "rxnormid18": "67890",
+                "rxnormid37": "11111",
+                "rxnormid40": "99999",
+                "rxnormid41": "xxxxx",  # not valid
+                "formver": 4,
+            }
+        )
+        attr = UDSFormA4Missingness(uds_table)
+        assert attr._missingness_rxnormid1() == "00000"
+        assert attr._missingness_rxnormid2() == "12345"
+        assert attr._missingness_rxnormid3() == "67890"
+        assert attr._missingness_rxnormid4() == "11111"
+        assert attr._missingness_rxnormid5() == "99999"
+        assert attr._missingness_rxnormid6() == INFORMED_BLANK
+        assert attr._missingness_rxnormid15() == INFORMED_BLANK
+        assert attr._missingness_rxnormid18() == INFORMED_BLANK
+        assert attr._missingness_rxnormid37() == INFORMED_BLANK
+        assert attr._missingness_rxnormid40() == INFORMED_BLANK

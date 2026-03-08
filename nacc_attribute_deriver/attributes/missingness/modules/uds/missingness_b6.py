@@ -1,6 +1,7 @@
 """Class to handle B6-specific missingness values."""
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormB6Missingness(UDSMissingness):
@@ -15,7 +16,11 @@ class UDSFormB6Missingness(UDSMissingness):
     def _missingness_nogds(self) -> int:
         """Handle missingness for NOGDS."""
         nogds = self.uds.get_value("nogds", int)
-        return nogds if nogds is not None else 0
+
+        if nogds is None:
+            return 0 if self.submitted else INFORMED_MISSINGNESS
+
+        return nogds
 
     def __handle_nogds_gate(self, field: str) -> int:
         """Handles missingness for GDS vars.

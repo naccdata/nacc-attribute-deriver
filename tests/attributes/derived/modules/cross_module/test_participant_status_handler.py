@@ -129,3 +129,16 @@ class TestParticipantStatusHandler:
         prespart.update(base_data)
         participant = ParticipantStatusHandler(working)
         assert participant.initial_visit_only() is None
+
+    def test_future_date_ignored(self) -> None:
+        """Ensure a future date is ignored."""
+        working = create_working(
+            {
+                "milestone-discontinued-date": {
+                    "value": "5000-01-01",
+                    "date": "2025-01-01",
+                }
+            }
+        )
+        participant = ParticipantStatusHandler(working)
+        assert participant.discontinued() is None

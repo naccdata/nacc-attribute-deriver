@@ -500,10 +500,11 @@ class A3FamilyHandlerV4(A3FamilyHandler):
 
             etpr = prev_etpr
 
-        if etpr is not None and etpr >= 1 and etpr <= 12:
+        # set to 1 if 01-12 (exclude 10: psyciatric condition)
+        if etpr is not None and etpr != 10 and etpr >= 1 and etpr <= 12:
             return 1
 
-        if etpr == 0:
+        if etpr in [0, 10]:
             return 0
 
         if prev_value in [0, 1]:
