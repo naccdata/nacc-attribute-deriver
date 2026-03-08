@@ -12,8 +12,9 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Other edge case fixes
 
 * rc2:
-    * Removes gaps in `rxnormid` values in case they left certain ones empty
+    * Removes gaps in `RXNORMID` values in case they left certain ones empty
     * Fixes a few issues related to V4 FVP visits
+    * Updates `ANYMEDS` and `NOGDS` missingness to check if the form was submitted
 
 ## 2.1.4 - 2.1.5
 

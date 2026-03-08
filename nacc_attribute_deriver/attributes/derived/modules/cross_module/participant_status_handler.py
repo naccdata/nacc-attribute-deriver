@@ -9,6 +9,7 @@ we prioritize the other status change (one way to think of it is they
 completed the UDS visit and then decided to discontinue at the visit).
 """
 
+from datetime import date
 from typing import Any, Optional
 
 from nacc_attribute_deriver.attributes.namespace.namespace import (
@@ -25,6 +26,11 @@ from .participant_status import (
     ParticipantStatus,
     RejoinedStatus,
 )
+
+
+# get today's date at the global level so it's consistent
+# throughout runtime
+TODAY_DATE = date.today()
 
 
 class ParticipantStatusHandler:
@@ -54,7 +60,7 @@ class ParticipantStatusHandler:
         status: Optional[ParticipantStatus],
     ) -> Optional[Any]:
         """Determine if the status is valid, e.g. it is the latest and nothing
-        invalidates it.
+        invalidates it (also that it is a date that is not in the future).
 
         A status can be invalidated if either a) they rejoined AFTER
         this status' date or b) they had a UDS visit AFTER this status'
@@ -68,6 +74,19 @@ class ParticipantStatusHandler:
         # if status is not set, return None
         if not status:
             return None
+
+        # if the status date is > today's date, ignore
+        # don't apply when the year is unknown
+        if not status.status_date.startswith(
+            "9999"
+        ) and not status.status_date.startswith("8888"):
+            today_status = ParticipantStatus(
+                status="today",
+                status_date=str(TODAY_DATE),
+                form_date=TODAY_DATE,
+            )
+            if status > today_status:
+                return None
 
         # if status is set, but a UDS visit or REJOIN came after, it has
         # effectively been unset; return None

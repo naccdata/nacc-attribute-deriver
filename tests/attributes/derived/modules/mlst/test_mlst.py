@@ -17,6 +17,7 @@ def table() -> SymbolTable:
                     "json": {
                         "visitdate": "2020-01-01",
                         "module": "MLST",
+                        "formver": 3
                     }
                 }
             }
@@ -113,3 +114,19 @@ class TestMilestoneAttributeCollection:
             {"discyr": None, "discmo": None, "discday": None}
         )
         assert attr._create_milestone_discontinued_date() == "2020-01-01"
+
+    def test_rejoined_deceased_same_visit(self, table) -> None:
+        """Test when a V2 REJOIN and DECEASED are in the same visit."""
+        table["file.info.forms.json"].update(
+            {
+                "rejoin": "1",
+                "deceased": "1",
+                "formver": 2,
+            }
+        )
+        attr = MilestoneAttributeCollection(table)
+        assert attr._create_milestone_rejoined_date() is None
+
+        # if deceased not set, rejoin should be set
+        table["file.info.forms.json.deceased"] = 0
+        assert attr._create_milestone_rejoined_date() == "2020-01-01"
