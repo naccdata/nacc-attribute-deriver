@@ -15,11 +15,15 @@ class CLSMissingness(SubjectMissingnessCollection):
 
     def _missingness_naccengl(self) -> float:
         """Handles NACCENGL."""
-        return self.handle_subject_missing("naccengl", float, float(INFORMED_MISSINGNESS))
+        return self.handle_subject_missing(
+            "naccengl", float, float(INFORMED_MISSINGNESS)
+        )
 
     def _missingness_naccspnl(self) -> float:
         """Handles NACCSPNL."""
-        return self.handle_subject_missing("naccspnl", float, float(INFORMED_MISSINGNESS))
+        return self.handle_subject_missing(
+            "naccspnl", float, float(INFORMED_MISSINGNESS)
+        )
 
 
 class CLSFormMissingness(UDSCorrelatedFormMissingnessCollection):

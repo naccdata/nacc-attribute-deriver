@@ -105,9 +105,9 @@ class MDSFormAttributeCollection(AttributeCollection):
         # 9 = Missing/Unknown, so use as default if missing
         return source if source is not None else 9
 
-    def _create_mds_affiliate(self) -> bool:
+    def _create_mds_affiliate(self) -> int:
         """Returns whether or not the participant is an affiliate.
 
         In MDS checks if source == 3
         """
-        return self.__mds.get_value("source", int) == 3
+        return 1 if self.__mds.get_value("source", int) == 3 else 0

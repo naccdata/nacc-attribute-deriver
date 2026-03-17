@@ -294,7 +294,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if naccpaff == 1:
             return 1
 
-        return 1 if self._create_affiliate() else 0
+        return self._create_affiliate()
 
     def _create_uds_source(self) -> Optional[int]:
         """Returns UDS source (V2 and earlier)"""
@@ -304,16 +304,16 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         """Returns UDS sourcenw (V3 and later)"""
         return self.uds.get_value("sourcenw", int)
 
-    def _create_affiliate(self) -> bool:
+    def _create_affiliate(self) -> int:
         """Returns whether or not the participant is an affiliate.
 
         There are some nuances, but for now just check for source == 4
         or sourcenw == 2 (non-ADC).
         """
         # get current status
-        affiliate = self.__subject_derived.get_value("affiliate", bool)
+        affiliate = self.__subject_derived.get_value("affiliate", int)
         if affiliate is None:
-            affiliate = False
+            affiliate = 0
 
         # only provided in IVP
         if self.uds.is_initial():
@@ -324,7 +324,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             if source is None and sourcenw is None:
                 return affiliate
 
-            return source == 4 or sourcenw == 2
+            return 1 if (source == 4 or sourcenw == 2) else 0
 
         # return whatever the current status is
         return affiliate

@@ -16,6 +16,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Updates `ANYMEDS` and `NOGDS` missingness to check if the form was submitted
 * rc3:
     * More minor fixes
+    * Make `affiliate` an integer
 
 ## 2.1.4 - 2.1.5
 
