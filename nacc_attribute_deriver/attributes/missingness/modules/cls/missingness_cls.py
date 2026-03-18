@@ -13,13 +13,17 @@ from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 class CLSMissingness(SubjectMissingnessCollection):
     """Class to handle CLS missingness values."""
 
-    def _missingness_naccengl(self) -> int:
+    def _missingness_naccengl(self) -> float:
         """Handles NACCENGL."""
-        return self.handle_subject_missing("naccengl", int, INFORMED_MISSINGNESS)
+        return self.handle_subject_missing(
+            "naccengl", float, float(INFORMED_MISSINGNESS)
+        )
 
-    def _missingness_naccspnl(self) -> int:
+    def _missingness_naccspnl(self) -> float:
         """Handles NACCSPNL."""
-        return self.handle_subject_missing("naccspnl", int, INFORMED_MISSINGNESS)
+        return self.handle_subject_missing(
+            "naccspnl", float, float(INFORMED_MISSINGNESS)
+        )
 
 
 class CLSFormMissingness(UDSCorrelatedFormMissingnessCollection):

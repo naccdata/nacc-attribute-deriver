@@ -126,25 +126,28 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if not self.uds.is_initial():
             return None
 
+        known_value = self.__subject_derived.get_cross_sectional_value("naccrefr", int)
+
         if self.formver >= 3:
             refersc = self.uds.get_value("refersc", int)
             if refersc in [1, 2, 3]:
                 return 1
             if refersc in [4, 5, 6]:
                 return 2
-            if refersc is None:
-                return 9
-            return refersc
+            if refersc == 8:
+                return 8
+
+            return 9 if known_value is None else known_value
 
         refer = self.uds.get_value("refer", int)
-        if refer == 5:
+        if refer == 1:
+            return 1
+        if refer in [2, 5]:
             return 2
-        if refer in [3, 4, 6, 7]:
+        if refer in [3, 4, 6, 7, 8]:
             return 8
-        if refer is None:
-            return 9
 
-        return refer
+        return 9 if known_value is None else known_value
 
     def _create_naccsex(self) -> Optional[int]:
         """Creates NACCSEX - participant's sex.
@@ -294,7 +297,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if naccpaff == 1:
             return 1
 
-        return 1 if self._create_affiliate() else 0
+        return self._create_affiliate()
 
     def _create_uds_source(self) -> Optional[int]:
         """Returns UDS source (V2 and earlier)"""
@@ -304,16 +307,16 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         """Returns UDS sourcenw (V3 and later)"""
         return self.uds.get_value("sourcenw", int)
 
-    def _create_affiliate(self) -> bool:
+    def _create_affiliate(self) -> int:
         """Returns whether or not the participant is an affiliate.
 
         There are some nuances, but for now just check for source == 4
         or sourcenw == 2 (non-ADC).
         """
         # get current status
-        affiliate = self.__subject_derived.get_value("affiliate", bool)
+        affiliate = self.__subject_derived.get_value("affiliate", int)
         if affiliate is None:
-            affiliate = False
+            affiliate = 0
 
         # only provided in IVP
         if self.uds.is_initial():
@@ -324,7 +327,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             if source is None and sourcenw is None:
                 return affiliate
 
-            return source == 4 or sourcenw == 2
+            return 1 if (source == 4 or sourcenw == 2) else 0
 
         # return whatever the current status is
         return affiliate

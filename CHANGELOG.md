@@ -10,11 +10,14 @@ Documentation of release versions of `nacc-attribute-deriver`
         * D1a `NACCMCII`
         * Milestone-related variables
     * Other edge case fixes
-
 * rc2:
     * Removes gaps in `RXNORMID` values in case they left certain ones empty
     * Fixes a few issues related to V4 FVP visits
     * Updates `ANYMEDS` and `NOGDS` missingness to check if the form was submitted
+* rc3:
+    * More minor fixes
+    * Make `affiliate` an integer
+    * Update `NACCREFR` to not allow I4 9s (unknowns) override previously known values
 
 ## 2.1.4 - 2.1.5
 

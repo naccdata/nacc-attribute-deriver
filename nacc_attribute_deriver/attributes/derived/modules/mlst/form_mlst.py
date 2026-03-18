@@ -43,7 +43,7 @@ class MilestoneAttributeCollection(AttributeCollection):
             msg = f"Current file is not a MLST form: found {module}"
             raise InvalidFieldError(msg)
 
-        self.__formver = self.__mlst.get_required("formver", int)
+        self.__formver = self.__mlst.get_required("formver", float)
 
     def get_date(self) -> Optional[date]:
         return self.__mlst.get_date()
