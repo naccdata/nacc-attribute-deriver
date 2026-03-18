@@ -142,12 +142,10 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         refer = self.uds.get_value("refer", int)
         if refer == 1:
             return 1
-        if refer == 2:
+        if refer in [2, 5]:
             return 2
         if refer in [3, 4, 6, 7, 8]:
             return 8
-        if refer == 5:
-            return 2
 
         return 9 if known_value is None else known_value
 
