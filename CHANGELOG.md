@@ -17,6 +17,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * rc3:
     * More minor fixes
     * Make `affiliate` an integer
+    * Update `NACCREFR` to not allow I4 9s (unknowns) override previously known values
 
 ## 2.1.4 - 2.1.5
 

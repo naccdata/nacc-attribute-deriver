@@ -126,25 +126,30 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if not self.uds.is_initial():
             return None
 
+        known_value = self.__subject_derived.get_cross_sectional_value("naccrefr", int)
+
         if self.formver >= 3:
             refersc = self.uds.get_value("refersc", int)
             if refersc in [1, 2, 3]:
                 return 1
             if refersc in [4, 5, 6]:
                 return 2
-            if refersc is None:
-                return 9
-            return refersc
+            if refersc == 8:
+                return 8
+
+            return 9 if known_value is None else known_value
 
         refer = self.uds.get_value("refer", int)
+        if refer == 1:
+            return 1
+        if refer == 2:
+            return 2
+        if refer in [3, 4, 6, 7, 8]:
+            return 8
         if refer == 5:
             return 2
-        if refer in [3, 4, 6, 7]:
-            return 8
-        if refer is None:
-            return 9
 
-        return refer
+        return 9 if known_value is None else known_value
 
     def _create_naccsex(self) -> Optional[int]:
         """Creates NACCSEX - participant's sex.
