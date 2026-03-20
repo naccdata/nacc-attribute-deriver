@@ -148,7 +148,37 @@ class TestUDSFormD1aMissingness:
         assert attr._missingness_cogoth2x() == INFORMED_BLANK
         assert attr._missingness_cogoth3x() == INFORMED_BLANK
 
+    def test_cogoth_missingness(self, uds_table):
+        """Another cogoth case."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 2.0,
+                "formverd1": 2.0,
+                "packet": "T",
+                "normcog": 1,
+                "cogoth": 0,
+                "cogoth2": 0,
+                "cogoth3": None,  # problematic one
+                "cogothif": None,
+                "cogoth2f": None,
+                "cogoth3f": None,
+                "cogothx": None,
+                "cogoth2x": None,
+                "cogoth3x": None,
+            }
+        )
+        attr = UDSFormD1aMissingness(uds_table)
+        assert attr._missingness_cogoth() == 0
+        assert attr._missingness_cogoth2() == 0
+        assert attr._missingness_cogoth3() == 8
 
+        assert attr._missingness_cogothif() == 8
+        assert attr._missingness_cogoth2f() == 8
+        assert attr._missingness_cogoth3f() == 8
+
+        assert attr._missingness_cogothx() == INFORMED_BLANK
+        assert attr._missingness_cogoth2x() == INFORMED_BLANK
+        assert attr._missingness_cogoth3x() == INFORMED_BLANK
     def cogoth_versions(self, uds_table):
         """Test when the versions are different."""
         uds_table["file.info.forms.json"].update(
