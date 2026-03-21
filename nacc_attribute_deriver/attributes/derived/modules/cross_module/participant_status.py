@@ -140,6 +140,8 @@ class ParticipantStatus:
 @dataclass(eq=False)
 class DeceasedStatus(ParticipantStatus):
     age_at_death: int
+
+    # note if an NP form exists, this status cannot be unset by a rejoin/UDS visit
     has_np: bool
 
     @classmethod

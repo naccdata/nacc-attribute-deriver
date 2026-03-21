@@ -179,6 +179,7 @@ class TestUDSFormD1aMissingness:
         assert attr._missingness_cogothx() == INFORMED_BLANK
         assert attr._missingness_cogoth2x() == INFORMED_BLANK
         assert attr._missingness_cogoth3x() == INFORMED_BLANK
+
     def cogoth_versions(self, uds_table):
         """Test when the versions are different."""
         uds_table["file.info.forms.json"].update(
