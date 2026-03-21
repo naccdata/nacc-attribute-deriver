@@ -1,8 +1,4 @@
-"""Class to handle COVID missingness values.
-
-TODO: THIS IS ONLY REQUIRED TO BACKFILL WRITE-IN/KNOWN BLANK VARIABLES TO AVOID
-THE NOT-IN-CONTAINER ERROR. REMOVE ONCE FEATURE IS ADDED TO ETL GEAR.
-"""
+"""Class to handle COVID missingness values."""
 
 from typing import Type
 

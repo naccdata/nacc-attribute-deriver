@@ -468,3 +468,4 @@ uds,parkage,subject.info.working.cross-sectional.parkage,update,FALSE
 uds,naccfam,subject.info.derived.longitudinal.naccfam,list,TRUE
 uds,naccmom,subject.info.derived.longitudinal.naccmom,list,TRUE
 uds,naccdad,subject.info.derived.longitudinal.naccdad,list,TRUE
+bds,bds_naccdage,file.info.derived.naccdage,update,FALSE
