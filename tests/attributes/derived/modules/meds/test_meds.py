@@ -130,12 +130,12 @@ class TestMEDSFormAttributeCollection:
 
         assert meds._create_drugs_list() == [
             "d00004",
+            "d04523",
             "d00170",
             "d00269",
             "d00321",
+            "d04523",
             "d00732",
-            "d04523",
-            "d04523",
         ]
 
     def test_meds_date(self, table):
