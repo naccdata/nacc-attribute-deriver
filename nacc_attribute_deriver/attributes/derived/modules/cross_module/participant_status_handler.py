@@ -87,6 +87,10 @@ class ParticipantStatusHandler:
             if status > today_status:
                 return None
 
+        # deceased statuses with NP cannot be unset
+        if isinstance(status, DeceasedStatus) and status.has_np:
+            return status
+
         # if status is set, but a UDS visit or REJOIN came after, it has
         # effectively been unset; return None
         for state in [self.__latest_uds, self.__rejoined]:

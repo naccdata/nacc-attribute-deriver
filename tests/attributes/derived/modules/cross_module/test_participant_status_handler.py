@@ -142,3 +142,27 @@ class TestParticipantStatusHandler:
         )
         participant = ParticipantStatusHandler(working)
         assert participant.discontinued() is None
+
+    def test_np_death_final(self) -> None:
+        """Tests that the existence of an NP form does not allow death to be
+        unset, even if an UDS visit came after."""
+        working = create_working(
+            {
+                "np-death-date": {
+                    "value": "2025-01-99",
+                    "date": "2025-07-19",
+                },
+                "np-death-age": 79,
+                "uds-visitdates": ["2025-12-10"],
+            }
+        )
+
+        participant = ParticipantStatusHandler(working)
+        assert participant.latest_uds_visit().status_date == "2025-12-10"
+        assert participant.deceased().status_date == "2025-01-99"
+        assert participant.deceased().has_np
+        assert participant.deceased().age_at_death == 79
+
+        assert participant.rejoined() is None
+        assert participant.discontinued() is None
+        assert participant.minimum_contact() is None

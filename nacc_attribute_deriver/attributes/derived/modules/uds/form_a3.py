@@ -76,10 +76,11 @@ class UDSFormA3Attribute(UDSAttributeCollection):
             # data was changed, and we can just bring forward previous
             # values.
             # IMPORTANT: V1 and V2 have opposite codes for when a3chg is set
+            # For V2, since 0s are conflated with blanks, let A3CHG be 0 or None
             a3chg = self.uds.get_value("a3chg", int)
             if (
                 self.uds.is_initial()
-                or (formvera3 == 2 and a3chg == 0)
+                or (formvera3 == 2 and (a3chg == 0 or a3chg is None))
                 or (formvera3 == 1 and a3chg == 1)
             ):
                 if formvera3 == 2:

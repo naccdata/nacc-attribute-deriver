@@ -2847,3 +2847,9 @@ uds,frmdated1a,file.info.resolved.frmdated1a,update,FALSE,str
 uds,langd1a,file.info.resolved.langd1a,update,FALSE,int
 uds,frmdated1b,file.info.resolved.frmdated1b,update,FALSE,str
 uds,langd1b,file.info.resolved.langd1b,update,FALSE,int
+bds,header_adcid,file.info.resolved.adcid,update,FALSE,int
+bds,header_formver,file.info.resolved.formver,update,FALSE,float
+bds,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
+bds,bds_sex,file.info.resolved.sex,update,FALSE,int
+bds,bds_hispanic,file.info.resolved.hispanic,update,FALSE,int
+bds,bdsrace,file.info.resolved.bdsrace,update,FALSE,int
