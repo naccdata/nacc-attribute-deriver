@@ -113,7 +113,7 @@ class MEDSFormAttributeCollection(AttributeCollection):
             if drug in REPLACEMENT_DRUGS:
                 drugs[i] = REPLACEMENT_DRUGS[drug]
 
-        return sorted(drugs)
+        return drugs
 
     def __get_v1_drugs(self) -> List[str]:
         """Gets V1 drugs by mapping write-ins to normalized DB."""
@@ -133,4 +133,4 @@ class MEDSFormAttributeCollection(AttributeCollection):
                 drug_id = DRUGS_V1.get(drug_name, "xxxxxx")
                 drugs_list.append(drug_id if drug_id is not None else drug_name)
 
-        return drugs_list
+        return sorted(drugs_list)

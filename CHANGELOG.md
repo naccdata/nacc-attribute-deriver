@@ -22,6 +22,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Adds new variables for BDS scope
     * Changes `INFORMED_BLANK` string to be `__blank__` to avoid collisions with actual write-in values
     * Update deceased status to not be unset if participant has an NP form (so death is certain)
+    * Only sort V1 meds; otherwise keep order they were entered in
 
 ## 2.1.4 - 2.1.5
 
