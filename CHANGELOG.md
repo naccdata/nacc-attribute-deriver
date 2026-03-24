@@ -23,6 +23,8 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Changes `INFORMED_BLANK` string to be `__blank__` to avoid collisions with actual write-in values
     * Update deceased status to not be unset if participant has an NP form (so death is certain)
     * Only sort V1 meds; otherwise keep order they were entered in
+* final release:
+    * Fixes `adverseotx` missingness to not rely on `trtbiomark`
 
 ## 2.1.4 - 2.1.5
 
