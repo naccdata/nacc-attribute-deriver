@@ -344,5 +344,5 @@ class UDSFormA4aMissingness(UDSMissingness):
     def _missingness_adverseotx(self) -> str:
         """Handles missingness for ADVERSEOTX."""
         return self._handle_a4a_missingness(
-            ["newtreat", "newadevent", "trtbiomark"], "adverseotx", attr_type=str
+            ["newtreat", "newadevent"], "adverseotx", attr_type=str
         )
