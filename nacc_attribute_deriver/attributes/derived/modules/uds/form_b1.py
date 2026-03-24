@@ -79,7 +79,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
     def _compute_average(
         self, field1: str, field2: str, minimum: int, maximum: int
-    ) -> Optional[int]:
+    ) -> int:
         """Compute the average for the two fields (V4 only).
 
         Rounded to the nearest integer.
@@ -88,9 +88,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
             return INFORMED_MISSINGNESS
 
         if not self.submitted:
-            if self.uds.is_initial():
-                return INFORMED_MISSINGNESS
-            return None
+            return INFORMED_MISSINGNESS
 
         value1 = self.uds.get_value(field1, int)
         value2 = self.uds.get_value(field2, int)
@@ -105,13 +103,13 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         # enforce min/max
         return max(minimum, min(maximum, result))
 
-    def _create_naccwaist(self) -> Optional[int]:
+    def _create_naccwaist(self) -> int:
         """Creates NACCWAIST - Waist circumference (inches),
         average of two measurements.
         """
         return self._compute_average("waist1", "waist2", 20, 60)
 
-    def _create_nacchip(self) -> Optional[int]:
+    def _create_nacchip(self) -> int:
         """Creates NACCHIP - Hip circumference (inches),
         average of two measurements
         """
@@ -156,7 +154,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         # otherwise, -4
         return INFORMED_MISSINGNESS
 
-    def _create_naccbpsysl(self) -> Optional[int]:
+    def _create_naccbpsysl(self) -> int:
         """Creates NACCBPSYSL - Participant blood pressure
         (average of two readings), systolic, left arm
         """
@@ -165,7 +163,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return self._compute_average("bpsysl1", "bpsysl2", 70, 230)
 
-    def _create_naccbpsysr(self) -> Optional[int]:
+    def _create_naccbpsysr(self) -> int:
         """Creates NACCBPSYSR - Participant blood pressure
         (average of two readings), systolic, right arm
         """
@@ -174,7 +172,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return self._compute_average("bpsysr1", "bpsysr2", 70, 230)
 
-    def _create_naccbpdial(self) -> Optional[int]:
+    def _create_naccbpdial(self) -> int:
         """Creates NACCBPDIAL - Participant blood pressure
         (average of two readings), diastolic, left arm
         """
@@ -183,7 +181,7 @@ class UDSFormB1Attribute(UDSAttributeCollection):
 
         return self._compute_average("bpdiasl1", "bpdiasl2", 30, 140)
 
-    def _create_naccbpdiar(self) -> Optional[int]:
+    def _create_naccbpdiar(self) -> int:
         """Creates NACCBPDIAR - Participant blood pressure
         (average of two readings), diastolic, right arm
         """

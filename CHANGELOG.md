@@ -25,6 +25,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Only sort V1 meds; otherwise keep order they were entered in
 * final release:
     * Fixes `adverseotx` missingness to not rely on `trtbiomark`
+    * Always return something for B1 V4 derived variables since they're longitudinal
 
 ## 2.1.4 - 2.1.5
 
