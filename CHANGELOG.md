@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.2.1
+
+* Fix A4 derived variables to also check for drug existence first
+
 ## 2.2.0
 
 * rc1:

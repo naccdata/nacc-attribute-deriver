@@ -2,7 +2,7 @@
 
 import pytest
 import random
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_a4 import (
     UDSFormA4Attribute,
 )
@@ -109,11 +109,15 @@ class TestUDSFormA4Attribute:
         assert attr._create_naccadmd() == 0
 
     def __check_derived_values(
-        self, attr: UDSFormA4Attribute, expected_value: int
+        self,
+        attr: UDSFormA4Attribute,
+        expected_value: int,
+        amd_value: Optional[int] = None,
     ) -> None:
         """Check all derived values return the expected value based on the
         submitted property."""
-        assert attr._create_naccamd() == expected_value
+        amd_value = expected_value if amd_value is None else amd_value
+        assert attr._create_naccamd() == amd_value
         assert attr._create_naccaaas() == expected_value
         assert attr._create_naccaanx() == expected_value
         assert attr._create_naccac() == expected_value
@@ -174,6 +178,35 @@ class TestUDSFormA4Attribute:
         uds_table["file.info.forms.json.anymeds"] = None
         assert not attr.submitted
         self.__check_derived_values(attr, -4)
+
+        # always submitted if drugs exist
+        uds_table["file.info.forms.json"].update(
+            {"formver": random.choice([1.0, 2.0, 3.0, 3.2])}
+        )
+        uds_table.update(
+            {
+                "subject": {
+                    "info": {
+                        "working": {
+                            "longitudinal": {
+                                "drugs-list": [
+                                    {
+                                        "date": "2025-01-01",
+                                        "value": [
+                                            "1",
+                                            "2",
+                                        ],
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+            }
+        )
+        attr = UDSFormA4Attribute(uds_table)
+        assert attr.submitted
+        self.__check_derived_values(attr, 0, amd_value=2)
 
     def test_naccamd_range_enforced(self, table1):
         """Ensure range is enforced for NACCAMD."""

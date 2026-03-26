@@ -34,27 +34,19 @@ class UDSFormA4Attribute(UDSAttributeCollection):
 
     @property
     def submitted(self) -> bool:
-        """In V4, form completion dependent on ANYMEDS variable. For earlier
-        versions, see A4SUB.
+        """Due to inconsistency of A4SUB/ANYMEDS, we check if they submitted
+        any medications first, then base on A4SUB and ANYMEDS."""
+        if self.__meds:
+            return True
 
-        Note not being completed is NOT the same as ANYMEDS = 0.
-        If not submitted, these derived variables are -4; if
-        ANYMEDS = 0, they are typically set to 0. Additionally,
-        ANYMEDS doesn't seem to correspond to whether or not there
-        is actually a MEDS file with meds in it, so not reliable
-        (at least for V1 - V3).
-        """
-        if self.formver >= 4:
-            return self.uds.get_value("anymeds", int) is not None
+        if self.formver < 4:
+            return self.uds.get_value("a4sub", int) == 1
 
-        return self.uds.get_value("a4sub", int) == 1
+        return self.uds.get_value("anymeds", int) is not None
 
     def __load_drugs_list(self) -> List[str]:
         """Loads drugs_list from MEDS form data that was saved under
         subject.info.derived.drugs_list.<visitdate>."""
-        if not self.submitted:
-            return []
-
         drugs = []
 
         # V4+ uses RXNORM 1-40 values directly from A4 form
