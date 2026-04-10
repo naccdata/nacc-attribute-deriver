@@ -78,11 +78,26 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         return 888.8
 
     def _compute_average(
-        self, field1: str, field2: str, minimum: int, maximum: int
+        self,
+        field1: str,
+        field2: str,
+        minimum: int,
+        maximum: int,
+        use_minimum: bool = False,
     ) -> int:
         """Compute the average for the two fields (V4 only).
 
         Rounded to the nearest integer.
+
+        Args:
+            field1: The first value to use
+            field2: The second value to use
+            minimum: The minimum value to enforce
+            maximum: The maximum value to enforce
+            use_minimum: If exactly one of the values is 888 (Not Assessed) or None:
+                If True, use the minimum of the two values
+                If False, return 888 regardless of whether the other value
+                    is set or not
         """
         if self.formver < 4:
             return INFORMED_MISSINGNESS
@@ -93,7 +108,20 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         value1 = self.uds.get_value(field1, int)
         value2 = self.uds.get_value(field2, int)
 
-        if any(x is None or x == 888 for x in [value1, value2]):
+        # set None to 888 (Not Assessed)
+        if value1 is None:
+            value1 = 888
+        if value2 is None:
+            value2 = 888
+
+        # if one or both values 888
+        if any(x == 888 for x in [value1, value2]):
+            # if only one value is 888 and use_minimum flag set, then
+            # return the lower of the two
+            if not all(x == 888 for x in [value1, value2]) and use_minimum:
+                return min(value1, value2)
+
+            # otherwise, just return 888
             return 888
 
         result = (value1 + value2) / 2  # type: ignore
@@ -107,13 +135,13 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         """Creates NACCWAIST - Waist circumference (inches),
         average of two measurements.
         """
-        return self._compute_average("waist1", "waist2", 20, 60)
+        return self._compute_average("waist1", "waist2", 20, 60, use_minimum=True)
 
     def _create_nacchip(self) -> int:
         """Creates NACCHIP - Hip circumference (inches),
         average of two measurements
         """
-        return self._compute_average("hip1", "hip2", 25, 70)
+        return self._compute_average("hip1", "hip2", 25, 70, use_minimum=True)
 
     def _handle_v3_blood_pressure(
         self, gate: str, field: str, minimum: int, maximum: int
