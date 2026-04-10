@@ -1372,6 +1372,7 @@ uds,sourcenw,file.info.resolved.sourcenw,update,FALSE,int
 uds,maristat,file.info.resolved.maristat,update,FALSE,int
 uds,independ,file.info.resolved.independ,update,FALSE,int
 uds,residenc,file.info.resolved.residenc,update,FALSE,int
+uds,zip,file.info.resolved.zip,update,FALSE,str
 uds,handed,file.info.resolved.handed,update,FALSE,int
 uds,raceaian,file.info.resolved.raceaian,update,FALSE,int
 uds,raceaianx,file.info.resolved.raceaianx,update,FALSE,str

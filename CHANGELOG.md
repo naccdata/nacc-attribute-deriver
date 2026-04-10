@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## Unreleased
 
 * [uniform-data-set #533](https://github.com/naccdata/uniform-data-set/pull/533) Updates B1 `NACCWAIST` and `NACCHIP` to use minimum if only one of the values is 888
+* Adds `zip` to missingness variables
 * Fix grabbing `subject.info.derived.affiliate` to be an integer, not a bool
 
 ## 2.2.1

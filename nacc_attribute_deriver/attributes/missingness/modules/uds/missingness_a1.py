@@ -8,7 +8,10 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+)
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
@@ -45,6 +48,27 @@ class UDSFormA1Missingness(UDSMissingness):
             return 9
 
         return self.generic_missingness("maristat", int)
+
+    def _missingness_zip(self) -> Optional[str]:
+        """Handles missingness for ZIP."""
+        zipcode = self.uds.get_value("zip", str)
+        if zipcode is None:
+            return INFORMED_BLANK
+
+        # Ensure between 006 - 999
+        try:
+            zipcode_int = int(zipcode)
+            if zipcode_int < 6 or zipcode_int > 999:
+                raise ValueError(f"{zipcode} out of range")
+
+        except (ValueError, TypeError) as e:
+            raise AttributeDeriverError(
+                f"Provided zip code {zipcode} is not a valid number between "
+                + f"006 - 999: {e}"
+            ) from e
+
+        # return formatted to 3 digits
+        return f"{zipcode_int:03}"
 
     ############################################################
     # Generic A1 missingness logic
