@@ -152,6 +152,31 @@ class TestUDSFormB1Attribute:
         uds_table["file.info.forms.json"].update({"field1": 141, "field2": 145})
         assert attr._compute_average("field1", "field2", 30, 140) == 140
 
+    def test_compute_average_use_minimum(self, uds_table):
+        """Test _compute_average works as expected when the use_minimum flag is involved."""
+        uds_table["file.info.forms.json"].update({"modeb1": 1, "formver": 4.0})
+        attr = UDSFormB1Attribute(uds_table)
+
+        # test when only one field is 888
+        uds_table["file.info.forms.json"].update({"field1": 1, "field2": 888})
+        assert attr._compute_average("field1", "field2", 30, 140) == 888
+        assert attr._compute_average("field1", "field2", 30, 140, use_minimum=True) == 1
+
+        # test when only one field is None (should have same behavior as one 888)
+        uds_table["file.info.forms.json"].update({"field1": None, "field2": 13})
+        assert attr._compute_average("field1", "field2", 30, 140) == 888
+        assert attr._compute_average("field1", "field2", 30, 140, use_minimum=True) == 13
+
+        # test when both fields are 888
+        uds_table["file.info.forms.json"].update({"field1": 888, "field2": 888})
+        assert attr._compute_average("field1", "field2", 30, 140) == 888
+        assert attr._compute_average("field1", "field2", 30, 140, use_minimum=True) == 888
+
+        # test when both fields are None (should have same behavior as two 888s)
+        uds_table["file.info.forms.json"].update({"field1": None, "field2": None})
+        assert attr._compute_average("field1", "field2", 30, 140) == 888
+        assert attr._compute_average("field1", "field2", 30, 140, use_minimum=True) == 888
+
     def test_handle_v3_blood_pressure(self, uds_table):
         """Test _handle_v3_blood_pressure, which is for V3 blood pressure
         variables.
