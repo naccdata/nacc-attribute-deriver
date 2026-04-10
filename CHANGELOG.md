@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## Unreleased
+
+* Fix grabbing `subject.info.derived.affiliate` to be an integer, not a bool
+
 ## 2.2.1
 
 * Fix A4 derived variables to also check for drug existence first

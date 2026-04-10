@@ -149,7 +149,7 @@ class CrossModuleAttributeCollection(AttributeCollection):
 
         # if an affiliate, return 5 (not in RDD and won't go in QAF
         # but just used to differentiate)
-        if self.__subject_derived.get_value("affiliate", bool):
+        if self.__subject_derived.get_value("affiliate", int) == 1:
             return 5
 
         # if dead, discontinued, or initial visit only, return 0
@@ -315,5 +315,5 @@ class CrossModuleAttributeCollection(AttributeCollection):
             return 1
 
         # use overall affiliate status as a fallback
-        affiliate = self.__subject_derived.get_value("affiliate", bool)
-        return 1 if not affiliate else 0
+        affiliate = self.__subject_derived.get_value("affiliate", int)
+        return 1 if affiliate != 1 else 0
