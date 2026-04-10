@@ -78,7 +78,12 @@ class UDSFormB1Attribute(UDSAttributeCollection):
         return 888.8
 
     def _compute_average(
-        self, field1: str, field2: str, minimum: int, maximum: int, use_minimum: bool = False
+        self,
+        field1: str,
+        field2: str,
+        minimum: int,
+        maximum: int,
+        use_minimum: bool = False,
     ) -> int:
         """Compute the average for the two fields (V4 only).
 
