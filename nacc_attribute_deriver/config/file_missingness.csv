@@ -1758,7 +1758,6 @@ uds,kid15etpr,file.info.resolved.kid15etpr,update,FALSE,str
 uds,kid15etsec,file.info.resolved.kid15etsec,update,FALSE,str
 uds,kid15meval,file.info.resolved.kid15meval,update,FALSE,int
 uds,kid15ago,file.info.resolved.kid15ago,update,FALSE,int
-
 uds,anymeds,file.info.resolved.anymeds,update,FALSE,int
 uds,rxnormid1,file.info.resolved.rxnormid1,update,FALSE,str
 uds,rxnormid2,file.info.resolved.rxnormid2,update,FALSE,str
