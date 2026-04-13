@@ -183,6 +183,10 @@ class UDSFormA1Missingness(UDSMissingness):
         """Handles missingness for ETHBLKOTHX."""
         return self.__handle_a1_prev_visit("ethblkothx", str)
 
+    def _missingness_ethispanic(self) -> int:
+        """Handles missingness for ETHISPANIC."""
+        return self.__handle_a1_prev_visit("ethispanic", int, default=self.__default)
+
     def _missingness_ethmexican(self) -> int:
         """Handles missingness for ETHMEXICAN."""
         return self.__handle_a1_prev_visit("ethmexican", int, default=self.__default)
@@ -331,11 +335,7 @@ class UDSFormA1Missingness(UDSMissingness):
         """Handles missingness for PRIOCC."""
         return self.__handle_a1_prev_visit("priocc", int, default=999)
 
-    def _missingness_chldhdctry(self) -> str:
-        """Handles missingness for CHLDHDCTRY."""
-        return self.__handle_a1_prev_visit("chldhdctry", str)
-
-    # The following are required so no defaults
+    # The following have no defaults
 
     def _missingness_birthsex(self) -> int:
         """Handles missingness for BIRTHSEX."""
@@ -344,6 +344,10 @@ class UDSFormA1Missingness(UDSMissingness):
     def _missingness_intersex(self) -> int:
         """Handles missingness for INTERSEX."""
         return self.__handle_a1_prev_visit("intersex", int)
+
+    def _missingness_predomlan(self) -> int:
+        """Handles missingness for PREDOMLAN."""
+        return self.__handle_a1_prev_visit("predomlan", int)
 
     def _missingness_served(self) -> int:
         """Handles missingness for SERVED."""
@@ -364,6 +368,49 @@ class UDSFormA1Missingness(UDSMissingness):
     def _missingness_sourcenw(self) -> int:
         """Handles missingness for SOURCENW."""
         return self.__handle_a1_prev_visit("sourcenw", int)
+
+    def _missingness_refersc(self) -> int:
+        """Handles missingness for REFERSC."""
+        return self.__handle_a1_prev_visit("refersc", int)
+
+    def _missingness_reflearned(self) -> int:
+        """Handles missingness for REFLEARNED."""
+        return self.__handle_a1_prev_visit("reflearned", int)
+
+    # write-ins
+
+    def _missingness_predomlanx(self) -> str:
+        """Handles missingness for PREDOMLANX."""
+        return self.__handle_a1_prev_visit("predomlanx", str)
+
+    def _missingness_chldhdctry(self) -> str:
+        """Handles missingness for CHLDHDCTRY."""
+        return self.__handle_a1_prev_visit("chldhdctry", str)
+
+    def _missingness_refctrsocx(self) -> str:
+        """Handles missingness for REFCTRSOCX."""
+        return self.__handle_a1_prev_visit("refctrsocx", str)
+
+    def _missingness_refctrregx(self) -> str:
+        """Handles missingness for REFCTRREGX."""
+        return self.__handle_a1_prev_visit("refctrregx", str)
+
+    def _missingness_refothwebx(self) -> str:
+        """Handles missingness for REFOTHWEBX."""
+        return self.__handle_a1_prev_visit("refothwebx", str)
+
+    def _missingness_refothmedx(self) -> str:
+        """Handles missingness for REFOTHMEDX."""
+        return self.__handle_a1_prev_visit("refothmedx", str)
+
+    def _missingness_refothregx(self) -> str:
+        """Handles missingness for REFOTHREGX."""
+        return self.__handle_a1_prev_visit("refothregx", str)
+
+    def _missingness_refothx(self) -> str:
+        """Handles missingness for REFOTHX."""
+        return self.__handle_a1_prev_visit("refothx", str)
+
 
     ##############################################
     # Set every visit, so may potentially change #
