@@ -81,9 +81,9 @@ class UDSFormB9Attribute(UDSAttributeCollection):
         if value is None:
             return INFORMED_MISSINGNESS
 
-        # enforce range is 9 - 110
+        # enforce range is 9 - 120
         if value not in [777, 888, 999]:
-            value = max(9, min(110, value))
+            value = max(9, min(120, value))
 
         return value
 
