@@ -2,7 +2,7 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## Unreleased
+## 2.3.0
 
 * [uniform-data-set #532](https://github.com/naccdata/uniform-data-set/pull/) Updaate `NACCCOGAGE` and other V4 B9-related age variables maximum to 120
 * [uniform-data-set #533](https://github.com/naccdata/uniform-data-set/pull/533) Updates B1 `NACCWAIST` and `NACCHIP` to use minimum if only one of the values is 888
