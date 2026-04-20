@@ -411,7 +411,6 @@ class UDSFormA1Missingness(UDSMissingness):
         """Handles missingness for REFOTHX."""
         return self.__handle_a1_prev_visit("refothx", str)
 
-
     ##############################################
     # Set every visit, so may potentially change #
     ##############################################

@@ -256,8 +256,8 @@ class TestUDSFormB9Attribute:
         # check range is enforced
         uds_table["file.info.forms.json"].update({field: 5})
         assert attr._create_nacccogage() == 9
-        uds_table["file.info.forms.json"].update({field: 115})
-        assert attr._create_nacccogage() == 110
+        uds_table["file.info.forms.json"].update({field: 125})
+        assert attr._create_nacccogage() == 120
 
 
 class TestUDSFormB9RawAttribute:
