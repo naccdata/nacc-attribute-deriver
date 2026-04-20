@@ -126,17 +126,28 @@ class NPMissingness(FormMissingnessCollection):
 
         return self.generic_missingness("nppmih", float)
 
-    ###################
-    # Other variables #
-    ###################
+    ################
+    # Cast 0 to -4 #
+    ################
+
+    def __cast_np_not_provided(self, field) -> int:
+        """Handle casting 0 to -4."""
+        if self.form.get_value(field, int) == 0:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness(field, int)
 
     def _missingness_nplewycs(self) -> int:
         """Handles missingness for NPLEWYCS."""
-        # cast 0s to -4
-        if self.form.get_value("nplewycs", int) == 0:
-            return INFORMED_MISSINGNESS
+        return self.__cast_np_not_provided("nplewycs")
 
-        return self.generic_missingness("nplewycs", int)
+    def _missingness_nppnorm(self) -> int:
+        """Handles missingness for NPPNORM."""
+        return self.__cast_np_not_provided("nppnorm")
+
+    def _missingness_npcad(self) -> int:
+        """Handles missingness for NPCAD."""
+        return self.__cast_np_not_provided("npcad")
 
     #############################################
     # RECODE 10a + RECODE 9a (NPINFx variables) #
