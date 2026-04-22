@@ -70,20 +70,3 @@ NON_COMBINATION_RX_CLASSES = [
 ]
 
 ALL_RX_CLASSES = COMBINATION_RX_CLASSES + NON_COMBINATION_RX_CLASSES
-
-
-# REGRESSION: let these go through and evaluate missingness logic
-# these are variables that ideally should be -4 if they are not
-# applicable to the version, but the SAS code does set them to
-# something, so for now we let them through
-REGRESSION_VARIABLES = [
-    "height",
-    "trailarr",
-    "trailali",
-    "trailbrr",
-    "trailbli",
-    "cogoth2f",
-    "cogoth3f",
-    "comport",
-    "cdrlang",
-]
