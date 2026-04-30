@@ -33,6 +33,14 @@ class GeneticsScope(Scope):
     NCRAD_BIOSAMPLES = "ncrad_biosamples"
 
 
+class NCRADBiomarkerScope(Scope):
+    # ncrad biomarkers
+    PTAU217 = 'ptau217'
+    N2PB = 'n2pb'
+    ABETA40 = 'abeta40'
+    ABETA42 = 'abeta42'
+
+
 class SCANPETScope(Scope):
     # SCAN - PET
     PET_QC = "scan_pet_qc"
@@ -74,6 +82,10 @@ ScopeLiterals = Literal[
     GeneticsScope.HISTORIC_APOE,
     GeneticsScope.NIAGADS_AVAILABILITY,
     GeneticsScope.NCRAD_BIOSAMPLES,
+    NCRADBiomarkerScope.PTAU217,
+    NCRADBiomarkerScope.N2PB,
+    NCRADBiomarkerScope.ABETA40,
+    NCRADBiomarkerScope.ABETA42,
     SCANPETScope.PET_QC,
     SCANPETScope.AMYLOID_PET_GAAIN,
     SCANPETScope.AMYLOID_PET_NPDKA,
