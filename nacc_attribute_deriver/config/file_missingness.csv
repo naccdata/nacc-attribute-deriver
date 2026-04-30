@@ -15,6 +15,7 @@ covid,c19t3yr,file.info.resolved.c19t3yr,update,FALSE,int
 csf,header_adcid,file.info.resolved.adcid,update,FALSE,int
 csf,header_formver,file.info.resolved.formver,update,FALSE,float
 csf,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
+csf,csflpdate,file.info.resolved.csflpdate,update,FALSE,str
 csf,csfabeta,file.info.resolved.csfabeta,update,FALSE,float
 csf,csfptau,file.info.resolved.csfptau,update,FALSE,float
 csf,csfttau,file.info.resolved.csfttau,update,FALSE,float

@@ -88,16 +88,20 @@ class FormMissingnessCollection(AttributeCollection):
     def form(self) -> FormNamespace | RawNamespace:
         return self.__form
 
-    def get_visitdate(self) -> Optional[str]:
+    def get_visitdate(self, date_attribute: Optional[str] = None) -> Optional[str]:
         """Visitdate can come in several formats, so resolve everything to
         YYYY-MM-DD for consistency.
 
+        Args:
+            date_attribute: date attribute to check; if not provided, defaults
+                to the form's date attribute
         Returns:
             visitdate as a string, if found, None otherwise
         """
-        date_attribute = self.__form.date_attribute
         if not date_attribute:
-            return None
+            date_attribute = self.__form.date_attribute
+            if not date_attribute:
+                return None
 
         raw_visitdate = self.form.get_value(date_attribute, str)
         if not raw_visitdate:
