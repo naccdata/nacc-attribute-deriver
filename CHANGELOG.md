@@ -11,7 +11,8 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Removes use of `REGRESSION_VARIABLES`; instead, denote variables that should have missingness logic applied regardless of whether or not its applicable to the version with a 2 in `uds_ded_matrix.csv`; this was basically already being done but not consistently
 * [uniform-data-set #532](https://github.com/naccdata/uniform-data-set/pull/) Updaate `NACCCOGAGE` and other V4 B9-related age variables maximum to 120
 * [uniform-data-set #533](https://github.com/naccdata/uniform-data-set/pull/533) Updates B1 `NACCWAIST` and `NACCHIP` to use minimum if only one of the values is 888
-* Adds NCRAD biomarker scopes
+* Adds NCRAD biomarker 
+* Updates header missingness to use `_uds_visitdate` if form belongs to the same session as an UDS visit
 * Fix grabbing `subject.info.derived.affiliate` to be an integer, not a bool
 
 ## 2.2.1
