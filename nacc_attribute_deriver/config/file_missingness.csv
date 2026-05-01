@@ -112,6 +112,17 @@ np,npoftd5,file.info.resolved.npoftd5,update,FALSE,int
 np,nplewycs,file.info.resolved.nplewycs,update,FALSE,int
 np,nppnorm,file.info.resolved.nppnorm,update,FALSE,int
 np,npcad,file.info.resolved.npcad,update,FALSE,int
+np,npcadp,file.info.resolved.npcadp,update,FALSE,int
+np,npcftld,file.info.resolved.npcftld,update,FALSE,int
+np,npchipp,file.info.resolved.npchipp,update,FALSE,int
+np,npclewy,file.info.resolved.npclewy,update,FALSE,int
+np,npcnorm,file.info.resolved.npcnorm,update,FALSE,int
+np,npcoth1,file.info.resolved.npcoth1,update,FALSE,int
+np,npcoth2,file.info.resolved.npcoth2,update,FALSE,int
+np,npcoth3,file.info.resolved.npcoth3,update,FALSE,int
+np,npcprion,file.info.resolved.npcprion,update,FALSE,int
+np,npcsfant,file.info.resolved.npcsfant,update,FALSE,int
+np,npcvasc,file.info.resolved.npcvasc,update,FALSE,int
 uds,header_adcid,file.info.resolved.adcid,update,FALSE,int
 uds,header_formver,file.info.resolved.formver,update,FALSE,float
 uds,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
