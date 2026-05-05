@@ -27,3 +27,16 @@ class TestHeaderMissingness:
         # MM/DD/YYYY
         table["file.info.forms.json.visitdate"] = "01/01/2025"
         assert attr._missingness_header_visitdate() == "2025-01-01"
+
+    def test_uds_visitdate(self):
+        """Test when there is an associated UDS visit."""
+        table = SymbolTable()
+        table["_uds_visitdate"] = "03-13-1990"
+        table["file.info.forms.json.visitdate"] = "01/01/2025"
+
+        attr = HeaderFormMissingness(table)
+        assert attr._missingness_header_visitdate() == '1990-03-13'
+
+        table["_uds_visitdate"] = None
+        attr = HeaderFormMissingness(table)
+        assert attr._missingness_header_visitdate() == '2025-01-01'

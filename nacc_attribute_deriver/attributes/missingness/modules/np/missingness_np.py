@@ -126,18 +126,6 @@ class NPMissingness(FormMissingnessCollection):
 
         return self.generic_missingness("nppmih", float)
 
-    ###################
-    # Other variables #
-    ###################
-
-    def _missingness_nplewycs(self) -> int:
-        """Handles missingness for NPLEWYCS."""
-        # cast 0s to -4
-        if self.form.get_value("nplewycs", int) == 0:
-            return INFORMED_MISSINGNESS
-
-        return self.generic_missingness("nplewycs", int)
-
     #############################################
     # RECODE 10a + RECODE 9a (NPINFx variables) #
     #############################################
@@ -467,3 +455,106 @@ class NPMissingness(FormMissingnessCollection):
             return INFORMED_BLANK
 
         return self.generic_missingness("nppathox", str)
+
+    ################
+    # Cast 0 to -4 #
+    ################
+
+    def __cast_np_not_provided(self, field) -> int:
+        """Handle casting 0 to -4."""
+        if self.form.get_value(field, int) == 0:
+            return INFORMED_MISSINGNESS
+
+        return self.generic_missingness(field, int)
+
+    def _missingness_nplewycs(self) -> int:
+        """Handles missingness for NPLEWYCS."""
+        return self.__cast_np_not_provided("nplewycs")
+
+    def _missingness_nppnorm(self) -> int:
+        """Handles missingness for NPPNORM."""
+        return self.__cast_np_not_provided("nppnorm")
+
+    def _missingness_npcad(self) -> int:
+        """Handles missingness for NPCAD."""
+        return self.__cast_np_not_provided("npcad")
+
+    def _missingness_npplewy(self) -> int:
+        """Handles missingness for NPPLEWY."""
+        return self.__cast_np_not_provided("npplewy")
+
+    def _missingness_npcadp(self) -> int:
+        """Handles missingness for NPCADP."""
+        return self.__cast_np_not_provided("npcadp")
+
+    def _missingness_npcftld(self) -> int:
+        """Handles missingness for NPCFTLD."""
+        return self.__cast_np_not_provided("npcftld")
+
+    def _missingness_npchipp(self) -> int:
+        """Handles missingness for NPCHIPP."""
+        return self.__cast_np_not_provided("npchipp")
+
+    def _missingness_npclewy(self) -> int:
+        """Handles missingness for NPCLEWY."""
+        return self.__cast_np_not_provided("npclewy")
+
+    def _missingness_npcnorm(self) -> int:
+        """Handles missingness for NPCNORM."""
+        return self.__cast_np_not_provided("npcnorm")
+
+    def _missingness_nppadp(self) -> int:
+        """Handles missingness for NPPADP."""
+        return self.__cast_np_not_provided("nppadp")
+
+    def _missingness_npcoth1(self) -> int:
+        """Handles missingness for NPCOTH1."""
+        return self.__cast_np_not_provided("npcoth1")
+
+    def _missingness_npcoth2(self) -> int:
+        """Handles missingness for NPCOTH2."""
+        return self.__cast_np_not_provided("npcoth2")
+
+    def _missingness_npcoth3(self) -> int:
+        """Handles missingness for NPCOTH3."""
+        return self.__cast_np_not_provided("npcoth3")
+
+    def _missingness_npcprion(self) -> int:
+        """Handles missingness for NPCPRION."""
+        return self.__cast_np_not_provided("npcprion")
+
+    def _missingness_npcsfant(self) -> int:
+        """Handles missingness for NPCSFANT."""
+        return self.__cast_np_not_provided("npcsfant")
+
+    def _missingness_npcvasc(self) -> int:
+        """Handles missingness for NPCVASC."""
+        return self.__cast_np_not_provided("npcvasc")
+
+    def _missingness_nppvasc(self) -> int:
+        """Handles missingness for NPPVASC."""
+        return self.__cast_np_not_provided("nppvasc")
+
+    def _missingness_nppftld(self) -> int:
+        """Handles missingness for NPPFTLD."""
+        return self.__cast_np_not_provided("nppftld")
+
+    def _missingness_npphipp(self) -> int:
+        """Handles missingness for NPPHIPP."""
+        return self.__cast_np_not_provided("npphipp")
+
+    def _missingness_nppprion(self) -> int:
+        """Handles missingness for NPPPRION."""
+        return self.__cast_np_not_provided("nppprion")
+
+    def _missingness_nppoth1(self) -> int:
+        """Handles missingness for NPPOTH1."""
+        return self.__cast_np_not_provided("nppoth1")
+
+    def _missingness_nppoth2(self) -> int:
+        """Handles missingness for NPPOTH2."""
+        return self.__cast_np_not_provided("nppoth2")
+
+    def _missingness_nppoth3(self) -> int:
+        """Handles missingness for NPPOTH3."""
+        return self.__cast_np_not_provided("nppoth3")

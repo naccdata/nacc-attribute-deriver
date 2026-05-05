@@ -8,6 +8,7 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class CSFMissingness(SubjectMissingnessCollection):
@@ -39,6 +40,14 @@ class CSFFormMissingness(FormMissingnessCollection):
             return min(max(minimum, result), maximum)
 
         return result
+
+    def _missingness_csflpdate(self) -> str:
+        """Handles missingness for CSFLPDATE."""
+        csflpdate = self.get_visitdate("csflpdate")
+        if not csflpdate:
+            raise AttributeDeriverError("Missing cslfpdate from CSF form header")
+
+        return csflpdate
 
     def _missingness_csfabeta(self) -> float:
         """Handles missingness for CSFABETA."""

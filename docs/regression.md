@@ -13,7 +13,11 @@ The following are known and notable issues and inconsistencies in how the legacy
 ## Generally
 
 * For missingness, there are a lot of inconsistencies on when things are set to -4 based on relevance to the form version. The legacy had to hardcode all of these, and it seems several slipped through the cracks/accidentally got set to something anyways. Going forward, we are using `config/uds_ded_matrix.csv` to explicitly set something to the missingness value (-4/-4.4/blank) if it is not applicable to the version.
-	* In the matrix, 1 = collected in that version, 2 = collected only at IVP and automatically brought across, 0/blank = not applicable 
+	* 1 = collected in that version, so should run missingness logic
+	* 2 = not applicable to that version but should run missingness logic regardless
+		* Used for variables that have missingness logic regardless of the version, variables that were only collected in IVP and need to be explicitly brought forward, or variables that a different default missingness
+	* 0/blank = not applicable, generic missingness will be applied
+
 
 ## Form A3
 

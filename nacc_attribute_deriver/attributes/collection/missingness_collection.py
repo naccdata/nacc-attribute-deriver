@@ -24,6 +24,7 @@ from nacc_attribute_deriver.utils.constants import (
     MISSINGNESS_VALUES,
 )
 from nacc_attribute_deriver.utils.date import (
+    date_from_form_date,
     find_closest_date,
     standardize_date,
 )
@@ -80,6 +81,9 @@ class FormMissingnessCollection(AttributeCollection):
         )
         self.__prev_record = PreviousRecordNamespace(table=table)
 
+        # if form is associated with a UDS visit (same session)
+        self.__uds_visitdate = date_from_form_date(table.get("_uds_visitdate", None))
+
     @property
     def prev_record(self) -> PreviousRecordNamespace:
         return self.__prev_record
@@ -88,18 +92,25 @@ class FormMissingnessCollection(AttributeCollection):
     def form(self) -> FormNamespace | RawNamespace:
         return self.__form
 
-    def get_visitdate(self) -> Optional[str]:
+    def get_visitdate(self, date_attribute: Optional[str] = None) -> Optional[str]:
         """Visitdate can come in several formats, so resolve everything to
         YYYY-MM-DD for consistency.
 
+        Args:
+            date_attribute: date attribute to check; if not provided, defaults
+                to the form's date attribute
         Returns:
             visitdate as a string, if found, None otherwise
         """
-        date_attribute = self.__form.date_attribute
-        if not date_attribute:
+        if date_attribute:
+            raw_visitdate = self.form.get_value(date_attribute, str)
+        elif self.__uds_visitdate:
+            raw_visitdate = self.__uds_visitdate
+        elif self.__form.date_attribute:
+            raw_visitdate = self.form.get_value(self.__form.date_attribute, str)
+        else:
             return None
 
-        raw_visitdate = self.form.get_value(date_attribute, str)
         if not raw_visitdate:
             raise AttributeDeriverError(
                 f"Unable to find date attribute {date_attribute}"

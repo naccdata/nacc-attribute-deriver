@@ -458,6 +458,10 @@ class UDSFormB9Missingness(UDSMissingness):
     # If VAR = 777, then VAR = value from previous visit #
     ######################################################
 
+    def _missingness_cogage(self) -> int:
+        """Handles missingness for COGAGE."""
+        return self.__handle_b9_prev_value("cogage")
+
     def _missingness_behage(self) -> int:
         """Handles missingness for BEHAGE."""
         return self.__handle_b9_prev_value("behage")

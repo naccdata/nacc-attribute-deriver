@@ -23,7 +23,7 @@ from .schema.schema import (
     RuleFileModel,
 )
 from .symbol_table import SymbolTable
-from .utils.constants import CURATION_TYPE, REGRESSION_VARIABLES
+from .utils.constants import CURATION_TYPE
 from .utils.errors import AttributeDeriverError, OperationError
 from .utils.scope import FormScope, ScopeLiterals
 
@@ -259,11 +259,6 @@ class MissingnessDeriver(BaseAttributeDeriver):
                 key = f"v{float(formver):.1f}_{packet.upper()}"
                 if not self.__applicable_attributes.get(key, {}).get(rule.name):
                     applicable = False
-
-        # REGRESSION: let these go through even if they're not
-        # actually in the form version. remove once done testing
-        if not applicable and rule.name in REGRESSION_VARIABLES:
-            applicable = True
 
         # if applicable, try to see if this attribute has a specific
         # rule function attached to it, and call that
