@@ -35,8 +35,8 @@ class TestHeaderMissingness:
         table["file.info.forms.json.visitdate"] = "01/01/2025"
 
         attr = HeaderFormMissingness(table)
-        assert attr._missingness_header_visitdate() == '1990-03-13'
+        assert attr._missingness_header_visitdate() == "1990-03-13"
 
         table["_uds_visitdate"] = None
         attr = HeaderFormMissingness(table)
-        assert attr._missingness_header_visitdate() == '2025-01-01'
+        assert attr._missingness_header_visitdate() == "2025-01-01"

@@ -1,6 +1,7 @@
 """Class to handle form missingness values that check subject-level derived
 variables."""
 
+from datetime import date
 from typing import Optional, Tuple, Type
 
 from nacc_attribute_deriver.attributes.collection.attribute_collection import (
@@ -102,6 +103,8 @@ class FormMissingnessCollection(AttributeCollection):
         Returns:
             visitdate as a string, if found, None otherwise
         """
+        raw_visitdate: str | date | None = None
+
         if date_attribute:
             raw_visitdate = self.form.get_value(date_attribute, str)
         elif self.__uds_visitdate:

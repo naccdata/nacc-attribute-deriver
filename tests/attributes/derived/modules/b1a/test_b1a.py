@@ -55,8 +55,13 @@ class TestB1aFormAttributeCollection:
         with pytest.raises(MissingRequiredError) as e:
             B1aFormAttributeCollection(table)
 
+        assert (
+            str(e.value)
+            == "missing required attributes: file.info.forms.json.visitdate"
+        )
+
         table["_uds_visitdate"] = None
-        table["file.info.forms.json.visitdate"] = '01/05/2019'
+        table["file.info.forms.json.visitdate"] = "01/05/2019"
         table["file.info.forms.json.frmdateb1a"] = None
         attr = B1aFormAttributeCollection(table)
         assert str(attr.get_date()) == "2019-01-05"

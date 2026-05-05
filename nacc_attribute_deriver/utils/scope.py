@@ -35,10 +35,10 @@ class GeneticsScope(Scope):
 
 class NCRADBiomarkerScope(Scope):
     # ncrad biomarkers
-    PTAU217 = 'ptau217'
-    N2PB = 'n2pb'
-    ABETA40 = 'abeta40'
-    ABETA42 = 'abeta42'
+    PTAU217 = "ptau217"
+    N2PB = "n2pb"
+    ABETA40 = "abeta40"
+    ABETA42 = "abeta42"
 
 
 class SCANPETScope(Scope):
