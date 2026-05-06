@@ -55,17 +55,12 @@ class UDSFormA1Missingness(UDSMissingness):
         if zipcode is None:
             return INFORMED_BLANK
 
-        # Ensure between 006 - 999
+        zipcode = zipcode.strip()
         try:
             zipcode_int = int(zipcode)
-            if zipcode_int < 6 or zipcode_int > 999:
-                raise ValueError(f"{zipcode} out of range")
-
-        except (ValueError, TypeError) as e:
-            raise AttributeDeriverError(
-                f"Provided zip code {zipcode} is not a valid number between "
-                + f"006 - 999: {e}"
-            ) from e
+        except (ValueError, TypeError):
+            # some entries are not ints, so just return as-is
+            return zipcode
 
         # return formatted to 3 digits
         return f"{zipcode_int:03}"

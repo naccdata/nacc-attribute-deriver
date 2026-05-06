@@ -1,7 +1,5 @@
 """Tests UDS Form A1 missingness attributes."""
 
-import pytest
-
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_a1 import (
     UDSFormA1Missingness,
 )
@@ -9,7 +7,6 @@ from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
     INFORMED_MISSINGNESS,
 )
-from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class TestUDSFormA1Missingness:
@@ -149,35 +146,28 @@ class TestUDSFormA1Missingness:
         uds_table["file.info.forms.json"].update({"zip": None})
         assert attr._missingness_zip() == INFORMED_BLANK
 
-        # ensure within range
-        with pytest.raises(AttributeDeriverError) as e:
-            uds_table["file.info.forms.json"].update({"zip": "005"})
-            attr._missingness_zip()
+        # # ensure within range
+        # with pytest.raises(AttributeDeriverError) as e:
+        #     uds_table["file.info.forms.json"].update({"zip": "005"})
+        #     attr._missingness_zip()
 
-        assert (
-            "Provided zip code 005 is not a valid number between 006 - 999: "
-            + "005 out of range"
-            in str(e)
-        )
+        # assert (
+        #     "Provided zip code 005 is not a valid number between 006 - 999: "
+        #     + "005 out of range"
+        #     in str(e)
+        # )
 
-        # ensure within range
-        with pytest.raises(AttributeDeriverError) as e:
-            uds_table["file.info.forms.json"].update({"zip": "1000"})
-            attr._missingness_zip()
+        # # ensure within range
+        # with pytest.raises(AttributeDeriverError) as e:
+        #     uds_table["file.info.forms.json"].update({"zip": "1000"})
+        #     attr._missingness_zip()
 
-        assert (
-            "Provided zip code 1000 is not a valid number between 006 - 999: "
-            + "1000 out of range"
-            in str(e)
-        )
+        # assert (
+        #     "Provided zip code 1000 is not a valid number between 006 - 999: "
+        #     + "1000 out of range"
+        #     in str(e)
+        # )
 
-        # bad zip code
-        with pytest.raises(AttributeDeriverError) as e:
-            uds_table["file.info.forms.json"].update({"zip": "hello world"})
-            attr._missingness_zip()
-
-        assert (
-            "Provided zip code hello world is not a valid number between 006 - 999: "
-            + "invalid literal for int() with base 10"
-            in str(e)
-        )
+        # non-integer zip code
+        uds_table["file.info.forms.json"].update({"zip": "   hello world "})
+        assert attr._missingness_zip() == "hello world"
