@@ -393,7 +393,7 @@ uds,naccetpr,subject.info.cognitive.uds.etpr.latest,latest,TRUE
 uds,naccetpr,subject.info.cognitive.uds.etpr.all,set,FALSE
 uds,global_cdr,subject.info.cognitive.uds.cdrglob.initial,initial,TRUE
 uds,global_cdr,subject.info.cognitive.uds.cdrglob.latest,latest,TRUE
-uds,global_cdr,subject.info.cognitive.uds.cdrglob.set,set,FALSE
+uds,global_cdr,subject.info.cognitive.uds.cdrglob.all,set,FALSE
 uds,naccage,subject.info.demographics.uds.age.initial,initial,TRUE
 uds,naccage,subject.info.demographics.uds.age.latest,latest,TRUE
 uds,uds_sex,subject.info.demographics.uds.sex.latest,latest,TRUE

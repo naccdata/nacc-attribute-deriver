@@ -132,7 +132,7 @@ class CognitiveAttributeCollection(AttributeCollection):
 
             attribute_list.append(attribute)
 
-        return attribute_list
+        return sorted(attribute_list)
 
     def map_attributes(
         self, mapping: Mapping[str, str], expected_value: int
