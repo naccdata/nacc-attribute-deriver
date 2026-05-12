@@ -14,11 +14,16 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
-        "provenance": {
-            "file_id": "12345",
-            "file_name": "dummy_parent_file.csv",
-            "flywheel_path": "fw://some/path/in/fw",
-            "modified_date": "2020-01-01T00:00:00.000000+00:00",
+        "file": {
+            "info": {
+                "provenance": {
+                    "file_id": "12345",
+                    "file_name": "dummy_parent_file.csv",
+                    "flywheel_path": "fw://some/path/in/fw",
+                    "created_date": "2020-01-01T00:00:00.000000+00:00",
+                    "modified_date": "2025-01-01T00:00:00.000000+00:00",
+                }
+            }
         }
     }
 
@@ -32,25 +37,23 @@ class TestNCRADBiomarkerAttributeCollection:
         assert attr._create_past_ncrad_embargo() == 1
 
         # make the modified date now so it doesn't pass
-        table["provenance"]["modified_date"] = datetime.datetime.now(
+        table['file.info.provenance.created_date'] = datetime.datetime.now(
             datetime.timezone.utc
         ).isoformat()
         assert attr._create_past_ncrad_embargo() == 0
 
     def test_create_past_ncrad_embargo_bad_provenance(self, table):
         """Tests create_past_ncrad_embargo with bad data."""
-        table["provenance"]["modified_date"] = None
+        table["file.info.provenance.created_date"] = None
         attr = NCRADBiomarkerAttributeCollection(table)
 
         with pytest.raises(AttributeDeriverError) as e:
             assert attr._create_past_ncrad_embargo()
 
-        assert str(e.value) == "modified_date not found in biomarker provenance data"
+        assert str(e.value) == "created_date not found in biomarker provenance data"
 
-        table["provenance"]["modified_date"] = "hello world"
-        attr = NCRADBiomarkerAttributeCollection(table)
-
+        table["file.info.provenance.created_date"] = "hello world"
         with pytest.raises(AttributeDeriverError) as e:
             assert attr._create_past_ncrad_embargo()
 
-        assert str(e.value) == "Failed to calculate embargo date"
+        assert str(e.value) == "Failed to convert created_date to datetime object"

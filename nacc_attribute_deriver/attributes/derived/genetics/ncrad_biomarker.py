@@ -22,20 +22,25 @@ class NCRADBiomarkerAttributeCollection(AttributeCollection):
     def _create_past_ncrad_embargo(self) -> int:
         """Creates past_ncrad_embargo.
 
-        Determines whether biomarker data is ready to release.
+        Determines whether biomarker data is ready to release. A 90-day
+        embargo begins from the FIRST time data is distributed to centers,
+        hence usage of the created_date rather than a modified_date, as the
+        embargo does not restart if data is modified.
         """
         # date this data was released to ADRCs
-        provenance_date = self.__provenance.get_value("modified_date", str)
-        if not provenance_date:
+        created_date = self.__provenance.get_value("created_date", str)
+        if not created_date:
             raise AttributeDeriverError(
-                "modified_date not found in biomarker provenance data"
+                "created_date not found in biomarker provenance data"
             )
 
         try:
-            release_dt = datetime.datetime.fromisoformat(provenance_date)
+            release_dt = datetime.datetime.fromisoformat(created_date)
             now = datetime.datetime.now(datetime.timezone.utc)
         except (ValueError, TypeError) as e:
-            raise AttributeDeriverError("Failed to calculate embargo date") from e
+            raise AttributeDeriverError(
+                "Failed to convert created_date to datetime object"
+            ) from e
 
         # check if this data was distributed over 90 days ago
         return 1 if (now - release_dt) > datetime.timedelta(days=90) else 0
