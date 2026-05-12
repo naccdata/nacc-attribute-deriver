@@ -148,7 +148,7 @@ class ProvenanceNamespace(BaseNamespace):
         self,
         *,
         table: SymbolTable,
-        attribute_prefix: str = "provenance.",
+        attribute_prefix: str = "file.info.provenance.",
         required: frozenset[str] = frozenset(),
         date_attribute: Optional[str] = None,
     ) -> None:
