@@ -138,3 +138,23 @@ class RxClassNamespace(BaseNamespace):
             return []
 
         return [x.strip() for x in members]
+
+
+class ProvenanceNamespace(BaseNamespace):
+    """Namespace for attributes describing the provenance of the data, namely
+    the parent file it came from."""
+
+    def __init__(
+        self,
+        *,
+        table: SymbolTable,
+        attribute_prefix: str = "provenance.",
+        required: frozenset[str] = frozenset(),
+        date_attribute: Optional[str] = None,
+    ) -> None:
+        super().__init__(
+            table=table,
+            attribute_prefix=attribute_prefix,
+            required=required,
+            date_attribute=date_attribute,
+        )

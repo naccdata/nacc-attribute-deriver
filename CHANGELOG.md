@@ -17,6 +17,9 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Fix grabbing `subject.info.derived.affiliate` to be an integer, not a bool
 * rc2:
     * Do not enforce format on `zip` missingness
+    * Add 90-day embargo check on NCRAD biosamples
+        * Adds the `ProvenanceNamespace` to support this
+    * Prefixes APOE scopes with `ncrad`
 
 ## 2.2.1
 

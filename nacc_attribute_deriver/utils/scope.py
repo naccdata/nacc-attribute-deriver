@@ -27,18 +27,18 @@ class FormScope(Scope):
 
 class GeneticsScope(Scope):
     # genetics
-    APOE = "apoe"
-    HISTORIC_APOE = "historic_apoe"
-    NIAGADS_AVAILABILITY = "niagads_availability"
+    APOE = "ncrad_apoe"
+    HISTORIC_APOE = "ncrad_historic_apoe"
     NCRAD_BIOSAMPLES = "ncrad_biosamples"
+    NIAGADS_AVAILABILITY = "niagads_availability"
 
 
 class NCRADBiomarkerScope(Scope):
     # ncrad biomarkers
-    PTAU217 = "ptau217"
-    N2PB = "n2pb"
-    ABETA40 = "abeta40"
-    ABETA42 = "abeta42"
+    PTAU217 = "ncrad_biomarker_ptau217"
+    N2PB = "ncrad_biomarker_n2pb"
+    ABETA40 = "ncrad_biomarker_abeta40"
+    ABETA42 = "ncrad_biomarker_abeta42"
 
 
 class SCANPETScope(Scope):
