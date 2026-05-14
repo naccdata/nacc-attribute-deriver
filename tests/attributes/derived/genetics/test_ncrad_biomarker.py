@@ -37,7 +37,7 @@ class TestNCRADBiomarkerAttributeCollection:
         assert attr._create_past_ncrad_embargo() == 1
 
         # make the modified date now so it doesn't pass
-        table['file.info.provenance.created_date'] = datetime.datetime.now(
+        table["file.info.provenance.created_date"] = datetime.datetime.now(
             datetime.timezone.utc
         ).isoformat()
         assert attr._create_past_ncrad_embargo() == 0

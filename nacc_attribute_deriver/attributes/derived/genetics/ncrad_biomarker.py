@@ -23,9 +23,10 @@ class NCRADBiomarkerAttributeCollection(AttributeCollection):
         """Creates past_ncrad_embargo.
 
         Determines whether biomarker data is ready to release. A 90-day
-        embargo begins from the FIRST time data is distributed to centers,
-        hence usage of the created_date rather than a modified_date, as the
-        embargo does not restart if data is modified.
+        embargo begins from the FIRST time data is distributed to
+        centers, hence usage of the created_date rather than a
+        modified_date, as the embargo does not restart if data is
+        modified.
         """
         # date this data was released to ADRCs
         created_date = self.__provenance.get_value("created_date", str)
