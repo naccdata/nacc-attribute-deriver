@@ -15,7 +15,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Adds NCRAD biomarker 
     * Updates header missingness to use `_uds_visitdate` if form belongs to the same session as an UDS visit
     * Fix grabbing `subject.info.derived.affiliate` to be an integer, not a bool
-* rc2:
+* final release:
     * Do not enforce format on `zip` missingness
     * Add 90-day embargo check on NCRAD biosamples
         * Adds the `ProvenanceNamespace` to support this
