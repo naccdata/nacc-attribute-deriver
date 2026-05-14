@@ -1,7 +1,7 @@
-"""Tests NCRAD genetic attributes."""
+"""Tests NCRAD APOE attributes."""
 
 import pytest
-from nacc_attribute_deriver.attributes.derived.genetics.ncrad import (
+from nacc_attribute_deriver.attributes.derived.genetics.ncrad_apoe import (
     HistoricalNCRADAPOEAttributeCollection,
     NCRADAPOEAttributeCollection,
 )

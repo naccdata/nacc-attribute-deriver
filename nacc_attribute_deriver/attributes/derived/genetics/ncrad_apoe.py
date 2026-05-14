@@ -1,4 +1,4 @@
-"""NCRAD-specific derived variables.
+"""NCRAD APOE derived variables.
 
 For APOE there are both historical (ADC-reported) and NCRAD APOE values.
 From Genetics RDD:
@@ -17,6 +17,7 @@ from nacc_attribute_deriver.attributes.namespace.namespace import (
     WorkingNamespace,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 class NCRADAPOEAttributeCollection(AttributeCollection):
@@ -96,8 +97,8 @@ class HistoricalNCRADAPOEAttributeCollection(AttributeCollection):
         # to make sure entire rows lines up, else there's an issue
         for field in ["apoecenter", "apoenp", "apoeadgc", "adcapoe", "apoecomm"]:
             source_apoe = self.__apoe.get_value(field, int)
-            if source_apoe:
-                assert source_apoe == apoe, (
+            if source_apoe and source_apoe != apoe:
+                raise AttributeDeriverError(
                     f"Source {field} with value {source_apoe} does not match "
                     + f"expected apoe value {apoe}"
                 )
@@ -118,15 +119,3 @@ class HistoricalNCRADAPOEAttributeCollection(AttributeCollection):
             return 2
 
         return 9
-
-
-class NCRADBiosampleAttributeCollection(AttributeCollection):
-    """Class to collect historical NCRAD biosample attributes."""
-
-    def _create_naccncrd(self) -> int:
-        """Create NACCNCRD. From makerddgen.sas.
-
-        See docs/ncrad.md for notes on this variable. Basically if this
-        is called at all, file exists, so set NACCNCRD to 1.
-        """
-        return 1

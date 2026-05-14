@@ -46,7 +46,7 @@ class TestAttributeDeriver:
         """APOE/NCRAD namespaces."""
         attr = AttributeDeriver()
 
-        assert self.__extract_attributes(attr.get_curation_rules("apoe"), 4) == {
+        assert self.__extract_attributes(attr.get_curation_rules("ncrad_apoe"), 4) == {
             "subject.info.derived.cross-sectional.naccapoe",
             "subject.info.derived.cross-sectional.naccne4s",
             "file.info.derived.naccapoe",
@@ -54,7 +54,7 @@ class TestAttributeDeriver:
         }
 
         assert self.__extract_attributes(
-            attr.get_curation_rules("historic_apoe"), 3
+            attr.get_curation_rules("ncrad_historic_apoe"), 3
         ) == {
             "subject.info.derived.cross-sectional.naccapoe",
             "subject.info.working.cross-sectional.historic-apoe",

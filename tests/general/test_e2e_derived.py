@@ -161,7 +161,7 @@ def test_ncrad_apoe():
     form["file.info.raw"] = {"a1": "E4", "a2": "E2"}
 
     deriver = AttributeDeriver()
-    deriver.curate(form, "apoe")
+    deriver.curate(form, "ncrad_apoe")
     assert form["subject.info.derived.cross-sectional"] == {
         "naccapoe": 5,
         "naccne4s": 1,
