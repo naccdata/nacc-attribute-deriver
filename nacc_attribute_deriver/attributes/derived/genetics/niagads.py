@@ -26,6 +26,8 @@ class NIAGADSAttributeCollection(AttributeCollection):
                     "niagads_wes",
                     "adgc_gwas",
                     "adgc_exomechip",
+                    "gwas_round",
+                    "exome_round",
                 ]
             ),
         )
@@ -56,8 +58,8 @@ class NIAGADSAttributeCollection(AttributeCollection):
         """NIAGADS WES investigator availability."""
         return self._evaluate_investigator_status("niagads_wes")
 
-    def _evaluate_accession(self, attribute: str) -> str:
-        """Evaluate accession number. Returns 88 if missing.
+    def _evaluate_string_value(self, attribute: str) -> str:
+        """Evaluates string value. Returns 88 if missing.
 
         Args:
             attribute: name of attribute
@@ -67,19 +69,19 @@ class NIAGADSAttributeCollection(AttributeCollection):
 
     def _create_ngdsgwac(self) -> str:
         """NGDSGWAC - NIAGADS GWAS accession number."""
-        return self._evaluate_accession("niagads_gwas")
+        return self._evaluate_string_value("niagads_gwas")
 
     def _create_ngdsexac(self) -> str:
         """NGDSEXAC - NIAGADS ExomeChip accession number."""
-        return self._evaluate_accession("niagads_exomechip")
+        return self._evaluate_string_value("niagads_exomechip")
 
     def _create_ngdswgac(self) -> str:
         """NGDSWGAC - NIAGADS whole genome sequencing accession number."""
-        return self._evaluate_accession("niagads_wgs")
+        return self._evaluate_string_value("niagads_wgs")
 
     def _create_ngdsweac(self) -> str:
         """NGDSWEAC - NIAGADS whole exome sequencing accession number."""
-        return self._evaluate_accession("niagads_wes")
+        return self._evaluate_string_value("niagads_wes")
 
     def _create_adgcgwas(self) -> int:
         """ADGCGWAS - GWAS available from ADGC (y/n)."""
@@ -91,10 +93,8 @@ class NIAGADSAttributeCollection(AttributeCollection):
 
     def _create_adgcrnd(self) -> str:
         """ADGCRND - ADGC data-selection round. Can be blank."""
-        value = self.__niagads.get_value("gwas_round", str)
-        return value if value else "88"
+        return self._evaluate_string_value("gwas_round")
 
     def _create_adgcexr(self) -> str:
         """ADGCEXR - ExomeChip genotyping round. Can be blank."""
-        value = self.__niagads.get_value("exome_round", str)
-        return value if value else "88"
+        return self._evaluate_string_value("exome_round")

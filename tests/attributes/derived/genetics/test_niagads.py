@@ -8,7 +8,7 @@ from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
 @pytest.fixture(scope="function")
-def attr() -> NIAGADSAttributeCollection:
+def table() -> SymbolTable:
     """Create dummy data and return it in an attribute object."""
     data = {
         "file": {
@@ -27,12 +27,14 @@ def attr() -> NIAGADSAttributeCollection:
         }
     }
 
-    return NIAGADSAttributeCollection(SymbolTable(data))
+    return SymbolTable(data)
 
 
 class TestNIAGADSAttribute:
-    def test_create_niagads(self, attr):
+    def test_create_niagads(self, table):
         """Tests creating NGDS* variables."""
+        attr = NIAGADSAttributeCollection(table)
+
         assert attr._create_ngdsgwas() == 1
         assert attr._create_ngdsexom() == 1
         assert attr._create_ngdswgs() == 0
@@ -41,3 +43,11 @@ class TestNIAGADSAttribute:
         assert attr._create_adgcexom() == 0
         assert attr._create_adgcrnd() == "ADC 0"
         assert attr._create_adgcexr() == "Exome1"
+
+    def test_create_niagads_missingness(self, table):
+        """Tests creating NGDS* variables in the missingness case."""
+        table["file.info.raw"].update({"gwas_round": "0", "exome_round": 0})
+
+        attr = NIAGADSAttributeCollection(table)
+        assert attr._create_adgcrnd() == "88"
+        assert attr._create_adgcexr() == "88"

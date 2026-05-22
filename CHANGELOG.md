@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.3.1
+
+* Update NIAGADS logic to account for `gwas_round` and `exome_round` being 0
+
 ## 2.3.0
 
 * rc1:
