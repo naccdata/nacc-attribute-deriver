@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.4.0
+
+* Adds ADGC dataset-specific logic - essentially an extension of the UDS logic and belongs to the UDS namespace
+
 ## 2.3.1
 
 * Update NIAGADS logic to account for `gwas_round` and `exome_round` being 0

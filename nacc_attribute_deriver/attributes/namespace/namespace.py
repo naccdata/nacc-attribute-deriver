@@ -391,7 +391,8 @@ class SubjectDerivedNamespace(BaseNamespace):
     def get_prev_longitudinal_record(
         self, attribute: str, attr_type: Type[T]
     ) -> Optional[DateTaggedValue]:
-        """Gets the previous record - pulls from longitudinal records.
+        """Gets the previous record - pulls from longitudinal records, e.g.
+        the latest one documented.
 
         Args:
             attribute: The field to grab the previous longitudinal record for
