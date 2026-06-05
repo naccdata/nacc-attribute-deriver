@@ -240,8 +240,8 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
 
         Args:
             attribute: Attributes to check if any == 1 (PRIMARY)
-            check_primdxd1b: If true, PRIMDXD1B (has_primary_d1b) must also be 0
-                for this to return True
+            check_primdxd1b: If true, PRIMDXD1B (has_primary_d1b) must also be
+                False for the candidate attributes to set this to true
 
         Returns:
             Whether or not this visit has a primary dx
