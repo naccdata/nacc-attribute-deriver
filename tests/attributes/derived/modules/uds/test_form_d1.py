@@ -249,10 +249,10 @@ class TestUDSFormD1bAttribute:
         # causes PRIMDX1B = 0
         set_attribute(table, form_prefix, "alzdisif", 0)
 
-        set_attribute(table, form_prefix, 'othdepdif', 1)
+        set_attribute(table, form_prefix, "othdepdif", 1)
         assert attr._create_naccetpr() == 19
 
-        set_attribute(table, form_prefix, 'othdepdif', 0)
+        set_attribute(table, form_prefix, "othdepdif", 0)
         set_attribute(table, form_prefix, "tbidxif", 1)
         assert attr._create_naccetpr() == 13
 

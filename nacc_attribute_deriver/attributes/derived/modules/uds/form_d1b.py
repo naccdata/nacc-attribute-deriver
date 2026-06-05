@@ -234,12 +234,13 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
 
         return not all(x == 0 or x is None for x in all_attributes)
 
-    def has_primary(self, attributes: List[str], check_primary: bool = False) -> bool:
-        """Returns true if any of the attributes == 1 (Primary). False otherwise.
+    def has_primary(self, attributes: List[str], check_primdxd1b: bool = False) -> bool:
+        """Returns true if any of the attributes == 1 (Primary). False
+        otherwise.
 
         Args:
             attribute: Attributes to check if any == 1 (PRIMARY)
-            check_primary: If true, PRIMDXD1B (has_primary_d1b) must also be 0
+            check_primdxd1b: If true, PRIMDXD1B (has_primary_d1b) must also be 0
                 for this to return True
 
         Returns:
@@ -247,7 +248,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         """
 
         # For V4, some rules require PRIMDXD1B = False
-        if check_primary and self.formver >= 4 and self.has_primary_d1b():
+        if self.formver >= 4 and check_primdxd1b and self.has_primary_d1b():
             return False
 
         overall_status = self.get_contr_status(attributes)
@@ -295,45 +296,47 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return 12
         if self.formver < 4 and self.has_primary(["brninjif"]):
             return 13
-        if self.formver >= 4 and self.has_primary(["tbidxif"], check_primary=True):
+        if self.formver >= 4 and self.has_primary(["tbidxif"], check_primdxd1b=True):
             return 13
-        if self.has_primary(["hycephif"], check_primary=True):
+        if self.has_primary(["hycephif"], check_primdxd1b=True):
             return 14
-        if self.has_primary(["epilepif"], check_primary=True):
+        if self.has_primary(["epilepif"], check_primdxd1b=True):
             return 15
-        if self.has_primary(["neopif"], check_primary=True):
+        if self.has_primary(["neopif"], check_primdxd1b=True):
             return 16
-        if self.has_primary(["hivif"], check_primary=True):
+        if self.has_primary(["hivif"], check_primdxd1b=True):
             return 17
-        if self.has_primary(["othcillif"], check_primary=True):
+        if self.has_primary(["othcillif"], check_primdxd1b=True):
             return 18
-        if self.formver < 4 and self.has_primary(["depif"], check_primary=True):
+        if self.formver < 4 and self.has_primary(["depif"], check_primdxd1b=True):
             return 19
-        if self.formver >= 4 and self.has_primary(['majdepdif', 'othdepdif'], check_primary=True):
+        if self.formver >= 4 and self.has_primary(
+            ["majdepdif", "othdepdif"], check_primdxd1b=True
+        ):
             return 19
-        if self.has_primary(["bipoldif"], check_primary=True):
+        if self.has_primary(["bipoldif"], check_primdxd1b=True):
             return 20
-        if self.has_primary(["schizoif"], check_primary=True):
+        if self.has_primary(["schizoif"], check_primdxd1b=True):
             return 21
-        if self.has_primary(["anxietif"], check_primary=True):
+        if self.has_primary(["anxietif"], check_primdxd1b=True):
             return 22
-        if self.has_primary(["delirif"], check_primary=True):
+        if self.has_primary(["delirif"], check_primdxd1b=True):
             return 23
-        if self.has_primary(["ptsddxif"], check_primary=True):
+        if self.has_primary(["ptsddxif"], check_primdxd1b=True):
             return 24
-        if self.has_primary(["othpsyif"], check_primary=True):
+        if self.has_primary(["othpsyif"], check_primdxd1b=True):
             return 25
-        if self.has_primary(["alcdemif"], check_primary=True):
+        if self.has_primary(["alcdemif"], check_primdxd1b=True):
             return 26
-        if self.has_primary(["impsubif"], check_primary=True):
+        if self.has_primary(["impsubif"], check_primdxd1b=True):
             return 27
-        if self.has_primary(["dysillif"], check_primary=True):
+        if self.has_primary(["dysillif"], check_primdxd1b=True):
             return 28
-        if self.has_primary(["medsif"], check_primary=True):
+        if self.has_primary(["medsif"], check_primdxd1b=True):
             return 29
         if self.has_primary(["cogothif", "cogoth2f", "cogoth3f"]):
             return 30
-        if self.has_primary(["ndevdisif"], check_primary=True):
+        if self.has_primary(["ndevdisif"], check_primdxd1b=True):
             return 31
         if self.has_primary(["cteif"]):
             return 32
