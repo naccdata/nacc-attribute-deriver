@@ -235,13 +235,19 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         return not all(x == 0 or x is None for x in all_attributes)
 
     def has_primary(self, attributes: List[str], check_primary: bool = False) -> bool:
-        """Returns true if any of the attributes == 1 (Primary).
+        """Returns true if any of the attributes == 1 (Primary). False otherwise.
 
-        False otherwise.
+        Args:
+            attribute: Attributes to check if any == 1 (PRIMARY)
+            check_primary: If true, PRIMDXD1B (has_primary_d1b) must also be 0
+                for this to return True
+
+        Returns:
+            Whether or not this visit has a primary dx
         """
 
         # For V4, some rules require PRIMDXD1B = False
-        if self.formver >= 4 and self.has_primary_d1b():
+        if check_primary and self.formver >= 4 and self.has_primary_d1b():
             return False
 
         overall_status = self.get_contr_status(attributes)
@@ -323,7 +329,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return 28
         if self.has_primary(["medsif"], check_primary=True):
             return 29
-        if self.has_primary(["cogothif", "cogoth2f", "cogoth3f"], check_primary=True):
+        if self.has_primary(["cogothif", "cogoth2f", "cogoth3f"]):
             return 30
         if self.has_primary(["ndevdisif"], check_primary=True):
             return 31
