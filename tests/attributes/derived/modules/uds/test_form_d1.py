@@ -246,8 +246,13 @@ class TestUDSFormD1bAttribute:
         assert attr._create_naccetpr() == 1
 
         # ensure PRIMDXD1B controls result
-        # causes PRIMDX1B = 0, so 13 is hit
+        # causes PRIMDX1B = 0
         set_attribute(table, form_prefix, "alzdisif", 0)
+
+        set_attribute(table, form_prefix, 'othdepdif', 1)
+        assert attr._create_naccetpr() == 19
+
+        set_attribute(table, form_prefix, 'othdepdif', 0)
         set_attribute(table, form_prefix, "tbidxif", 1)
         assert attr._create_naccetpr() == 13
 
@@ -255,3 +260,14 @@ class TestUDSFormD1bAttribute:
         set_attribute(table, form_prefix, "lateif", 1)
         set_attribute(table, form_prefix, "tbidxif", 1)
         assert attr._create_naccetpr() == 34
+
+        # other cases
+        set_attribute(table, form_prefix, "lateif", 0)
+        set_attribute(table, form_prefix, "tbidxif", 0)
+        set_attribute(table, form_prefix, "othcogif", 1)
+        set_attribute(table, form_prefix, "othcillif", 1)
+        assert attr._create_naccetpr() == 99
+
+        set_attribute(table, form_prefix, "othcogif", 0)
+        set_attribute(table, form_prefix, "othcillif", 1)
+        assert attr._create_naccetpr() == 18

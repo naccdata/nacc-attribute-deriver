@@ -271,7 +271,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return 1
         if self.formver < 3 and self.has_primary(["dlbif", "parkif"]):
             return 2
-        if self.formver >= 3 and self.has_primary(["lbdif"]):
+        if self.has_primary(["lbdif"]):
             return 2
         if self.has_primary(["msaif"]):
             return 3
@@ -305,9 +305,11 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return 16
         if self.has_primary(["hivif"], check_primary=True):
             return 17
-        if self.has_primary(["othcogif", "othcillif"], check_primary=True):
+        if self.has_primary(["othcillif"], check_primary=True):
             return 18
-        if self.has_primary(["depif"], check_primary=True):
+        if self.formver < 4 and self.has_primary(["depif"], check_primary=True):
+            return 19
+        if self.formver >= 4 and self.has_primary(['majdepdif', 'othdepdif'], check_primary=True):
             return 19
         if self.has_primary(["bipoldif"], check_primary=True):
             return 20

@@ -4,7 +4,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 ## 2.3.2
 
-* Fixes bug where `check_primary` was not being used in the V4 NACCETPR logic, causing all V4 visits to check `PRIMDXD1B`
+* Fixes bugs in NACCETPR logic, the biggest being that `check_primary` was not being used in the V4 NACCETPR logic, causing all V4 visits to check `PRIMDXD1B`
 
 ## 2.3.1
 
