@@ -54,88 +54,6 @@ class TestUDSFormD1Attribute:
         assert attr.generate_mci() == 0
 
 
-class TestUDSFormD1bAttribute:
-    def test_create_naccalzp(self, table, form_prefix):
-        """Tests creating NACCALZP."""
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_naccalzp() == 8
-
-        set_attribute(table, form_prefix, "normcog", 0)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_naccalzp() == 7
-
-        for field in ["probadif", "possadif", "alzdisif"]:
-            for status in ContributionStatus.all():
-                set_attribute(table, form_prefix, field, status)
-                attr = UDSFormD1bAttribute(table)
-                assert attr._create_naccalzp() == status
-                set_attribute(table, form_prefix, field, None)
-
-        set_attribute(table, form_prefix, "probadif", 3)
-        set_attribute(table, form_prefix, "possadif", 2)
-        set_attribute(table, form_prefix, "alzdisif", 1)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_naccalzp() == 1
-
-    def test_create_nacclbde(self, table, form_prefix):
-        """Tests creating NACCLBDE."""
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbde() == 8
-
-        set_attribute(table, form_prefix, "normcog", 0)
-
-        # formver != 3
-        set_attribute(table, form_prefix, "park", 0)
-        set_attribute(table, form_prefix, "dlb", 0)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbde() == 0
-
-        set_attribute(table, form_prefix, "dlb", 1)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbde() == 1
-
-        # formver == 3
-        set_attribute(table, form_prefix, "formver", 3)
-        for value in [0, 1, 3]:
-            set_attribute(table, form_prefix, "lbdis", value)
-            attr = UDSFormD1bAttribute(table)
-
-            if value == 3:
-                assert attr._create_nacclbde() == 0
-            else:
-                assert attr._create_nacclbde() == value
-
-    def test_create_nacclbdp(self, table, form_prefix):
-        """Tests creating NACCLBDP."""
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbdp() == 8
-
-        set_attribute(table, form_prefix, "normcog", 0)
-
-        # relies on nacclbde == 0
-        set_attribute(table, form_prefix, "lbdis", 0)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbdp() == 7
-
-        set_attribute(table, form_prefix, "formver", 3.0)
-        for status in ContributionStatus.all():
-            set_attribute(table, form_prefix, "lbdif", status)
-            attr = UDSFormD1bAttribute(table)
-            assert attr._create_nacclbdp() == status
-
-        set_attribute(table, form_prefix, "formver", 2.0)
-        set_attribute(table, form_prefix, "dlbif", 3)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbdp() == 3
-        set_attribute(table, form_prefix, "parkif", 1)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbdp() == 1
-
-        set_attribute(table, form_prefix, "formver", 3)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_nacclbdp() == 3
-
-
 class TestUDSFormD1aAttribute:
     def test_naccppme(self, table, form_prefix):
         """Tests NACCPPME."""
@@ -232,3 +150,124 @@ class TestUDSFormD1aAttribute:
         attr = UDSFormD1aAttribute(uds_table)
         assert attr._create_naccmcii() == 1 if naccmcii == 1 else 8
         assert attr._create_naccmcii_working() == naccmcii
+
+
+class TestUDSFormD1bAttribute:
+    def test_create_naccalzp(self, table, form_prefix):
+        """Tests creating NACCALZP."""
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccalzp() == 8
+
+        set_attribute(table, form_prefix, "normcog", 0)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccalzp() == 7
+
+        for field in ["probadif", "possadif", "alzdisif"]:
+            for status in ContributionStatus.all():
+                set_attribute(table, form_prefix, field, status)
+                attr = UDSFormD1bAttribute(table)
+                assert attr._create_naccalzp() == status
+                set_attribute(table, form_prefix, field, None)
+
+        set_attribute(table, form_prefix, "probadif", 3)
+        set_attribute(table, form_prefix, "possadif", 2)
+        set_attribute(table, form_prefix, "alzdisif", 1)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccalzp() == 1
+
+    def test_create_nacclbde(self, table, form_prefix):
+        """Tests creating NACCLBDE."""
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbde() == 8
+
+        set_attribute(table, form_prefix, "normcog", 0)
+
+        # formver != 3
+        set_attribute(table, form_prefix, "park", 0)
+        set_attribute(table, form_prefix, "dlb", 0)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbde() == 0
+
+        set_attribute(table, form_prefix, "dlb", 1)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbde() == 1
+
+        # formver == 3
+        set_attribute(table, form_prefix, "formver", 3)
+        for value in [0, 1, 3]:
+            set_attribute(table, form_prefix, "lbdis", value)
+            attr = UDSFormD1bAttribute(table)
+
+            if value == 3:
+                assert attr._create_nacclbde() == 0
+            else:
+                assert attr._create_nacclbde() == value
+
+    def test_create_nacclbdp(self, table, form_prefix):
+        """Tests creating NACCLBDP."""
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbdp() == 8
+
+        set_attribute(table, form_prefix, "normcog", 0)
+
+        # relies on nacclbde == 0
+        set_attribute(table, form_prefix, "lbdis", 0)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbdp() == 7
+
+        set_attribute(table, form_prefix, "formver", 3.0)
+        for status in ContributionStatus.all():
+            set_attribute(table, form_prefix, "lbdif", status)
+            attr = UDSFormD1bAttribute(table)
+            assert attr._create_nacclbdp() == status
+
+        set_attribute(table, form_prefix, "formver", 2.0)
+        set_attribute(table, form_prefix, "dlbif", 3)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbdp() == 3
+        set_attribute(table, form_prefix, "parkif", 1)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbdp() == 1
+
+        set_attribute(table, form_prefix, "formver", 3)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbdp() == 3
+
+    def test__create_naccetpr_v4(self, table, form_prefix):
+        """Tests creating NACCETPR (V4 logic)."""
+        set_attribute(table, form_prefix, "formver", 4)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccetpr() == 88
+
+        set_attribute(table, form_prefix, "normcog", 0)
+        attr = UDSFormD1bAttribute(table)
+
+        set_attribute(table, form_prefix, "alzdisif", 1)
+        assert attr._create_naccetpr() == 1
+
+        # ensure PRIMDXD1B controls result
+        # causes PRIMDX1B = 0
+        set_attribute(table, form_prefix, "alzdisif", 0)
+
+        set_attribute(table, form_prefix, "othdepdif", 1)
+        assert attr._create_naccetpr() == 19
+
+        set_attribute(table, form_prefix, "othdepdif", 0)
+        set_attribute(table, form_prefix, "tbidxif", 1)
+        assert attr._create_naccetpr() == 13
+
+        # causes PRIMDX1B = 1, so we skip 13 and go to 34
+        set_attribute(table, form_prefix, "lateif", 1)
+        set_attribute(table, form_prefix, "tbidxif", 1)
+        assert attr._create_naccetpr() == 34
+
+        # other cases
+        set_attribute(table, form_prefix, "lateif", 0)
+        set_attribute(table, form_prefix, "tbidxif", 0)
+        set_attribute(table, form_prefix, "othcogif", 1)
+        set_attribute(table, form_prefix, "othcillif", 1)
+        assert attr._create_naccetpr() == 99
+
+        set_attribute(table, form_prefix, "othcogif", 0)
+        set_attribute(table, form_prefix, "othcillif", 1)
+        assert attr._create_naccetpr() == 18
