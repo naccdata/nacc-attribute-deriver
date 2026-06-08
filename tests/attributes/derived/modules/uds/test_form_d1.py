@@ -233,7 +233,7 @@ class TestUDSFormD1bAttribute:
         attr = UDSFormD1bAttribute(table)
         assert attr._create_nacclbdp() == 3
 
-    def test__create_naccetpr_v4(self, table, form_prefix):
+    def test_create_naccetpr_v4(self, table, form_prefix):
         """Tests creating NACCETPR (V4 logic)."""
         set_attribute(table, form_prefix, "formver", 4)
         attr = UDSFormD1bAttribute(table)
@@ -270,4 +270,18 @@ class TestUDSFormD1bAttribute:
 
         set_attribute(table, form_prefix, "othcogif", 0)
         set_attribute(table, form_prefix, "othcillif", 1)
+        assert attr._create_naccetpr() == 18
+
+    def test_create_naccetpr_v4_18(self, table, form_prefix):
+        """Tests creating NACCETPR = 18."""
+        set_attribute(table, form_prefix, "normcog", 0)
+        set_attribute(table, form_prefix, "formver", random.choice([1, 2, 3]))
+        set_attribute(table, form_prefix, "othcogif", 1)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccetpr() == 18
+
+        set_attribute(table, form_prefix, "formver", 4)
+        set_attribute(table, form_prefix, "othcogif", 0)
+        set_attribute(table, form_prefix, "othcillif", 1)
+        attr = UDSFormD1bAttribute(table)
         assert attr._create_naccetpr() == 18
