@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## Unreleased
+
+* Adds scope for DS module
+
 ## 2.3.3
 
 * Fixes NACCETPR = 18 bug
