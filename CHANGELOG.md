@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 2.3.4 (Unreleased)
 
 * Adds scope for DS module, and adds attribute for its header to ensure association with an UDS visit
+* Fixes NP bug with NACCADMU and NACCFTDM
 
 ## 2.3.3
 

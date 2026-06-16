@@ -39,8 +39,18 @@ def subject_derived_prefix():
 
 
 @fixture
+def subject_derived_cs_prefix():
+    return "subject.info.derived.cross-sectional."
+
+
+@fixture
 def working_derived_prefix():
     return "subject.info.working."
+
+
+@fixture
+def working_derived_cs_prefix():
+    return "subject.info.working.cross-sectional."
 
 
 @fixture(scope="function")
