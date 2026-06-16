@@ -29,6 +29,10 @@ class ADGCDatasetAttribute(UDSAttributeCollection):
         self.__d1a = UDSFormD1aAttribute(table=table)
         self.__d1b = UDSFormD1bAttribute(table=table)
 
+        # these attributes rely heavily on NACCETPR, so just compute
+        # once and set as an instance variable
+        self.__naccetpr = self.__d1b._create_naccetpr()
+
     def _create_clindiag(self) -> int:
         """Creates CLINDIAG (clinical diagnosis).
         Need to evaluate in reverse order (exclusionary, MCI, Case, then Control).
@@ -72,8 +76,7 @@ class ADGCDatasetAttribute(UDSAttributeCollection):
         # get latest NACCUDSD and NACCETPR values, which are also used
         # for the other cases
         naccudsd = self.__d1a._create_naccudsd()
-        naccetpr = self.__d1b._create_naccetpr()
-        if naccudsd == 2 or naccetpr not in [1, 88, 99]:
+        if naccudsd == 2 or self.__naccetpr not in [1, 88, 99]:
             return 8
 
         ######################
@@ -101,3 +104,10 @@ class ADGCDatasetAttribute(UDSAttributeCollection):
 
         # default (-4)
         return INFORMED_MISSINGNESS
+
+    # NAREASON - use NACCETPR directly
+    # TODO: need updated definitions for NACCETPR = 31 - 34?
+
+    def _create_neurodiag(self) -> int:
+        """Creates NEURODIAG - neuropath diagnosis."""
+

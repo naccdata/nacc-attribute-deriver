@@ -602,3 +602,8 @@ class NPFormAttributeCollection(AttributeCollection):
         V10+
         """
         return self.__np.get_value("nppdxq", int)
+
+    def _create_npadnc(self) -> Optional[int]:
+        """Keeps track of NPADNC - required for NEURODIAG in ADGC.
+        """
+        return self.__np.get_value("npadnc", int)

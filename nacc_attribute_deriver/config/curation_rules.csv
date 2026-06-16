@@ -105,6 +105,7 @@ np,np_death_date,subject.info.working.cross-sectional.np-death-date,update,TRUE
 np,npchrom,subject.info.working.cross-sectional.npchrom,update,FALSE
 np,nppdxp,subject.info.working.cross-sectional.nppdxp,update,FALSE
 np,nppdxq,subject.info.working.cross-sectional.nppdxq,update,FALSE
+np,npadnc,subject.info.working.cross-sectional.npadnc,update,FALSE
 np,np_form_date,subject.info.working.cross-sectional.np-form-date,update,FALSE
 cls,naccengl,subject.info.derived.cross-sectional.naccengl,update,FALSE
 cls,naccspnl,subject.info.derived.cross-sectional.naccspnl,update,FALSE
@@ -472,4 +473,9 @@ uds,parkage,subject.info.working.cross-sectional.parkage,update,FALSE
 uds,naccfam,subject.info.derived.longitudinal.naccfam,list,TRUE
 uds,naccmom,subject.info.derived.longitudinal.naccmom,list,TRUE
 uds,naccdad,subject.info.derived.longitudinal.naccdad,list,TRUE
+uds,clindiag,subject.info.derived.cross-sectional.clindiag,update,FALSE
+uds,neurodiag,subject.info.derived.cross-sectional.neurodiag,update,FALSE
+uds,autopsyconf,subject.info.derived.cross-sectional.autopsyconf,update,FALSE
+uds,incad,subject.info.derived.cross-sectional.incad,update,FALSE
+uds,prevad,subject.info.derived.cross-sectional.prevad,update,FALSE
 bds,bds_naccdage,file.info.derived.naccdage,update,FALSE
