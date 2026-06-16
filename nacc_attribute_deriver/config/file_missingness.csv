@@ -45,6 +45,9 @@ lbd,lbapaage,file.info.resolved.lbapaage,update,FALSE,int
 lbd,sccofrst,file.info.resolved.sccofrst,update,FALSE,int
 lbd,sccoagen,file.info.resolved.sccoagen,update,FALSE,int
 lbd,sccoaged,file.info.resolved.sccoaged,update,FALSE,int
+ds,header_adcid,file.info.resolved.adcid,update,FALSE,int
+ds,header_formver,file.info.resolved.formver,update,FALSE,float
+ds,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
 mds,header_adcid,file.info.resolved.adcid,update,FALSE,int
 mds,header_formver,file.info.resolved.formver,update,FALSE,float
 mds,header_visitdate,file.info.resolved.visitdate,update,FALSE,str

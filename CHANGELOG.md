@@ -2,9 +2,21 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## 2.4.0
+## 2.4.0 (Unreleased)
 
 * Adds ADGC dataset-specific logic - essentially an extension of the UDS logic and belongs to the UDS namespace
+
+## 2.3.4 (Unreleased)
+
+* Adds scope for DS module, and adds attribute for its header to ensure association with an UDS visit
+
+## 2.3.3
+
+* Fixes NACCETPR = 18 bug
+
+## 2.3.2
+
+* Fixes bugs in NACCETPR logic, the biggest being that `check_primary` was not being used in the V4 NACCETPR logic, causing all V4 visits to check `PRIMDXD1B`
 
 ## 2.3.1
 
