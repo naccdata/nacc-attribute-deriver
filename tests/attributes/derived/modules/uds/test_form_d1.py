@@ -285,3 +285,79 @@ class TestUDSFormD1bAttribute:
         set_attribute(table, form_prefix, "othcillif", 1)
         attr = UDSFormD1bAttribute(table)
         assert attr._create_naccetpr() == 18
+
+    def test_create_naccadmu(
+        self, table, form_prefix, working_derived_cs_prefix, subject_derived_cs_prefix
+    ):
+        """Tests creating NACCADMU."""
+        set_attribute(table, form_prefix, "formver", random.choice([1, 2, 3]))
+        attr = UDSFormD1bAttribute(table)
+
+        # ADMUT case
+        set_attribute(table, form_prefix, "admut", 1)
+        assert attr._create_naccadmu() == 1
+
+        # NPCHROM case
+        set_attribute(table, form_prefix, "admut", 0)
+        assert attr._create_naccadmu() == 0
+        set_attribute(table, working_derived_cs_prefix, "npchrom", random.choice([1, 2, 3]))
+        assert attr._create_naccadmu() == 1
+
+        # NPPDXP case
+        set_attribute(table, working_derived_cs_prefix, "npchrom", random.choice([0, 4]))
+        assert attr._create_naccadmu() == 0
+        set_attribute(table, working_derived_cs_prefix, "nppdxp", 1)
+        assert attr._create_naccadmu() == 1
+
+        # V4 case
+        set_attribute(table, working_derived_cs_prefix, "nppdxp", 0)
+        set_attribute(table, form_prefix, "formver", 4)
+        assert attr._create_naccadmu() == 0
+
+        # V4 NPPDXP case
+        set_attribute(table, working_derived_cs_prefix, "nppdxp", 1)
+        assert attr._create_naccadmu() == 1
+
+        # already set case
+        set_attribute(table, working_derived_cs_prefix, "nppdxp", 0)
+        assert attr._create_naccadmu() == 0
+        set_attribute(table, subject_derived_cs_prefix, "naccadmu", 1)
+        assert attr._create_naccadmu() == 1
+
+    def test_create_naccftdm(
+        self, table, form_prefix, working_derived_cs_prefix, subject_derived_cs_prefix
+    ):
+        """Tests creating NACCFTDM."""
+        set_attribute(table, form_prefix, "formver", random.choice([1, 2, 3]))
+        attr = UDSFormD1bAttribute(table)
+
+        # FTLDMUT case
+        set_attribute(table, form_prefix, "ftldmut", 1)
+        assert attr._create_naccftdm() == 1
+
+        # NPCHROM case
+        set_attribute(table, form_prefix, "ftldmut", 0)
+        assert attr._create_naccftdm() == 0
+        set_attribute(table, working_derived_cs_prefix, "npchrom", 4)
+        assert attr._create_naccftdm() == 1
+
+        # NPPDXQ case
+        set_attribute(table, working_derived_cs_prefix, "npchrom", random.choice([0, 1, 2, 3]))
+        assert attr._create_naccftdm() == 0
+        set_attribute(table, working_derived_cs_prefix, "nppdxq", 1)
+        assert attr._create_naccftdm() == 1
+
+        # V4 case
+        set_attribute(table, working_derived_cs_prefix, "nppdxq", 0)
+        set_attribute(table, form_prefix, "formver", 4)
+        assert attr._create_naccftdm() == 0
+
+        # V4 NPPDXQ case
+        set_attribute(table, working_derived_cs_prefix, "nppdxq", 1)
+        assert attr._create_naccftdm() == 1
+
+        # already set case
+        set_attribute(table, working_derived_cs_prefix, "nppdxq", 0)
+        assert attr._create_naccftdm() == 0
+        set_attribute(table, subject_derived_cs_prefix, "naccftdm", 1)
+        assert attr._create_naccftdm() == 1

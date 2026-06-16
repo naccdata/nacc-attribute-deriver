@@ -150,12 +150,13 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if naccadmu == 1:
             return 1
 
+        nppdxp = self.working.get_cross_sectional_value("nppdxp", int)
+
         if self.formver >= 4:
-            return 1 if self.uds.get_value("nppdxp", int) == 1 else 0
+            return 1 if nppdxp == 1 else 0
 
         admut = self.uds.get_value("admut", int)
         npchrom = self.working.get_cross_sectional_value("npchrom", int)
-        nppdxp = self.working.get_cross_sectional_value("nppdxp", int)
 
         if admut == 1 or npchrom in [1, 2, 3] or nppdxp == 1:
             return 1
@@ -172,12 +173,13 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if naccftdm == 1:
             return 1
 
+        nppdxq = self.working.get_cross_sectional_value("nppdxq", int)
+
         if self.formver >= 4:
-            return 1 if self.uds.get_value("nppdxq", int) == 1 else 0
+            return 1 if nppdxq == 1 else 0
 
         ftldmut = self.uds.get_value("ftldmut", int)
         npchrom = self.working.get_cross_sectional_value("npchrom", int)
-        nppdxq = self.working.get_cross_sectional_value("nppdxq", int)
 
         if ftldmut == 1 or npchrom == 4 or nppdxq == 1:
             return 1
