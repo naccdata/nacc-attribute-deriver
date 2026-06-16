@@ -2,9 +2,9 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## Unreleased
+## 2.3.4 (Unreleased)
 
-* Adds scope for DS module
+* Adds scope for DS module, and adds attribute for its header to ensure association with an UDS visit
 
 ## 2.3.3
 
