@@ -300,11 +300,15 @@ class TestUDSFormD1bAttribute:
         # NPCHROM case
         set_attribute(table, form_prefix, "admut", 0)
         assert attr._create_naccadmu() == 0
-        set_attribute(table, working_derived_cs_prefix, "npchrom", random.choice([1, 2, 3]))
+        set_attribute(
+            table, working_derived_cs_prefix, "npchrom", random.choice([1, 2, 3])
+        )
         assert attr._create_naccadmu() == 1
 
         # NPPDXP case
-        set_attribute(table, working_derived_cs_prefix, "npchrom", random.choice([0, 4]))
+        set_attribute(
+            table, working_derived_cs_prefix, "npchrom", random.choice([0, 4])
+        )
         assert attr._create_naccadmu() == 0
         set_attribute(table, working_derived_cs_prefix, "nppdxp", 1)
         assert attr._create_naccadmu() == 1
@@ -342,7 +346,9 @@ class TestUDSFormD1bAttribute:
         assert attr._create_naccftdm() == 1
 
         # NPPDXQ case
-        set_attribute(table, working_derived_cs_prefix, "npchrom", random.choice([0, 1, 2, 3]))
+        set_attribute(
+            table, working_derived_cs_prefix, "npchrom", random.choice([0, 1, 2, 3])
+        )
         assert attr._create_naccftdm() == 0
         set_attribute(table, working_derived_cs_prefix, "nppdxq", 1)
         assert attr._create_naccftdm() == 1
