@@ -130,6 +130,7 @@ def test_np_form():
                         "naccwri1": None,
                         "naccwri2": None,
                         "naccwri3": None,
+                        "neurodiag": 8,
                     },
                 },
                 "working": {

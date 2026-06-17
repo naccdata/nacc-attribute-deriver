@@ -1,5 +1,6 @@
 scope,function,location,operation,dated,attr_type
 np,npformver,subject.info.derived.cross-sectional.npformver,update,FALSE,int
+np,neurodiag,subject.info.derived.cross-sectional.neurodiag,update,FALSE,int
 mlst,naccnrdy,subject.info.derived.cross-sectional.naccnrdy,update,FALSE,int
 mlst,naccnrmo,subject.info.derived.cross-sectional.naccnrmo,update,FALSE,int
 mlst,naccnryr,subject.info.derived.cross-sectional.naccnryr,update,FALSE,int
@@ -13,6 +14,9 @@ cls,naccspnl,subject.info.derived.cross-sectional.naccspnl,update,FALSE,float
 csf,naccacsf,subject.info.derived.cross-sectional.naccacsf,update,FALSE,int
 csf,naccpcsf,subject.info.derived.cross-sectional.naccpcsf,update,FALSE,int
 csf,nacctcsf,subject.info.derived.cross-sectional.nacctcsf,update,FALSE,int
+uds,clindiag,subject.info.derived.cross-sectional.clindiag,update,FALSE,int
+uds,incad,subject.info.derived.cross-sectional.incad,update,FALSE,int
+uds,prevad,subject.info.derived.cross-sectional.prevad,update,FALSE,int
 niagads_availability,adgcgwas,subject.info.derived.cross-sectional.adgcgwas,update,FALSE,int
 niagads_availability,adgcexom,subject.info.derived.cross-sectional.adgcexom,update,FALSE,int
 niagads_availability,adgcrnd,subject.info.derived.cross-sectional.adgcrnd,update,FALSE,str

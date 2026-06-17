@@ -27,8 +27,12 @@ class NPSubjectMissingness(SubjectMissingnessCollection):
     missing."""
 
     def _missingness_npformver(self) -> int:
-        # curated in the context of an UDS visit
+        """Handles NPFORMVER."""
         return self.handle_subject_missing("npformver", int, INFORMED_MISSINGNESS)
+
+    def _missingness_neurodiag(self) -> int:
+        """Handles NEURODIAG."""
+        return self.handle_subject_missing("neurodiag", int, INFORMED_MISSINGNESS)
 
 
 class NPMissingness(FormMissingnessCollection):

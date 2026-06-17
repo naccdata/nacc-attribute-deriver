@@ -603,7 +603,33 @@ class NPFormAttributeCollection(AttributeCollection):
         """
         return self.__np.get_value("nppdxq", int)
 
-    def _create_npadnc(self) -> Optional[int]:
-        """Keeps track of NPADNC - required for NEURODIAG in ADGC.
+    def _create_neurodiag(self) -> int:
+        """Creates NEURODIAG - neuropath diagnosis. Part of the ADGC
+        dataset but relies strictly on the NP form.
+
+        Returns:
+            1: Control
+            2: Case
+            8: N/A
         """
-        return self.__np.get_value("npadnc", int)
+        npadnc = self.__np.get_value("npadnc", int)
+        if npadnc in [2, 3]:
+            return 2
+        if npadnc in [0, 1]:
+            return 1
+
+        # after this point assuming NPADNC is None, 7, 8, or 9, which are all forms
+        # of missingness/not assessed/etc.
+        naccbraa = self._create_naccbraa()
+        naccneur = self._create_naccneur()
+
+        if naccbraa in [3, 4, 5, 6] and naccneur in [2, 3]:
+            return 2
+
+        if naccbraa in [0, 1, 2, 3, 4, 5, 6] and naccneur in [0, 1]:
+            return 1
+
+        if naccbraa in [0, 1, 2] and naccneur in [0, 1, 2, 3]:
+            return 1
+
+        return 8
