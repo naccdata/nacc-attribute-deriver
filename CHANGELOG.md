@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.3.5
+
+* Updates NCRAD embargo check to allow rounds 1-14 through automatically (legacy rounds that got uploaded to Flywheel at a later timepoint but passed embargo a long time ago)
+
 ## 2.3.4
 
 * Adds scope for DS module, and adds attribute for its header to ensure association with an UDS visit
