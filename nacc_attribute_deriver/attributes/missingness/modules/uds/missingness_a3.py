@@ -1420,7 +1420,8 @@ class UDSFormA3V4Missingness(UDSMissingness):
     #######################
 
     def __handle_a3_sibs_kids_missingness(
-        self, field: str,
+        self,
+        field: str,
     ) -> T:
         """In V4, SIBS/KIDS can also be 66."""
         # Just run generic missingness if not V4
@@ -1433,7 +1434,6 @@ class UDSFormA3V4Missingness(UDSMissingness):
             prev_code=66,
             default=INFORMED_MISSINGNESS,
         )
-
 
     def _missingness_sibs(self) -> int:
         """Handles missingness for SIBS."""
