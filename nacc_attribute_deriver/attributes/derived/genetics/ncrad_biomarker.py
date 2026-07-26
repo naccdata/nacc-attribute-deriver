@@ -48,7 +48,7 @@ class NCRADBiomarkerAttributeCollection(AttributeCollection):
         # pass embargo since these are legacy rounds that were already
         # returned before Flywheel
         return_round = int(match.group(1))
-        if 'express' not in parent_file and return_round > 0 and return_round < 15:
+        if "express" not in parent_file and return_round > 0 and return_round < 15:
             return 1
 
         # date this data was released to ADRCs
