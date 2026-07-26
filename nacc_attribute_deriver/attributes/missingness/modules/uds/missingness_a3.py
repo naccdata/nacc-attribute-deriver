@@ -1414,3 +1414,31 @@ class UDSFormA3V4Missingness(UDSMissingness):
         return self.__handle_a3_prev_visit_missingness(
             "nwinfkid", "kid15ago", int, prev_code=666
         )
+
+    #######################
+    # SIBS/KIDS variables #
+    #######################
+
+    def __handle_a3_sibs_kids_missingness(
+        self, field: str,
+    ) -> T:
+        """In V4, SIBS/KIDS can also be 66."""
+        # Just run generic missingness if not V4
+        if self.formver < 4:
+            return self.generic_missingness(field, int)
+
+        return self.handle_prev_visit(
+            field,
+            int,
+            prev_code=66,
+            default=INFORMED_MISSINGNESS,
+        )
+
+
+    def _missingness_sibs(self) -> int:
+        """Handles missingness for SIBS."""
+        return self.__handle_a3_sibs_kids_missingness("sibs")
+
+    def _missingness_kids(self) -> int:
+        """Handles missingness for SIBS."""
+        return self.__handle_a3_sibs_kids_missingness("kids")

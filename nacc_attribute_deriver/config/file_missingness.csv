@@ -285,6 +285,7 @@ uds,dadetpr,file.info.resolved.dadetpr,update,FALSE,str
 uds,dadetsec,file.info.resolved.dadetsec,update,FALSE,str
 uds,dadmeval,file.info.resolved.dadmeval,update,FALSE,int
 uds,dadageo,file.info.resolved.dadageo,update,FALSE,int
+uds,sibs,file.info.resolved.sibs,update,FALSE,int
 uds,sib1yob,file.info.resolved.sib1yob,update,FALSE,int
 uds,sib1agd,file.info.resolved.sib1agd,update,FALSE,int
 uds,sib1etpr,file.info.resolved.sib1etpr,update,FALSE,str
@@ -405,6 +406,7 @@ uds,sib20etpr,file.info.resolved.sib20etpr,update,FALSE,str
 uds,sib20etsec,file.info.resolved.sib20etsec,update,FALSE,str
 uds,sib20meval,file.info.resolved.sib20meval,update,FALSE,int
 uds,sib20ago,file.info.resolved.sib20ago,update,FALSE,int
+uds,kids,file.info.resolved.kids,update,FALSE,int
 uds,kid1yob,file.info.resolved.kid1yob,update,FALSE,int
 uds,kid1agd,file.info.resolved.kid1agd,update,FALSE,int
 uds,kid1etpr,file.info.resolved.kid1etpr,update,FALSE,str
