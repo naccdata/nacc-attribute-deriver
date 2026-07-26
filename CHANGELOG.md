@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 2.3.6
 
 * Fix issue where early express returns were accidentally being considered as part of legacy returns
+* Include rounds 15-16 as "legacy" since they were returned before ingestion pipeline attached them
 
 ## 2.3.5
 

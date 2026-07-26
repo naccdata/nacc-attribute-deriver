@@ -22,7 +22,7 @@ def table() -> SymbolTable:
             "info": {
                 "provenance": {
                     "file_id": "12345",
-                    "file_name": "0_ncrad-biomarker-dummy-return-15_identifiers.csv",
+                    "file_name": "0_ncrad-biomarker-dummy-return-17_identifiers.csv",
                     "flywheel_path": "fw://some/path/in/fw",
                     "created_date": "2020-01-01T00:00:00.000000+00:00",
                     "modified_date": "2025-01-01T00:00:00.000000+00:00",
@@ -51,7 +51,7 @@ class TestNCRADBiomarkerAttributeCollection:
 
         Also tests regex works even with extra stuff in the filename.
         """
-        return_round = random.choice(range(1, 15))
+        return_round = random.choice(range(1, 17))
         file_name = (
             f"0_ncrad-biomarker-dummy-legacy-return-{return_round}"
             + "-other-text_identifiers.csv"
@@ -74,7 +74,7 @@ class TestNCRADBiomarkerAttributeCollection:
 
         Also tests regex works even with extra stuff in the filename.
         """
-        return_round = random.choice(range(1, 15))
+        return_round = random.choice(range(1, 17))
         file_name = (
             "0_ncrad-biomarker-abeta-42-adcfb-express-return-"
             + f"{return_round}_identifiers.csv"

@@ -44,11 +44,11 @@ class NCRADBiomarkerAttributeCollection(AttributeCollection):
                 + f"Found {parent_file}, expected format {BIOMARKER_FILENAME_REGEX}"
             )
 
-        # Then, check the return round; legacy rounds 1-14 automatically
+        # Then, check the return round; legacy rounds 1-16 automatically
         # pass embargo since these are legacy rounds that were already
         # returned before Flywheel
         return_round = int(match.group(1))
-        if "express" not in parent_file and return_round > 0 and return_round < 15:
+        if "express" not in parent_file and return_round > 0 and return_round < 17:
             return 1
 
         # date this data was released to ADRCs
