@@ -69,6 +69,29 @@ class TestNCRADBiomarkerAttributeCollection:
         attr = NCRADBiomarkerAttributeCollection(table)
         assert attr._create_past_ncrad_embargo() == 1
 
+    def test_early_express_round_does_not_pass_embargo(self, table):
+        """Test that an old legacy return does NOT pass embargo.
+
+        Also tests regex works even with extra stuff in the filename.
+        """
+        return_round = random.choice(range(1, 15))
+        file_name = (
+            "0_ncrad-biomarker-abeta-42-adcfb-express-return-"
+            + f"{return_round}_identifiers.csv"
+        )
+
+        table["file.info.provenance"].update(
+            {
+                "file_name": file_name,
+                "created_date": datetime.datetime.now(
+                    datetime.timezone.utc
+                ).isoformat(),
+            }
+        )
+
+        attr = NCRADBiomarkerAttributeCollection(table)
+        assert attr._create_past_ncrad_embargo() == 0
+
     def test_bad_created_date(self, table):
         """Tests create_past_ncrad_embargo with bad created date."""
         table["file.info.provenance.created_date"] = None

@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.3.6
+
+* Fix issue where early express returns were accidentally being considered as part of legacy returns
+
 ## 2.3.5
 
 * Updates NCRAD embargo check to allow rounds 1-14 through automatically (legacy rounds that got uploaded to Flywheel at a later timepoint but passed embargo a long time ago)
@@ -38,7 +42,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * Fix grabbing `subject.info.derived.affiliate` to be an integer, not a bool
 * final release:
     * Do not enforce format on `zip` missingness
-    * Add 90-day embargo check on NCRAD biosamples
+    * Add 90-day embargo check on NCRAD biomarkers
         * Adds the `ProvenanceNamespace` to support this
     * Prefixes APOE scopes with `ncrad`
 
