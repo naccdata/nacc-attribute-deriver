@@ -191,6 +191,13 @@ class FormMissingnessCollection(AttributeCollection):
             if prev_value is not None and prev_value not in MISSINGNESS_VALUES:
                 return prev_value
 
+            # If there is no previous value, and a default is defined, return that
+            # If there is no default in this case, this function ultimately
+            # returns prev_code
+            if default is not None:
+                return default
+
+        # Fallback to generic missingness
         return self.generic_missingness(attribute, attr_type, default=default)
 
 

@@ -3,6 +3,7 @@
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_a3 import (
     UDSFormA3V4Missingness,
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class TestUDSFormA3V4Missingness:
@@ -65,3 +66,31 @@ class TestUDSFormA3V4Missingness:
         # set newinfpar to 1, should now use current
         uds_table["file.info.forms.json.nwinfpar"] = "1"
         assert attr._missingness_mometpr() == "12"
+
+    def test_no_prev_value(self, uds_table):
+        """Test when the previous value was not actually provided; should use
+        the default, not the prev missingness code."""
+        # from prev visit
+        uds_table.update(
+            {
+                "_prev_record": {
+                    "info": {
+                        "forms": {"json": {"visitdate": "2020-01-01"}},
+                        "resolved": {
+                            "kid2ago": -4,
+                        },
+                    }
+                }
+            }
+        )
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 4,
+                "packet": "F",
+                "nwinfkid": "1",
+                "kid2ago": "666",
+            }
+        )
+
+        attr = UDSFormA3V4Missingness(uds_table)
+        assert attr._missingness_kid2ago() == INFORMED_MISSINGNESS

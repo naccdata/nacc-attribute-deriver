@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.3.7
+
+* Fixes missingness issue discovered via the A3 form where sometimes a visit specifies a "Provided at previous visit" value but the previous visit does not actually have a value. In this case, if a default value was provided, return that instead of the original `prev_code`
+
 ## 2.3.6
 
 * Fix issue where early express returns were accidentally being considered as part of legacy returns
