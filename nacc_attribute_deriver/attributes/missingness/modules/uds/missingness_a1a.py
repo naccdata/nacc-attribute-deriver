@@ -5,6 +5,15 @@ from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 
 class UDSFormA1aMissingness(UDSMissingness):
+
+    def _missingness_langa1a(self) -> int:
+        """Handle missingness for LANGA1A."""
+        return self.handle_optional_header_variables("lang", "a1a")
+
+    def _missingness_admina1a(self) -> int:
+        """Handle missingness for ADMINA1A."""
+        return self.handle_optional_header_variables("admin", "a1a")
+
     def __handle_a1a_missingness(self, field: str) -> int:
         """Handle A1a missingness; basically need to set the default to 0 for
         all of these if V4."""
