@@ -6,6 +6,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 
 * Adds missingness logic to handle `sibs` and `kids` being 66 (provided at previous visit)
 * Fixes missingness issue discovered via the A3 form where sometimes a visit specifies a "Provided at previous visit" value but the previous visit does not actually have a value. In this case, if a default value was provided, return that instead of the original `prev_code`
+* Fixes `NACCFDYS` being set to 0 for I4 visits
 
 ## 2.3.6
 

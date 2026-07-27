@@ -80,9 +80,6 @@ class TestUDSHeaderAttributeCollection:
     def test_create_naccdays(self, table, form_prefix, working_derived_prefix):
         """Tests _create_naccdays."""
         attr = UDSHeaderAttributeCollection(table)
-
-        # actually 16,462 but maxes out at 5000
-        # assert attr._create_naccdays() == 5000
         assert attr._create_naccdays() == 16462
 
         # set it closer
@@ -103,6 +100,13 @@ class TestUDSHeaderAttributeCollection:
         # test initial visit
         set_attribute(table, form_prefix, "packet", "IT")
         assert attr._create_naccdays() == 0
+
+    def test_create_naccdays_i4(self, table, form_prefix):
+        """Tsests _create_naccdays on an I4 visit."""
+        set_attribute(table, form_prefix, "packet", "I4")
+        attr = UDSHeaderAttributeCollection(table)
+
+        assert attr._create_naccdays() == 16462
 
     def test_create_naccnvst(self, table):
         """Tsests _create_naccnvst."""
