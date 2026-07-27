@@ -509,9 +509,9 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         if naccidem in [1, 8]:
             return naccidem
 
-        # requires followup visit, so if initial return 0/8 - visits
+        # requires followup visit, so if (true) initial return 0/8 - visits
         # should be curated in order anyways
-        if self.uds.is_initial():
+        if self.uds.is_initial() and not self.uds.is_i4():
             if self.demented == 1:
                 return 8
 
@@ -530,7 +530,7 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
 
         Used for NACCIDEM.
         """
-        if not self.uds.is_initial():
+        if not self.uds.is_initial() or self.uds.is_i4():
             return None
 
         impnomci = self.uds.get_value("impnomci", int)
