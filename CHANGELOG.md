@@ -7,7 +7,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds `D1c` variables to the `uds_ded_matrix.csv`, and missingness logic for its header variables since its an optional form
 * Adds missingness logic to handle `sibs` and `kids` being 66 (provided at previous visit)
 * Enforce header variables `LANGX` and `ADMINX` for optional forms to be empty when form is not submitted
-* Fixes missingness issue discovered via the A3 form where sometimes a visit specifies a "Provided at previous visit" value but the previous visit does not actually have a value. In this case, if a default value was provided, return that instead of the original `prev_code`
+* Change behavior of no previous value found when a "Provided at previous visit" code is specified - return missingness instead of the prev code again
 * Fixes `NACCFDYS` being set to 0 for I4 visits
 
 ## 2.3.6
