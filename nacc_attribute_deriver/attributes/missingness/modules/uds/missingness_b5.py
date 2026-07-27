@@ -7,6 +7,10 @@ from nacc_attribute_deriver.utils.constants import (
 
 
 class UDSFormB5Missingness(UDSMissingness):
+    def _missingness_langb5(self) -> int:
+        """Handle missingness for LANGB5."""
+        return self.handle_optional_header_variables("lang", "b5")
+
     def _missingness_npiqinfx(self) -> str:
         """Handle missingness for NPIQINFX."""
         return self.handle_forbidden_gated_writein("npiqinf", 3, "npiqinfx")

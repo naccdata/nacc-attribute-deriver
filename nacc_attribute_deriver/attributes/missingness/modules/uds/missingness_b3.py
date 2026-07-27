@@ -37,6 +37,10 @@ class UDSFormB3Missingness(UDSMissingness):
         "bradykin",
     ]
 
+    def _missingness_langb3(self) -> int:
+        """Handle missingness for LANGB3."""
+        return self.handle_optional_header_variables("lang", "b3")
+
     def _missingness_pdnormal(self) -> int:
         """Handles missingness for PDNORMAL for if PDNORMAL is blank.
 

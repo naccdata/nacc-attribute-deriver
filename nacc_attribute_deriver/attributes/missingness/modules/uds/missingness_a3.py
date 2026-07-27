@@ -1422,7 +1422,7 @@ class UDSFormA3V4Missingness(UDSMissingness):
     def __handle_a3_sibs_kids_missingness(
         self,
         field: str,
-    ) -> T:
+    ) -> int:
         """In V4, SIBS/KIDS can also be 66."""
         # Just run generic missingness if not V4
         if self.formver < 4:

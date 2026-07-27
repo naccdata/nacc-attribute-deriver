@@ -35,30 +35,3 @@ class GenericUDSMissingness(UDSMissingness):
             return frmdate if frmdate else INFORMED_BLANK  # type: ignore
 
         return self.generic_missingness(field, attr_type)
-
-    def handle_optional_header_variables(
-        self, prefix: str, form: str,
-    ) -> int:
-        """
-        Sometimes invalid data is entered for header variables
-        on optional forms since they're not enforced to be empty;
-        clean up as needed.
-
-        FRMDATEX already handled in _missingness_uds, and allowed
-        if is a valid date. Rest should be of type integer.
-
-        Args:
-            Prefix for the variable, will be combined with the form
-                to get the full thing, e.g. lang + a1a = langa1a
-            form: Form this header variable belongs to
-            attr_type: The attribute type
-        Returns:
-            Resolved missingness for the optional header variable
-        """
-        # Determine if this is an optional form
-        mode_field = self.uds.get_value(f'mode{form}')
-        if self.uds.get_value(f'mode{form}', int) != 0:
-            return self.generic_missingness(field, int)
-
-        # this is an optional form, data should not be filled
-        return INFORMED_MISSINGNESS
