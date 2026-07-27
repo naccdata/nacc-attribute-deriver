@@ -102,13 +102,13 @@ class TestUDSHeaderAttributeCollection:
         assert attr._create_naccdays() == 0
 
     def test_create_naccdays_i4(self, table, form_prefix):
-        """Tsests _create_naccdays on an I4 visit."""
+        """Tests _create_naccdays on an I4 visit."""
         set_attribute(table, form_prefix, "packet", "I4")
         attr = UDSHeaderAttributeCollection(table)
 
         assert attr._create_naccdays() == 16462
 
     def test_create_naccnvst(self, table):
-        """Tsests _create_naccnvst."""
+        """Tests _create_naccnvst."""
         attr = UDSHeaderAttributeCollection(table)
         assert attr._create_naccnvst() == 5

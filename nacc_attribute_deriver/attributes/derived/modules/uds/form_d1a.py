@@ -517,28 +517,44 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
 
             return 0
 
-        notdemin = self.working.get_cross_sectional_value("notdemin", int)
-        if notdemin == 1 and self.demented == 1:
+        # notdemin = self.working.get_cross_sectional_value("notdemin", int)
+        # if notdemin == 1 and self.demented == 1:
+        #     return 1
+
+        # At this point, means we are at a followup visit and participant
+        # was NOT dementeed at the initial visit
+
+        # If demented now, then progressed to demented, so return 1
+        if self.demented == 1:
             return 1
 
-        # in general should be set, but sometimes we don't receive an initial visit
+        # Return whatever NACCIDEM currently is, which should be 0 but returning
+        # NACCIDEM itself is in case it's somehow not
         return naccidem
 
-    def _create_notdemin(self) -> Optional[int]:
-        """Creates NOTDEMIN, which is a helper variable for whether someone is
-        demented at the initial visit.
+    # def _create_notdemin(self) -> Optional[int]:
+    #     """Creates NOTDEMIN, which is a helper variable for whether someone is
+    #     demented at the initial visit.
 
-        Used for NACCIDEM.
-        """
-        if not self.uds.is_initial() or self.uds.is_i4():
-            return None
+    #     Used for NACCIDEM, although tbh I think it might not be utilized
+    #     given the check for 8 already? Leaving in just because of legacy
+    #     weirdness though.
+    #     """
+    #     if not self.uds.is_initial() or self.uds.is_i4():
+    #         return None
 
-        impnomci = self.uds.get_value("impnomci", int)
-        mci = self.generate_mci()
-        if self.normcog == 1 or impnomci == 1 or mci == 1:
-            return 1
+    #     # Legacy code
+    #     # impnomci = self.uds.get_value("impnomci", int)
+    #     # mci = self.generate_mci()
+    #     # if self.normcog == 1 or impnomci == 1 or mci == 1:
+    #     #     return 1
 
-        return 0
+    #     # return 0
+
+    #     # Should just check demented directly, not sure why old
+    #     # code did not, but V4+ also has to consider MBI so use
+    #     # demented directly
+    #     return 0 if self.demented == 1 else 1
 
     def _create_naccmcii(self) -> int:
         """Creates NACCMCII - Incident MCI during USD follow-up.

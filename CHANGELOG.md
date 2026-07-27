@@ -9,7 +9,8 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Enforce header variables `LANGX` and `ADMINX` for optional forms to be empty when form is not submitted
 * Change behavior of no previous value found when a "Provided at previous visit" code is specified - return missingness instead of the prev code again
 * Fixes `NACCFDYS` being set to 0 for I4 visits
-* Fixes `NACCIDEM` to account for I4 visits
+* Fixes `NACCIDEM` to account for I4 visits and when `MBI = 1` at an initial visit
+    * Removes `NOTDEMIN` from usage as it is not actually useful and was more of a legacy artifact
 
 ## 2.3.6
 

@@ -177,7 +177,6 @@ uds,uds_date_of_birth,subject.info.working.cross-sectional.uds-date-of-birth,upd
 uds,uds_naccmdss,subject.info.derived.cross-sectional.naccmdss,update,FALSE
 uds,uds_visitdate,subject.info.working.cross-sectional.initial-uds-visit,initial,TRUE
 uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
-uds,notdemin,subject.info.working.cross-sectional.notdemin,update,FALSE
 uds,naccavst,subject.info.derived.cross-sectional.naccavst,max,FALSE
 uds,naccavst,file.info.derived.naccvnum,update,FALSE
 uds,naccavst,subject.info.derived.longitudinal.naccvnum,list,TRUE
