@@ -498,8 +498,7 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         return self.normcog
 
     def _create_naccidem(self) -> Optional[int]:
-        """Creates NACCIDEM - Incident dementia during UDS follow-up.
-        """
+        """Creates NACCIDEM - Incident dementia during UDS follow-up."""
         naccidem = self.subject_derived.get_cross_sectional_value("naccidem", int)
         if naccidem in [1, 8]:
             return naccidem
