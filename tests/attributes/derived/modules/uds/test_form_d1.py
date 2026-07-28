@@ -151,31 +151,6 @@ class TestUDSFormD1aAttribute:
         assert attr._create_naccmcii() == 1 if naccmcii == 1 else 8
         assert attr._create_naccmcii_working() == naccmcii
 
-    # def test_create_notdemin(slef, uds_table):
-    #     """Tests the _create_notdemin helper method for NACCIDEM."""
-    #     uds_table["file.info.forms.json"].update({
-    #         'formver': 4,
-    #         'packet': 'I',
-    #         'normcog': 1,
-    #         'demented': 0
-    #     })
-    #     attr = UDSFormD1aAttribute(uds_table)
-    #     assert attr._create_notdemin() == 1
-
-    #     uds_table["file.info.forms.json"].update({
-    #         'normcog': 0,
-    #         'demented': 1
-    #     })
-    #     attr = UDSFormD1aAttribute(uds_table)
-    #     assert attr._create_notdemin() == 0
-
-    #     # should always return None if not the initial visit
-    #     uds_table["file.info.forms.json"].update({
-    #         'packet': random.choice(['F', 'I4', 'T'])
-    #     })
-    #     attr = UDSFormD1aAttribute(uds_table)
-    #     assert attr._create_notdemin() is None
-
     def test_create_naccidem(self, uds_table):
         """Tests _create_naccidem."""
         # Initial visit and demented
