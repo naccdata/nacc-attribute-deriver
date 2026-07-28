@@ -40,6 +40,10 @@ class UDSFormA3V4Missingness(UDSMissingness):
 
         *ETPR and *ETSEC variables are effectively int-like strings, so can use
         same logic just type casted to str at the end.
+
+        NOTE: at some point I wonder if we want to carry values forward similar
+            to the A1 form when the NWINF value = no change. I don't think anyone has
+            really brought it up though since A3 is not generally part of the QAF.
         """
         default = attr_type(INFORMED_MISSINGNESS)  # type: ignore
         # only in V4
