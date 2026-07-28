@@ -498,47 +498,28 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         return self.normcog
 
     def _create_naccidem(self) -> Optional[int]:
-        """Creates NACCIDEM - Incident dementia during UDS follow-up.
-
-        This probably could utilize the _prev_record workflow instead, but since
-        V3 is already using worker variables, and V4 has no change from it, and
-        this is very confusing to begin with, keep using this system for now.
-        Deserves a refactor at some point though.
-        """
+        """Creates NACCIDEM - Incident dementia during UDS follow-up."""
         naccidem = self.subject_derived.get_cross_sectional_value("naccidem", int)
         if naccidem in [1, 8]:
             return naccidem
 
-        # requires followup visit, so if initial return 0/8 - visits
-        # should be curated in order anyways
-        if self.uds.is_initial():
+        # requires followup visit, so if (the actual) initial visit return 0/8
+        if self.uds.is_initial() and not self.uds.is_i4():
             if self.demented == 1:
                 return 8
 
             return 0
 
-        notdemin = self.working.get_cross_sectional_value("notdemin", int)
-        if notdemin == 1 and self.demented == 1:
+        # At this point, means we are at a followup visit and participant
+        # was NOT dementeed at the initial visit
+
+        # If demented now, then progressed to demented, so return 1
+        if self.demented == 1:
             return 1
 
-        # in general should be set, but sometimes we don't receive an initial visit
+        # Return whatever NACCIDEM currently is, which should be 0 but returning
+        # NACCIDEM itself in case it's somehow not
         return naccidem
-
-    def _create_notdemin(self) -> Optional[int]:
-        """Creates NOTDEMIN, which is a helper variable for whether someone is
-        demented at the initial visit.
-
-        Used for NACCIDEM.
-        """
-        if not self.uds.is_initial():
-            return None
-
-        impnomci = self.uds.get_value("impnomci", int)
-        mci = self.generate_mci()
-        if self.normcog == 1 or impnomci == 1 or mci == 1:
-            return 1
-
-        return 0
 
     def _create_naccmcii(self) -> int:
         """Creates NACCMCII - Incident MCI during USD follow-up.

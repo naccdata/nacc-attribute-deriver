@@ -127,6 +127,18 @@ class FormMissingnessCollection(AttributeCollection):
 
         return visitdate
 
+    def __get_typed_missingness(self, attr_type: Type[T]) -> T:
+        """Return the appropriate missingness value for the given type."""
+
+        if attr_type == int:  # noqa: E721
+            return INFORMED_MISSINGNESS  # type: ignore
+        if attr_type == str:  # noqa: E721
+            return INFORMED_BLANK  # type: ignore
+        if attr_type == float:  # noqa: E721
+            return float(INFORMED_MISSINGNESS)  # type: ignore
+
+        raise AttributeDeriverError(f"Unknown missingness attribute type: {attr_type}")
+
     def generic_missingness(
         self, attribute: str, attr_type: Type[T], default: Optional[T] = None
     ) -> T:
@@ -147,16 +159,7 @@ class FormMissingnessCollection(AttributeCollection):
             if default is not None:
                 return default
 
-            if attr_type == int:  # noqa: E721
-                return INFORMED_MISSINGNESS  # type: ignore
-            if attr_type == str:  # noqa: E721
-                return INFORMED_BLANK  # type: ignore
-            if attr_type == float:  # noqa: E721
-                return float(INFORMED_MISSINGNESS)  # type: ignore
-
-            raise AttributeDeriverError(
-                f"Unknown missingness attribute type: {attr_type}"
-            )
+            return self.__get_typed_missingness(attr_type)
 
         return value
 
@@ -191,6 +194,14 @@ class FormMissingnessCollection(AttributeCollection):
             if prev_value is not None and prev_value not in MISSINGNESS_VALUES:
                 return prev_value
 
+            # If there is no previous value, and a default is defined, return that
+            # If there is no default in, return the default missingness for the type
+            if default is not None:
+                return default
+
+            return self.__get_typed_missingness(attr_type)
+
+        # Fallback to generic missingness
         return self.generic_missingness(attribute, attr_type, default=default)
 
 

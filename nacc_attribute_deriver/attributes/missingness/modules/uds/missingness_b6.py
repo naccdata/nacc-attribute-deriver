@@ -13,6 +13,10 @@ class UDSFormB6Missingness(UDSMissingness):
 
         return self.uds.get_value("b6sub", int) == 1
 
+    def _missingness_langb6(self) -> int:
+        """Handle missingness for LANGB6."""
+        return self.handle_optional_header_variables("lang", "b6")
+
     def _missingness_nogds(self) -> int:
         """Handle missingness for NOGDS."""
         nogds = self.uds.get_value("nogds", int)

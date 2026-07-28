@@ -77,8 +77,10 @@ class TestFormMissingnessCollection:
         assert attr.handle_prev_visit("dummy", int, prev_code=None) == 777
 
         # matches prev code, so looks for previous, but since it can't find it,
-        # falls to generic missingness
-        assert attr.handle_prev_visit("dummy", int, prev_code=777) == 777
+        # use missingness value
+        assert (
+            attr.handle_prev_visit("dummy", int, prev_code=777) == INFORMED_MISSINGNESS
+        )
 
         # matches prev code, and previous is defined
         # directly from info.forms.json case

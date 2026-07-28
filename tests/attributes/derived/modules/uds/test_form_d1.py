@@ -151,6 +151,48 @@ class TestUDSFormD1aAttribute:
         assert attr._create_naccmcii() == 1 if naccmcii == 1 else 8
         assert attr._create_naccmcii_working() == naccmcii
 
+    def test_create_naccidem(self, uds_table):
+        """Tests _create_naccidem."""
+        # Initial visit and demented
+        uds_table["file.info.forms.json"].update(
+            {"formver": 4, "packet": "I", "normcog": 0, "demented": 1}
+        )
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccidem() == 8
+
+        # Initial visit and NOT demented
+        uds_table["file.info.forms.json"].update({"normcog": 1, "demented": 0})
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccidem() == 0
+
+        # Not initial visit but NACCIDEM is already 1 or 8
+        uds_table["file.info.forms.json"].update(
+            {"packet": random.choice(["F", "I4", "T"]), "normcog": 1, "demented": 0}
+        )
+        value = random.choice([1, 8])
+        uds_table["subject.info.derived.cross-sectional.naccidem"] = value
+        # uds_table["subject.info.derived.cross-sectional.notdemin"] = 0
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccidem() == value
+
+        # Not initial visit and NACCIDEM is 0, but still not demented
+        uds_table["subject.info.derived.cross-sectional.naccidem"] = 0
+        # uds_table["subject.info.working.cross-sectional.notdemin"] = 1
+        uds_table["file.info.forms.json"].update(
+            {"packet": random.choice(["F", "I4", "T"]), "normcog": 1, "demented": 0}
+        )
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccidem() == 0
+
+        # Not initial visit and changed to demented
+        uds_table["subject.info.derived.cross-sectional.naccidem"] = 0
+        # uds_table["subject.info.working.cross-sectional.notdemin"] = 1
+        uds_table["file.info.forms.json"].update(
+            {"packet": random.choice(["F", "I4", "T"]), "normcog": 0, "demented": 1}
+        )
+        attr = UDSFormD1aAttribute(uds_table)
+        assert attr._create_naccidem() == 1
+
 
 class TestUDSFormD1bAttribute:
     def test_create_naccalzp(self, table, form_prefix):

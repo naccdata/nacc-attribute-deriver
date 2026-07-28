@@ -131,6 +131,28 @@ class TestUDSFormB9Missingness:
         assert attr._missingness_moage() == 9
         assert attr._missingness_decclin() == 1
 
+    def test_carry_forward_invalid(self, uds_table):
+        """Test when 777 is specified but the previous value doesn't exist.
+
+        V4 only.
+        """
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 4.0,
+                "packet": "F",
+                "behage": 777,
+            }
+        )
+        uds_table["_prev_record.info.forms.json"] = {
+            "visitdate": "2000-01-01",
+            "formver": 4.0,
+            "packet": "I4",
+            "behage": None,  # not set
+        }
+
+        attr = UDSFormB9Missingness(uds_table)
+        assert attr._missingness_behage() == INFORMED_MISSINGNESS
+
     def test_cognitive_ivp(self, uds_table):
         """Test missingness of cognitive variables on an initial.
 

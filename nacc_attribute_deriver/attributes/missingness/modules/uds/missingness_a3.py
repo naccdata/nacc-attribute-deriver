@@ -40,6 +40,10 @@ class UDSFormA3V4Missingness(UDSMissingness):
 
         *ETPR and *ETSEC variables are effectively int-like strings, so can use
         same logic just type casted to str at the end.
+
+        NOTE: at some point I wonder if we want to carry values forward similar
+            to the A1 form when the NWINF value = no change. I don't think anyone has
+            really brought it up though since A3 is not generally part of the QAF.
         """
         default = attr_type(INFORMED_MISSINGNESS)  # type: ignore
         # only in V4
@@ -1414,3 +1418,31 @@ class UDSFormA3V4Missingness(UDSMissingness):
         return self.__handle_a3_prev_visit_missingness(
             "nwinfkid", "kid15ago", int, prev_code=666
         )
+
+    #######################
+    # SIBS/KIDS variables #
+    #######################
+
+    def __handle_a3_sibs_kids_missingness(
+        self,
+        field: str,
+    ) -> int:
+        """In V4, SIBS/KIDS can also be 66."""
+        # Just run generic missingness if not V4
+        if self.formver < 4:
+            return self.generic_missingness(field, int)
+
+        return self.handle_prev_visit(
+            field,
+            int,
+            prev_code=66,
+            default=INFORMED_MISSINGNESS,
+        )
+
+    def _missingness_sibs(self) -> int:
+        """Handles missingness for SIBS."""
+        return self.__handle_a3_sibs_kids_missingness("sibs")
+
+    def _missingness_kids(self) -> int:
+        """Handles missingness for SIBS."""
+        return self.__handle_a3_sibs_kids_missingness("kids")

@@ -22,6 +22,10 @@ class UDSFormB1Missingness(UDSMissingness):
         self.__working = WorkingNamespace(table=table)
         self.__visitdate = self.uds.get_required("visitdate", str)
 
+    def _missingness_langb1(self) -> int:
+        """Handle missingness for LANGB1."""
+        return self.handle_optional_header_variables("lang", "b1")
+
     def _missingness_height(self) -> float:
         """Handle missingness for HEIGHT. May need to add the decimal in legacy
         versions.

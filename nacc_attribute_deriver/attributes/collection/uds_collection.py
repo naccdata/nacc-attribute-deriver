@@ -18,6 +18,7 @@ from nacc_attribute_deriver.attributes.namespace.uds_namespace import (
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
 )
 from nacc_attribute_deriver.utils.errors import (
     AttributeDeriverError,
@@ -111,3 +112,26 @@ class UDSMissingness(FormMissingnessCollection):
             return gate_value
 
         return None
+
+    def handle_optional_header_variables(self, prefix: str, form: str) -> int:
+        """Sometimes invalid data is entered for header variables on optional
+        forms since they're not enforced to be empty; clean up as needed.
+
+        FRMDATEX already handled in generic _missingness_uds, and allowed
+        if is a valid date. Rest should be of type integer.
+
+        Args:
+            Prefix for the variable, will be combined with the form
+                to get the full thing, e.g. lang + a1a = langa1a
+            form: Form this header variable belongs to
+            attr_type: The attribute type
+        Returns:
+            Resolved missingness for the optional header variable
+        """
+        # If this form was NOT submitted, return -4
+        mode_field = self.uds.get_value(f"mode{form}", int)
+        if mode_field is None or mode_field == 0:
+            return INFORMED_MISSINGNESS
+
+        # otherwise, form was submitted, do generic missingness
+        return self.generic_missingness(f"{prefix}{form}", int)

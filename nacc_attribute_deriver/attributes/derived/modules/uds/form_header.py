@@ -80,10 +80,10 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
     def _create_naccdays(self) -> Optional[int]:
         """Creates NACCDAYS - days from initial visit to most recent visit.
 
-        This is also used for NACCFDAYS, just under a different curation
+        This is also used for NACCFDYS, just under a different curation
         rule (cross-sectional vs longitudinal).
         """
-        if self.uds.is_initial():
+        if self.uds.is_initial() and not self.uds.is_i4():
             return 0
 
         # while technically shouldn't happen, we do appear to have some
