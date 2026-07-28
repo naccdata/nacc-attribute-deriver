@@ -499,18 +499,12 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
 
     def _create_naccidem(self) -> Optional[int]:
         """Creates NACCIDEM - Incident dementia during UDS follow-up.
-
-        This probably could utilize the _prev_record workflow instead, but since
-        V3 is already using worker variables, and V4 has no change from it, and
-        this is very confusing to begin with, keep using this system for now.
-        Deserves a refactor at some point though.
         """
         naccidem = self.subject_derived.get_cross_sectional_value("naccidem", int)
         if naccidem in [1, 8]:
             return naccidem
 
-        # requires followup visit, so if (true) initial return 0/8 - visits
-        # should be curated in order anyways
+        # requires followup visit, so if (the actual) initial visit return 0/8
         if self.uds.is_initial() and not self.uds.is_i4():
             if self.demented == 1:
                 return 8
@@ -525,7 +519,7 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             return 1
 
         # Return whatever NACCIDEM currently is, which should be 0 but returning
-        # NACCIDEM itself is in case it's somehow not
+        # NACCIDEM itself in case it's somehow not
         return naccidem
 
     def _create_naccmcii(self) -> int:
