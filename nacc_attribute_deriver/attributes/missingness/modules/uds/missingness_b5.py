@@ -9,7 +9,7 @@ from nacc_attribute_deriver.utils.constants import (
 class UDSFormB5Missingness(UDSMissingness):
     def _missingness_langb5(self) -> int:
         """Handle missingness for LANGB5."""
-        return self.handle_optional_header_variables("lang", "b5")
+        return self.handle_optional_header_variables("lang", "b5", [1, 2])
 
     def _missingness_npiqinfx(self) -> str:
         """Handle missingness for NPIQINFX."""

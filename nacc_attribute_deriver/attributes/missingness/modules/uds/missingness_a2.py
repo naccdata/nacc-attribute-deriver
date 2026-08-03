@@ -7,7 +7,7 @@ from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 class UDSFormA2Missingness(UDSMissingness):
     def _missingness_langa2(self) -> int:
         """Handle missingness for LANGA2."""
-        return self.handle_optional_header_variables("lang", "a2")
+        return self.handle_optional_header_variables("lang", "a2", [1, 2])
 
     ############################
     # INLIVWTH-gated variables #

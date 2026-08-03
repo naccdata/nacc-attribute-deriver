@@ -2,6 +2,10 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.4.1
+
+* Update enforcement of header variables `LANGX` and `ADMINX` for optional forms to only be set to -4 if not a valid value (1 or 2); does not check `MODEXX` anymore
+
 ## 2.4.0
 
 * Adds `D1c` variables to the `uds_ded_matrix.csv`, and missingness logic for its header variables since its an optional form
