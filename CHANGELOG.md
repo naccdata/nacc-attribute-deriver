@@ -5,6 +5,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 ## 2.4.1
 
 * Update enforcement of header variables `LANGX` and `ADMINX` for optional forms to only be set to -4 if not a valid value (1 or 2); does not check `MODEXX` anymore
+* Fixes `NACCWMHSEV` to be longitudinal
 
 ## 2.4.0
 
