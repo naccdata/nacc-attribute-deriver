@@ -180,7 +180,6 @@ uds,uds_visitdate,subject.info.working.cross-sectional.uds-visitdates,set,FALSE
 uds,naccavst,subject.info.derived.cross-sectional.naccavst,max,FALSE
 uds,naccavst,file.info.derived.naccvnum,update,FALSE
 uds,naccavst,subject.info.derived.longitudinal.naccvnum,list,TRUE
-uds,naccnvst,subject.info.derived.cross-sectional.naccnvst,max,FALSE
 uds,naccdays,subject.info.derived.cross-sectional.naccdays,max,FALSE
 uds,naccdays,file.info.derived.naccfdys,update,FALSE
 uds,naccdays,subject.info.derived.longitudinal.naccfdys,list,TRUE

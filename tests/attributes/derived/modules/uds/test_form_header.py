@@ -24,7 +24,6 @@ def table(uds_table) -> SymbolTable:
         {
             "subject": {
                 "info": {
-                    "derived": {"cross-sectional": {"naccnvst": 4}},
                     "working": {
                         "cross-sectional": {
                             "uds-visitdates": [
@@ -107,8 +106,3 @@ class TestUDSHeaderAttributeCollection:
         attr = UDSHeaderAttributeCollection(table)
 
         assert attr._create_naccdays() == 16462
-
-    def test_create_naccnvst(self, table):
-        """Tests _create_naccnvst."""
-        attr = UDSHeaderAttributeCollection(table)
-        assert attr._create_naccnvst() == 5

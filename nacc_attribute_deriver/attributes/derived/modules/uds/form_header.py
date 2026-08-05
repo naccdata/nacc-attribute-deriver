@@ -106,17 +106,6 @@ class UDSHeaderAttributeCollection(UDSAttributeCollection):
         # enforced. This limit will be removed from the RDD in the future.
         return num_days
 
-    def _create_naccnvst(self) -> int:
-        """Creates NACCNVST - Total number of in-person UDS visits made."""
-        total = self.__subject_derived.get_cross_sectional_value("naccnvst", int)
-        if total is None:
-            total = 0
-
-        if self.uds.is_in_person():
-            return total + 1
-
-        return total
-
     def _create_uds_naccmdss(self) -> int:
         """Creates NACCMDSS - Subject's status in the Minimal Data Set
         (MDS) and Uniform Data Set (UDS)
