@@ -2,6 +2,13 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.4.1
+
+* Update enforcement of header variables `LANGX` and `ADMINX` for optional forms to only be set to -4 if not a valid value (1 or 2); does not check `MODEXX` anymore
+* Fixes `NACCWMHSEV` to be longitudinal
+* Removes `NACCNVST` and `uds.is_in_person()` logic since it is ambiguous in V4 (determined by per-form modes)
+    * Also worth noting this has been incorrectly counting "IT" packets as "in-person" since legacy SAS days, so was probably never 100% accurate to begin with
+
 ## 2.4.0
 
 * Adds `D1c` variables to the `uds_ded_matrix.csv`, and missingness logic for its header variables since its an optional form

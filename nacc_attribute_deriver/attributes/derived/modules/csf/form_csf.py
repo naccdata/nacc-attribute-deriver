@@ -27,7 +27,7 @@ class CSFAttributeCollection(AttributeCollection):
             raise InvalidFieldError(msg)
 
     def __check_concentration(self, field: str, derived_field: str) -> int:
-        """Returns 1 if concentration is vavlid, 0 otherwise.
+        """Returns 1 if concentration is valid, 0 otherwise.
 
         REGRESSION: this used to check within a specific range, but it is
             not guaranteed the user enters a value within that range.

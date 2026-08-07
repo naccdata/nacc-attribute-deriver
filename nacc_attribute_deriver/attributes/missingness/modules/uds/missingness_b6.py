@@ -15,7 +15,7 @@ class UDSFormB6Missingness(UDSMissingness):
 
     def _missingness_langb6(self) -> int:
         """Handle missingness for LANGB6."""
-        return self.handle_optional_header_variables("lang", "b6")
+        return self.handle_optional_header_variables("lang", "b6", [1, 2])
 
     def _missingness_nogds(self) -> int:
         """Handle missingness for NOGDS."""

@@ -24,7 +24,7 @@ class UDSFormB1Missingness(UDSMissingness):
 
     def _missingness_langb1(self) -> int:
         """Handle missingness for LANGB1."""
-        return self.handle_optional_header_variables("lang", "b1")
+        return self.handle_optional_header_variables("lang", "b1", [1, 2])
 
     def _missingness_height(self) -> float:
         """Handle missingness for HEIGHT. May need to add the decimal in legacy

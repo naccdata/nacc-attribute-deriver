@@ -22,34 +22,26 @@ class TestUDSAttributeCollection:
 
 class TestUDSMissingness:
     def test_handle_optional_header_variables(self, uds_table):
-        """Test handling an optional header variable when form is and isn't
-        submitted."""
-        # Submitted
+        """Test handling an optional header variables."""
+        # Valid values
         uds_table["file.info.forms.json"].update(
             {
-                "modexxx": 1,
                 "langxxx": 2,
-                "adminxxx": None,
+                "adminxxx": 1,
             }
         )
 
         attr = UDSMissingness(uds_table)
-        assert attr.handle_optional_header_variables("lang", "xxx") == 2
+        assert attr.handle_optional_header_variables("lang", "xxx", [1, 2]) == 2
+        assert attr.handle_optional_header_variables("admin", "xxx", [1, 2]) == 1
+
+        # Invalid values
+        uds_table["file.info.forms.json"].update({"langxxx": 3, "adminxxx": -1})
         assert (
-            attr.handle_optional_header_variables("admin", "xxx")
+            attr.handle_optional_header_variables("lang", "xxx", [1, 2])
             == INFORMED_MISSINGNESS
         )
-
-        # not submitted
-        uds_table["file.info.forms.json"].update(
-            {
-                "modexxx": 0,
-            }
-        )
         assert (
-            attr.handle_optional_header_variables("lang", "xxx") == INFORMED_MISSINGNESS
-        )
-        assert (
-            attr.handle_optional_header_variables("admin", "xxx")
+            attr.handle_optional_header_variables("admin", "xxx", [1, 2])
             == INFORMED_MISSINGNESS
         )

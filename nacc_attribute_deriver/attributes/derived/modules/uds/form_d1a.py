@@ -200,7 +200,7 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         return 8
 
     def __determine_predominant_syndrome(self, field: str) -> int:
-        """V4; determine predominant syndrome, used for NACCAPPA, NACCBVFT, and
+        """V4; determine predominant syndrome, used for NACCPPA, NACCBVFT, and
         NACCLBDS.
 
         If NORMCOG == 1, DERIVED = 8

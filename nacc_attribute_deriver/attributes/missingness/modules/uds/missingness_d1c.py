@@ -6,4 +6,4 @@ from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissi
 class UDSFormD1cMissingness(UDSMissingness):
     def _missingness_langd1c(self) -> int:
         """Handle missingness for LANGD1C."""
-        return self.handle_optional_header_variables("lang", "d1c")
+        return self.handle_optional_header_variables("lang", "d1c", [1, 2])
