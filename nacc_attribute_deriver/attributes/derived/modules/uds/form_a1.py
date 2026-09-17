@@ -252,9 +252,7 @@ class UDSFormA1Attribute(UDSAttributeCollection):
 
         # a blank write-in on a later packet must not erase text already
         # captured at an earlier visit
-        known_value = self.__subject_derived.get_cross_sectional_value(
-            "nacclangx", str
-        )
+        known_value = self.__subject_derived.get_cross_sectional_value("nacclangx", str)
         return known_value if known_value else INFORMED_BLANK
 
     def _create_nacchisp(self) -> Optional[int]:
