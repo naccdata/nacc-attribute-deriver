@@ -190,6 +190,7 @@ uds,nacclivs,file.info.derived.nacclivs,update,FALSE
 uds,nacclivs,subject.info.derived.longitudinal.nacclivs,list,TRUE
 uds,naccnihr,file.info.derived.naccnihr,update,FALSE
 uds,naccnihr,subject.info.derived.cross-sectional.naccnihr,update,FALSE
+uds,naccnihr_v1v3,subject.info.derived.cross-sectional-v1v3.naccnihr,update,FALSE
 uds,naccreas,subject.info.derived.cross-sectional.naccreas,update,FALSE
 uds,naccrefr,subject.info.derived.cross-sectional.naccrefr,update,FALSE
 uds,naccsex,subject.info.derived.cross-sectional.naccsex,update,FALSE
@@ -197,6 +198,7 @@ uds,nacclang,subject.info.derived.cross-sectional.nacclang,update,FALSE
 uds,nacclangx,subject.info.derived.cross-sectional.nacclangx,update,FALSE
 uds,nacchisp,subject.info.derived.cross-sectional.nacchisp,update,FALSE
 uds,naccedulvl,subject.info.derived.cross-sectional.naccedulvl,update,FALSE
+uds,naccedulvl_v1v3,subject.info.derived.cross-sectional-v1v3.naccedulvl,update,FALSE
 uds,naccninr,file.info.derived.naccninr,update,FALSE
 uds,naccninr,subject.info.derived.longitudinal.naccninr,list,TRUE
 uds,naccincntfq,file.info.derived.naccincntfq,update,FALSE
