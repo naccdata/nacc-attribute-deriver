@@ -214,7 +214,7 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
         value = self.uds.get_value(field, int)
         predomsyn = self.uds.get_value("predomsyn", int)
         if value == 1:
-            return 8
+            return 1
         if predomsyn == 1 and value is None:
             return 0
         if predomsyn == 0 and value is None:
