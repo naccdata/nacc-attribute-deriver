@@ -237,7 +237,11 @@ class SCANPETAmyloidGAAINAttributeCollection(AttributeCollection):
         """Returns the Amyloid GAAIN Centiloid/SUVR analysis type."""
         centiloid = self.get_centiloid()
         suvr = self.__amyloid_gaain.get_value("gaain_summary_suvr", float)
-        return PETAnalysisTypes.AMYLOID_GAAIN if centiloid and suvr else None
+        return (
+            PETAnalysisTypes.AMYLOID_GAAIN
+            if centiloid is not None and suvr is not None
+            else None
+        )
 
 
 class SCANPETAmyloidNPDKAAttributeCollection(AttributeCollection):

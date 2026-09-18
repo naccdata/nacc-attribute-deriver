@@ -112,7 +112,7 @@ class NPFormAttributeCollection(AttributeCollection):
         if self.formver in [10, 11]:
             pass
         elif self.formver in [7, 8, 9]:
-            if not npavas:
+            if npavas is None:
                 raise InvalidFieldError(
                     "npvas cannot be missing for formver 7, 8, or 9"
                 )
@@ -157,7 +157,7 @@ class NPFormAttributeCollection(AttributeCollection):
             if npbraak == 7:
                 naccbraa = 0
         elif self.formver == 1:
-            if npbraak:
+            if npbraak is not None:
                 if npbraak == 7:
                     naccbraa = 0
             else:

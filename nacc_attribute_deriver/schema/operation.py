@@ -349,7 +349,7 @@ class ComparisonOperation(Operation):
             raw_value = None
 
         try:
-            if not dest_value or self.compare(raw_value, dest_value):
+            if dest_value is None or self.compare(raw_value, dest_value):
                 if isinstance(value, DateTaggedValue):
                     value = value.model_dump()
 
