@@ -140,6 +140,10 @@ class NPMissingness(FormMissingnessCollection):
                 return 88
             if npinf == 9:
                 return 99
+            # NPINF 0 means no infarcts, so an unanswered sub-value is 0
+            # rather than missing
+            if npinf == 0 and self.form.get_value(field, int) is None:
+                return 0
 
         # rec9a macro; unnecessary but keeping it here
         # to reference the SAS code; can remove once
@@ -198,8 +202,9 @@ class NPMissingness(FormMissingnessCollection):
                 return 88.8
             elif npinf == 9 or gate_value == 99:
                 return 99.9
+            # NPINF 0 means no infarcts, so the volumes are 88.8 not missing
             elif npinf == 0:
-                return INFORMED_MISSINGNESS_FLOAT
+                return 88.8
 
         # rec9b macro; unnecessary but keeping it here
         # to reference the SAS code; can remove once
@@ -298,9 +303,10 @@ class NPMissingness(FormMissingnessCollection):
                 return 8
             if gate_value == 9:
                 return 9
-
+            # the gate being 0 means the sub-questions were skipped, so an
+            # unanswered sub-value is 0 rather than missing
             if gate_value == 0 and value is None:
-                return INFORMED_MISSINGNESS
+                return 0
 
         # rec9a macro; unnecessary but keeping it here
         # to reference the SAS code; can remove once

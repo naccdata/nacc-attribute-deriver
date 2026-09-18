@@ -39,9 +39,9 @@ class TestNPMissingness:
         attr = NPMissingness(np_table)
         assert attr._missingness_npinf1a() == INFORMED_MISSINGNESS
 
-        # V10/V11: -4 cases
+        # V10/V11: NPINF 0 means no infarcts, so the sub-value is 0
         np_table["file.info.forms.json.npinf"] = 0
-        assert attr._missingness_npinf1a() == INFORMED_MISSINGNESS
+        assert attr._missingness_npinf1a() == 0
 
         # V10/V11: 88 case
         np_table["file.info.forms.json.npinf"] = 8
@@ -66,9 +66,9 @@ class TestNPMissingness:
         attr = NPMissingness(np_table)
         assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
 
-        # V10/v11: -4.4 cases
+        # V10/V11: NPINF 0 means no infarcts, so the volume is 88.8
         np_table["file.info.forms.json.npinf"] = 0
-        assert attr._missingness_npinf4f() == INFORMED_MISSINGNESS_FLOAT
+        assert attr._missingness_npinf4f() == 88.8
 
         # V10/V11: 99 case
         np_table["file.info.forms.json.npinf"] = 9
@@ -131,14 +131,45 @@ class TestNPMissingness:
         np_table["file.info.forms.json.nphemo"] = 9
         assert attr._missingness_nphemo2() == 9
 
-        # V10/V11: 0 case
+        # V10/V11: the gate being 0 means the sub-value is 0
         np_table["file.info.forms.json.nphemo"] = 0
-        assert attr._missingness_nphemo2() == INFORMED_MISSINGNESS
+        assert attr._missingness_nphemo2() == 0
 
         # any version, something is set case
         np_table["file.info.forms.json.formver"] = random.choice([1, 7, 8, 9, 10, 11])
         np_table["file.info.forms.json.nphemo2"] = 6
         assert attr._missingness_nphemo2() == 6
+
+    def test_gate_zero_fills_subvalues(self, np_table):
+        """A gate of 0 means the sub-questions were skipped, so unanswered sub-
+        values are 0 rather than missing."""
+        for formver in [10, 11]:
+            np_table["file.info.forms.json.formver"] = formver
+            attr = NPMissingness(np_table)
+
+            for gate, method in [
+                ("nphemo", "_missingness_nphemo1"),
+                ("npold", "_missingness_npold1"),
+                ("npoldd", "_missingness_npoldd1"),
+                ("nppath", "_missingness_nppath2"),
+                ("npftdtau", "_missingness_npftdt2"),
+                ("npoftd", "_missingness_npoftd1"),
+            ]:
+                np_table[f"file.info.forms.json.{gate}"] = 0
+                assert getattr(attr, method)() == 0, f"{gate} on v{formver}"
+
+    def test_npinf_zero_fills_subvalues(self, np_table):
+        """NPINF 0 means no infarcts: the A variables are 0 and the volumes are
+        88.8."""
+        for formver in [10, 11]:
+            np_table["file.info.forms.json.formver"] = formver
+            np_table["file.info.forms.json.npinf"] = 0
+            attr = NPMissingness(np_table)
+
+            assert attr._missingness_npinf1a() == 0
+            assert attr._missingness_npinf4a() == 0
+            assert attr._missingness_npinf1b() == 88.8
+            assert attr._missingness_npinf4f() == 88.8
 
     def test_nppmih(self, np_table):
         """Test the NPPMIH decimal case."""
