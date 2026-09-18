@@ -8,7 +8,10 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1 import (
 from nacc_attribute_deriver.attributes.derived.modules.uds.form_a1_raw import (
     UDSFormA1RawAttribute,
 )
-from nacc_attribute_deriver.utils.constants import INFORMED_BLANK
+from nacc_attribute_deriver.utils.constants import (
+    INFORMED_BLANK,
+    INFORMED_MISSINGNESS,
+)
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
@@ -142,7 +145,7 @@ class TestUDSFormA1Attribute:
         """Tests _create_nacclangx."""
         table["file.info.forms.json"].update(
             {
-                "primlangx": "some legacy text",  # V3
+                "primlanx": "some legacy text",  # V3
                 "predomlanx": "some current text",  # V4
             }
         )
@@ -156,6 +159,84 @@ class TestUDSFormA1Attribute:
         # check returns informed blank if missing
         table["file.info.forms.json.predomlanx"] = None
         assert attr._create_nacclangx() == INFORMED_BLANK
+
+    def test_create_naccnihr_v1v3(self, table):
+        """V1-3 race is kept for V1-3 rows and never written by an I4."""
+        table["file.info.forms.json"].update({"race": 1})
+        assert UDSFormA1Attribute(table)._create_naccnihr_v1v3() == 1
+
+        # an I4 must not touch the V1-3 value; the base rule still takes V4
+        table["file.info.forms.json"].update(
+            {"formver": 4.0, "packet": "I4", "racemena": 1}
+        )
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_naccnihr_v1v3() is None
+        assert attr._create_naccnihr() == 7
+
+    def test_create_naccedulvl_v1v3(self, table):
+        """V1-3 education is kept for V1-3 rows and never written by an I4."""
+        table["file.info.forms.json"].update({"educ": 20})
+        assert UDSFormA1Attribute(table)._create_naccedulvl_v1v3() == 6
+
+        table["file.info.forms.json"].update(
+            {"formver": 4.0, "packet": "I4", "lvleduc": 3}
+        )
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_naccedulvl_v1v3() is None
+        assert attr._create_naccedulvl() == 3
+
+    def test_v1v3_rules_skip_followups(self, table):
+        """Only an initial packet establishes the V1-3 value."""
+        table["file.info.forms.json"].update({"packet": "F", "race": 1, "educ": 20})
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_naccnihr_v1v3() is None
+        assert attr._create_naccedulvl_v1v3() is None
+
+    def test_v4_unknowns_do_not_override_known_values(self, table):
+        """A V4 packet must not replace a known value with an unknown."""
+        table["subject.info.derived.cross-sectional"] = {
+            "nacclangx": "Tagalog",
+            "nacchisp": 0,
+            "naccsex": 2,
+            "nacclang": 8,
+            "naccreas": 1,
+        }
+        table["file.info.forms.json"].update(
+            {
+                "formver": 4.0,
+                "packet": "I4",
+                "predomlanx": None,
+                "predomlan": 9,
+                "ethispanic": 0,
+                "raceunkn": 1,
+                "birthsex": None,
+            }
+        )
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_nacclangx() == "Tagalog"
+        assert attr._create_nacchisp() == 0
+        assert attr._create_nacclang() == 8
+        assert attr._create_naccreas() == 1
+        assert attr._create_naccsex() == 2
+
+    def test_v4_unknowns_still_apply_when_nothing_known(self, table):
+        """With no prior value the existing fallbacks are unchanged."""
+        table["subject.info.derived.cross-sectional"] = {}
+        table["file.info.forms.json"].update(
+            {
+                "formver": 4.0,
+                "packet": "I4",
+                "predomlanx": None,
+                "predomlan": 9,
+                "ethispanic": 0,
+                "raceunkn": 1,
+            }
+        )
+        attr = UDSFormA1Attribute(table)
+        assert attr._create_nacclangx() == INFORMED_BLANK
+        assert attr._create_nacchisp() == 9
+        assert attr._create_nacclang() == 9
+        assert attr._create_naccreas() == INFORMED_MISSINGNESS
 
     def test_create_nacchisp(self, table):
         """Tests _create_nacchisp."""

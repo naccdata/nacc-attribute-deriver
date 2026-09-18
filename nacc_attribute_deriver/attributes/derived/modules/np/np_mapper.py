@@ -5,9 +5,6 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.namespace.namespace import (
     FormNamespace,
 )
-from nacc_attribute_deriver.utils.constants import (
-    INFORMED_MISSINGNESS,
-)
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
@@ -101,8 +98,10 @@ class NPMapper:
 
         if gateway in [8, 9]:
             return gateway
+        # the gate being 0 means the sub-questions were skipped, so the
+        # sub-value is 0 rather than missing
         if gateway == 0:
-            return INFORMED_MISSINGNESS
+            return 0
 
         return 9
 

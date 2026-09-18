@@ -2,6 +2,18 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.5.0
+
+* Fixes `NACCLANGX` never resolving for V1-3: `_create_nacclangx` read `primlangx`, but the A1 V1-3 variable is `PRIMLANX`. The unit test carried the same misspelling, so it passed
+* Adds `NACCNIHR` and `NACCEDULVL` as quasi-cross-sectional per the RDD - V1-3 rows keep the value derived from V1-3 fields, V4 rows take the V4 value
+    * Stored under `subject.info.derived.cross-sectional-v1v3`; requires the companion change in the attribute curator gear to be applied to files
+    * V1-3 and V4 ask different questions (`EDUC` years vs `LVLEDUC` category; V1-3 race fields vs the V4 checkboxes, which can yield code 7), so the V4 answer is not a correction of the V1-3 one
+* Stops a V4 packet overwriting a known cross-sectional value with an unknown, extending the existing `NACCREFR` behavior to `NACCLANGX`, `NACCHISP`, `NACCLANG`, `NACCSEX` and `NACCREAS`
+    * `NACCREAS` previously returned missingness on any `formver >= 4` before checking the packet, so an F4 followup cleared it for the whole subject
+* Fixes NP gate variables not filling in their sub-values when the gate is 0. `NPINF`, `NPHEMO`, `NPOLD`, `NPOLDD`, `NPPATH`, `NPFTDTAU` and `NPOFTD` set to 0 mean the sub-questions were skipped, so an unanswered sub-value is 0 (or 88.8 for the `NPINFxB/D/F` volumes) rather than missingness
+    * Affects `NPINF1A-4A`, `NPINFxB/D/F`, `NPHEMO1-3`, `NPOLD1-4`, `NPOLDD1-4`, `NPPATH2-11`, `NPFTDT2/5-10`, `NPOFTD1-5`, and the derived `NACCNEC`, `NACCPICK`, `NACCCBD` and `NACCPROG`
+    * V10 already produced the correct values because legacy records arrive with the sub-values populated; V11 forms leave them blank, which exposed that the rule was never implemented. A sub-value that was actually submitted is still preserved
+
 ## 2.4.1
 
 * Update enforcement of header variables `LANGX` and `ADMINX` for optional forms to only be set to -4 if not a valid value (1 or 2); does not check `MODEXX` anymore

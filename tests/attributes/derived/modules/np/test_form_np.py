@@ -204,8 +204,9 @@ class TestCreateNACCCBD:
         assert np_form_attribute._create_nacccbd() == 9
         set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 8)
         assert np_form_attribute._create_nacccbd() == 8
+        # the gate being 0 means the sub-value is 0, not missing
         set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 0)
-        assert np_form_attribute._create_nacccbd() == -4
+        assert np_form_attribute._create_nacccbd() == 0
 
 
 class TestCreateNACCPRIO:
@@ -263,3 +264,23 @@ class TestGeneralNP:
             NPFormAttributeCollection(np_form_attribute_table)
 
         assert str(e.value) == "Unexpected formver for NP: 11.5"
+
+
+class TestNPGateZero:
+    def test_gate_zero_fills_derived_subvalues(
+        self, np_form_attribute_table, form_prefix
+    ):
+        """A gate of 0 means the sub-value is 0, not missing."""
+        for field in ["npcort", "nppick", "npprog", "npnec"]:
+            set_attribute(np_form_attribute_table, form_prefix, field, None)
+
+        for formver in [10, 11]:
+            set_attribute(np_form_attribute_table, form_prefix, "formver", formver)
+            set_attribute(np_form_attribute_table, form_prefix, "npftdtau", 0)
+            set_attribute(np_form_attribute_table, form_prefix, "nppath", 0)
+            np_form_attribute = NPFormAttributeCollection(np_form_attribute_table)
+
+            assert np_form_attribute._create_nacccbd() == 0
+            assert np_form_attribute._create_naccpick() == 0
+            assert np_form_attribute._create_naccprog() == 0
+            assert np_form_attribute._create_naccnec() == 0
