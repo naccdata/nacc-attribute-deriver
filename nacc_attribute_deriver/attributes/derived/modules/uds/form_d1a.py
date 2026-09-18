@@ -173,7 +173,7 @@ class UDSFormD1aAttribute(UDSFormDxAttribute):
             tbidxif = self.uds.get_value("tbidxif", int)
             tbidx = self.uds.get_value("tbidx", int)
             if tbidxif in [1, 2, 3]:
-                return 1
+                return tbidxif
             if tbidx is None:
                 return 7
 
