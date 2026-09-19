@@ -45,6 +45,8 @@ class UDSFormB1Missingness(UDSMissingness):
             if height != height_with_dec:
                 height = height_with_dec
 
+        # cap all versions at 87.9 so legacy V1/V2 heights stay clear of
+        # the 88/99 informed-missingness codes
         return min(max(36.0, height), 87.9)
 
     #################################################
