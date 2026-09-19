@@ -136,7 +136,7 @@ class BaseNamespace:
 
         try:
             return attr_type(value)  # type: ignore
-        except TypeError as e:
+        except (TypeError, ValueError) as e:
             raise InvalidFieldError(
                 f"{self.__symbol(attribute)} must be of type {attr_type}"
             ) from e
