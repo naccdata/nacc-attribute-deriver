@@ -256,7 +256,7 @@ class SCANPETAmyloidNPDKAAttributeCollection(AttributeCollection):
     def _create_scan_pet_amyloid_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Amyloid NPDKA SUVR analysis type."""
         suvr = self.__amyloid_npdka.get_value("npdka_summary_suvr", float)
-        return PETAnalysisTypes.AMYLOID_NPDKA if suvr else None
+        return PETAnalysisTypes.AMYLOID_NPDKA if suvr is not None else None
 
 
 class SCANPETFTDNPDKAAttributeCollection(AttributeCollection):
@@ -269,7 +269,7 @@ class SCANPETFTDNPDKAAttributeCollection(AttributeCollection):
     def _create_scan_pet_fdg_npdka_analysis_type(self) -> Optional[str]:
         """Returns the FDG NPDKA SUVR analysis type."""
         suvr = self.__fdg_npdka.get_value("fdg_metaroi_suvr", float)
-        return PETAnalysisTypes.FDG_NPDKA if suvr else None
+        return PETAnalysisTypes.FDG_NPDKA if suvr is not None else None
 
 
 class SCANPETTAUNPDKAAttributeCollection(AttributeCollection):
@@ -282,4 +282,4 @@ class SCANPETTAUNPDKAAttributeCollection(AttributeCollection):
     def _create_scan_pet_tau_npdka_analysis_type(self) -> Optional[str]:
         """Returns the Tau NPDKA SUVR analysis type."""
         suvr = self.__tau_npdka.get_value("meta_temporal_suvr", float)
-        return PETAnalysisTypes.TAU_NPDKA if suvr else None
+        return PETAnalysisTypes.TAU_NPDKA if suvr is not None else None

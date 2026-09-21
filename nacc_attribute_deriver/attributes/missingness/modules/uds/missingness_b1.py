@@ -67,7 +67,7 @@ class UDSFormB1Missingness(UDSMissingness):
                 self.__visitdate, field, int
             )
 
-        if not value:
+        if value is None:
             value = self.generic_missingness(field, int)
 
         # Cannot be 999 in V4, so seems okay to not gate based
