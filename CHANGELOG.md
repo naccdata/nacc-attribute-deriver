@@ -13,6 +13,12 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Fixes NP gate variables not filling in their sub-values when the gate is 0. `NPINF`, `NPHEMO`, `NPOLD`, `NPOLDD`, `NPPATH`, `NPFTDTAU` and `NPOFTD` set to 0 mean the sub-questions were skipped, so an unanswered sub-value is 0 (or 88.8 for the `NPINFxB/D/F` volumes) rather than missingness
     * Affects `NPINF1A-4A`, `NPINFxB/D/F`, `NPHEMO1-3`, `NPOLD1-4`, `NPOLDD1-4`, `NPPATH2-11`, `NPFTDT2/5-10`, `NPOFTD1-5`, and the derived `NACCNEC`, `NACCPICK`, `NACCCBD` and `NACCPROG`
     * V10 already produced the correct values because legacy records arrive with the sub-values populated; V11 forms leave them blank, which exposed that the rule was never implemented. A sub-value that was actually submitted is still preserved
+* Fixes valid `0`/`0.0` values being treated as unset due to falsy checks
+    * `min`/`max` operations no longer discard a stored `0` (affects all min/max derived variables, e.g. SCAN PET centiloid minimums)
+    * `NACCBRAA` (Braak stage 0), `NACCAVAS` (0) and the SCAN amyloid GAAIN analysis type (centiloid `0.0`) now keep valid zero values
+* Fixes UDSv4 predominant syndrome returning 8 ("no diagnosis") instead of 1 when the syndrome is present, affecting `NACCPPA`, `NACCBVFT` and `NACCLBDS`
+* Fixes `NACCTBIDXIF` collapsing UDSv4 values 2 and 3 to 1
+* Fixes participant status equality never comparing dates (a stray `raise` made the date check dead code), used when comparing milestone dates between minimal-contact and discontinued statuses
 
 ## 2.4.1
 

@@ -87,7 +87,6 @@ class ParticipantStatus:
             other_date = date_from_form_date(other.status_date)
 
             if this_date is not None and other_date is not None:
-                raise ValueError(this_date == other_date)
                 return this_date == other_date
         except (TypeError, ValueError, AttributeDeriverError):
             pass

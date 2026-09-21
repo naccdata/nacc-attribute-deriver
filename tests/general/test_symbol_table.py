@@ -1,3 +1,5 @@
+import pytest
+
 from nacc_attribute_deriver.symbol_table import SymbolTable
 
 
@@ -60,6 +62,16 @@ class TestSymbolTable:
         assert table.pop("nested.key.not.in.dict", "my_default") == "my_default"
 
         assert table.to_dict() == {"a": 0, "c": 2, "nested": {"d": {}, "f": 4}}
+
+    def test_delete_unsupported(self):
+        """Deletion is intentionally unsupported and must fail loudly."""
+        table = SymbolTable({"a": 0, "nested": {"b": 1}})
+
+        with pytest.raises(NotImplementedError):
+            del table["a"]
+
+        with pytest.raises(NotImplementedError):
+            del table["nested.b"]
 
     def test_mutability(self):
         """Test this in the way the Attribute Curation gear uses it.

@@ -76,7 +76,7 @@ class SymbolTable(MutableMapping[str, Any]):
         return True
 
     def __delitem__(self, key: Any) -> None:
-        return
+        raise NotImplementedError("SymbolTable does not support deletion")
 
     def __iter__(self) -> Iterator[str]:
         return self.__table.__iter__()
