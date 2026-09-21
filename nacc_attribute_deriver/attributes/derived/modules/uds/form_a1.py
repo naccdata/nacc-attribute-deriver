@@ -100,14 +100,31 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             raceunkn=self.uds.get_value("raceunkn", int),
         )
 
+    def _create_naccnihr_v1v3(self) -> Optional[int]:
+        """NACCNIHR as established by the participant's V1-3 initial visit.
+
+        Quasi-cross-sectional: V1-3 rows keep the race derived from the V1-3
+        race fields even after an I4 supplies the V4 ones, which ask a different
+        question and can produce codes (e.g. 7) that V1-3 cannot. Returns None
+        outside a V1-3 initial packet so the stored value is never overwritten.
+        """
+        if self.formver >= 4:
+            return None
+
+        return self._create_naccnihr()
+
     def _create_naccreas(self) -> Optional[int]:
         """Creates NACCREAS - primary reason for coming to ADC.
 
         Not collected at followup visits.
         REMOVED IN V4
         """
+        known_value = self.__subject_derived.get_cross_sectional_value("naccreas", int)
+
+        # removed in V4, so keep whatever V1-3 established rather than
+        # blanking it out from a V4 packet
         if self.formver >= 4:
-            return INFORMED_MISSINGNESS
+            return known_value if known_value is not None else INFORMED_MISSINGNESS
 
         if not self.uds.is_initial():
             return None
@@ -116,7 +133,10 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if reason in [3, 4]:
             return 7
 
-        return reason if reason is not None else 9
+        if reason is not None:
+            return reason
+
+        return 9 if known_value is None else known_value
 
     def _create_naccrefr(self) -> Optional[int]:
         """Ceates NACCREFR - principle referral source.
@@ -157,12 +177,18 @@ class UDSFormA1Attribute(UDSAttributeCollection):
         if not self.uds.is_initial():
             return None
 
+        known_value = self.__subject_derived.get_cross_sectional_value("naccsex", int)
+
         if self.formver < 4:
             sex = self.uds.get_value("sex", int)
         else:
             sex = self.uds.get_value("birthsex", int)
 
+        # an I4 must not blank out a sex already established by a V1-3 visit
         if sex is None:
+            if known_value is not None:
+                return known_value
+
             raise AttributeDeriverError(
                 "Unable to derive NACCSEX, missing sex/birthsex"
             )
@@ -192,10 +218,19 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             return primlang_mappings[primlang]
 
         predomlan = self.uds.get_value("predomlan", int)
-        if predomlan is None:
-            raise AttributeDeriverError(
-                "Unable to derive NACCLANG (V4): missing PREDOMLAN"
+
+        # an unknown/missing V4 answer must not override a known V1-3 value
+        if predomlan is None or predomlan == 9:
+            known_value = self.__subject_derived.get_cross_sectional_value(
+                "nacclang", int
             )
+            if known_value is not None and known_value != 9:
+                return known_value
+
+            if predomlan is None:
+                raise AttributeDeriverError(
+                    "Unable to derive NACCLANG (V4): missing PREDOMLAN"
+                )
 
         return predomlan
 
@@ -208,11 +243,17 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             return None
 
         if self.formver < 4:
-            result = self.uds.get_value("primlangx", str)
+            result = self.uds.get_value("primlanx", str)
         else:
             result = self.uds.get_value("predomlanx", str)
 
-        return result if result is not None else INFORMED_BLANK
+        if result is not None:
+            return result
+
+        # a blank write-in on a later packet must not erase text already
+        # captured at an earlier visit
+        known_value = self.__subject_derived.get_cross_sectional_value("nacclangx", str)
+        return known_value if known_value else INFORMED_BLANK
 
     def _create_nacchisp(self) -> Optional[int]:
         """Creates NACCHISP - Hispanic/Latino ethnicity
@@ -230,6 +271,8 @@ class UDSFormA1Attribute(UDSAttributeCollection):
                 )
             return hispanic
 
+        known_value = self.__subject_derived.get_cross_sectional_value("nacchisp", int)
+
         ethispanic = self.uds.get_value("ethispanic", int)
         if ethispanic == 1:
             return 1
@@ -238,6 +281,9 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             if raceunkn is None:
                 return 0
             if raceunkn == 1:
+                # unknown must not override a known V1-3 ethnicity
+                if known_value is not None and known_value != 9:
+                    return known_value
                 return 9
 
         raise AttributeDeriverError(
@@ -287,6 +333,19 @@ class UDSFormA1Attribute(UDSAttributeCollection):
             )
 
         return lvleduc
+
+    def _create_naccedulvl_v1v3(self) -> Optional[int]:
+        """NACCEDULVL as established by the participant's V1-3 initial visit.
+
+        Quasi-cross-sectional: V1-3 collects EDUC as years and V4 collects
+        LVLEDUC as a category, so the V4 answer must not replace the V1-3 one on
+        V1-3 rows. Returns None outside a V1-3 initial packet so the stored
+        value is never overwritten.
+        """
+        if self.formver >= 4:
+            return None
+
+        return self._create_naccedulvl()
 
     def _create_naccpaff(self) -> int:
         """Creates NACCPAFF - Previously affiliated subject.

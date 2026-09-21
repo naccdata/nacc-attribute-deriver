@@ -5,7 +5,6 @@ from typing import List, Optional, Type
 from pydantic import (
     BaseModel,
     ConfigDict,
-    ValidationError,
     field_validator,
 )
 
@@ -99,4 +98,4 @@ class MissingnessFileModel(RuleFileModel):
         if value == "str":
             return str
 
-        raise ValidationError(f"Unsupported attribute type: {value}")
+        raise ValueError(f"Unsupported attribute type: {value}")
