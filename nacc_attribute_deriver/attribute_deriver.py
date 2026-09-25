@@ -236,7 +236,7 @@ class MissingnessDeriver(BaseAttributeDeriver):
             for row in reader:
                 for version in matrix:
                     if row[version]:
-                        matrix[version][row["variable"]] = int(row[version])
+                        matrix[version][row["variable"].strip()] = int(row[version])
 
         return matrix
 
