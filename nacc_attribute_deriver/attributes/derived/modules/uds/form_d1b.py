@@ -63,6 +63,9 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if alzdisif in [1, 2, 3]:
             return alzdisif
 
+        if self.has_cognitive_impairment():
+            return 7
+
         return 8
 
     def _create_nacclbde(self) -> int:
