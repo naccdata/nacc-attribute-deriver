@@ -2,6 +2,17 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## 2.5.1
+
+* Fixes UDSv4 `FTLD` always resolving to -4: the DED matrix key `ftld` did not match the rule name `uds_ftld`
+* Fixes DED matrix keys with trailing spaces (`mci`, `cdommem`, `cdomattn`, `othcillif`, `pmrsu`) never matching their rules, so `CDOMMEM`, `CDOMATTN` and `OTHCILLIF` fell back to -4 instead of their custom missingness
+    * The matrix loader now strips keys; also removes 37 duplicate D1c rows (no behavior change)
+* Fixes UDSv4 `NACCALZP` returning 8 instead of 7 for cognitively impaired participants without an AD diagnosis, mirroring `NACCLBDP`
+* Fixes UDSv4 `NACCETPR` returning 99 (or 30) when `OTHCOGIF` is primary; `OTHCOGIF` now maps to 18 for all versions
+* Fixes UDSv4 follow-up gender (`GEN*`) and sexual orientation (`SEXORN*`) checkboxes inheriting boxes from the previous visit when a different box was checked
+    * The group, including the `GENOTHX`/`SEXORNOTHX` write-ins, is only carried forward when every box in it is blank
+* Fixes V1-3 `TOBAC30 = 1` being overwritten with 8/9 by the V4 `TOBAC100` gate; `TOBAC30` is only gated by `TOBAC100` in V4
+
 ## 2.5.0
 
 * Fixes `NACCLANGX` never resolving for V1-3: `_create_nacclangx` read `primlangx`, but the A1 V1-3 variable is `PRIMLANX`. The unit test carried the same misspelling, so it passed
