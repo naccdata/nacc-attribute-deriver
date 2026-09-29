@@ -311,7 +311,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             return 16
         if self.has_primary(["hivif"], check_primdxd1b=True):
             return 17
-        if self.formver < 4 and self.has_primary(["othcogif"]):
+        if self.has_primary(["othcogif"]):
             return 18
         if self.formver >= 4 and self.has_primary(["othcillif"], check_primdxd1b=True):
             return 18
