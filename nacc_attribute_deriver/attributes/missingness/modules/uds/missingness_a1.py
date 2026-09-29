@@ -14,6 +14,31 @@ from nacc_attribute_deriver.utils.constants import (
 )
 from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
+GENDER_BOXES = frozenset(
+    [
+        "genman",
+        "genwoman",
+        "gentrman",
+        "gentrwoman",
+        "gennonbi",
+        "gentwospir",
+        "genoth",
+        "gendkn",
+        "gennoans",
+    ]
+)
+SEXORN_BOXES = frozenset(
+    [
+        "sexorngay",
+        "sexornhet",
+        "sexornbi",
+        "sexorntwos",
+        "sexornoth",
+        "sexorndnk",
+        "sexornnoan",
+    ]
+)
+
 
 class UDSFormA1Missingness(UDSMissingness):
     def __init__(self, table: SymbolTable):
@@ -81,11 +106,16 @@ class UDSFormA1Missingness(UDSMissingness):
         attr_type: Type[T],
         default: Optional[T] = None,
         provided_fvp: bool = False,
+        group: Optional[frozenset[str]] = None,
     ) -> T:
         """Handle A1 prev visit.
 
         May need to ignore values added in FVP.
         """
+        # an answered checkbox group must not inherit boxes from the prior visit
+        if group and any(self.uds.get_value(x, int) == 1 for x in group):
+            return self.generic_missingness(field, attr_type, default=default)
+
         # ignore the current value if it is not an initial visit AND it's
         # not a value provided in FVP. this is to handle when they
         # enter something into an FVP form they weren't expected to
@@ -96,6 +126,12 @@ class UDSFormA1Missingness(UDSMissingness):
             attr_type=attr_type,
             default=default,
             ignore_current_value=ignore_current_value,
+        )
+
+    def __handle_a1_checkbox(self, field: str, group: frozenset[str]) -> int:
+        """Handle an A1 checkbox that is collected at every visit."""
+        return self.__handle_a1_prev_visit(
+            field, int, default=self.__default, provided_fvp=True, group=group
         )
 
     def _missingness_raceaian(self) -> int:
@@ -412,107 +448,79 @@ class UDSFormA1Missingness(UDSMissingness):
 
     def _missingness_genman(self) -> int:
         """Handles missingness for GENMAN."""
-        return self.__handle_a1_prev_visit(
-            "genman", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("genman", GENDER_BOXES)
 
     def _missingness_genwoman(self) -> int:
         """Handles missingness for GENWOMAN."""
-        return self.__handle_a1_prev_visit(
-            "genwoman", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("genwoman", GENDER_BOXES)
 
     def _missingness_gentrman(self) -> int:
         """Handles missingness for GENTRMAN."""
-        return self.__handle_a1_prev_visit(
-            "gentrman", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("gentrman", GENDER_BOXES)
 
     def _missingness_gentrwoman(self) -> int:
         """Handles missingness for GENTRWOMAN."""
-        return self.__handle_a1_prev_visit(
-            "gentrwoman", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("gentrwoman", GENDER_BOXES)
 
     def _missingness_gennonbi(self) -> int:
         """Handles missingness for GENNONBI."""
-        return self.__handle_a1_prev_visit(
-            "gennonbi", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("gennonbi", GENDER_BOXES)
 
     def _missingness_gentwospir(self) -> int:
         """Handles missingness for GENTWOSPIR."""
-        return self.__handle_a1_prev_visit(
-            "gentwospir", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("gentwospir", GENDER_BOXES)
 
     def _missingness_genoth(self) -> int:
         """Handles missingness for GENOTH."""
-        return self.__handle_a1_prev_visit(
-            "genoth", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("genoth", GENDER_BOXES)
 
     def _missingness_genothx(self) -> str:
         """Handles missingness for GENOTHX."""
-        return self.__handle_a1_prev_visit("genothx", str, provided_fvp=True)
+        return self.__handle_a1_prev_visit(
+            "genothx", str, provided_fvp=True, group=GENDER_BOXES
+        )
 
     def _missingness_gendkn(self) -> int:
         """Handles missingness for GENDKN."""
-        return self.__handle_a1_prev_visit(
-            "gendkn", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("gendkn", GENDER_BOXES)
 
     def _missingness_gennoans(self) -> int:
         """Handles missingness for GENNOANS."""
-        return self.__handle_a1_prev_visit(
-            "gennoans", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("gennoans", GENDER_BOXES)
 
     def _missingness_sexorngay(self) -> int:
         """Handles missingness for SEXORNGAY."""
-        return self.__handle_a1_prev_visit(
-            "sexorngay", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("sexorngay", SEXORN_BOXES)
 
     def _missingness_sexornhet(self) -> int:
         """Handles missingness for SEXORNHET."""
-        return self.__handle_a1_prev_visit(
-            "sexornhet", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("sexornhet", SEXORN_BOXES)
 
     def _missingness_sexornbi(self) -> int:
         """Handles missingness for SEXORNBI."""
-        return self.__handle_a1_prev_visit(
-            "sexornbi", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("sexornbi", SEXORN_BOXES)
 
     def _missingness_sexorntwos(self) -> int:
         """Handles missingness for SEXORNTWOS."""
-        return self.__handle_a1_prev_visit(
-            "sexorntwos", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("sexorntwos", SEXORN_BOXES)
 
     def _missingness_sexornoth(self) -> int:
         """Handles missingness for SEXORNOTH."""
-        return self.__handle_a1_prev_visit(
-            "sexornoth", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("sexornoth", SEXORN_BOXES)
 
     def _missingness_sexornothx(self) -> str:
         """Handles missingness for SEXORNOTHX."""
-        return self.__handle_a1_prev_visit("sexornothx", str, provided_fvp=True)
+        return self.__handle_a1_prev_visit(
+            "sexornothx", str, provided_fvp=True, group=SEXORN_BOXES
+        )
 
     def _missingness_sexorndnk(self) -> int:
         """Handles missingness for SEXORNDNK."""
-        return self.__handle_a1_prev_visit(
-            "sexorndnk", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("sexorndnk", SEXORN_BOXES)
 
     def _missingness_sexornnoan(self) -> int:
         """Handles missingness for SEXORNNOAN."""
-        return self.__handle_a1_prev_visit(
-            "sexornnoan", int, default=self.__default, provided_fvp=True
-        )
+        return self.__handle_a1_checkbox("sexornnoan", SEXORN_BOXES)
 
     def _missingness_adistate(self) -> int:
         """Handles missingness for ADISTATE."""

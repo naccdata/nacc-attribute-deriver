@@ -308,7 +308,7 @@ class TestUDSFormD1bAttribute:
         set_attribute(table, form_prefix, "tbidxif", 0)
         set_attribute(table, form_prefix, "othcogif", 1)
         set_attribute(table, form_prefix, "othcillif", 1)
-        assert attr._create_naccetpr() == 99
+        assert attr._create_naccetpr() == 18
 
         set_attribute(table, form_prefix, "othcogif", 0)
         set_attribute(table, form_prefix, "othcillif", 1)
