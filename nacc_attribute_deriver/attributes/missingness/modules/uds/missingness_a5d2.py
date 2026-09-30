@@ -181,11 +181,10 @@ class UDSFormA5D2Missingness(UDSMissingness):
         return self.__handle_a5d2_gate("tobac100", "packsper")
 
     def _missingness_tobac30(self) -> int:
-        """Handles missingness for TOBAC30; ignore gate logic in
-        V3 and earlier if TOBAC30 = 1"""
-        tobac30 = self.uds.get_value("tobac30", int)
-        if self.formver < 4 and tobac30 == 1:
-            return tobac30
+        """Handles missingness for TOBAC30; only gated by TOBAC100 in V4, V1-3
+        ask TOBAC30 before TOBAC100."""
+        if self.formver < 4:
+            return self.generic_missingness("tobac30", int)
 
         return self.__handle_a5d2_gate("tobac100", "tobac30")
 

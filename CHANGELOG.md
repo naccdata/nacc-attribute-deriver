@@ -11,7 +11,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Fixes UDSv4 `NACCETPR` returning 99 (or 30) when `OTHCOGIF` is primary; `OTHCOGIF` now maps to 18 for all versions
 * Fixes UDSv4 follow-up gender (`GEN*`) and sexual orientation (`SEXORN*`) checkboxes inheriting boxes from the previous visit when a different box was checked
     * The group, including the `GENOTHX`/`SEXORNOTHX` write-ins, is only carried forward when every box in it is blank
-* Fixes V1-3 `TOBAC30 = 1` being overwritten with 8/9 by the V4 `TOBAC100` gate; `TOBAC30` is only gated by `TOBAC100` in V4
+* Fixes the V4 `TOBAC100` gate being applied to V1-3 `TOBAC30`, which overwrote the source value (including `TOBAC30 = 1`) with 8/9; V1-3 ask `TOBAC30` before `TOBAC100`, so it is only gated in V4
 
 ## 2.5.0
 
