@@ -197,13 +197,19 @@ class TestUDSFormD1aAttribute:
 class TestUDSFormD1bAttribute:
     def test_create_naccalzp(self, table, form_prefix):
         """Tests creating NACCALZP."""
+        # normcog == 1 (from the fixture) -> 8
         attr = UDSFormD1bAttribute(table)
         assert attr._create_naccalzp() == 8
 
+        # normcog != 1 with AD present (probad == 1 from the fixture) and no
+        # contribution status: NACCALZP must NOT be 7, since NACCALZD == 1.
         set_attribute(table, form_prefix, "normcog", 0)
         attr = UDSFormD1bAttribute(table)
-        assert attr._create_naccalzp() == 7
+        assert attr._create_naccalzd() == 1
+        assert attr._create_naccalzp() == 8
 
+        # Explicit contribution statuses are returned regardless of the
+        # AD-absent/cognitive-impairment guard.
         for field in ["probadif", "possadif", "alzdisif"]:
             for status in ContributionStatus.all():
                 set_attribute(table, form_prefix, field, status)
@@ -216,6 +222,25 @@ class TestUDSFormD1bAttribute:
         set_attribute(table, form_prefix, "alzdisif", 1)
         attr = UDSFormD1bAttribute(table)
         assert attr._create_naccalzp() == 1
+
+        # No contribution status and no AD diagnosis: 7 only when the
+        # participant is cognitively impaired (DEMENTED/MCI/IMPNOMCI).
+        for field in ["probadif", "possadif", "alzdisif"]:
+            set_attribute(table, form_prefix, field, None)
+        set_attribute(table, form_prefix, "probad", 0)
+        set_attribute(table, form_prefix, "possad", 0)
+        set_attribute(table, form_prefix, "alzdis", 0)
+
+        # cognitively impaired -> 7
+        set_attribute(table, form_prefix, "demented", 1)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccalzd() != 1
+        assert attr._create_naccalzp() == 7
+
+        # not cognitively impaired -> 8
+        set_attribute(table, form_prefix, "demented", 0)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccalzp() == 8
 
     def test_create_nacclbde(self, table, form_prefix):
         """Tests creating NACCLBDE."""
