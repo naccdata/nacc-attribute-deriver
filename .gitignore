@@ -24,3 +24,7 @@ debug.json
 tests/*/tmp
 
 rule_reflection/*.csv
+
+# Kiro: track shared steering docs, ignore everything else (local/session config)
+.kiro/*
+!.kiro/steering/
