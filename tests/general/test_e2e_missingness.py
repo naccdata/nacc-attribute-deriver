@@ -89,3 +89,31 @@ def test_file_sanity_check():
     run."""
     MissingnessDeriver(missingness_level="file")
     MissingnessDeriver(missingness_level="subject")
+
+
+def test_bds_form():
+    """Test BDS gated missingness through the file-level rules."""
+    table = SymbolTable(
+        {
+            "file": {
+                "info": {
+                    "forms": {
+                        "json": {
+                            "module": "BDS",
+                            "visitdate": "2025-01-01",
+                            "formver": "1.0",
+                            "adcid": "1",
+                            "bdsudsd": "1",
+                        }
+                    }
+                }
+            }
+        }
+    )
+    MissingnessDeriver(missingness_level="file").curate(table, "bds")
+
+    resolved = table["file.info.resolved"]
+    assert resolved["bdstmci"] == 8
+    assert resolved["bdsetpr"] == 88
+    assert resolved["bdscoalz"] == 8
+    assert resolved["bdscoo3f"] == 8
