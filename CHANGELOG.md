@@ -11,6 +11,16 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `BDSETPR`: 88 if `BDSUDSD` = 1, 99 if `BDSUDSD` = 9
     * `BDSCOALZ`, `BDSCOLBD`, `BDSCOMSA`, `BDSCOPSP`, `BDSCOCBD`, `BDSCOFMO`, `BDSCOFOT`, `BDSCOVAS`, `BDSCOTBI`, `BDSCODWN`, `BDSCOO1F`, `BDSCOO2F`, `BDSCOO3F`: 8 if `BDSUDSD` = 1, 9 if `BDSUDSD` = 9
     * `BDSTMCI`: 8 if `BDSUDSD` ne 3
+* Adds DS module (A1D) informative missingness (uniform-data-set PR #552); submitted values are always kept
+    * `DSMOMAGE`, `DSMNSAGE`, `DSMNPAGE`, `DSAGEHRT`: if 777, carry forward the value from the previous DS visit (999 if there is none)
+    * `DSHRTRYR`, `DSCRDSYR`, `DSSPINYR`, `DSLWORYR`, `DSUPORYR`, `DSTHYSYR`, `DSONCSYR`, `DSOTHSYR`: if 7777, carry forward the value from the previous DS visit (9999 if there is none); if blank and the corresponding gate (`DSHRTRPR`, `DSCRDSRG`, `DSSPIN`, `DSLWORTH`, `DSUPORTH`, `DSTHYSRG`, `DSONCSRG`, `DSOTHSRG`) is 0 or 9, set to 8888
+* Adds DS module (B1D) informative missingness (uniform-data-set PR #573); skipped integers are left blank instead of -4, and submitted values are always kept
+    * `DSDXHS_MCI`, `DSDXHS_DEM`: blank if `DSDXHS_NO` = 1
+    * `DSMCIMO`, `DSMCIYR`: blank if `DSDXHS_MCI` ne 1
+    * `DSDEMMO`, `DSDEMYR`: blank if `DSDXHS_DEM` ne 1
+    * `DSDXBY`, `DSONSTMO`, `DSONSTYR`: blank if neither `DSDXHS_MCI` nor `DSDXHS_DEM` is 1
+    * Gated write-ins are strings and already stay blank under generic missingness
+
 
 ## 2.5.1
 
