@@ -117,3 +117,51 @@ def test_bds_form():
     assert resolved["bdsetpr"] == 88
     assert resolved["bdscoalz"] == 8
     assert resolved["bdscoo3f"] == 8
+
+
+def test_ds_form():
+    """Test DS A1D and B1D missingness through the file-level rules."""
+    table = SymbolTable(
+        {
+            "file": {
+                "info": {
+                    "forms": {
+                        "json": {
+                            "module": "DS",
+                            "visitdate": "2025-01-01",
+                            "formver": "1.0",
+                            "adcid": "1",
+                            "dsmomage": "777",
+                            "dshrtrpr": "0",
+                            "dscrdsrg": "1",
+                            "dscrdsyr": "7777",
+                            "dsdxhs_no": "1",
+                        }
+                    }
+                },
+            },
+            "_prev_record": {"info": {"resolved": {"dsmomage": 30}}},
+        }
+    )
+    MissingnessDeriver(missingness_level="file").curate(table, "ds")
+
+    resolved = table["file.info.resolved"]
+    assert resolved["dsmomage"] == 30
+    assert resolved["dsmnsage"] == -4
+    assert resolved["dshrtryr"] == 8888
+    assert resolved["dscrdsyr"] == 9999
+
+    # B1D: no MCI/dementia diagnosis, so the gated integers stay blank
+    for field in [
+        "dsdxhs_mci",
+        "dsdxhs_dem",
+        "dsmcimo",
+        "dsmciyr",
+        "dsdemmo",
+        "dsdemyr",
+        "dsdxby",
+        "dsonstmo",
+        "dsonstyr",
+    ]:
+        assert field in resolved
+        assert resolved[field] is None
