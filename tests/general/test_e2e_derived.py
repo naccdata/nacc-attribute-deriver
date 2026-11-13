@@ -574,3 +574,48 @@ def test_b1a():
             }
         },
     }
+
+
+def test_bds():
+    """Test BDS demographics are only set when the subject has no UDS."""
+    deriver = AttributeDeriver()
+
+    def bds_table() -> SymbolTable:
+        return SymbolTable(
+            {
+                "file": {
+                    "info": {
+                        "forms": {
+                            "json": {
+                                "module": "BDS",
+                                "visitdate": "2025-01-01",
+                                "formver": "1.0",
+                                "sex": "1",
+                                "hispanic": "0",
+                                "bdsrace": "9",
+                                "primlang": "4",
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+    # BDS only
+    table = bds_table()
+    deriver.curate(table, "bds")
+    assert table["file.info.derived"] == {"naccdage": 999}
+    assert table["subject.info.derived.cross-sectional"] == {
+        "naccsex": 1,
+        "nacchisp": 0,
+        "naccnihr": 99,
+        "nacclang": 3,
+        "nacclangx": None,
+    }
+
+    # UDS values are kept
+    table = bds_table()
+    table["subject.info.derived.cross-sectional.naccsex"] = 2
+    table["subject.info.working.cross-sectional.uds-visitdates"] = ["2020-01-01"]
+    deriver.curate(table, "bds")
+    assert table["subject.info.derived.cross-sectional"] == {"naccsex": 2}
