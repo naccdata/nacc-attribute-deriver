@@ -55,7 +55,7 @@ class TestBDSFormAttributeCollection:
         assert attr._create_bds_naccsex() == 2
 
         set_uds(table)
-        assert attr._create_bds_naccsex() is None
+        assert BDSFormAttributeCollection(table)._create_bds_naccsex() is None
 
     def test_create_bds_nacchisp(self, table):
         """Tests _create_bds_nacchisp."""
@@ -67,7 +67,7 @@ class TestBDSFormAttributeCollection:
             assert attr._create_bds_nacchisp() == value
 
         set_uds(table)
-        assert attr._create_bds_nacchisp() is None
+        assert BDSFormAttributeCollection(table)._create_bds_nacchisp() is None
 
     def test_create_bds_nacclang(self, table):
         """Tests _create_bds_nacclang."""
@@ -84,7 +84,7 @@ class TestBDSFormAttributeCollection:
             attr._create_bds_nacclang()
 
         set_uds(table)
-        assert attr._create_bds_nacclang() is None
+        assert BDSFormAttributeCollection(table)._create_bds_nacclang() is None
 
     def test_create_bds_nacclangx(self, table):
         """Tests _create_bds_nacclangx."""
@@ -96,7 +96,7 @@ class TestBDSFormAttributeCollection:
         assert attr._create_bds_nacclangx() == "Klingon"
 
         set_uds(table)
-        assert attr._create_bds_nacclangx() is None
+        assert BDSFormAttributeCollection(table)._create_bds_nacclangx() is None
 
     def test_create_bds_naccnihr(self, table):
         """Tests _create_bds_naccnihr."""
@@ -115,4 +115,4 @@ class TestBDSFormAttributeCollection:
             attr._create_bds_naccnihr()
 
         set_uds(table)
-        assert attr._create_bds_naccnihr() is None
+        assert BDSFormAttributeCollection(table)._create_bds_naccnihr() is None

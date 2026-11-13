@@ -31,6 +31,13 @@ class BDSFormAttributeCollection(AttributeCollection):
 
         self.__working = WorkingNamespace(table=table)
 
+        # Whether the participant has UDS visits; UDS always wins. Relies on
+        # BDS being curated after UDS, so the UDS visitdates are already
+        # recorded under subject.info.working.
+        self.__has_uds = bool(
+            self.__working.get_cross_sectional_value("uds-visitdates", list)
+        )
+
     def _create_bds_naccdage(self) -> int:
         """Creates BDS NACCDAGE - age at death.
 
@@ -52,18 +59,10 @@ class BDSFormAttributeCollection(AttributeCollection):
     # when the participant has no UDS visits. UDS always wins.   #
     ##############################################################
 
-    def __has_uds(self) -> bool:
-        """Whether the participant has UDS visits.
-
-        Relies on BDS being curated after UDS, so that the UDS
-        visitdates are already recorded under subject.info.working.
-        """
-        return bool(self.__working.get_cross_sectional_value("uds-visitdates", list))
-
     def __bds_only_value(self, attribute: str) -> Optional[int]:
         """Returns the BDS value for a direct-copy cross-sectional variable,
         None if the participant has UDS, or -4 if blank."""
-        if self.__has_uds():
+        if self.__has_uds:
             return None
 
         value = self.__bds.get_value(attribute, int)
@@ -89,7 +88,7 @@ class BDSFormAttributeCollection(AttributeCollection):
         PRIMLANG 3 (Mandarin) and 4 (Cantonese) both map to 3 (Chinese
         dialect); everything else maps to itself. -4 if blank.
         """
-        if self.__has_uds():
+        if self.__has_uds:
             return None
 
         primlang = self.__bds.get_value("primlang", int)
@@ -110,7 +109,7 @@ class BDSFormAttributeCollection(AttributeCollection):
 
         NACCLANGX = PRIMLANX
         """
-        if self.__has_uds():
+        if self.__has_uds:
             return None
 
         primlanx = self.__bds.get_value("primlanx", str)
@@ -121,7 +120,7 @@ class BDSFormAttributeCollection(AttributeCollection):
 
         BDSRACE 1-6 map to themselves, 9 maps to 99, -4 if blank.
         """
-        if self.__has_uds():
+        if self.__has_uds:
             return None
 
         bdsrace = self.__bds.get_value("bdsrace", int)

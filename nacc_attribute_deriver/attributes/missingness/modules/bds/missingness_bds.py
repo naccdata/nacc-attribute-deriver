@@ -1,6 +1,6 @@
 """Class to handle BDS missingness values."""
 
-from typing import Optional, Type
+from typing import Type
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     FormMissingnessCollection,
@@ -14,7 +14,7 @@ class BDSFormMissingness(FormMissingnessCollection):
         return self.generic_missingness(field, attr_type)
 
     def _handle_bdsudsd_gate(
-        self, field: str, normal_code: int, unknown_code: Optional[int] = None
+        self, field: str, normal_code: int, unknown_code: int
     ) -> int:
         """Handles variables skipped when BDSUDSD (cognitive status at time of
         death) is 1 (normal cognition) or 9 (unknown).
@@ -31,7 +31,7 @@ class BDSFormMissingness(FormMissingnessCollection):
         bdsudsd = self.form.get_value("bdsudsd", int)
         if bdsudsd == 1:
             return normal_code
-        if bdsudsd == 9 and unknown_code is not None:
+        if bdsudsd == 9:
             return unknown_code
 
         return self.generic_missingness(field, int)
