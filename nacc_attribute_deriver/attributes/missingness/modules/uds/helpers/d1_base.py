@@ -92,6 +92,7 @@ class UDSFormD1Missingness(UDSMissingness):
         gate: str,
         field: str,
         override_value: Optional[int] = None,
+        normcog_impaired: bool = True,
     ) -> int:
         """Handles variables dependent on cognitive impairment and another
         gate, e.g:
@@ -100,13 +101,17 @@ class UDSFormD1Missingness(UDSMissingness):
         Else if NORMCOG = 1 and FIELD is blank, FIELD = 8
 
         Impaired is NORMCOG = 0 for V4 (includes MBI), and any(DEMENTED, MCI,
-        IMPNOMCI = 1) for V1-V3; see is_impaired.
+        IMPNOMCI = 1) for V1-V3; see is_impaired. Fields that are not
+        primary/contributing/non-contributing pass normcog_impaired=False to
+        keep the DEMENTED/MCI/IMPNOMCI check in all versions.
 
         Args:
             gate: The gate to check - must be none/blank for condition to succeed
             field: The field
             override_value: REGRESSION ARG - some legacy variables set the value
                 beforehand based on other logic, see below, see below
+            normcog_impaired: Use is_impaired (NORMCOG = 0 for V4) rather
+                than has_cognitive_impairment
 
         REGRESSION: Some variables look at an additional gate and/or formverd1, so
             consideer that if specified. Mainly for POSSADIF, VASCPSIF, and COGOTH
@@ -125,11 +130,14 @@ class UDSFormD1Missingness(UDSMissingness):
         """
         gate_value = self.uds.get_value(gate, int)
         value = self.uds.get_value(field, int)
+        impaired = (
+            self.is_impaired() if normcog_impaired else self.has_cognitive_impairment()
+        )
 
         # main logic we actually care about
         if value is None:
             if (
-                self.is_impaired()
+                impaired
                 and (gate_value is None or gate_value == 0)
                 and (
                     override_value is None

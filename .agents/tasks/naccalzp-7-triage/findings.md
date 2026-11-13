@@ -62,13 +62,28 @@ Jessica Culhane changed step 3 from "impaired (DEMENTED, MCI or IMPNOMCI)" to
 being updated to match: 7 = impaired but not AD diagnosis, 8 = diagnosis of
 normal cognition and behavior.
 
-Per Kathryn Gauthreaux, the V4 D1b informative missingness for the
-primary/contributing/non-contributing fields also moves to `NORMCOG = 0` → 7.
-`handle_cognitive_impairment_gate` in
-`missingness/modules/uds/helpers/d1_base.py` now uses `is_impaired()`, which
-is `NORMCOG = 0` for V4 and DEMENTED/MCI/IMPNOMCI for V1–V3. The helper is
-shared with the V1–V3 D1 rules, so V1–V3 stay as they were. `ALZDISIF` and
-`LBDIF` have no custom missingness rule, so they aren't affected.
+Jessica Culhane asked for the same logic for each of `ALZDISIF`, `LBDIF`,
+`PSPIF`, `CORTIF`, `FTLDMOIF`, `FTLDNOIF`, `CVDIF`, `MSAIF`, `CTEIF`,
+`DOWNSIF`, `HUNTIF`, `PRIONIF`, `CAAIF`, `LATEIF` and `OTHCOGIF`:
+
+- `ALZDISIF` → `NACCALZP`, as above.
+- `LBDIF` → `NACCLBDP`, V4 branch, same rule. LBD diagnosed (`NACCLBDE = 1`)
+  with `LBDIF` blank raises `InvalidFieldError`, consistent with `NACCALZP`.
+- The other 13 → V4 informative missingness (Kathryn Gauthreaux agreed). These
+  go through `handle_cognitive_impairment_gate` in
+  `missingness/modules/uds/helpers/d1_base.py`, which now uses `is_impaired()`:
+  `NORMCOG = 0` for V4, DEMENTED/MCI/IMPNOMCI for V1–V3. The helper is shared
+  with the V1–V3 D1 rules, so V1–V3 stay as they were. `CTECERT` and
+  `FTLDSUBT` use the same helper but aren't in the list, so they pass
+  `normcog_impaired=False` and keep the old check.
+
+`ALZDISIF` and `LBDIF` have no informative missingness rule of their own, so
+none was changed for them.
+
+The missingness helper still doesn't assign 7 when the diagnosis is selected
+(gate = 1) and the `*IF` field is blank. That is the same invalid combination
+that raises in `NACCALZP` and `NACCLBDP`, but the missingness rules don't raise
+for it.
 
 `ALZDIS = 0` and blank `ALZDIS` both give 7 for impaired participants. Jessica
 Culhane confirmed this case (`NACCALZD = 0`, `NACCALZP = 7`). Under the form
@@ -97,5 +112,3 @@ primary/contributing/non-contributing field, and asked Sarah Yasuda to check.
   fields are blank. This matches `d1structrdd.sas`, but under the RDD
   definition it is also inconsistent. No V3 QC rules are available to show
   whether V3 records reach this state.
-- `_create_nacclbdp` has the same V4 pattern: it returns 7 for impaired
-  participants without checking that LBD is absent.

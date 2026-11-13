@@ -116,6 +116,14 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
 
         Primary, contributing, or non-contributing cause of cognitive
         impairment -- Lewy body disease (LBD)
+
+        V4 returns 8 when NORMCOG = 1, and LBDIF when it is 1, 2, or 3.
+        Otherwise the participant is impaired (NORMCOG = 0, which includes
+        MBI) with no LBD etiologic diagnosis, and it returns 7.
+
+        Raises:
+            InvalidFieldError: V4 with an LBD diagnosis (NACCLBDE = 1) and
+                LBDIF blank.
         """
         if self.normcog == 1:
             return 8
@@ -132,10 +140,23 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if self.formver < 4:
             if self._create_nacclbde() == 0:
                 return 7
-        elif self.has_cognitive_impairment():
-            return 7
 
-        return 8
+            return 8
+
+        if self._create_nacclbde() == 1:
+            # Invalid case not caught by QC: an LBD diagnosis (LBDIS = 1)
+            # requires LBDIF, and NACCLBDP has no code for it being blank.
+            # TODO: follow up once D1b QC requires LBDIF when LBDIS = 1
+            # and sites have filled in existing records.
+            raise InvalidFieldError(
+                "LBDIF must be 1, 2, or 3 when LBDIS = 1 "
+                + f"(found {self.uds.get_value('lbdif', int)}); "
+                + "cannot derive NACCLBDP"
+            )
+
+        # NORMCOG = 0 here (V4 requires NORMCOG in [0, 1]); this includes
+        # participants with MBI, not just DEMENTED, MCI, or IMPNOMCI
+        return 7
 
     def _create_naccalzd(self) -> int:
         """Creates NACCALZD - Presumptive etiologic diagnosis of

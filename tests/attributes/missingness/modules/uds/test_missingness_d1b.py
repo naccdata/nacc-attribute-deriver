@@ -63,6 +63,26 @@ class TestUDSFormD1bMissingness:
         attr = UDSFormD1bMissingness(uds_table)
         assert attr._missingness_msaif() == 8
 
+    def test_ctecert_v4_mbi_unchanged(self, uds_table):
+        """CTECERT is not a contribution field; MBI alone does not give 7."""
+        uds_table["file.info.forms.json"].update(
+            {
+                "formver": 4.0,
+                "packet": "I4",
+                "normcog": 0,
+                "mbi": 1,
+                "cte": 0,
+                "ctecert": None,
+            }
+        )
+
+        attr = UDSFormD1bMissingness(uds_table)
+        assert attr._missingness_ctecert() != 7
+
+        uds_table["file.info.forms.json"].update({"demented": 1})
+        attr = UDSFormD1bMissingness(uds_table)
+        assert attr._missingness_ctecert() == 7
+
     def test_cognitive_impairment_gate_v3_unchanged(self, uds_table):
         """V1-V3 *IF fields still require DEMENTED, MCI, or IMPNOMCI for 7."""
         uds_table["file.info.forms.json"].update(

@@ -317,6 +317,38 @@ class TestUDSFormD1bAttribute:
         attr = UDSFormD1bAttribute(table)
         assert attr._create_nacclbdp() == 3
 
+    def test_create_nacclbdp_v4(self, table, form_prefix):
+        """Tests creating NACCLBDP for V4."""
+        set_attribute(table, form_prefix, "formver", 4)
+        set_attribute(table, form_prefix, "probad", None)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbdp() == 8
+
+        set_attribute(table, form_prefix, "normcog", 0)
+
+        # impaired with only MBI, no LBD diagnosis (LBDIS = 0 or blank) -> 7
+        set_attribute(table, form_prefix, "mbi", 1)
+        for lbdis in [0, None]:
+            set_attribute(table, form_prefix, "lbdis", lbdis)
+            attr = UDSFormD1bAttribute(table)
+            assert not attr.has_cognitive_impairment()
+            assert attr._create_nacclbde() == 0
+            assert attr._create_nacclbdp() == 7
+
+        # LBD diagnosed: the contribution status is returned when present
+        set_attribute(table, form_prefix, "lbdis", 1)
+        for status in ContributionStatus.all():
+            set_attribute(table, form_prefix, "lbdif", status)
+            attr = UDSFormD1bAttribute(table)
+            assert attr._create_nacclbdp() == status
+
+        # LBD diagnosed with LBDIF blank is invalid (not caught by QC)
+        set_attribute(table, form_prefix, "lbdif", None)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_nacclbde() == 1
+        with pytest.raises(InvalidFieldError):
+            attr._create_nacclbdp()
+
     def test_create_naccetpr_v4(self, table, form_prefix):
         """Tests creating NACCETPR (V4 logic)."""
         set_attribute(table, form_prefix, "formver", 4)
