@@ -2,8 +2,15 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
-## Unreleased
+## 2.6.0
 
+* Adds BDS-derived `NACCSEX`, `NACCLANG`, `NACCLANGX`, `NACCHISP` and `NACCNIHR` for participants with a BDS form but no UDS visits, per the BDS derived variable spec (uniform-data-set PR #553)
+    * Written to `subject.info.derived.cross-sectional`; nothing is written if the subject has UDS visits (`subject.info.working.cross-sectional.uds-visitdates`), so UDS values always take precedence
+    * Requires the companion attribute curator gear change: BDS must be curated after UDS (moved to `pass0`), and BDS must be added to `BACKPROP_SCOPES` so the values are applied to BDS files
+* Adds BDS informative missingness gated on `BDSUDSD` (cognitive status at time of death); submitted values are always kept
+    * `BDSETPR`: 88 if `BDSUDSD` = 1, 99 if `BDSUDSD` = 9
+    * `BDSCOALZ`, `BDSCOLBD`, `BDSCOMSA`, `BDSCOPSP`, `BDSCOCBD`, `BDSCOFMO`, `BDSCOFOT`, `BDSCOVAS`, `BDSCOTBI`, `BDSCODWN`, `BDSCOO1F`, `BDSCOO2F`, `BDSCOO3F`: 8 if `BDSUDSD` = 1, 9 if `BDSUDSD` = 9
+    * `BDSTMCI`: 8 if `BDSUDSD` ne 3
 * Fixes UDSv4 `NACCALZP` returning 7 when AD is diagnosed (`NACCALZD = 1`) but `ALZDISIF` is blank, which produced `NACCALZD = 1` with `NACCALZP = 7`
     * 7 now requires cognitive impairment and no AD etiologic diagnosis; released V4 `NACCALZP` values change when data is reprocessed
     * AD diagnosed (`ALZDIS = 1`) with `ALZDISIF` blank is invalid but not caught by QC; it now raises an error, so the visit fails curation until the site fills in `ALZDISIF`

@@ -474,3 +474,8 @@ uds,naccfam,subject.info.derived.longitudinal.naccfam,list,TRUE
 uds,naccmom,subject.info.derived.longitudinal.naccmom,list,TRUE
 uds,naccdad,subject.info.derived.longitudinal.naccdad,list,TRUE
 bds,bds_naccdage,file.info.derived.naccdage,update,FALSE
+bds,bds_naccsex,subject.info.derived.cross-sectional.naccsex,update,FALSE
+bds,bds_nacclang,subject.info.derived.cross-sectional.nacclang,update,FALSE
+bds,bds_nacclangx,subject.info.derived.cross-sectional.nacclangx,update,FALSE
+bds,bds_nacchisp,subject.info.derived.cross-sectional.nacchisp,update,FALSE
+bds,bds_naccnihr,subject.info.derived.cross-sectional.naccnihr,update,FALSE
