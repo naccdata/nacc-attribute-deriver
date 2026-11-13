@@ -2,6 +2,12 @@
 
 Documentation of release versions of `nacc-attribute-deriver`
 
+## Unreleased
+
+* Fixes UDSv4 `NACCALZP` returning 7 when AD is diagnosed (`NACCALZD = 1`) but `ALZDISIF` is blank, which produced `NACCALZD = 1` with `NACCALZP = 7`
+    * 7 now requires cognitive impairment and no AD etiologic diagnosis; released V4 `NACCALZP` values change when data is reprocessed
+    * AD diagnosed with `ALZDISIF` blank has no code in the RDD and returns 8 until the value is decided
+
 ## 2.5.1
 
 * Fixes UDSv4 `FTLD` always resolving to -4: the DED matrix key `ftld` did not match the rule name `uds_ftld`

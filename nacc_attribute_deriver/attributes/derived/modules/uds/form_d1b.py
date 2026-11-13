@@ -44,17 +44,15 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         return None
 
     def _create_naccalzp(self) -> int:
-        """Based on d1structrdd.sas, with an added guard on the value 7.
-
-        Primary, contributing, or non-contributing cause of observed
+        """Primary, contributing, or non-contributing cause of observed
         cognitive impairment -- Alzheimer's disease (AD)
 
-        NACCALZP = 7 ("cognitively impaired but not an AD diagnosis") is
-        only assigned when the participant is cognitively impaired
-        (DEMENTED, MCI, or IMPNOMCI) and AD is absent (NACCALZD != 1). This
-        intentionally diverges from d1structrdd.sas, whose V1-V3 branch
-        returns 7 as an unconditional fall-through and can therefore produce
-        the impossible NACCALZD = 1 / NACCALZP = 7 combination.
+        V1-V3 follow d1structrdd.sas.
+
+        V4 returns ALZDISIF when it is 1, 2, or 3. Otherwise it returns 7
+        (cognitively impaired but not AD diagnosis) when the participant is
+        cognitively impaired (DEMENTED, MCI, or IMPNOMCI) and has no AD
+        etiologic diagnosis (NACCALZD != 1), and 8 otherwise.
         """
         if self.normcog == 1:
             return 8
@@ -64,17 +62,14 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
             if contr_status:
                 return contr_status
 
-            # NACCALZP = 7 cannot co-occur with an AD diagnosis, and requires
-            # cognitive impairment; otherwise fall through to 8.
-            if self._create_naccalzd() == 1 or not self.has_cognitive_impairment():
-                return 8
-
             return 7
 
         alzdisif = self.uds.get_value("alzdisif", int)
         if alzdisif in [1, 2, 3]:
             return alzdisif
 
+        # TODO: AD diagnosed (NACCALZD == 1) with ALZDISIF blank has no code
+        # in the RDD; this returns 8 until the value is decided.
         if self._create_naccalzd() != 1 and self.has_cognitive_impairment():
             return 7
 

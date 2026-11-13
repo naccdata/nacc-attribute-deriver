@@ -197,19 +197,13 @@ class TestUDSFormD1aAttribute:
 class TestUDSFormD1bAttribute:
     def test_create_naccalzp(self, table, form_prefix):
         """Tests creating NACCALZP."""
-        # normcog == 1 (from the fixture) -> 8
         attr = UDSFormD1bAttribute(table)
         assert attr._create_naccalzp() == 8
 
-        # normcog != 1 with AD present (probad == 1 from the fixture) and no
-        # contribution status: NACCALZP must NOT be 7, since NACCALZD == 1.
         set_attribute(table, form_prefix, "normcog", 0)
         attr = UDSFormD1bAttribute(table)
-        assert attr._create_naccalzd() == 1
-        assert attr._create_naccalzp() == 8
+        assert attr._create_naccalzp() == 7
 
-        # Explicit contribution statuses are returned regardless of the
-        # AD-absent/cognitive-impairment guard.
         for field in ["probadif", "possadif", "alzdisif"]:
             for status in ContributionStatus.all():
                 set_attribute(table, form_prefix, field, status)
@@ -223,24 +217,42 @@ class TestUDSFormD1bAttribute:
         attr = UDSFormD1bAttribute(table)
         assert attr._create_naccalzp() == 1
 
-        # No contribution status and no AD diagnosis: 7 only when the
-        # participant is cognitively impaired (DEMENTED/MCI/IMPNOMCI).
-        for field in ["probadif", "possadif", "alzdisif"]:
-            set_attribute(table, form_prefix, field, None)
-        set_attribute(table, form_prefix, "probad", 0)
-        set_attribute(table, form_prefix, "possad", 0)
-        set_attribute(table, form_prefix, "alzdis", 0)
-
-        # cognitively impaired -> 7
-        set_attribute(table, form_prefix, "demented", 1)
-        attr = UDSFormD1bAttribute(table)
-        assert attr._create_naccalzd() != 1
-        assert attr._create_naccalzp() == 7
-
-        # not cognitively impaired -> 8
-        set_attribute(table, form_prefix, "demented", 0)
+    def test_create_naccalzp_v4(self, table, form_prefix):
+        """Tests creating NACCALZP for V4."""
+        set_attribute(table, form_prefix, "formver", 4)
+        set_attribute(table, form_prefix, "probad", None)
         attr = UDSFormD1bAttribute(table)
         assert attr._create_naccalzp() == 8
+
+        set_attribute(table, form_prefix, "normcog", 0)
+
+        # impaired, no AD diagnosis (ALZDIS = 0 or blank) -> 7
+        set_attribute(table, form_prefix, "mci", 1)
+        for alzdis in [0, None]:
+            set_attribute(table, form_prefix, "alzdis", alzdis)
+            attr = UDSFormD1bAttribute(table)
+            assert attr._create_naccalzd() == 0
+            assert attr._create_naccalzp() == 7
+
+        # not impaired, no AD diagnosis -> 8
+        set_attribute(table, form_prefix, "mci", None)
+        set_attribute(table, form_prefix, "alzdis", 0)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccalzp() == 8
+
+        # AD diagnosed: the contribution status is returned when present
+        set_attribute(table, form_prefix, "mci", 1)
+        set_attribute(table, form_prefix, "alzdis", 1)
+        for status in ContributionStatus.all():
+            set_attribute(table, form_prefix, "alzdisif", status)
+            attr = UDSFormD1bAttribute(table)
+            assert attr._create_naccalzp() == status
+
+        # AD diagnosed with ALZDISIF blank must not be 7 (value still TBD)
+        set_attribute(table, form_prefix, "alzdisif", None)
+        attr = UDSFormD1bAttribute(table)
+        assert attr._create_naccalzd() == 1
+        assert attr._create_naccalzp() != 7
 
     def test_create_nacclbde(self, table, form_prefix):
         """Tests creating NACCLBDE."""
