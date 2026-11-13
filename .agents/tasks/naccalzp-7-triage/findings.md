@@ -53,24 +53,31 @@ model (`nacc-flywheel-metadata`).
 V4 branch only. The V1–V3 branch follows `d1structrdd.sas` and is unchanged.
 
 - `ALZDISIF` in 1, 2 or 3 → that value.
-- Otherwise 7 when the participant is cognitively impaired and
-  `NACCALZD != 1`.
+- AD diagnosed (`NACCALZD = 1`) with `ALZDISIF` blank → raises
+  `InvalidFieldError`.
+- Otherwise 7 when the participant is cognitively impaired.
 - Otherwise 8.
 
-`ALZDIS = 0` and blank `ALZDIS` both give 7 for impaired participants. This
-follows the RDD definition of 7. Under the form rules `ALZDISIF` is blank in
-both cases.
+`ALZDIS = 0` and blank `ALZDIS` both give 7 for impaired participants. Jessica
+Culhane confirmed this case (`NACCALZD = 0`, `NACCALZP = 7`). Under the form
+rules `ALZDISIF` is blank in both cases.
 
-## Open question
+## AD diagnosed with ALZDISIF blank
 
-AD diagnosed (`ALZDIS = 1`) with `ALZDISIF` blank has no valid code. 7
-contradicts `NACCALZD = 1`, 8 means normal cognition, and 1–3 would record a
-role the clinician didn't give. The code returns 8 with a TODO until this is
-decided. Options:
+This combination is invalid, and QC doesn't catch it. None of the allowable
+codes fit: 7 contradicts `NACCALZD = 1`, 8 means normal cognition, and 1–3
+would record a role the clinician didn't give. Jessica Culhane's position is
+that NACCALZP = 8 is not appropriate. Sites need to fill in `ALZDISIF` for
+these records, and a QC error check should prevent new ones. Kathryn Gauthreaux
+is adding the check to the forms change list as an express change.
 
-- Choose one of the allowable codes and update the RDD text to cover the case.
-- Add a V4 QC rule requiring `ALZDISIF` when `ALZDIS = 1`, which would stop new
-  records reaching this state. Existing records would still need a value.
+The deriver raises `InvalidFieldError` for this case. The curator gear catches
+it, so the visit is listed in `curation-failures.csv` and the whole visit
+fails curation, not just NACCALZP. The code has a TODO to follow up once the QC
+check is in place and sites have corrected existing records.
+
+Jessica noted the same gap may exist for every D1b diagnosis with a
+primary/contributing/non-contributing field, and asked Sarah Yasuda to check.
 
 ## Related, not changed
 

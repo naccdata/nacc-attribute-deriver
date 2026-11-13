@@ -9,6 +9,7 @@ from typing import List, Optional
 from nacc_attribute_deriver.utils.constants import (
     INFORMED_MISSINGNESS,
 )
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 from .form_d1 import UDSFormDxAttribute
 
@@ -52,7 +53,11 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         V4 returns ALZDISIF when it is 1, 2, or 3. Otherwise it returns 7
         (cognitively impaired but not AD diagnosis) when the participant is
         cognitively impaired (DEMENTED, MCI, or IMPNOMCI) and has no AD
-        etiologic diagnosis (NACCALZD != 1), and 8 otherwise.
+        etiologic diagnosis, and 8 otherwise.
+
+        Raises:
+            InvalidFieldError: V4 with an AD diagnosis (NACCALZD = 1) and
+                ALZDISIF blank.
         """
         if self.normcog == 1:
             return 8
@@ -68,9 +73,17 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if alzdisif in [1, 2, 3]:
             return alzdisif
 
-        # TODO: AD diagnosed (NACCALZD == 1) with ALZDISIF blank has no code
-        # in the RDD; this returns 8 until the value is decided.
-        if self._create_naccalzd() != 1 and self.has_cognitive_impairment():
+        if self._create_naccalzd() == 1:
+            # Invalid case not caught by QC: an AD diagnosis (ALZDIS = 1)
+            # requires ALZDISIF, and NACCALZP has no code for it being blank.
+            # TODO: follow up once D1b QC requires ALZDISIF when ALZDIS = 1
+            # and sites have filled in existing records.
+            raise InvalidFieldError(
+                "ALZDISIF must be 1, 2, or 3 when ALZDIS = 1 "
+                + f"(found {alzdisif}); cannot derive NACCALZP"
+            )
+
+        if self.has_cognitive_impairment():
             return 7
 
         return 8

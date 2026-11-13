@@ -16,6 +16,7 @@ from nacc_attribute_deriver.attributes.derived.modules.uds.form_d1b import (
 
 
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 from tests.conftest import set_attribute
 
@@ -248,11 +249,12 @@ class TestUDSFormD1bAttribute:
             attr = UDSFormD1bAttribute(table)
             assert attr._create_naccalzp() == status
 
-        # AD diagnosed with ALZDISIF blank must not be 7 (value still TBD)
+        # AD diagnosed with ALZDISIF blank is invalid (not caught by QC)
         set_attribute(table, form_prefix, "alzdisif", None)
         attr = UDSFormD1bAttribute(table)
         assert attr._create_naccalzd() == 1
-        assert attr._create_naccalzp() != 7
+        with pytest.raises(InvalidFieldError):
+            attr._create_naccalzp()
 
     def test_create_nacclbde(self, table, form_prefix):
         """Tests creating NACCLBDE."""
