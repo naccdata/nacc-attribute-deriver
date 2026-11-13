@@ -50,10 +50,9 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
 
         V1-V3 follow d1structrdd.sas.
 
-        V4 returns ALZDISIF when it is 1, 2, or 3. Otherwise it returns 7
-        (cognitively impaired but not AD diagnosis) when the participant is
-        cognitively impaired (DEMENTED, MCI, or IMPNOMCI) and has no AD
-        etiologic diagnosis, and 8 otherwise.
+        V4 returns 8 when NORMCOG = 1, and ALZDISIF when it is 1, 2, or 3.
+        Otherwise the participant is impaired (NORMCOG = 0, which includes
+        MBI) with no AD etiologic diagnosis, and it returns 7.
 
         Raises:
             InvalidFieldError: V4 with an AD diagnosis (NACCALZD = 1) and
@@ -83,10 +82,9 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
                 + f"(found {alzdisif}); cannot derive NACCALZP"
             )
 
-        if self.has_cognitive_impairment():
-            return 7
-
-        return 8
+        # NORMCOG = 0 here (V4 requires NORMCOG in [0, 1]); this includes
+        # participants with MBI, not just DEMENTED, MCI, or IMPNOMCI
+        return 7
 
     def _create_nacclbde(self) -> int:
         """From d1structrdd.sas.

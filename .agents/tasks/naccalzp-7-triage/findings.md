@@ -55,8 +55,14 @@ V4 branch only. The V1–V3 branch follows `d1structrdd.sas` and is unchanged.
 - `ALZDISIF` in 1, 2 or 3 → that value.
 - AD diagnosed (`NACCALZD = 1`) with `ALZDISIF` blank → raises
   `InvalidFieldError`.
-- Otherwise 7 when the participant is cognitively impaired.
-- Otherwise 8.
+- Otherwise 7. `NORMCOG = 0` here, since V4 requires `NORMCOG` to be 0 or 1.
+
+Jessica Culhane changed step 3 from "impaired (DEMENTED, MCI or IMPNOMCI)" to
+`NORMCOG = 0`, so participants with only MBI get 7. The RDD definitions are
+being updated to match: 7 = impaired but not AD diagnosis, 8 = diagnosis of
+normal cognition and behavior. Kathryn Gauthreaux noted the informative
+missingness rules also use DEMENTED/MCI/IMPNOMCI and could move to
+`NORMCOG = 0`; that is not part of this change.
 
 `ALZDIS = 0` and blank `ALZDIS` both give 7 for impaired participants. Jessica
 Culhane confirmed this case (`NACCALZD = 0`, `NACCALZP = 7`). Under the form

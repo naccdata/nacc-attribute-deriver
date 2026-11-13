@@ -235,11 +235,14 @@ class TestUDSFormD1bAttribute:
             assert attr._create_naccalzd() == 0
             assert attr._create_naccalzp() == 7
 
-        # not impaired, no AD diagnosis -> 8
+        # impaired with only MBI (no DEMENTED, MCI, or IMPNOMCI) -> 7
         set_attribute(table, form_prefix, "mci", None)
+        set_attribute(table, form_prefix, "mbi", 1)
         set_attribute(table, form_prefix, "alzdis", 0)
         attr = UDSFormD1bAttribute(table)
-        assert attr._create_naccalzp() == 8
+        assert not attr.has_cognitive_impairment()
+        assert attr._create_naccalzp() == 7
+        set_attribute(table, form_prefix, "mbi", None)
 
         # AD diagnosed: the contribution status is returned when present
         set_attribute(table, form_prefix, "mci", 1)
