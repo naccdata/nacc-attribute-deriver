@@ -21,6 +21,8 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `DSDXBY`, `DSONSTMO`, `DSONSTYR`: 8 / 88 / 8888 if `DSDXHS_NO` = 1
     * `DSREPMO`: 888 if `DSRE_REP` ne 1
     * Gated write-ins are strings and already stay blank under generic missingness
+* Adds `NACCDS` (uniform-data-set PR #574): 1 if the participant has at least one DS module visit, otherwise 0; mirrors `NACCFTD` and `NACCLBDM`
+    * Written to `file.info.derived` and `subject.info.derived.cross-sectional`; the subject-level default of 0 comes from subject missingness
 
 
 ## 2.5.1

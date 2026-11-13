@@ -4,8 +4,17 @@ from typing import Type
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     FormMissingnessCollection,
+    SubjectMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
+
+
+class DSMissingness(SubjectMissingnessCollection):
+    """Class to handle DS subject-level missingness values."""
+
+    def _missingness_naccds(self) -> int:
+        """Handles NACCDS; 0 if the subject has no DS visits."""
+        return self.handle_subject_missing("naccds", int, 0)
 
 
 class DSFormMissingness(FormMissingnessCollection):

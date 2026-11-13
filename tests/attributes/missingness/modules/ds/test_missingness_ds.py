@@ -3,6 +3,7 @@
 import pytest
 from nacc_attribute_deriver.attributes.missingness.modules.ds.missingness_ds import (
     DSFormMissingness,
+    DSMissingness,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
@@ -148,3 +149,13 @@ class TestDSFormMissingness:
         # submitted value is kept
         table[f"file.info.forms.json.{field}"] = "6"
         assert missingness(attr, field) == 6
+
+
+class TestDSMissingness:
+    def test_naccds(self):
+        """NACCDS is 0 if the subject has no DS visits."""
+        table = SymbolTable({})
+        assert DSMissingness(table)._missingness_naccds() == 0
+
+        table["subject.info.derived.cross-sectional.naccds"] = 1
+        assert DSMissingness(table)._missingness_naccds() == 1
