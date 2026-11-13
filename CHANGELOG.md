@@ -14,11 +14,12 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds DS module (A1D) informative missingness (uniform-data-set PR #552); submitted values are always kept
     * `DSMOMAGE`, `DSMNSAGE`, `DSMNPAGE`, `DSAGEHRT`: if 777, carry forward the value from the previous DS visit (999 if there is none)
     * `DSHRTRYR`, `DSCRDSYR`, `DSSPINYR`, `DSLWORYR`, `DSUPORYR`, `DSTHYSYR`, `DSONCSYR`, `DSOTHSYR`: if 7777, carry forward the value from the previous DS visit (9999 if there is none); if blank and the corresponding gate (`DSHRTRPR`, `DSCRDSRG`, `DSSPIN`, `DSLWORTH`, `DSUPORTH`, `DSTHYSRG`, `DSONCSRG`, `DSOTHSRG`) is 0 or 9, set to 8888
-* Adds DS module (B1D) informative missingness (uniform-data-set PR #573); skipped integers are left blank instead of -4, and submitted values are always kept
-    * `DSDXHS_MCI`, `DSDXHS_DEM`: blank if `DSDXHS_NO` = 1
-    * `DSMCIMO`, `DSMCIYR`: blank if `DSDXHS_MCI` ne 1
-    * `DSDEMMO`, `DSDEMYR`: blank if `DSDXHS_DEM` ne 1
-    * `DSDXBY`, `DSONSTMO`, `DSONSTYR`: blank if neither `DSDXHS_MCI` nor `DSDXHS_DEM` is 1
+* Adds DS module (B1D) informative missingness (uniform-data-set PR #573); skipped integers get a "not applicable" code, and submitted values are always kept
+    * `DSDXHS_MCI`, `DSDXHS_DEM`: 0 if `DSDXHS_NO` = 1
+    * `DSMCIMO`, `DSMCIYR`: 88 / 8888 if `DSDXHS_MCI` ne 1
+    * `DSDEMMO`, `DSDEMYR`: 88 / 8888 if `DSDXHS_DEM` ne 1
+    * `DSDXBY`, `DSONSTMO`, `DSONSTYR`: 8 / 88 / 8888 if `DSDXHS_NO` = 1
+    * `DSREPMO`: 888 if `DSRE_REP` ne 1
     * Gated write-ins are strings and already stay blank under generic missingness
 
 

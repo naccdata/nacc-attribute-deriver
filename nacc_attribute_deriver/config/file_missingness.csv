@@ -69,6 +69,7 @@ ds,dsdemyr,file.info.resolved.dsdemyr,update,FALSE,int
 ds,dsdxby,file.info.resolved.dsdxby,update,FALSE,int
 ds,dsonstmo,file.info.resolved.dsonstmo,update,FALSE,int
 ds,dsonstyr,file.info.resolved.dsonstyr,update,FALSE,int
+ds,dsrepmo,file.info.resolved.dsrepmo,update,FALSE,int
 mds,header_adcid,file.info.resolved.adcid,update,FALSE,int
 mds,header_formver,file.info.resolved.formver,update,FALSE,float
 mds,header_visitdate,file.info.resolved.visitdate,update,FALSE,str

@@ -5,10 +5,7 @@ from nacc_attribute_deriver.attributes.missingness.modules.ds.missingness_ds imp
     DSFormMissingness,
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
-from nacc_attribute_deriver.utils.constants import (
-    INFORMED_BLANK,
-    INFORMED_MISSINGNESS,
-)
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 AGE_VARS = ["dsmomage", "dsmnsage", "dsmnpage", "dsagehrt"]
 
@@ -98,67 +95,56 @@ class TestDSFormMissingness:
         table[f"_prev_record.info.resolved.{field}"] = 1999
         assert missingness(attr, field) == 1999
 
-    @pytest.mark.parametrize("field", ["dsdxhs_mci", "dsdxhs_dem"])
-    def test_dx_history_checkboxes(self, table, field):
-        """Blank if DSDXHS_NO = 1, else generic."""
+    @pytest.mark.parametrize(
+        "field,code",
+        [
+            ("dsdxhs_mci", 0),
+            ("dsdxhs_dem", 0),
+            ("dsdxby", 8),
+            ("dsonstmo", 88),
+            ("dsonstyr", 8888),
+        ],
+    )
+    def test_no_dx_history(self, table, field, code):
+        """CODE if DSDXHS_NO = 1, else generic."""
         attr = DSFormMissingness(table)
 
-        # DSDXHS_NO not checked
+        # DSDXHS_NO blank or 0
         assert missingness(attr, field) == INFORMED_MISSINGNESS
         table["file.info.forms.json.dsdxhs_no"] = 0
         assert missingness(attr, field) == INFORMED_MISSINGNESS
 
         # DSDXHS_NO = 1
         table["file.info.forms.json.dsdxhs_no"] = 1
-        assert missingness(attr, field) == INFORMED_BLANK
+        assert missingness(attr, field) == code
 
         # submitted value is kept
-        table[f"file.info.forms.json.{field}"] = "0"
-        assert missingness(attr, field) == 0
+        table[f"file.info.forms.json.{field}"] = "1"
+        assert missingness(attr, field) == 1
 
     @pytest.mark.parametrize(
-        "field,gate",
+        "field,gate,code",
         [
-            ("dsmcimo", "dsdxhs_mci"),
-            ("dsmciyr", "dsdxhs_mci"),
-            ("dsdemmo", "dsdxhs_dem"),
-            ("dsdemyr", "dsdxhs_dem"),
+            ("dsmcimo", "dsdxhs_mci", 88),
+            ("dsmciyr", "dsdxhs_mci", 8888),
+            ("dsdemmo", "dsdxhs_dem", 88),
+            ("dsdemyr", "dsdxhs_dem", 8888),
+            ("dsrepmo", "dsre_rep", 888),
         ],
     )
-    def test_dx_dates(self, table, field, gate):
-        """Blank if GATE ne 1, else generic."""
+    def test_gate_ne_1(self, table, field, gate, code):
+        """CODE if GATE ne 1, else generic."""
         attr = DSFormMissingness(table)
 
         # gate blank or 0
-        assert missingness(attr, field) == INFORMED_BLANK
+        assert missingness(attr, field) == code
         table[f"file.info.forms.json.{gate}"] = 0
-        assert missingness(attr, field) == INFORMED_BLANK
+        assert missingness(attr, field) == code
 
         # gate = 1, should have been submitted
         table[f"file.info.forms.json.{gate}"] = 1
         assert missingness(attr, field) == INFORMED_MISSINGNESS
 
         # submitted value is kept
-        table[f"file.info.forms.json.{field}"] = "99"
-        assert missingness(attr, field) == 99
-
-    @pytest.mark.parametrize("field", ["dsdxby", "dsonstmo", "dsonstyr"])
-    @pytest.mark.parametrize("gate", ["dsdxhs_mci", "dsdxhs_dem"])
-    def test_dx_followups(self, table, field, gate):
-        """Blank unless DSDXHS_MCI = 1 or DSDXHS_DEM = 1, else generic."""
-        attr = DSFormMissingness(table)
-
-        # no MCI/dementia dx
-        assert missingness(attr, field) == INFORMED_BLANK
-        table["file.info.forms.json.dsdxhs_no"] = 1
-        table["file.info.forms.json.dsdxhs_mci"] = 0
-        assert missingness(attr, field) == INFORMED_BLANK
-
-        # MCI or dementia dx, should have been submitted
-        table["file.info.forms.json.dsdxhs_no"] = 0
-        table[f"file.info.forms.json.{gate}"] = 1
-        assert missingness(attr, field) == INFORMED_MISSINGNESS
-
-        # submitted value is kept
-        table[f"file.info.forms.json.{field}"] = "2"
-        assert missingness(attr, field) == 2
+        table[f"file.info.forms.json.{field}"] = "6"
+        assert missingness(attr, field) == 6

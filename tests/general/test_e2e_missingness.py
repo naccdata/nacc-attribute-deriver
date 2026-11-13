@@ -151,17 +151,14 @@ def test_ds_form():
     assert resolved["dshrtryr"] == 8888
     assert resolved["dscrdsyr"] == 9999
 
-    # B1D: no MCI/dementia diagnosis, so the gated integers stay blank
-    for field in [
-        "dsdxhs_mci",
-        "dsdxhs_dem",
-        "dsmcimo",
-        "dsmciyr",
-        "dsdemmo",
-        "dsdemyr",
-        "dsdxby",
-        "dsonstmo",
-        "dsonstyr",
-    ]:
-        assert field in resolved
-        assert resolved[field] is None
+    # B1D: no MCI/dementia diagnosis, no repeat recommendation
+    assert resolved["dsdxhs_mci"] == 0
+    assert resolved["dsdxhs_dem"] == 0
+    assert resolved["dsmcimo"] == 88
+    assert resolved["dsmciyr"] == 8888
+    assert resolved["dsdemmo"] == 88
+    assert resolved["dsdemyr"] == 8888
+    assert resolved["dsdxby"] == 8
+    assert resolved["dsonstmo"] == 88
+    assert resolved["dsonstyr"] == 8888
+    assert resolved["dsrepmo"] == 888
