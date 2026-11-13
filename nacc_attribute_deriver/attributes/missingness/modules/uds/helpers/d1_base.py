@@ -39,6 +39,17 @@ class UDSFormD1Missingness(UDSMissingness):
         """Check DEMENTED, MCI, and IMPNOMCI for cognitive impairment."""
         return self.demented == 1 or self.generate_mci() == 1 or self.impnomci == 1
 
+    def is_impaired(self) -> bool:
+        """Check whether the participant is impaired.
+
+        V4 uses NORMCOG = 0, which also covers MBI. V1-V3 have no MBI
+        and keep the DEMENTED/MCI/IMPNOMCI check.
+        """
+        if self.formver >= 4:
+            return self.normcog == 0
+
+        return self.has_cognitive_impairment()
+
     def handle_normcog_gate(self, field: str, ignore_normcog_0: bool = False) -> int:
         """Handles NORMCOG-gated variables, which follow:
 
@@ -82,12 +93,14 @@ class UDSFormD1Missingness(UDSMissingness):
         field: str,
         override_value: Optional[int] = None,
     ) -> int:
-        """Handles variables dependent on cognitive impairment (DEMENTED, MCI,
-        IMPNOMCI) and another gate, e.g:
+        """Handles variables dependent on cognitive impairment and another
+        gate, e.g:
 
-        If any(DEMENTED, MCI, IMPNOMCI = 1) and GATE is 0 or blank and FIELD is blank,
-            FIELD = 7
+        If impaired and GATE is 0 or blank and FIELD is blank, FIELD = 7
         Else if NORMCOG = 1 and FIELD is blank, FIELD = 8
+
+        Impaired is NORMCOG = 0 for V4 (includes MBI), and any(DEMENTED, MCI,
+        IMPNOMCI = 1) for V1-V3; see is_impaired.
 
         Args:
             gate: The gate to check - must be none/blank for condition to succeed
@@ -116,7 +129,7 @@ class UDSFormD1Missingness(UDSMissingness):
         # main logic we actually care about
         if value is None:
             if (
-                self.has_cognitive_impairment()
+                self.is_impaired()
                 and (gate_value is None or gate_value == 0)
                 and (
                     override_value is None

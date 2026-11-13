@@ -14,6 +14,8 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Fixes UDSv4 `NACCALZP` returning 7 when AD is diagnosed (`NACCALZD = 1`) but `ALZDISIF` is blank, which produced `NACCALZD = 1` with `NACCALZP = 7`
     * 7 now means impaired (`NORMCOG = 0`, including MBI) with no AD etiologic diagnosis, instead of requiring `DEMENTED`, `MCI` or `IMPNOMCI`; released V4 `NACCALZP` values change when data is reprocessed
     * AD diagnosed (`ALZDIS = 1`) with `ALZDISIF` blank is invalid but not caught by QC; it now raises an error, so the visit fails curation until the site fills in `ALZDISIF`
+* Changes UDSv4 D1b informative missingness for primary/contributing/non-contributing fields to use `NORMCOG = 0` instead of `DEMENTED`/`MCI`/`IMPNOMCI`, so participants with only MBI get 7
+    * Affects `CTEIF`, `CTECERT`, `CAAIF`, `LATEIF`, `MSAIF`, `PSPIF`, `CORTIF`, `FTLDMOIF`, `FTLDNOIF`, `FTLDSUBT`, `CVDIF`, `DOWNSIF`, `HUNTIF`, `PRIONIF` and `OTHCOGIF`; V1-V3 are unchanged
 
 ## 2.5.1
 

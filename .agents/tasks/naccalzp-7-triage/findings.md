@@ -60,9 +60,15 @@ V4 branch only. The V1–V3 branch follows `d1structrdd.sas` and is unchanged.
 Jessica Culhane changed step 3 from "impaired (DEMENTED, MCI or IMPNOMCI)" to
 `NORMCOG = 0`, so participants with only MBI get 7. The RDD definitions are
 being updated to match: 7 = impaired but not AD diagnosis, 8 = diagnosis of
-normal cognition and behavior. Kathryn Gauthreaux noted the informative
-missingness rules also use DEMENTED/MCI/IMPNOMCI and could move to
-`NORMCOG = 0`; that is not part of this change.
+normal cognition and behavior.
+
+Per Kathryn Gauthreaux, the V4 D1b informative missingness for the
+primary/contributing/non-contributing fields also moves to `NORMCOG = 0` → 7.
+`handle_cognitive_impairment_gate` in
+`missingness/modules/uds/helpers/d1_base.py` now uses `is_impaired()`, which
+is `NORMCOG = 0` for V4 and DEMENTED/MCI/IMPNOMCI for V1–V3. The helper is
+shared with the V1–V3 D1 rules, so V1–V3 stay as they were. `ALZDISIF` and
+`LBDIF` have no custom missingness rule, so they aren't affected.
 
 `ALZDIS = 0` and blank `ALZDIS` both give 7 for impaired participants. Jessica
 Culhane confirmed this case (`NACCALZD = 0`, `NACCALZP = 7`). Under the form
