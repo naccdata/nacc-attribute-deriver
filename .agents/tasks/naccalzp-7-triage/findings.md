@@ -80,10 +80,13 @@ Jessica Culhane asked for the same logic for each of `ALZDISIF`, `LBDIF`,
 `ALZDISIF` and `LBDIF` have no informative missingness rule of their own, so
 none was changed for them.
 
-The missingness helper still doesn't assign 7 when the diagnosis is selected
-(gate = 1) and the `*IF` field is blank. That is the same invalid combination
-that raises in `NACCALZP` and `NACCLBDP`, but the missingness rules don't raise
-for it.
+For these 13 fields in V4, `NORMCOG = 0` with the diagnosis selected
+(gate = 1) and the `*IF` field blank raises `InvalidFieldError`, consistent
+with `NACCALZP` and `NACCLBDP`. Jessica Culhane confirmed this should be an
+error. The missingness rules run in the same curation step as the derived
+variables, so these visits also fail curation and appear in
+`curation-failures.csv`. The number of affected visits isn't known yet; Sarah
+Yasuda is checking.
 
 `ALZDIS = 0` and blank `ALZDIS` both give 7 for impaired participants. Jessica
 Culhane confirmed this case (`NACCALZD = 0`, `NACCALZP = 7`). Under the form

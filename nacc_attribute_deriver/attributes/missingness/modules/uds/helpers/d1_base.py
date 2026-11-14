@@ -9,6 +9,7 @@ from typing import Optional
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 
 class UDSFormD1Missingness(UDSMissingness):
@@ -100,6 +101,10 @@ class UDSFormD1Missingness(UDSMissingness):
         If impaired and GATE is 0 or blank and FIELD is blank, FIELD = 7
         Else if NORMCOG = 1 and FIELD is blank, FIELD = 8
 
+        For V4 primary/contributing/non-contributing fields
+        (normcog_impaired=True), NORMCOG = 0 with GATE = 1 and FIELD blank
+        raises InvalidFieldError.
+
         Impaired is NORMCOG = 0 for V4 (includes MBI), and any(DEMENTED, MCI,
         IMPNOMCI = 1) for V1-V3; see is_impaired. Fields that are not
         primary/contributing/non-contributing pass normcog_impaired=False to
@@ -136,6 +141,22 @@ class UDSFormD1Missingness(UDSMissingness):
 
         # main logic we actually care about
         if value is None:
+            if (
+                normcog_impaired
+                and self.formver >= 4
+                and self.normcog == 0
+                and gate_value == 1
+            ):
+                # Invalid case not caught by QC: a selected diagnosis requires
+                # its primary/contributing/non-contributing field.
+                # TODO: follow up once D1b QC requires the field when the
+                # diagnosis is selected and sites have filled in existing
+                # records.
+                raise InvalidFieldError(
+                    f"{field.upper()} must be 1, 2, or 3 when "
+                    + f"{gate.upper()} = 1 and NORMCOG = 0"
+                )
+
             if (
                 impaired
                 and (gate_value is None or gate_value == 0)

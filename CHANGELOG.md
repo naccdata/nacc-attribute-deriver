@@ -18,6 +18,7 @@ Documentation of release versions of `nacc-attribute-deriver`
     * LBD diagnosed (`LBDIS = 1`) with `LBDIF` blank is invalid but not caught by QC; it now raises an error, so the visit fails curation until the site fills in `LBDIF`
 * Changes UDSv4 D1b informative missingness for primary/contributing/non-contributing fields to use `NORMCOG = 0` instead of `DEMENTED`/`MCI`/`IMPNOMCI`, so participants with only MBI get 7
     * Affects `CTEIF`, `CAAIF`, `LATEIF`, `MSAIF`, `PSPIF`, `CORTIF`, `FTLDMOIF`, `FTLDNOIF`, `CVDIF`, `DOWNSIF`, `HUNTIF`, `PRIONIF` and `OTHCOGIF`; `CTECERT`, `FTLDSUBT` and V1-V3 are unchanged
+    * With `NORMCOG = 0`, a selected diagnosis with its field blank is invalid but not caught by QC; it now raises an error, so the visit fails curation until the site fills in the field
 
 ## 2.5.1
 
