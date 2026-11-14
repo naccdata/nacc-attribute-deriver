@@ -150,7 +150,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
 
     def _missingness_ctecert(self) -> int:
         """Handles missingness for CTECERT."""
-        return self.handle_cognitive_impairment_gate("cte", "ctecert")
+        return self.handle_cognitive_impairment_gate(
+            "cte", "ctecert", normcog_impaired=False
+        )
 
     def _missingness_caaif(self) -> int:
         """Handles missingness for CAAIF."""
@@ -199,7 +201,9 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
             else:
                 return ftldsubt
 
-        return self.handle_cognitive_impairment_gate("ftld", "ftldsubt")
+        return self.handle_cognitive_impairment_gate(
+            "ftld", "ftldsubt", normcog_impaired=False
+        )
 
     def _missingness_cvdif(self) -> int:
         """Handles missingness for CVDIF."""
