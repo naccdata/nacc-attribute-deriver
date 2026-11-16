@@ -161,4 +161,5 @@ def test_ds_form():
     assert resolved["dsdxby"] == 8
     assert resolved["dsonstmo"] == 88
     assert resolved["dsonstyr"] == 8888
-    assert resolved["dsrepmo"] == 888
+    assert resolved["dsrepmo"] == 888.0
+    assert isinstance(resolved["dsrepmo"], float)

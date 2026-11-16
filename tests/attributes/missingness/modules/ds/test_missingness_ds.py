@@ -130,7 +130,6 @@ class TestDSFormMissingness:
             ("dsmciyr", "dsdxhs_mci", 8888),
             ("dsdemmo", "dsdxhs_dem", 88),
             ("dsdemyr", "dsdxhs_dem", 8888),
-            ("dsrepmo", "dsre_rep", 888),
         ],
     )
     def test_gate_ne_1(self, table, field, gate, code):
@@ -149,6 +148,28 @@ class TestDSFormMissingness:
         # submitted value is kept
         table[f"file.info.forms.json.{field}"] = "6"
         assert missingness(attr, field) == 6
+
+    def test_dsrepmo(self, table):
+        """DSREPMO is a float: 888.0 if DSRE_REP ne 1, else -4.0 if blank."""
+        attr = DSFormMissingness(table)
+
+        def check(expected: float) -> None:
+            result = missingness(attr, "dsrepmo")
+            assert isinstance(result, float)
+            assert result == expected
+
+        # gate blank or 0
+        check(888.0)
+        table["file.info.forms.json.dsre_rep"] = 0
+        check(888.0)
+
+        # gate = 1, should have been submitted
+        table["file.info.forms.json.dsre_rep"] = 1
+        check(-4.0)
+
+        # submitted value is kept
+        table["file.info.forms.json.dsrepmo"] = "6.5"
+        check(6.5)
 
 
 class TestDSMissingness:

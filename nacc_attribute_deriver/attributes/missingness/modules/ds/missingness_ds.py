@@ -108,7 +108,8 @@ class DSFormMissingness(FormMissingnessCollection):
     #######
     # Write-ins (DSLIVX, DSDXOTHX, DSLEOTHX, DSDXTYPE, DSDXBYX, DSDEMCOM,
     # DSMHOTHX, DSCANCX) are strings, so generic missingness already
-    # leaves them blank. Skipped integers get a "not applicable" code.
+    # leaves them blank. Skipped numerics get a "not applicable" code.
+    # DSREPMO is the one float; it uses 888 / -4 as floats.
 
     def __handle_skipped(self, field: str, skipped: bool, code: int) -> int:
         """Handles B1D integers that are skipped by a gate question.
@@ -165,6 +166,16 @@ class DSFormMissingness(FormMissingnessCollection):
         """Handles missingness for DSONSTYR; 8888 if DSDXHS_NO = 1."""
         return self.__handle_skipped("dsonstyr", self.__no_dx_history(), 8888)
 
-    def _missingness_dsrepmo(self) -> int:
-        """Handles missingness for DSREPMO; 888 if DSRE_REP ne 1."""
-        return self.__handle_skipped("dsrepmo", self.__gate_ne_1("dsre_rep"), 888)
+    def _missingness_dsrepmo(self) -> float:
+        """Handles missingness for DSREPMO, which is a float.
+
+        If DSREPMO is blank and DSRE_REP ne 1, DSREPMO = 888.0
+        Else generic missingness (-4.0 if blank)
+        """
+        if (
+            self.__gate_ne_1("dsre_rep")
+            and self.form.get_value("dsrepmo", float) is None
+        ):
+            return 888.0
+
+        return self.generic_missingness("dsrepmo", float)
