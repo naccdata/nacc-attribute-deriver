@@ -144,6 +144,18 @@ class UDSFormD1bMissingness(UDSFormD1Missingness):
     # Cognitive-status-gated variables #
     ####################################
 
+    # ALZDISIF and LBDIF intentionally have no informative missingness rule.
+    # They are not distributed, and the uniform-data-set D1b informative
+    # missingness spec has no rule for them; the NORMCOG-based 7/8 coding is
+    # applied in NACCALZP and NACCLBDP instead (form_d1b.py). ALZDIS and LBDIS
+    # likewise have no rule. None of the four has a row in
+    # file_missingness.csv, so their resolved values are the raw values and a
+    # blank stays blank. If rules are ever added, they would follow the other
+    # *IF fields here:
+    #     handle_cognitive_impairment_gate("alzdis", "alzdisif")
+    #     handle_cognitive_impairment_gate("lbdis", "lbdif")
+    # plus a file_missingness.csv row for each.
+
     def _missingness_cteif(self) -> int:
         """Handles missingness for CTEIF."""
         return self.handle_cognitive_impairment_gate("cte", "cteif")

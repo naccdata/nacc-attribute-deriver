@@ -77,8 +77,12 @@ Jessica Culhane asked for the same logic for each of `ALZDISIF`, `LBDIF`,
   `FTLDSUBT` use the same helper but aren't in the list, so they pass
   `normcog_impaired=False` and keep the old check.
 
-`ALZDISIF` and `LBDIF` have no informative missingness rule of their own, so
-none was changed for them.
+`ALZDISIF` and `LBDIF` have no informative missingness rule, and none was
+added. Jessica Culhane confirmed they aren't distributed and the 8 is assigned
+in NACCALZP and NACCLBDP. None of `ALZDIS`, `ALZDISIF`, `LBDIS` or `LBDIF` has
+a `file_missingness.csv` row, so their resolved values are the raw values and
+a blank stays blank (not -4). A comment in `missingness_d1b.py` marks where
+the rules would go.
 
 For these 13 fields in V4, `NORMCOG = 0` with the diagnosis selected
 (gate = 1) and the `*IF` field blank raises `InvalidFieldError`, consistent
