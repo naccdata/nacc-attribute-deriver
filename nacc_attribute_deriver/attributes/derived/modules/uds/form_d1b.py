@@ -55,7 +55,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         MBI) with no AD etiologic diagnosis, and it returns 7.
 
         Raises:
-            InvalidFieldError: V4 with an AD diagnosis (NACCALZD = 1) and
+            InvalidFieldError: V4 with an AD diagnosis (ALZDIS = 1) and
                 ALZDISIF blank.
         """
         if self.normcog == 1:
@@ -72,7 +72,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         if alzdisif in [1, 2, 3]:
             return alzdisif
 
-        if self._create_naccalzd() == 1:
+        if self.uds.get_value("alzdis", int) == 1:
             # Invalid case not caught by QC: an AD diagnosis (ALZDIS = 1)
             # requires ALZDISIF, and NACCALZP has no code for it being blank.
             # TODO: follow up once D1b QC requires ALZDISIF when ALZDIS = 1
@@ -122,7 +122,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
         MBI) with no LBD etiologic diagnosis, and it returns 7.
 
         Raises:
-            InvalidFieldError: V4 with an LBD diagnosis (NACCLBDE = 1) and
+            InvalidFieldError: V4 with an LBD diagnosis (LBDIS = 1) and
                 LBDIF blank.
         """
         if self.normcog == 1:
@@ -143,7 +143,7 @@ class UDSFormD1bAttribute(UDSFormDxAttribute):
 
             return 8
 
-        if self._create_nacclbde() == 1:
+        if self.uds.get_value("lbdis", int) == 1:
             # Invalid case not caught by QC: an LBD diagnosis (LBDIS = 1)
             # requires LBDIF, and NACCLBDP has no code for it being blank.
             # TODO: follow up once D1b QC requires LBDIF when LBDIS = 1
