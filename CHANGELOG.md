@@ -12,8 +12,9 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `BDSCOALZ`, `BDSCOLBD`, `BDSCOMSA`, `BDSCOPSP`, `BDSCOCBD`, `BDSCOFMO`, `BDSCOFOT`, `BDSCOVAS`, `BDSCOTBI`, `BDSCODWN`, `BDSCOO1F`, `BDSCOO2F`, `BDSCOO3F`: 8 if `BDSUDSD` = 1, 9 if `BDSUDSD` = 9
     * `BDSTMCI`: 8 if `BDSUDSD` ne 3
 * Adds DS module (A1D) informative missingness; submitted values are always kept
-    * `DSMOMAGE`, `DSMNSAGE`, `DSMNPAGE`, `DSAGEHRT`: if 777, carry forward the value from the previous DS visit (999 if there is none)
-    * `DSHRTRYR`, `DSCRDSYR`, `DSSPINYR`, `DSLWORYR`, `DSUPORYR`, `DSTHYSYR`, `DSONCSYR`, `DSOTHSYR`: if 7777, carry forward the value from the previous DS visit (9999 if there is none, or if the previous value is 8888 "not applicable"); if blank and the corresponding gate (`DSHRTRPR`, `DSCRDSRG`, `DSSPIN`, `DSLWORTH`, `DSUPORTH`, `DSTHYSRG`, `DSONCSRG`, `DSOTHSRG`) is 0 or 9, set to 8888
+    * `DSMOMAGE`, `DSMNSAGE`, `DSMNPAGE`, `DSAGEHRT`: if 777, carry forward the value from the previous DS visit
+    * `DSHRTRYR`, `DSCRDSYR`, `DSSPINYR`, `DSLWORYR`, `DSUPORYR`, `DSTHYSYR`, `DSONCSYR`, `DSOTHSYR`: if 7777, carry forward the value from the previous DS visit; if blank and the corresponding gate (`DSHRTRPR`, `DSCRDSRG`, `DSSPIN`, `DSLWORTH`, `DSUPORTH`, `DSTHYSRG`, `DSONCSRG`, `DSOTHSRG`) is 0 or 9, set to 8888
+    * If there is no valid previous DS value to carry forward (none, -4, or 8888 for the years), raises an error so the file fails curation; the spec gives no fallback value, and failing keeps incorrect submissions from propagating
 * Adds DS module (B1D) informative missingness; submitted values are always kept
     * Checkboxes `DSDX_*` (7), `DSCN_*` (9), `DSLE_*` (9) and `DSRE_REF`, `DSRE_INT`, `DSRE_ANN`, `DSRE_REP`: 0 if blank and B1D was completed (`FRMDATEB1D` not blank)
     * `DSDXHS_NO`, `DSDXHS_MCI`, `DSDXHS_DEM`: 0 if blank and either of the other two is 1

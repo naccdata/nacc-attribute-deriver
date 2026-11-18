@@ -1,6 +1,6 @@
 """Class to handle DS missingness values."""
 
-from typing import Callable, Optional, Type
+from typing import Callable, Optional, Tuple, Type
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     FormMissingnessCollection,
@@ -31,16 +31,35 @@ class DSFormMissingness(FormMissingnessCollection):
         """Defines general missingness for DS form variables."""
         return self.generic_missingness(field, attr_type)
 
-    def __handle_age(self, field: str) -> int:
-        """Handles A1D ages that can be carried forward from the previous
-        visit.
+    def __carry_forward(
+        self, field: str, prev_code: int, invalid: Tuple[int, ...] = ()
+    ) -> int:
+        """Returns the previous DS visit's value for FIELD = PREV_CODE.
 
-        If FIELD = 777, FIELD = previous visit's value (999 if none)
+        A "provided at previous visit" code needs a valid previous
+        value. If there is none (no previous visit, -4, the code itself,
+        or one of INVALID), the submission is incorrect, so raise an
+        error and fail the file.
+        """
+        result = self.handle_prev_visit(field, int, prev_code=prev_code)
+        if result in [INFORMED_MISSINGNESS, prev_code, *invalid]:
+            raise AttributeDeriverError(
+                f"{field.upper()} = {prev_code} (provided at previous visit) "
+                + "but no previous value found"
+            )
+
+        return result
+
+    def __handle_prev_code(self, field: str, prev_code: int) -> int:
+        """Handles values that can be provided at the previous visit (A1D ages,
+        D1D).
+
+        If FIELD = PREV_CODE, FIELD = previous DS visit's value (error if none)
         Else generic missingness
         """
         value = self.form.get_value(field, int)
-        if value == 777:
-            return self.handle_prev_visit(field, int, prev_code=777, default=999)
+        if value == prev_code:
+            return self.__carry_forward(field, prev_code)
 
         if value is not None:
             return value
@@ -51,16 +70,15 @@ class DSFormMissingness(FormMissingnessCollection):
         """Handles A1D surgery/procedure years, which can be carried forward
         from the previous visit and are only asked if GATE = 1.
 
-        If FIELD = 7777, FIELD = previous visit's value (9999 if none)
-            - if the previous value is 8888 (not applicable), FIELD = 9999,
-              since the procedure is now reported but no year was given
+        If FIELD = 7777, FIELD = previous visit's value
+            - error if none, or if it is 8888 (not applicable), since the
+              procedure is now reported but no year was ever given
         If FIELD is blank and GATE = 0 or 9, FIELD = 8888
         Else generic missingness
         """
         value = self.form.get_value(field, int)
         if value == 7777:
-            result = self.handle_prev_visit(field, int, prev_code=7777, default=9999)
-            return 9999 if result == 8888 else result
+            return self.__carry_forward(field, 7777, invalid=(8888,))
 
         if value is not None:
             return value
@@ -76,19 +94,19 @@ class DSFormMissingness(FormMissingnessCollection):
 
     def _missingness_dsmomage(self) -> int:
         """Handles missingness for DSMOMAGE."""
-        return self.__handle_age("dsmomage")
+        return self.__handle_prev_code("dsmomage", 777)
 
     def _missingness_dsmnsage(self) -> int:
         """Handles missingness for DSMNSAGE."""
-        return self.__handle_age("dsmnsage")
+        return self.__handle_prev_code("dsmnsage", 777)
 
     def _missingness_dsmnpage(self) -> int:
         """Handles missingness for DSMNPAGE."""
-        return self.__handle_age("dsmnpage")
+        return self.__handle_prev_code("dsmnpage", 777)
 
     def _missingness_dsagehrt(self) -> int:
         """Handles missingness for DSAGEHRT."""
-        return self.__handle_age("dsagehrt")
+        return self.__handle_prev_code("dsagehrt", 777)
 
     def _missingness_dshrtryr(self) -> int:
         """Handles missingness for DSHRTRYR."""
@@ -388,30 +406,6 @@ class DSFormMissingness(FormMissingnessCollection):
     #######
     # D1D #
     #######
-
-    def __handle_prev_code(self, field: str, prev_code: int) -> int:
-        """Handles D1D values that can be provided at the previous visit.
-
-        If FIELD = PREV_CODE, FIELD = previous DS visit's value
-            - QC (d1d-dsfvp-p-1005/1006) requires a valid previous value,
-              so if there is none, raise an error and fail the file
-        Else generic missingness
-        """
-        value = self.form.get_value(field, int)
-        if value == prev_code:
-            result = self.handle_prev_visit(field, int, prev_code=prev_code)
-            if result in [INFORMED_MISSINGNESS, prev_code]:
-                raise AttributeDeriverError(
-                    f"{field.upper()} = {prev_code} (provided at previous visit) "
-                    + "but no previous value found"
-                )
-
-            return result
-
-        if value is not None:
-            return value
-
-        return self.generic_missingness(field, int)
 
     def _missingness_dsheadcm(self) -> int:
         """Handles missingness for DSHEADCM; 777 carries forward."""

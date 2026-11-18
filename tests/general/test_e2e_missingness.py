@@ -143,7 +143,9 @@ def test_ds_form():
                     }
                 },
             },
-            "_prev_record": {"info": {"resolved": {"dsmomage": 30, "dsheadcm": 55}}},
+            "_prev_record": {
+                "info": {"resolved": {"dsmomage": 30, "dsheadcm": 55, "dscrdsyr": 2001}}
+            },
         }
     )
     MissingnessDeriver(missingness_level="file").curate(table, "ds")
@@ -152,7 +154,7 @@ def test_ds_form():
     assert resolved["dsmomage"] == 30
     assert resolved["dsmnsage"] == -4
     assert resolved["dshrtryr"] == 8888
-    assert resolved["dscrdsyr"] == 9999
+    assert resolved["dscrdsyr"] == 2001
 
     # B1D: completed; no MCI/dementia diagnosis, unchecked boxes are 0
     assert resolved["dsdx_aut"] == 0

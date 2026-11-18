@@ -75,9 +75,19 @@ class TestDSFormMissingness:
 
         # 777 with no previous visit
         table[f"file.info.forms.json.{field}"] = 777
-        assert missingness(attr, field) == 999
+        with pytest.raises(AttributeDeriverError):
+            missingness(attr, field)
 
-        # 777 with previous visit
+        # 777 with a missing previous value
+        table[f"_prev_record.info.resolved.{field}"] = INFORMED_MISSINGNESS
+        with pytest.raises(AttributeDeriverError):
+            missingness(attr, field)
+
+        # 777 with previous visit; unknown and not applicable codes carry
+        for code in [999, 888]:
+            table[f"_prev_record.info.resolved.{field}"] = code
+            assert missingness(attr, field) == code
+
         table[f"_prev_record.info.resolved.{field}"] = 18
         assert missingness(attr, field) == 18
 
@@ -104,15 +114,19 @@ class TestDSFormMissingness:
 
         # 7777 with no previous visit
         table[f"file.info.forms.json.{field}"] = 7777
-        assert missingness(attr, field) == 9999
+        with pytest.raises(AttributeDeriverError):
+            missingness(attr, field)
 
-        # 7777 with previous visit
-        table[f"_prev_record.info.resolved.{field}"] = 1999
-        assert missingness(attr, field) == 1999
+        # 7777 with a missing or not applicable (8888) previous value
+        for code in [INFORMED_MISSINGNESS, 8888]:
+            table[f"_prev_record.info.resolved.{field}"] = code
+            with pytest.raises(AttributeDeriverError):
+                missingness(attr, field)
 
-        # 7777 with previous visit 8888 (not applicable) becomes unknown
-        table[f"_prev_record.info.resolved.{field}"] = 8888
-        assert missingness(attr, field) == 9999
+        # 7777 with previous visit; unknown carries
+        for code in [1999, 9999]:
+            table[f"_prev_record.info.resolved.{field}"] = code
+            assert missingness(attr, field) == code
 
     @pytest.mark.parametrize(
         "field,code",
