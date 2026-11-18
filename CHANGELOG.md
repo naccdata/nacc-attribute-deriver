@@ -11,17 +11,19 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `BDSETPR`: 88 if `BDSUDSD` = 1, 99 if `BDSUDSD` = 9
     * `BDSCOALZ`, `BDSCOLBD`, `BDSCOMSA`, `BDSCOPSP`, `BDSCOCBD`, `BDSCOFMO`, `BDSCOFOT`, `BDSCOVAS`, `BDSCOTBI`, `BDSCODWN`, `BDSCOO1F`, `BDSCOO2F`, `BDSCOO3F`: 8 if `BDSUDSD` = 1, 9 if `BDSUDSD` = 9
     * `BDSTMCI`: 8 if `BDSUDSD` ne 3
-* Adds DS module (A1D) informative missingness (uniform-data-set PR #552); submitted values are always kept
+* Adds DS module (A1D) informative missingness; submitted values are always kept
     * `DSMOMAGE`, `DSMNSAGE`, `DSMNPAGE`, `DSAGEHRT`: if 777, carry forward the value from the previous DS visit (999 if there is none)
-    * `DSHRTRYR`, `DSCRDSYR`, `DSSPINYR`, `DSLWORYR`, `DSUPORYR`, `DSTHYSYR`, `DSONCSYR`, `DSOTHSYR`: if 7777, carry forward the value from the previous DS visit (9999 if there is none); if blank and the corresponding gate (`DSHRTRPR`, `DSCRDSRG`, `DSSPIN`, `DSLWORTH`, `DSUPORTH`, `DSTHYSRG`, `DSONCSRG`, `DSOTHSRG`) is 0 or 9, set to 8888
-* Adds DS module (B1D) informative missingness (uniform-data-set PR #573); skipped integers get a "not applicable" code, and submitted values are always kept
-    * `DSDXHS_MCI`, `DSDXHS_DEM`: 0 if `DSDXHS_NO` = 1
-    * `DSMCIMO`, `DSMCIYR`: 88 / 8888 if `DSDXHS_MCI` ne 1
-    * `DSDEMMO`, `DSDEMYR`: 88 / 8888 if `DSDXHS_DEM` ne 1
+    * `DSHRTRYR`, `DSCRDSYR`, `DSSPINYR`, `DSLWORYR`, `DSUPORYR`, `DSTHYSYR`, `DSONCSYR`, `DSOTHSYR`: if 7777, carry forward the value from the previous DS visit (9999 if there is none, or if the previous value is 8888 "not applicable"); if blank and the corresponding gate (`DSHRTRPR`, `DSCRDSRG`, `DSSPIN`, `DSLWORTH`, `DSUPORTH`, `DSTHYSRG`, `DSONCSRG`, `DSOTHSRG`) is 0 or 9, set to 8888
+* Adds DS module (B1D) informative missingness; submitted values are always kept
+    * Checkboxes `DSDX_*` (7), `DSCN_*` (9), `DSLE_*` (9) and `DSRE_REF`, `DSRE_INT`, `DSRE_ANN`, `DSRE_REP`: 0 if blank and B1D was completed (`FRMDATEB1D` not blank)
+    * `DSDXHS_NO`, `DSDXHS_MCI`, `DSDXHS_DEM`: 0 if blank and either of the other two is 1
+    * `DSMCIMO`, `DSMCIYR`: 88 / 8888 if `DSDXHS_MCI` = 0
+    * `DSDEMMO`, `DSDEMYR`: 88 / 8888 if `DSDXHS_DEM` = 0
     * `DSDXBY`, `DSONSTMO`, `DSONSTYR`: 8 / 88 / 8888 if `DSDXHS_NO` = 1
-    * `DSREPMO` (float): 888.0 if `DSRE_REP` ne 1; -4.0 if otherwise blank
+    * `DSREPMO` (float): 888.0 if `DSRE_REP` = 0; -4.0 if otherwise blank
+    * The "= 0" gates use the checkbox's resolved value (a blank box counts as 0 when the rules above apply), so an unanswered gate leaves the dependent at -4
     * Gated write-ins are strings and already stay blank under generic missingness
-* Adds `NACCDS` (uniform-data-set PR #574): 1 if the participant has at least one DS module visit, otherwise 0; mirrors `NACCFTD` and `NACCLBDM`
+* Adds `NACCDS`: 1 if the participant has at least one DS module visit, otherwise 0; mirrors `NACCFTD` and `NACCLBDM`
     * Written to `file.info.derived` and `subject.info.derived.cross-sectional`; the subject-level default of 0 comes from subject missingness
 
 

@@ -135,6 +135,7 @@ def test_ds_form():
                             "dshrtrpr": "0",
                             "dscrdsrg": "1",
                             "dscrdsyr": "7777",
+                            "frmdateb1d": "2025-01-01",
                             "dsdxhs_no": "1",
                         }
                     }
@@ -151,7 +152,10 @@ def test_ds_form():
     assert resolved["dshrtryr"] == 8888
     assert resolved["dscrdsyr"] == 9999
 
-    # B1D: no MCI/dementia diagnosis, no repeat recommendation
+    # B1D: completed; no MCI/dementia diagnosis, unchecked boxes are 0
+    assert resolved["dsdx_aut"] == 0
+    assert resolved["dsre_rep"] == 0
+    assert resolved["dsdxhs_no"] == 1
     assert resolved["dsdxhs_mci"] == 0
     assert resolved["dsdxhs_dem"] == 0
     assert resolved["dsmcimo"] == 88

@@ -1,12 +1,19 @@
 """Class to handle DS missingness values."""
 
-from typing import Type
+from typing import Callable, Optional, Type
 
 from nacc_attribute_deriver.attributes.collection.missingness_collection import (
     FormMissingnessCollection,
     SubjectMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
+
+# Q16 diagnostic history checkboxes and the other boxes in the question
+_Q16_OTHERS = {
+    "dsdxhs_no": ("dsdxhs_mci", "dsdxhs_dem"),
+    "dsdxhs_mci": ("dsdxhs_no", "dsdxhs_dem"),
+    "dsdxhs_dem": ("dsdxhs_no", "dsdxhs_mci"),
+}
 
 
 class DSMissingness(SubjectMissingnessCollection):
@@ -29,8 +36,12 @@ class DSFormMissingness(FormMissingnessCollection):
         If FIELD = 777, FIELD = previous visit's value (999 if none)
         Else generic missingness
         """
-        if self.form.get_value(field, int) == 777:
+        value = self.form.get_value(field, int)
+        if value == 777:
             return self.handle_prev_visit(field, int, prev_code=777, default=999)
+
+        if value is not None:
+            return value
 
         return self.generic_missingness(field, int)
 
@@ -39,14 +50,20 @@ class DSFormMissingness(FormMissingnessCollection):
         from the previous visit and are only asked if GATE = 1.
 
         If FIELD = 7777, FIELD = previous visit's value (9999 if none)
+            - if the previous value is 8888 (not applicable), FIELD = 9999,
+              since the procedure is now reported but no year was given
         If FIELD is blank and GATE = 0 or 9, FIELD = 8888
         Else generic missingness
         """
         value = self.form.get_value(field, int)
         if value == 7777:
-            return self.handle_prev_visit(field, int, prev_code=7777, default=9999)
+            result = self.handle_prev_visit(field, int, prev_code=7777, default=9999)
+            return 9999 if result == 8888 else result
 
-        if value is None and self.form.get_value(gate, int) in [0, 9]:
+        if value is not None:
+            return value
+
+        if self.form.get_value(gate, int) in [0, 9]:
             return 8888
 
         return self.generic_missingness(field, int)
@@ -108,74 +125,260 @@ class DSFormMissingness(FormMissingnessCollection):
     #######
     # Write-ins (DSLIVX, DSDXOTHX, DSLEOTHX, DSDXTYPE, DSDXBYX, DSDEMCOM,
     # DSMHOTHX, DSCANCX) are strings, so generic missingness already
-    # leaves them blank. Skipped numerics get a "not applicable" code.
-    # DSREPMO is the one float; it uses 888 / -4 as floats.
+    # leaves them blank.
+    #
+    # Checkboxes arrive blank when unchecked; a blank box is 0 when its
+    # question was answered:
+    #   - DSDX_*, DSCN_*, DSLE_*, DSRE_*: if B1D was completed (FRMDATEB1D)
+    #   - DSDXHS_NO/MCI/DEM (Q16): if another Q16 box is checked
+    # Gated numerics get a "not applicable" code when the gate box resolves
+    # to 0, so an unanswered gate (-4) leaves them at -4 too. DSREPMO is the
+    # one float; it uses 888 / -4 as floats.
 
-    def __handle_skipped(self, field: str, skipped: bool, code: int) -> int:
+    def __handle_skipped(
+        self, field: str, skipped: Callable[[], bool], code: int
+    ) -> int:
         """Handles B1D integers that are skipped by a gate question.
 
-        If FIELD is blank and SKIPPED, FIELD = CODE
+        If FIELD is submitted, keep it
+        If FIELD is blank and SKIPPED(), FIELD = CODE
         Else generic missingness
+
+        SKIPPED is only evaluated when FIELD is blank.
         """
-        if skipped and self.form.get_value(field, int) is None:
+        value = self.form.get_value(field, int)
+        if value is not None:
+            return value
+
+        if skipped():
             return code
 
         return self.generic_missingness(field, int)
+
+    def __b1d_completed(self) -> bool:
+        """Whether B1D was completed (FRMDATEB1D is not blank)."""
+        return self.form.get_value("frmdateb1d", str) not in [None, ""]
+
+    def __any_checked(self, *fields: str) -> bool:
+        """Whether any of FIELDS = 1."""
+        return any(self.form.get_value(x, int) == 1 for x in fields)
+
+    def __box_applies(self, field: str) -> bool:
+        """Whether a blank checkbox FIELD should be 0."""
+        others = _Q16_OTHERS.get(field)
+        if others:
+            return self.__any_checked(*others)
+
+        return self.__b1d_completed()
+
+    def __resolved_box(self, field: str) -> Optional[int]:
+        """The checkbox's resolved value: submitted value, else 0 if its
+        question was answered, else None."""
+        value = self.form.get_value(field, int)
+        if value is not None:
+            return value
+
+        return 0 if self.__box_applies(field) else None
+
+    def __handle_box(self, field: str) -> int:
+        """Handles a checkbox.
+
+        If FIELD is blank and its question was answered, FIELD = 0
+        Else generic missingness
+        """
+        return self.__handle_skipped(field, lambda: self.__box_applies(field), 0)
 
     def __no_dx_history(self) -> bool:
         """Whether DSDXHS_NO = 1 (no diagnosis of MCI or dementia)."""
         return self.form.get_value("dsdxhs_no", int) == 1
 
-    def __gate_ne_1(self, gate: str) -> bool:
-        """Whether GATE ne 1."""
-        return self.form.get_value(gate, int) != 1
+    def __gate_is_0(self, gate: str) -> bool:
+        """Whether the GATE checkbox resolves to 0."""
+        return self.__resolved_box(gate) == 0
+
+    # Q9 diagnosed conditions
+    def _missingness_dsdx_aut(self) -> int:
+        """Handles missingness for DSDX_AUT."""
+        return self.__handle_box("dsdx_aut")
+
+    def _missingness_dsdx_cp(self) -> int:
+        """Handles missingness for DSDX_CP."""
+        return self.__handle_box("dsdx_cp")
+
+    def _missingness_dsdx_ds(self) -> int:
+        """Handles missingness for DSDX_DS."""
+        return self.__handle_box("dsdx_ds")
+
+    def _missingness_dsdx_frx(self) -> int:
+        """Handles missingness for DSDX_FRX."""
+        return self.__handle_box("dsdx_frx")
+
+    def _missingness_dsdx_id(self) -> int:
+        """Handles missingness for DSDX_ID."""
+        return self.__handle_box("dsdx_id")
+
+    def _missingness_dsdx_pw(self) -> int:
+        """Handles missingness for DSDX_PW."""
+        return self.__handle_box("dsdx_pw")
+
+    def _missingness_dsdx_oth(self) -> int:
+        """Handles missingness for DSDX_OTH."""
+        return self.__handle_box("dsdx_oth")
+
+    # Q10 co-occurring conditions
+    def _missingness_dscn_vim(self) -> int:
+        """Handles missingness for DSCN_VIM."""
+        return self.__handle_box("dscn_vim")
+
+    def _missingness_dscn_bld(self) -> int:
+        """Handles missingness for DSCN_BLD."""
+        return self.__handle_box("dscn_bld")
+
+    def _missingness_dscn_gls(self) -> int:
+        """Handles missingness for DSCN_GLS."""
+        return self.__handle_box("dscn_gls")
+
+    def _missingness_dscn_him(self) -> int:
+        """Handles missingness for DSCN_HIM."""
+        return self.__handle_box("dscn_him")
+
+    def _missingness_dscn_df(self) -> int:
+        """Handles missingness for DSCN_DF."""
+        return self.__handle_box("dscn_df")
+
+    def _missingness_dscn_had(self) -> int:
+        """Handles missingness for DSCN_HAD."""
+        return self.__handle_box("dscn_had")
+
+    def _missingness_dscn_mim(self) -> int:
+        """Handles missingness for DSCN_MIM."""
+        return self.__handle_box("dscn_mim")
+
+    def _missingness_dscn_uw(self) -> int:
+        """Handles missingness for DSCN_UW."""
+        return self.__handle_box("dscn_uw")
+
+    def _missingness_dscn_miw(self) -> int:
+        """Handles missingness for DSCN_MIW."""
+        return self.__handle_box("dscn_miw")
+
+    # Q14 significant life events
+    def _missingness_dsle_cd(self) -> int:
+        """Handles missingness for DSLE_CD."""
+        return self.__handle_box("dsle_cd")
+
+    def _missingness_dsle_chl(self) -> int:
+        """Handles missingness for DSLE_CHL."""
+        return self.__handle_box("dsle_chl")
+
+    def _missingness_dsle_chs(self) -> int:
+        """Handles missingness for DSLE_CHS."""
+        return self.__handle_box("dsle_chs")
+
+    def _missingness_dsle_nrm(self) -> int:
+        """Handles missingness for DSLE_NRM."""
+        return self.__handle_box("dsle_nrm")
+
+    def _missingness_dsle_ill(self) -> int:
+        """Handles missingness for DSLE_ILL."""
+        return self.__handle_box("dsle_ill")
+
+    def _missingness_dsle_sem(self) -> int:
+        """Handles missingness for DSLE_SEM."""
+        return self.__handle_box("dsle_sem")
+
+    def _missingness_dsle_sei(self) -> int:
+        """Handles missingness for DSLE_SEI."""
+        return self.__handle_box("dsle_sei")
+
+    def _missingness_dsle_sev(self) -> int:
+        """Handles missingness for DSLE_SEV."""
+        return self.__handle_box("dsle_sev")
+
+    def _missingness_dsle_oth(self) -> int:
+        """Handles missingness for DSLE_OTH."""
+        return self.__handle_box("dsle_oth")
+
+    # Q16 diagnostic history
+    def _missingness_dsdxhs_no(self) -> int:
+        """Handles missingness for DSDXHS_NO; 0 if DSDXHS_MCI or DSDXHS_DEM =
+        1."""
+        return self.__handle_box("dsdxhs_no")
 
     def _missingness_dsdxhs_mci(self) -> int:
-        """Handles missingness for DSDXHS_MCI; 0 if DSDXHS_NO = 1."""
-        return self.__handle_skipped("dsdxhs_mci", self.__no_dx_history(), 0)
+        """Handles missingness for DSDXHS_MCI; 0 if DSDXHS_NO or DSDXHS_DEM =
+        1."""
+        return self.__handle_box("dsdxhs_mci")
 
     def _missingness_dsdxhs_dem(self) -> int:
-        """Handles missingness for DSDXHS_DEM; 0 if DSDXHS_NO = 1."""
-        return self.__handle_skipped("dsdxhs_dem", self.__no_dx_history(), 0)
+        """Handles missingness for DSDXHS_DEM; 0 if DSDXHS_NO or DSDXHS_MCI =
+        1."""
+        return self.__handle_box("dsdxhs_dem")
 
     def _missingness_dsmcimo(self) -> int:
-        """Handles missingness for DSMCIMO; 88 if DSDXHS_MCI ne 1."""
-        return self.__handle_skipped("dsmcimo", self.__gate_ne_1("dsdxhs_mci"), 88)
+        """Handles missingness for DSMCIMO; 88 if DSDXHS_MCI = 0."""
+        return self.__handle_skipped(
+            "dsmcimo", lambda: self.__gate_is_0("dsdxhs_mci"), 88
+        )
 
     def _missingness_dsmciyr(self) -> int:
-        """Handles missingness for DSMCIYR; 8888 if DSDXHS_MCI ne 1."""
-        return self.__handle_skipped("dsmciyr", self.__gate_ne_1("dsdxhs_mci"), 8888)
+        """Handles missingness for DSMCIYR; 8888 if DSDXHS_MCI = 0."""
+        return self.__handle_skipped(
+            "dsmciyr", lambda: self.__gate_is_0("dsdxhs_mci"), 8888
+        )
 
     def _missingness_dsdemmo(self) -> int:
-        """Handles missingness for DSDEMMO; 88 if DSDXHS_DEM ne 1."""
-        return self.__handle_skipped("dsdemmo", self.__gate_ne_1("dsdxhs_dem"), 88)
+        """Handles missingness for DSDEMMO; 88 if DSDXHS_DEM = 0."""
+        return self.__handle_skipped(
+            "dsdemmo", lambda: self.__gate_is_0("dsdxhs_dem"), 88
+        )
 
     def _missingness_dsdemyr(self) -> int:
-        """Handles missingness for DSDEMYR; 8888 if DSDXHS_DEM ne 1."""
-        return self.__handle_skipped("dsdemyr", self.__gate_ne_1("dsdxhs_dem"), 8888)
+        """Handles missingness for DSDEMYR; 8888 if DSDXHS_DEM = 0."""
+        return self.__handle_skipped(
+            "dsdemyr", lambda: self.__gate_is_0("dsdxhs_dem"), 8888
+        )
 
     def _missingness_dsdxby(self) -> int:
         """Handles missingness for DSDXBY; 8 if DSDXHS_NO = 1."""
-        return self.__handle_skipped("dsdxby", self.__no_dx_history(), 8)
+        return self.__handle_skipped("dsdxby", self.__no_dx_history, 8)
 
     def _missingness_dsonstmo(self) -> int:
         """Handles missingness for DSONSTMO; 88 if DSDXHS_NO = 1."""
-        return self.__handle_skipped("dsonstmo", self.__no_dx_history(), 88)
+        return self.__handle_skipped("dsonstmo", self.__no_dx_history, 88)
 
     def _missingness_dsonstyr(self) -> int:
         """Handles missingness for DSONSTYR; 8888 if DSDXHS_NO = 1."""
-        return self.__handle_skipped("dsonstyr", self.__no_dx_history(), 8888)
+        return self.__handle_skipped("dsonstyr", self.__no_dx_history, 8888)
+
+    # Q30 next steps / recommendations
+    def _missingness_dsre_ref(self) -> int:
+        """Handles missingness for DSRE_REF."""
+        return self.__handle_box("dsre_ref")
+
+    def _missingness_dsre_int(self) -> int:
+        """Handles missingness for DSRE_INT."""
+        return self.__handle_box("dsre_int")
+
+    def _missingness_dsre_ann(self) -> int:
+        """Handles missingness for DSRE_ANN."""
+        return self.__handle_box("dsre_ann")
+
+    def _missingness_dsre_rep(self) -> int:
+        """Handles missingness for DSRE_REP."""
+        return self.__handle_box("dsre_rep")
 
     def _missingness_dsrepmo(self) -> float:
         """Handles missingness for DSREPMO, which is a float.
 
-        If DSREPMO is blank and DSRE_REP ne 1, DSREPMO = 888.0
+        If DSREPMO is blank and DSRE_REP = 0, DSREPMO = 888.0
         Else generic missingness (-4.0 if blank)
         """
-        if (
-            self.__gate_ne_1("dsre_rep")
-            and self.form.get_value("dsrepmo", float) is None
-        ):
+        value = self.form.get_value("dsrepmo", float)
+        if value is not None:
+            return value
+
+        if self.__gate_is_0("dsre_rep"):
             return 888.0
 
         return self.generic_missingness("dsrepmo", float)

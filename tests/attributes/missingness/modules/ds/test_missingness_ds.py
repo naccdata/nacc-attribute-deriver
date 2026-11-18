@@ -10,6 +10,19 @@ from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 
 AGE_VARS = ["dsmomage", "dsmnsage", "dsmnpage", "dsagehrt"]
 
+B1D_BOXES = [
+    *[f"dsdx_{x}" for x in ["aut", "cp", "ds", "frx", "id", "pw", "oth"]],
+    *[
+        f"dscn_{x}"
+        for x in ["vim", "bld", "gls", "him", "df", "had", "mim", "uw", "miw"]
+    ],
+    *[
+        f"dsle_{x}"
+        for x in ["cd", "chl", "chs", "nrm", "ill", "sem", "sei", "sev", "oth"]
+    ],
+    *[f"dsre_{x}" for x in ["ref", "int", "ann", "rep"]],
+]
+
 YEAR_GATES = {
     "dshrtryr": "dshrtrpr",
     "dscrdsyr": "dscrdsrg",
@@ -96,11 +109,13 @@ class TestDSFormMissingness:
         table[f"_prev_record.info.resolved.{field}"] = 1999
         assert missingness(attr, field) == 1999
 
+        # 7777 with previous visit 8888 (not applicable) becomes unknown
+        table[f"_prev_record.info.resolved.{field}"] = 8888
+        assert missingness(attr, field) == 9999
+
     @pytest.mark.parametrize(
         "field,code",
         [
-            ("dsdxhs_mci", 0),
-            ("dsdxhs_dem", 0),
             ("dsdxby", 8),
             ("dsonstmo", 88),
             ("dsonstyr", 8888),
@@ -123,21 +138,67 @@ class TestDSFormMissingness:
         table[f"file.info.forms.json.{field}"] = "1"
         assert missingness(attr, field) == 1
 
-    @pytest.mark.parametrize(
-        "field,gate,code",
-        [
-            ("dsmcimo", "dsdxhs_mci", 88),
-            ("dsmciyr", "dsdxhs_mci", 8888),
-            ("dsdemmo", "dsdxhs_dem", 88),
-            ("dsdemyr", "dsdxhs_dem", 8888),
-        ],
-    )
-    def test_gate_ne_1(self, table, field, gate, code):
-        """CODE if GATE ne 1, else generic."""
+    @pytest.mark.parametrize("field", B1D_BOXES)
+    def test_b1d_boxes(self, table, field):
+        """0 if blank and B1D was completed (FRMDATEB1D), else generic."""
         attr = DSFormMissingness(table)
 
-        # gate blank or 0
+        # B1D not completed
+        assert missingness(attr, field) == INFORMED_MISSINGNESS
+
+        # B1D completed
+        table["file.info.forms.json.frmdateb1d"] = "2025-01-01"
+        assert missingness(attr, field) == 0
+
+        # submitted value is kept
+        table[f"file.info.forms.json.{field}"] = "1"
+        assert missingness(attr, field) == 1
+
+    @pytest.mark.parametrize(
+        "checked,expected",
+        [
+            ("dsdxhs_no", {"dsdxhs_no": 1, "dsdxhs_mci": 0, "dsdxhs_dem": 0}),
+            ("dsdxhs_mci", {"dsdxhs_no": 0, "dsdxhs_mci": 1, "dsdxhs_dem": 0}),
+            ("dsdxhs_dem", {"dsdxhs_no": 0, "dsdxhs_mci": 0, "dsdxhs_dem": 1}),
+        ],
+    )
+    def test_q16_boxes(self, table, checked, expected):
+        """A blank Q16 box is 0 if another Q16 box is checked."""
+        attr = DSFormMissingness(table)
+
+        # none checked
+        for field in expected:
+            assert missingness(attr, field) == INFORMED_MISSINGNESS
+
+        table[f"file.info.forms.json.{checked}"] = "1"
+        for field, value in expected.items():
+            assert missingness(attr, field) == value
+
+    @pytest.mark.parametrize(
+        "field,gate,other,code",
+        [
+            ("dsmcimo", "dsdxhs_mci", "dsdxhs_dem", 88),
+            ("dsmciyr", "dsdxhs_mci", "dsdxhs_dem", 8888),
+            ("dsdemmo", "dsdxhs_dem", "dsdxhs_mci", 88),
+            ("dsdemyr", "dsdxhs_dem", "dsdxhs_mci", 8888),
+        ],
+    )
+    def test_gate_is_0(self, table, field, gate, other, code):
+        """CODE if the GATE box resolves to 0, else generic."""
+        attr = DSFormMissingness(table)
+
+        # Q16 unanswered
+        assert missingness(attr, field) == INFORMED_MISSINGNESS
+
+        # gate blank but resolves to 0 (another box checked)
+        table[f"file.info.forms.json.{other}"] = 1
         assert missingness(attr, field) == code
+        table[f"file.info.forms.json.{other}"] = None
+        table["file.info.forms.json.dsdxhs_no"] = 1
+        assert missingness(attr, field) == code
+
+        # gate submitted as 0
+        table["file.info.forms.json.dsdxhs_no"] = None
         table[f"file.info.forms.json.{gate}"] = 0
         assert missingness(attr, field) == code
 
@@ -150,7 +211,8 @@ class TestDSFormMissingness:
         assert missingness(attr, field) == 6
 
     def test_dsrepmo(self, table):
-        """DSREPMO is a float: 888.0 if DSRE_REP ne 1, else -4.0 if blank."""
+        """DSREPMO is a float: 888.0 if DSRE_REP resolves to 0, else -4.0 if
+        blank."""
         attr = DSFormMissingness(table)
 
         def check(expected: float) -> None:
@@ -158,12 +220,18 @@ class TestDSFormMissingness:
             assert isinstance(result, float)
             assert result == expected
 
-        # gate blank or 0
+        # B1D not completed, DSRE_REP blank
+        check(-4.0)
+
+        # B1D completed, DSRE_REP blank resolves to 0
+        table["file.info.forms.json.frmdateb1d"] = "2025-01-01"
         check(888.0)
+
+        # DSRE_REP submitted as 0
         table["file.info.forms.json.dsre_rep"] = 0
         check(888.0)
 
-        # gate = 1, should have been submitted
+        # DSRE_REP = 1, should have been submitted
         table["file.info.forms.json.dsre_rep"] = 1
         check(-4.0)
 
