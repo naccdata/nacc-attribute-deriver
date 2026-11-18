@@ -7,6 +7,8 @@ from nacc_attribute_deriver.attributes.collection.missingness_collection import 
     SubjectMissingnessCollection,
 )
 from nacc_attribute_deriver.attributes.namespace.namespace import T
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 # Q16 diagnostic history checkboxes and the other boxes in the question
 _Q16_OTHERS = {
@@ -382,3 +384,39 @@ class DSFormMissingness(FormMissingnessCollection):
             return 888.0
 
         return self.generic_missingness("dsrepmo", float)
+
+    #######
+    # D1D #
+    #######
+
+    def __handle_prev_code(self, field: str, prev_code: int) -> int:
+        """Handles D1D values that can be provided at the previous visit.
+
+        If FIELD = PREV_CODE, FIELD = previous DS visit's value
+            - QC (d1d-dsfvp-p-1005/1006) requires a valid previous value,
+              so if there is none, raise an error and fail the file
+        Else generic missingness
+        """
+        value = self.form.get_value(field, int)
+        if value == prev_code:
+            result = self.handle_prev_visit(field, int, prev_code=prev_code)
+            if result in [INFORMED_MISSINGNESS, prev_code]:
+                raise AttributeDeriverError(
+                    f"{field.upper()} = {prev_code} (provided at previous visit) "
+                    + "but no previous value found"
+                )
+
+            return result
+
+        if value is not None:
+            return value
+
+        return self.generic_missingness(field, int)
+
+    def _missingness_dsheadcm(self) -> int:
+        """Handles missingness for DSHEADCM; 777 carries forward."""
+        return self.__handle_prev_code("dsheadcm", 777)
+
+    def _missingness_dschrom(self) -> int:
+        """Handles missingness for DSCHROM; 7 carries forward."""
+        return self.__handle_prev_code("dschrom", 7)

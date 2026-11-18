@@ -7,6 +7,7 @@ from nacc_attribute_deriver.attributes.missingness.modules.ds.missingness_ds imp
 )
 from nacc_attribute_deriver.symbol_table import SymbolTable
 from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 AGE_VARS = ["dsmomage", "dsmnsage", "dsmnpage", "dsagehrt"]
 
@@ -238,6 +239,36 @@ class TestDSFormMissingness:
         # submitted value is kept
         table["file.info.forms.json.dsrepmo"] = "6.5"
         check(6.5)
+
+    @pytest.mark.parametrize(
+        "field,prev_code,prev_value",
+        [("dsheadcm", 777, 56), ("dschrom", 7, 1)],
+    )
+    def test_d1d_carry_forward(self, table, field, prev_code, prev_value):
+        """PREV_CODE carries forward the previous visit's value; an error if
+        there is none."""
+        attr = DSFormMissingness(table)
+
+        # blank
+        assert missingness(attr, field) == INFORMED_MISSINGNESS
+
+        # submitted value is kept
+        table[f"file.info.forms.json.{field}"] = "2"
+        assert missingness(attr, field) == 2
+
+        # prev code with no previous visit
+        table[f"file.info.forms.json.{field}"] = prev_code
+        with pytest.raises(AttributeDeriverError):
+            missingness(attr, field)
+
+        # prev code with a missing previous value
+        table[f"_prev_record.info.resolved.{field}"] = INFORMED_MISSINGNESS
+        with pytest.raises(AttributeDeriverError):
+            missingness(attr, field)
+
+        # prev code with previous visit
+        table[f"_prev_record.info.resolved.{field}"] = prev_value
+        assert missingness(attr, field) == prev_value
 
 
 class TestDSMissingness:

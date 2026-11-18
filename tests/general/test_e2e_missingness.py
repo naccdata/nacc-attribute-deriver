@@ -137,11 +137,13 @@ def test_ds_form():
                             "dscrdsyr": "7777",
                             "frmdateb1d": "2025-01-01",
                             "dsdxhs_no": "1",
+                            "dsheadcm": "777",
+                            "dschrom": "2",
                         }
                     }
                 },
             },
-            "_prev_record": {"info": {"resolved": {"dsmomage": 30}}},
+            "_prev_record": {"info": {"resolved": {"dsmomage": 30, "dsheadcm": 55}}},
         }
     )
     MissingnessDeriver(missingness_level="file").curate(table, "ds")
@@ -167,3 +169,7 @@ def test_ds_form():
     assert resolved["dsonstyr"] == 8888
     assert resolved["dsrepmo"] == 888.0
     assert isinstance(resolved["dsrepmo"], float)
+
+    # D1D: 777 carries forward, submitted value kept
+    assert resolved["dsheadcm"] == 55
+    assert resolved["dschrom"] == 2

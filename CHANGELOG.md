@@ -23,6 +23,10 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `DSREPMO` (float): 888.0 if `DSRE_REP` = 0; -4.0 if otherwise blank
     * The "= 0" gates use the checkbox's resolved value (a blank box counts as 0 when the rules above apply), so an unanswered gate leaves the dependent at -4
     * Gated write-ins are strings and already stay blank under generic missingness
+* Adds DS module (D1D) informative missingness; submitted values are always kept
+    * `DSHEADCM`: if 777, carry forward the value from the previous DS visit
+    * `DSCHROM`: if 7, carry forward the value from the previous DS visit
+    * If there is no previous DS value to carry forward (QC checks `d1d-dsfvp-p-1005/1006` should prevent this), raises an error so the file fails curation
 * Adds `NACCDS`: 1 if the participant has at least one DS module visit, otherwise 0; mirrors `NACCFTD` and `NACCLBDM`
     * Written to `file.info.derived` and `subject.info.derived.cross-sectional`; the subject-level default of 0 comes from subject missingness
 

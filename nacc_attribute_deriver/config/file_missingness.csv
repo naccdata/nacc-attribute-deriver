@@ -100,6 +100,8 @@ ds,dsre_int,file.info.resolved.dsre_int,update,FALSE,int
 ds,dsre_ann,file.info.resolved.dsre_ann,update,FALSE,int
 ds,dsre_rep,file.info.resolved.dsre_rep,update,FALSE,int
 ds,dsrepmo,file.info.resolved.dsrepmo,update,FALSE,float
+ds,dsheadcm,file.info.resolved.dsheadcm,update,FALSE,int
+ds,dschrom,file.info.resolved.dschrom,update,FALSE,int
 mds,header_adcid,file.info.resolved.adcid,update,FALSE,int
 mds,header_formver,file.info.resolved.formver,update,FALSE,float
 mds,header_visitdate,file.info.resolved.visitdate,update,FALSE,str
