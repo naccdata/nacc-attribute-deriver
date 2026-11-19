@@ -30,7 +30,14 @@ Documentation of release versions of `nacc-attribute-deriver`
     * If there is no previous DS value to carry forward (QC checks `d1d-dsfvp-p-1005/1006` should prevent this), raises an error so the file fails curation
 * Adds `NACCDS`: 1 if the participant has at least one DS module visit, otherwise 0; mirrors `NACCFTD` and `NACCLBDM`
     * Written to `file.info.derived` and `subject.info.derived.cross-sectional`; the subject-level default of 0 comes from subject missingness
-
+* Fixes UDSv4 `NACCALZP` and `NACCLBDP` so that 7 means impaired (`NORMCOG = 0`, including MBI) without that etiologic diagnosis. Released V4 values change on reprocessing:
+    * `ALZDIS = 1` with `ALZDISIF` blank (or `LBDIS = 1` with `LBDIF` blank) now raises an error instead of getting 7 (or 8 if not `DEMENTED`/`MCI`/`IMPNOMCI`). This is invalid but not caught by QC; it previously produced the `NACCALZD = 1` / `NACCALZP = 7` pair
+    * `NORMCOG = 0` without `DEMENTED`, `MCI` or `IMPNOMCI` (e.g., MBI only) and no diagnosis now gets 7 instead of 8
+* Changes UDSv4 D1b informative missingness for `CTEIF`, `CAAIF`, `LATEIF`, `MSAIF`, `PSPIF`, `CORTIF`, `FTLDMOIF`, `FTLDNOIF`, `CVDIF`, `DOWNSIF`, `HUNTIF`, `PRIONIF` and `OTHCOGIF` to use `NORMCOG = 0` instead of `DEMENTED`/`MCI`/`IMPNOMCI`. For a blank field, released V4 values change on reprocessing:
+    * `NORMCOG = 0` without `DEMENTED`, `MCI` or `IMPNOMCI` and the diagnosis not selected now gets 7 instead of informed missingness
+    * `NORMCOG = 0` with the diagnosis selected now raises an error instead of getting informed missingness. This is invalid but not caught by QC
+    * `CTECERT`, `FTLDSUBT` and V1-V3 are unchanged
+* When one of these errors is raised, the curator lists the visit in `curation-failures.csv` and doesn't tag the file as curated, so the visit is left out of the data freeze until the site fills in the field. Subject-level values from rules that ran before the error are still written
 
 ## 2.5.1
 
