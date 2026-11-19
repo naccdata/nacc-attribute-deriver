@@ -5,6 +5,7 @@ import pytest
 from nacc_attribute_deriver.attributes.missingness.modules.uds.missingness_d1b import (
     UDSFormD1bMissingness,
 )
+from nacc_attribute_deriver.utils.constants import INFORMED_MISSINGNESS
 from nacc_attribute_deriver.utils.errors import InvalidFieldError
 
 
@@ -87,7 +88,7 @@ class TestUDSFormD1bMissingness:
         )
 
         attr = UDSFormD1bMissingness(uds_table)
-        assert attr._missingness_ctecert() != 7
+        assert attr._missingness_ctecert() == INFORMED_MISSINGNESS
 
         uds_table["file.info.forms.json"].update({"demented": 1})
         attr = UDSFormD1bMissingness(uds_table)
@@ -96,7 +97,7 @@ class TestUDSFormD1bMissingness:
         # not a contribution field, so a selected CTE does not raise
         uds_table["file.info.forms.json"].update({"cte": 1})
         attr = UDSFormD1bMissingness(uds_table)
-        assert attr._missingness_ctecert() != 7
+        assert attr._missingness_ctecert() == INFORMED_MISSINGNESS
 
     def test_cognitive_impairment_gate_v3_selected_no_error(self, uds_table):
         """V1-V3 diagnosis selected with *IF blank does not raise."""
@@ -112,7 +113,7 @@ class TestUDSFormD1bMissingness:
         )
 
         attr = UDSFormD1bMissingness(uds_table)
-        assert attr._missingness_msaif() != 7
+        assert attr._missingness_msaif() == INFORMED_MISSINGNESS
 
     def test_cognitive_impairment_gate_v3_unchanged(self, uds_table):
         """V1-V3 *IF fields still require DEMENTED, MCI, or IMPNOMCI for 7."""
@@ -127,7 +128,7 @@ class TestUDSFormD1bMissingness:
         )
 
         attr = UDSFormD1bMissingness(uds_table)
-        assert attr._missingness_msaif() != 7
+        assert attr._missingness_msaif() == INFORMED_MISSINGNESS
 
         uds_table["file.info.forms.json"].update({"demented": 1})
         attr = UDSFormD1bMissingness(uds_table)
