@@ -117,3 +117,61 @@ def test_bds_form():
     assert resolved["bdsetpr"] == 88
     assert resolved["bdscoalz"] == 8
     assert resolved["bdscoo3f"] == 8
+
+
+def test_ds_form():
+    """Test DS A1D and B1D missingness through the file-level rules."""
+    table = SymbolTable(
+        {
+            "file": {
+                "info": {
+                    "forms": {
+                        "json": {
+                            "module": "DS",
+                            "visitdate": "2025-01-01",
+                            "formver": "1.0",
+                            "adcid": "1",
+                            "dsmomage": "777",
+                            "dshrtrpr": "0",
+                            "dscrdsrg": "1",
+                            "dscrdsyr": "7777",
+                            "frmdateb1d": "2025-01-01",
+                            "dsdxhs_no": "1",
+                            "dsheadcm": "777",
+                            "dschrom": "2",
+                        }
+                    }
+                },
+            },
+            "_prev_record": {
+                "info": {"resolved": {"dsmomage": 30, "dsheadcm": 55, "dscrdsyr": 2001}}
+            },
+        }
+    )
+    MissingnessDeriver(missingness_level="file").curate(table, "ds")
+
+    resolved = table["file.info.resolved"]
+    assert resolved["dsmomage"] == 30
+    assert resolved["dsmnsage"] == -4
+    assert resolved["dshrtryr"] == 8888
+    assert resolved["dscrdsyr"] == 2001
+
+    # B1D: completed; no MCI/dementia diagnosis, unchecked boxes are 0
+    assert resolved["dsdx_aut"] == 0
+    assert resolved["dsre_rep"] == 0
+    assert resolved["dsdxhs_no"] == 1
+    assert resolved["dsdxhs_mci"] == 0
+    assert resolved["dsdxhs_dem"] == 0
+    assert resolved["dsmcimo"] == 88
+    assert resolved["dsmciyr"] == 8888
+    assert resolved["dsdemmo"] == 88
+    assert resolved["dsdemyr"] == 8888
+    assert resolved["dsdxby"] == 8
+    assert resolved["dsonstmo"] == 88
+    assert resolved["dsonstyr"] == 8888
+    assert resolved["dsrepmo"] == 888.0
+    assert isinstance(resolved["dsrepmo"], float)
+
+    # D1D: 777 carries forward, submitted value kept
+    assert resolved["dsheadcm"] == 55
+    assert resolved["dschrom"] == 2

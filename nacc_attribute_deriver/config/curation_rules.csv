@@ -157,6 +157,8 @@ ftld,naccftd,subject.info.derived.cross-sectional.naccftd,max,FALSE
 ftld,naccftd,file.info.derived.naccftd,max,FALSE
 lbd,nacclbdm,subject.info.derived.cross-sectional.nacclbdm,max,FALSE
 lbd,nacclbdm,file.info.derived.nacclbdm,max,FALSE
+ds,naccds,subject.info.derived.cross-sectional.naccds,max,FALSE
+ds,naccds,file.info.derived.naccds,max,FALSE
 lbd,lbpsyage,subject.info.working.cross-sectional.lbpsyage,update,FALSE
 lbd,lbsagerm,subject.info.working.cross-sectional.lbsagerm,update,FALSE
 lbd,lbsagesm,subject.info.working.cross-sectional.lbsagesm,update,FALSE
