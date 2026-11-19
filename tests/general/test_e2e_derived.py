@@ -464,6 +464,30 @@ def test_lbd():
     }
 
 
+def test_ds():
+    """Test against minimal DS data."""
+    form = SymbolTable()
+    form["file.info.forms.json"] = {"module": "DS", "visitdate": "2025-01-01"}
+
+    deriver = AttributeDeriver()
+    deriver.curate(form, "ds")
+
+    assert form.to_dict() == {
+        "file": {
+            "info": {
+                "derived": {"naccds": 1},
+                "forms": {
+                    "json": {
+                        "module": "DS",
+                        "visitdate": "2025-01-01",
+                    }
+                },
+            }
+        },
+        "subject": {"info": {"derived": {"cross-sectional": {"naccds": 1}}}},
+    }
+
+
 def test_csf():
     """Test against minimal CSF data."""
     form = SymbolTable()
