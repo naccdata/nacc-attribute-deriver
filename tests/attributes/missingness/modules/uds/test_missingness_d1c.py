@@ -132,6 +132,14 @@ class TestUDSFormD1cMissingness:
             == INFORMED_MISSINGNESS
         )
 
+        # INFORISCH unanswered but IMGRSINF checked: IMGRSINF is kept as 1, so
+        # its blank sub-boxes are unselected (0), consistent with their parent
+        form.update({"inforisch": None, "imgrsinf": 1})
+        attr = UDSFormD1cMissingness(d1c_table)
+        assert attr._missingness_imgrsinf() == 1
+        assert attr._missingness_imgrsinflc() == 0
+        assert attr._missingness_imgrsinfct() == 0
+
     @pytest.mark.parametrize("moded1c", [0, None])
     def test_not_completed(self, d1c_table, moded1c):
         """If D1c not completed, everything falls back to -4."""
