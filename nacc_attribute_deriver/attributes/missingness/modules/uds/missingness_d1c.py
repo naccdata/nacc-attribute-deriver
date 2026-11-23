@@ -36,13 +36,18 @@ class UDSFormD1cMissingness(UDSMissingness):
 
         return self.generic_missingness(field, int)
 
-    def __handle_unchecked_box(self, checkbox: str, field: str) -> int:
+    def __handle_unchecked_box(self, gate: str, checkbox: str, field: str) -> int:
         """Handles the follow-up questions to a checkbox:
 
         If CHECKBOX is blank and FIELD is blank, then FIELD = 8
+
+        Only applies when the checkbox's yes/no GATE was answered (0 or 1),
+        i.e. the checkbox itself resolves to 8 or 0. If GATE is unanswered the
+        checkbox resolves to -4, and so does FIELD.
         """
         if (
             self.submitted
+            and self.uds.get_value(gate, int) in (0, 1)
             and self.uds.get_value(checkbox, int) is None
             and self.uds.get_value(field, int) is None
         ):
@@ -194,79 +199,79 @@ class UDSFormD1cMissingness(UDSMissingness):
 
     def _missingness_ptau217rs(self) -> int:
         """Handles missingness for PTAU217RS."""
-        return self.__handle_unchecked_box("dxptau217", "ptau217rs")
+        return self.__handle_unchecked_box("dxplsmabio", "dxptau217", "ptau217rs")
 
     def _missingness_pt217anlys(self) -> int:
         """Handles missingness for PT217ANLYS."""
-        return self.__handle_unchecked_box("dxptau217", "pt217anlys")
+        return self.__handle_unchecked_box("dxplsmabio", "dxptau217", "pt217anlys")
 
     def _missingness_pt217int(self) -> int:
         """Handles missingness for PT217INT."""
-        return self.__handle_unchecked_box("dxptau217", "pt217int")
+        return self.__handle_unchecked_box("dxplsmabio", "dxptau217", "pt217int")
 
     def _missingness_pcpt217rs(self) -> int:
         """Handles missingness for PCPT217RS."""
-        return self.__handle_unchecked_box("dxpcpt217", "pcpt217rs")
+        return self.__handle_unchecked_box("dxplsmabio", "dxpcpt217", "pcpt217rs")
 
     def _missingness_pcpt217int(self) -> int:
         """Handles missingness for PCPT217INT."""
-        return self.__handle_unchecked_box("dxpcpt217", "pcpt217int")
+        return self.__handle_unchecked_box("dxplsmabio", "dxpcpt217", "pcpt217int")
 
     def _missingness_othplsmars(self) -> int:
         """Handles missingness for OTHPLSMARS."""
-        return self.__handle_unchecked_box("dxothplsma", "othplsmars")
+        return self.__handle_unchecked_box("dxplsmabio", "dxothplsma", "othplsmars")
 
     def _missingness_oplsmanlys(self) -> int:
         """Handles missingness for OPLSMANLYS."""
-        return self.__handle_unchecked_box("dxothplsma", "oplsmanlys")
+        return self.__handle_unchecked_box("dxplsmabio", "dxothplsma", "oplsmanlys")
 
     def _missingness_oplsmaint(self) -> int:
         """Handles missingness for OPLSMAINT."""
-        return self.__handle_unchecked_box("dxothplsma", "oplsmaint")
+        return self.__handle_unchecked_box("dxplsmabio", "dxothplsma", "oplsmaint")
 
     def _missingness_pt181abrs(self) -> int:
         """Handles missingness for PT181ABRS."""
-        return self.__handle_unchecked_box("dxpt181ab", "pt181abrs")
+        return self.__handle_unchecked_box("dxcsfbio", "dxpt181ab", "pt181abrs")
 
     def _missingness_pt181abays(self) -> int:
         """Handles missingness for PT181ABAYS."""
-        return self.__handle_unchecked_box("dxpt181ab", "pt181abays")
+        return self.__handle_unchecked_box("dxcsfbio", "dxpt181ab", "pt181abays")
 
     def _missingness_pt181abint(self) -> int:
         """Handles missingness for PT181ABINT."""
-        return self.__handle_unchecked_box("dxpt181ab", "pt181abint")
+        return self.__handle_unchecked_box("dxcsfbio", "dxpt181ab", "pt181abint")
 
     def _missingness_ttabetars(self) -> int:
         """Handles missingness for TTABETARS."""
-        return self.__handle_unchecked_box("dxttabeta", "ttabetars")
+        return self.__handle_unchecked_box("dxcsfbio", "dxttabeta", "ttabetars")
 
     def _missingness_ttabetaint(self) -> int:
         """Handles missingness for TTABETAINT."""
-        return self.__handle_unchecked_box("dxttabeta", "ttabetaint")
+        return self.__handle_unchecked_box("dxcsfbio", "dxttabeta", "ttabetaint")
 
     def _missingness_ab42ab40rs(self) -> int:
         """Handles missingness for AB42AB40RS."""
-        return self.__handle_unchecked_box("dxab42ab40", "ab42ab40rs")
+        return self.__handle_unchecked_box("dxcsfbio", "dxab42ab40", "ab42ab40rs")
 
     def _missingness_ab42ab40ay(self) -> int:
         """Handles missingness for AB42AB40AY."""
-        return self.__handle_unchecked_box("dxab42ab40", "ab42ab40ay")
+        return self.__handle_unchecked_box("dxcsfbio", "dxab42ab40", "ab42ab40ay")
 
     def _missingness_ab42ab40it(self) -> int:
         """Handles missingness for AB42AB40IT."""
-        return self.__handle_unchecked_box("dxab42ab40", "ab42ab40it")
+        return self.__handle_unchecked_box("dxcsfbio", "dxab42ab40", "ab42ab40it")
 
     def _missingness_othcsfrs(self) -> int:
         """Handles missingness for OTHCSFRS."""
-        return self.__handle_unchecked_box("dxothcsf", "othcsfrs")
+        return self.__handle_unchecked_box("dxcsfbio", "dxothcsf", "othcsfrs")
 
     def _missingness_ocsfanlys(self) -> int:
         """Handles missingness for OCSFANLYS."""
-        return self.__handle_unchecked_box("dxothcsf", "ocsfanlys")
+        return self.__handle_unchecked_box("dxcsfbio", "dxothcsf", "ocsfanlys")
 
     def _missingness_ocsfint(self) -> int:
         """Handles missingness for OCSFINT."""
-        return self.__handle_unchecked_box("dxothcsf", "ocsfint")
+        return self.__handle_unchecked_box("dxcsfbio", "dxothcsf", "ocsfint")
 
     ######################################
     # Questions skipped by a yes/no gate #

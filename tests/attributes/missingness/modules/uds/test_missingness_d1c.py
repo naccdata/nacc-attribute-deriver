@@ -61,8 +61,17 @@ class TestUDSFormD1cMissingness:
         form.update({"dxcsfbio": 0})
         assert UDSFormD1cMissingness(d1c_table)._missingness_ab42ab40it() == 8
 
+        # yes/no question unanswered: the checkbox is -4, so its follow-ups are
+        # too (not 8)
+        form.update({"dxplsmabio": None, "dxptau217": None})
+        attr = UDSFormD1cMissingness(d1c_table)
+        assert attr._missingness_dxptau217() == INFORMED_MISSINGNESS
+        assert attr._missingness_ptau217rs() == INFORMED_MISSINGNESS
+        assert attr._missingness_pt217anlys() == INFORMED_MISSINGNESS
+        assert attr._missingness_pt217int() == INFORMED_MISSINGNESS
+
         # checked but follow-up blank is missing data
-        form.update({"dxptau217": 1})
+        form.update({"dxplsmabio": 1, "dxptau217": 1})
         assert (
             UDSFormD1cMissingness(d1c_table)._missingness_ptau217rs()
             == INFORMED_MISSINGNESS
