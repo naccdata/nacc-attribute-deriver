@@ -1,11 +1,19 @@
 """Class to handle D1c-specific missingness values.
 
 D1c is optional (MODED1C = 0 means not completed). As with B6, the
-informative missingness codes only apply when the form was completed;
-otherwise all variables fall back to generic missingness (-4).
+informative missingness codes only apply when the form was completed.
 
-Write-in variables (DXOTHPLSMX, DXOTHCSFX, IMGRSOTHX, ASYNASSAYX,
-ASYNANLYSX, CR1OTHX) stay blank, which generic missingness already does.
+The yes/no questions (DXPLSMABIO, DXCSFBIO, DXAPET, DXTAUPET, INFORISCH,
+DXASYN, AACRITMET), D1CNOT and the write-ins (DXOTHPLSMX, DXOTHCSFX,
+IMGRSOTHX, ASYNASSAYX, ASYNANLYSX, CR1OTHX) have no missingness rule in the
+spec, so no rule runs on them and they keep their submitted value. The
+yes/no questions and write-ins are blank on a not-completed form; D1CNOT
+is the reverse, 88 on a not-completed form and blank on a completed one
+(as for B5NOT, B6NOT, etc.). The QAF turns the numeric blanks (the yes/no
+questions and D1CNOT) into -4; the write-ins stay blank. QC
+requires each write-in to be blank unless its box or answer selects it
+(missingness checks m-033/034, m-078/079, m-147/148, m-161/162, m-163/164,
+m-184/185), so a stray write-in is rejected there rather than blanked here.
 """
 
 from nacc_attribute_deriver.attributes.collection.uds_collection import UDSMissingness
