@@ -7,6 +7,7 @@ Documentation of release versions of `nacc-attribute-deriver`
 * Adds BDS-derived `NACCSEX`, `NACCLANG`, `NACCLANGX`, `NACCHISP` and `NACCNIHR` for participants with a BDS form but no UDS visits, per the BDS derived variable spec (uniform-data-set PR #553)
     * Written to `subject.info.derived.cross-sectional`; nothing is written if the subject has UDS visits (`subject.info.working.cross-sectional.uds-visitdates`), so UDS values always take precedence
     * Requires the companion attribute curator gear change: BDS must be curated after UDS (moved to `pass0`), and BDS must be added to `BACKPROP_SCOPES` so the values are applied to BDS files
+* BDS `NACCDAGE` now raises an error when the subject has no NP form (no NP death age), so the BDS file fails curation; previously it was set to 999
 * Adds BDS informative missingness gated on `BDSUDSD` (cognitive status at time of death); submitted values are always kept
     * `BDSETPR`: 88 if `BDSUDSD` = 1, 99 if `BDSUDSD` = 9
     * `BDSCOALZ`, `BDSCOLBD`, `BDSCOMSA`, `BDSCOPSP`, `BDSCOCBD`, `BDSCOFMO`, `BDSCOFOT`, `BDSCOVAS`, `BDSCOTBI`, `BDSCODWN`, `BDSCOO1F`, `BDSCOO2F`, `BDSCOO3F`: 8 if `BDSUDSD` = 1, 9 if `BDSUDSD` = 9
