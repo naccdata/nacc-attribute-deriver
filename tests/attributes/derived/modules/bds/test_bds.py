@@ -75,7 +75,7 @@ class TestBDSFormAttributeCollection:
         attr = BDSFormAttributeCollection(table)
         assert attr._create_bds_nacclang() == INFORMED_MISSINGNESS
 
-        expected = {1: 1, 2: 2, 3: 3, 4: 3, 5: 5, 6: 6, 8: 8, 9: 9}
+        expected = {1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 5, 8: 8, 9: 9}
         for primlang, nacclang in expected.items():
             table["file.info.forms.json.primlang"] = primlang
             assert attr._create_bds_nacclang() == nacclang
