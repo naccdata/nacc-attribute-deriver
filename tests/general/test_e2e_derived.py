@@ -4,8 +4,10 @@ Mainly sanity checks to make sure modules run at all. Does not test UDS
 fully due to its complexity/length.
 """
 
+import pytest
 from nacc_attribute_deriver.attribute_deriver import AttributeDeriver
 from nacc_attribute_deriver.symbol_table import SymbolTable
+from nacc_attribute_deriver.utils.errors import AttributeDeriverError
 
 
 def test_uds_form(uds_table):
@@ -621,14 +623,23 @@ def test_bds():
                             }
                         }
                     }
-                }
+                },
+                "subject": {
+                    "info": {"working": {"cross-sectional": {"np-death-age": 86}}}
+                },
             }
         )
+
+    # no NP form, fails curation
+    table = bds_table()
+    table.pop("subject")
+    with pytest.raises(AttributeDeriverError):
+        deriver.curate(table, "bds")
 
     # BDS only
     table = bds_table()
     deriver.curate(table, "bds")
-    assert table["file.info.derived"] == {"naccdage": 999}
+    assert table["file.info.derived"] == {"naccdage": 86}
     assert table["subject.info.derived.cross-sectional"] == {
         "naccsex": 1,
         "nacchisp": 0,

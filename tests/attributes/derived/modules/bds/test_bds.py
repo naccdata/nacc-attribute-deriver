@@ -42,9 +42,10 @@ class TestBDSFormAttributeCollection:
         attr = BDSFormAttributeCollection(table)
         assert attr._create_bds_naccdage() == 86
 
-        # when not there
+        # no NP form
         table.pop("subject")
-        assert attr._create_bds_naccdage() == 999
+        with pytest.raises(AttributeDeriverError):
+            attr._create_bds_naccdage()
 
     def test_create_bds_naccsex(self, table):
         """Tests _create_bds_naccsex."""

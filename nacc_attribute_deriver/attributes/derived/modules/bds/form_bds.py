@@ -45,11 +45,14 @@ class BDSFormAttributeCollection(AttributeCollection):
         so we always expect an NP form, which will always provide
         an age of death.
 
-        If an NP form is not provided, just return 999.
+        If an NP form is not found, raises an error so the BDS
+        file fails curation.
         """
         age_at_death = self.__working.get_cross_sectional_value("np-death-age", int)
         if not age_at_death:
-            return 999
+            raise AttributeDeriverError(
+                "BDS form requires an NP form; no NP death age found"
+            )
 
         # enforce minimum of 18
         return max(18, age_at_death)
