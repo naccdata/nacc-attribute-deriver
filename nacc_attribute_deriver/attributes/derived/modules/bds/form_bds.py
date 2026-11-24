@@ -88,8 +88,9 @@ class BDSFormAttributeCollection(AttributeCollection):
     def _create_bds_nacclang(self) -> Optional[int]:
         """Creates NACCLANG from the BDS if there is no UDS.
 
-        PRIMLANG 3 (Mandarin) and 4 (Cantonese) both map to 3 (Chinese
-        dialect); everything else maps to itself. -4 if blank.
+        PRIMLANG 3 (Mandarin) and 4 (Cantonese) map to 3 (Chinese
+        dialect), 5 (Russian) to 4 and 6 (Japanese) to 5, as for UDS
+        V1-3; -4 if blank.
         """
         if self.__has_uds:
             return None
@@ -98,7 +99,7 @@ class BDSFormAttributeCollection(AttributeCollection):
         if primlang is None:
             return INFORMED_MISSINGNESS
 
-        primlang_mappings = {1: 1, 2: 2, 3: 3, 4: 3, 5: 5, 6: 6, 8: 8, 9: 9}
+        primlang_mappings = {1: 1, 2: 2, 3: 3, 4: 3, 5: 4, 6: 5, 8: 8, 9: 9}
         if primlang not in primlang_mappings:
             raise AttributeDeriverError(
                 "Unable to derive NACCLANG (BDS): unsupported primlang value: "
