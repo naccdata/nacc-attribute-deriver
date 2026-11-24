@@ -23,13 +23,20 @@ Documentation of release versions of `nacc-attribute-deriver`
     * `DSDXBY`, `DSONSTMO`, `DSONSTYR`: 8 / 88 / 8888 if `DSDXHS_NO` = 1
     * `DSREPMO` (float): 888.0 if `DSRE_REP` = 0; -4.0 if otherwise blank
     * The "= 0" gates use the checkbox's resolved value (a blank box counts as 0 when the rules above apply), so an unanswered gate leaves the dependent at -4
-    * Gated write-ins are strings and already stay blank under generic missingness
+    * Gated write-ins have no rule and keep their submitted value
 * Adds DS module (D1D) informative missingness; submitted values are always kept
     * `DSHEADCM`: if 777, carry forward the value from the previous DS visit
     * `DSCHROM`: if 7, carry forward the value from the previous DS visit
     * If there is no previous DS value to carry forward (QC checks `d1d-dsfvp-p-1005/1006` should prevent this), raises an error so the file fails curation
 * Adds `NACCDS`: 1 if the participant has at least one DS module visit, otherwise 0; mirrors `NACCFTD` and `NACCLBDM`
     * Written to `file.info.derived` and `subject.info.derived.cross-sectional`; the subject-level default of 0 comes from subject missingness
+* Adds UDSv4 D1c informative missingness; submitted values are always kept
+    * Checkboxes under a yes/no question (`DXPTAU217`, `DXPCPT217`, `DXOTHPLSMA`, `DXPT181AB`, `DXTTABETA`, `DXAB42AB40`, `DXOTHCSF`, `APETVIS`, `APETQUANT`, `TPETMTLVIS`, `TPETMTLQNT`, `TPETNEOVIS`, `TPETNEOQNT`, `IMGRSINF`, `IMGRSMICR`, `IMGRSWMH`, `IMGRSSPSID`, `IMGRSOTH`, `CR1*`, `C1AB42AB40`): 8 if the question (`DXPLSMABIO`, `DXCSFBIO`, `DXAPET`, `DXTAUPET`, `INFORISCH`, `AACRITMET`) is 0, 0 if it is 1
+    * Follow-ups to a biomarker checkbox (`PTAU217RS`, `PT217ANLYS`, `PT217INT`, `PCPT217RS`, `PCPT217INT`, `OTHPLSMARS`, `OPLSMANLYS`, `OPLSMAINT`, `PT181ABRS`, `PT181ABAYS`, `PT181ABINT`, `TTABETARS`, `TTABETAINT`, `AB42AB40RS`, `AB42AB40AY`, `AB42AB40IT`, `OTHCSFRS`, `OCSFANLYS`, `OCSFINT`): 8 if the checkbox is blank and its question (`DXPLSMABIO`, `DXCSFBIO`) was answered; an unanswered question leaves them at -4, as for the checkbox
+    * `APETRS`, `APETANLYS`, `APETINT`, `TPETMTLRS`, `TPETMTLAYS`, `TPETNEORS`, `TPETNEOAYS`, `DXTAUPTINT`, `IMGRSINT`, `ASYNRS`, `ASYNASSAY`, `ASYNINT`, `BIOSTAGE`, `CLINSTAGE`: 8 if their question (`DXAPET`, `DXTAUPET`, `INFORISCH`, `DXASYN`, `AACRITMET`) is 0
+    * `IMGRSINFLC`, `IMGRSINFCT`: 8 if `INFORISCH` = 0, or `INFORISCH` = 1 and `IMGRSINF` is blank; 0 if `IMGRSINF` = 1
+    * D1c is optional: these codes only apply when `MODED1C` = 1; otherwise the variables above get -4 (same as B6)
+    * The yes/no questions, `D1CNOT` and the write-ins have no rule and keep their submitted value; QC requires each write-in to be blank unless its box or answer selects it
 * Fixes UDSv4 `NACCALZP` and `NACCLBDP` so that 7 means impaired (`NORMCOG = 0`, including MBI) without that etiologic diagnosis. Released V4 values change on reprocessing:
     * `ALZDIS = 1` with `ALZDISIF` blank (or `LBDIS = 1` with `LBDIF` blank) now raises an error instead of getting 7 (or 8 if not `DEMENTED`/`MCI`/`IMPNOMCI`). This is invalid but not caught by QC; it previously produced the `NACCALZD = 1` / `NACCALZP = 7` pair
     * `NORMCOG = 0` without `DEMENTED`, `MCI` or `IMPNOMCI` (e.g., MBI only) and no diagnosis now gets 7 instead of 8
